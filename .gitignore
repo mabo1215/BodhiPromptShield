@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.Python
+*.so
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+*.egg
+
+# Generated figures (paper uses fig/ from run_src)
+paper/fig/
+
+__init__.py
