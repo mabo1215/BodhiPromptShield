@@ -1,0 +1,6 @@
+Config,Train_acc,Val_acc,Notes
+(A) DBN/PB,0.9,0.8495,"COVID-19 train 0.90 (Fig.9); MIMIC val 0.8495 (\nu=0.01, Table 1 [ma2021privacy])"
+(B),0.004,0.0,Proxy on REAEDP (no boundary)
+(C),0.004,0.0,Proxy on REAEDP (internal center only)
+(D),0.004,0.0,Proxy on REAEDP (ring+center)
+(E) Full (ours),0.004,0.0,Proxy on REAEDP (full); replace with IBPPSVM

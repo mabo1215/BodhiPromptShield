@@ -58,7 +58,7 @@ def run_reaedp_baseline(reaedp_dir: str) -> dict | None:
     except ImportError:
         return None
     csv_path = None
-    for name in ["cdc-brfss-2024.csv", "brfss_survey_data_2024.csv", "tabular-feature-engineering.csv"]:
+    for name in ["tabular-feature-engineering.csv", "cdc-brfss-2024.csv", "brfss_survey_data_2024.csv"]:
         p = os.path.join(reaedp_dir, name)
         if os.path.isfile(p):
             csv_path = p
@@ -85,6 +85,10 @@ def run_reaedp_baseline(reaedp_dir: str) -> dict | None:
     X = X.values[valid][: len(y)]
     if len(np.unique(y)) < 2:
         return None
+    # If too many classes (e.g. regression-like), binarize by median for proxy classification
+    n_unique = len(np.unique(y))
+    if n_unique > 20 or n_unique > len(y) // 2:
+        y = (y >= np.median(y)).astype(np.intp)
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
     clf = LogisticRegression(max_iter=500, random_state=42)
     clf.fit(X_train, y_train)

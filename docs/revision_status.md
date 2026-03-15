@@ -41,7 +41,7 @@
 | **自重叠缓解（披露与引用）** | 已完成 | 在 “Differences from Prior DBN/PB-based Work” 中已包含建议的披露句；prior 论文~\cite{ma2021privacy} 在 Introduction 与表中明确引用；对比表明确 “Reused vs new” 一行。 |
 | **贡献列表精简** | 已完成 | Introduction 中五项贡献已改为每项一句、可验证式表述（分布理论、GDIFSEA、不完整标注、不均衡与正样本、模型综合）。 |
 | **实验/数据与 REAEDP** | 部分完成 | 在 “Training result from incomplete annotation data” 的 Setup 后增加 “Data availability and additional datasets” 段：说明为减少与 prior 重叠，主文使用 COVID-19 与 Medical Transcription，并注明可使用额外公开数据（含 REAEDP/data：CDC BRFSS、经济指标、flight-delay 等）做消融与敏感性分析；表格中 “Datasets” 行已指向 “Section V” 及额外数据。 |
-| **Major 2：新颖性隔离与消融** | 结构已完成 | 在实验部分新增 “Ablation study” 子节及 Table~\ref{tab:ablation}，明确五组配置 (A) DBN/PB、(B) 无边界、(C) 仅内中心、(D) 环+内中心、(E) 环+内中心+GDIFSEA；(A) 注明 “From prior paper if comparable”；(B)--(D) 为 placeholder，待补数值。 |
+| **Major 2：新颖性隔离与消融** | (A) 已完成，结构已完成 | 在实验部分新增 “Ablation study” 子节及 Table~\ref{tab:ablation}，明确五组配置；(A) 行已填入 prior 论文数值（Train 0.90, Val 0.8495，来自 [ma2021privacy] Table 1 与 Fig.9），并增加脚本 \texttt{prior\_ablation\_table.py} 复现来源；(B)--(D) 为 placeholder，待按顺序 (E)→(D)→(C)→(B) 跑 IBPPSVM 实验后填入。 |
 | **Major 3：理论三层结构与形式化命题** | 已完成 | 在 “Probability Distribution of Covid19 Dataset...” 中：增加三层结构（表示层/几何层/学习层）；给出 Assumption 1--3 与 **Proposition (Shell concentration)**，$r_1 \leq \|\mathbf{z}\|_2 \leq r_2$ 的显式 $r_1,r_2$；并说明学习层如何利用该几何（内部分类中心 + margin + 隐私加在输出）。 |
 | **Major 5：强基线与统计报告** | 结构已完成 | 新增 “Baselines and statistical reporting” 子节及 Table~\ref{tab:baselines}（placeholder）：列出 TF-IDF+线性 SVM、RNN/CNN、Transformer、prior DBN/PB、IBPPSVM；说明将补充 mean±std、显著性、运行时间/内存、隐私–效用曲线；数据可选用 REAEDP 或标准 NLP 语料。 |
 | **Related Work 分块与对比表** | 已完成 | 新增子节 “Privacy-preserving NLP and DP for text models”、“SVM and privacy-preserving classification”，以及 **Table (tab:related-comparison)**：Assumptions / Privacy mechanism / Cost 对比 Prior DBN/PB 与 This work。 |
@@ -54,8 +54,8 @@
 
 | 修改点 | 修改进度 | 修改说明 |
 |--------|----------|----------|
-| **Major 2：消融数值** | 未完成 | 表~\ref{tab:ablation} 中 (B)(C)(D) 及 (A) 的 prior 数值尚未填入；需实际跑 (B)--(E) 或引用 prior 论文可比结果。见下方“需您决策”。 |
-| **Major 5：基线数值与统计** | 未完成 | 表~\ref{tab:baselines} 为 placeholder；需跑 TF-IDF+SVM、RNN/Transformer 等并报告 mean±std、显著性、时间/内存、隐私–效用。见下方“需您决策”。 |
+| **Major 2：消融数值 (B)(C)(D)(E)** | 未完成 | **(A) 已更新**：表~\ref{tab:ablation} 中 (A) 行已填入 prior 论文数值（0.90 / 0.8495），见第二节。**(B)(C)(D)(E)** 仍为 placeholder 或占位基线（脚本 \texttt{--reaedp} 可生成 REAEDP 占位）；需按顺序 (E)→(D)→(C)→(B) 跑 IBPPSVM 真实消融实验后填入。 |
+| **Major 5：基线数值与统计** | 未完成 | 表~\ref{tab:baselines} 仍为 placeholder；需跑 TF-IDF+SVM、RNN/Transformer 等并报告 mean±std、显著性、时间/内存、隐私–效用；数据已选定 REAEDP 做一部分实验。 |
 | **Major 6：全篇写作与符号** | 未完成 | 尚未全篇技术语言改写及“每符号一定义、一致使用”的系统检查；计划按 section-by-section 清单逐节润色并统一符号表。 |
 
 ---
@@ -73,13 +73,47 @@
 
 ---
 
-## 五、数据与实验（REAEDP 与其它）
+## 五、如何修改（Major 2 消融 / Major 5 基线）与自动运行填入论文
+
+**如何修改：**
+
+- **Major 2（消融 (B)(C)(D)(E)）**：需要按顺序 (E)→(D)→(C)→(B) 实现并运行 IBPPSVM 的四种配置（无边界、仅内中心、环+内中心、完整），得到 train/val 等数值后填入表~\ref{tab:ablation}。当前可用脚本生成 **(A)** 行（prior 论文数值）及 **(B)(C)(D)(E)** 的占位或 REAEDP 代理数值，再通过“自动填表”写回论文。
+- **Major 5（基线数值）**：需要实现并运行 TF-IDF+SVM、RNN/CNN、Transformer 等基线，得到 mean±std、时间/内存、隐私–效用等，填入表~\ref{tab:baselines}。可用 REAEDP 等数据做一部分实验；若有脚本输出基线 CSV，也可用同一“自动填表”流程写回论文。
+
+**能否自动运行代码并把结果填入 paper：可以。**
+
+已提供脚本 **`src/experiments/fill_paper_tables.py`**，实现“运行实验 → 用结果更新 `paper/main.tex` 中表格”的一条龙流程：
+
+1. **消融表（tab:ablation）**
+   - 在仓库根目录执行（需将 `src` 加入 Python 路径）：
+     - `python -m experiments.fill_paper_tables --run-ablation`  
+       会先运行 `prior_ablation_table.py`，生成 `experiments/ablation_table.csv`（(A) 行为 prior 数值，(B)(C)(D)(E) 为占位），再将表体写回 `paper/main.tex` 的 Table~\ref{tab:ablation}。
+     - 若提供 REAEDP 数据路径，可生成 (B)(C)(D)(E) 的代理数值并一并填表：  
+       `python -m experiments.fill_paper_tables --reaedp C:/source/REAEDP/data`
+   - 若已有 CSV，可直接用其填表而不重新跑实验：  
+     `python -m experiments.fill_paper_tables --ablation-csv path/to/ablation_table.csv`
+   - 加 `--dry-run` 只运行实验并打印将要写入的表格内容，不修改 `main.tex`。
+
+2. **基线表（tab:baselines）**
+   - 若已有基线结果 CSV（列：Method, Accuracy, Epsilon, Notes），可用：  
+     `python -m experiments.fill_paper_tables --baseline-csv path/to/baseline_table.csv`  
+     将表体写回 Table~\ref{tab:baselines}。后续可增加 `run_baselines.py` 等脚本自动生成该 CSV。
+
+3. **可选参数**
+   - `--paper paper/main.tex`：指定论文路径。  
+   - `--out-dir DIR`：指定消融/基线 CSV 输出目录。
+
+**注意**：(B)(C)(D)(E) 的**真实**消融数值仍需在代码中实现对应 IBPPSVM 配置并跑实验后，用生成的 CSV 再跑一次 `fill_paper_tables` 更新论文；当前 `--reaedp` 仅为占位/代理数据。
+
+---
+
+## 六、数据与实验（REAEDP 与其它）
 
 - **REAEDP 数据路径**：`C:\source\REAEDP\data`。当前包含：CDC BRFSS 2024、经济指标、flight-delay、house-prices、home-credit、world-air-quality、tabular-feature-engineering 等 CSV；多为表格数据，可直接用于与 prior 不同的实验场景（如表格型 DP 或特征分析）。  
 - **文本实验**：主文仍以 COVID-19 与 Medical Transcription 为主；为隔离新颖性并避免抄袭，新实验可增加：  
   - 标准 NLP 文本分类数据集（如 20 Newsgroups、AG News、DBpedia 等），和/或  
   - 从 REAEDP 或其它公开来源构造的文本/表格混合设置（如用 BRFSS 等做特征或分组变量）。  
-- **建议**：在 “Data availability and additional datasets” 中已写明使用 REAEDP 等额外数据；实际跑消融与基线时，在 `revision_status.md` 中更新 “Major 2”“Major 5” 的修改进度与结果摘要。
+- **建议**：在 “Data availability and additional datasets” 中已写明使用 REAEDP 等额外数据；实际跑消融与基线时，在 `revision_status.md` 中更新 “Major 2”“Major 5” 的修改进度与结果摘要。自动填表用法见第五节。
 
 ---
-*最后更新：已完成 Major 3（理论三层+命题）、Related Work 分块与对比表、Method Assumptions、Conclusion（Limitations+Future）、Ablation 与 Baselines 小节结构及占位表；Major 2/5 的数值与 Major 6 全篇改写仍待完成；“需您决策”见第四节。*
+*最后更新：(A) 消融行已填入 prior 论文数值并已更新本节；Major 2 的 (B)(C)(D)(E)、Major 5 的基线数值、Major 6 全篇改写仍待完成；“需您决策”已按您选择落实，见第四节。*
