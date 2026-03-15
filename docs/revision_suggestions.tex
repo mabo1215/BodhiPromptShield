@@ -1,0 +1,208 @@
+\section*{Review Summary}
+
+This manuscript presents an updated privacy-preserving text classification framework built around Word2Vec-style document representations, differential privacy, and a distribution-driven classification margin. The paper positions itself against an earlier DBN/PB-based framework by replacing the learned privacy boundary with a theoretically motivated high-dimensional ring/ellipsoid distribution and an internal classification center. While the manuscript appears to move away from the earlier DBN-based design, the present submission still shows substantial conceptual, structural, and textual continuity with the prior work. In its current form, the manuscript raises a nontrivial risk of \emph{redundant publication / self-overlap} and also falls short of top-tier standards in rigor, novelty isolation, mathematical clarity, and experimental validation.
+
+\section*{Major Concerns}
+
+\subsection*{1. High risk of redundant-publication / self-overlap relative to prior work}
+The manuscript explicitly frames itself as a contrast to an earlier method based on \emph{Deep Belief Network (DBN)} and a \emph{Privacy Boundary (PB)}, while retaining the same broad problem setting, application scenario, privacy motivation, text-classification pipeline, and several closely related modeling components. This creates a serious editorial risk unless the paper clearly and explicitly states:
+\begin{enumerate}
+    \item what the prior paper contributed,
+    \item what is retained here,
+    \item what is removed,
+    \item what is fundamentally new, and
+    \item why the present manuscript is not merely a rewritten extension.
+\end{enumerate}
+
+\noindent \textbf{Required revision:}
+Add a dedicated subsection in the Introduction titled:
+\[
+\texttt{Differences from Prior DBN/PB-based Work}
+\]
+and include a precise itemized comparison table with columns:
+\[
+\{\text{Aspect},\ \text{Prior Work},\ \text{This Work},\ \text{Why the difference matters}\}.
+\]
+
+\noindent The comparison must explicitly cover:
+\begin{itemize}
+    \item privacy mechanism,
+    \item boundary construction,
+    \item role of DBN,
+    \item sequence/dictionary mining method,
+    \item theoretical claims,
+    \item datasets,
+    \item experiments,
+    \item reused versus newly added material.
+\end{itemize}
+
+\subsection*{2. Novelty is asserted, but not isolated with sufficient rigor}
+The manuscript claims that the main novelty lies in replacing the learned DBN/PB boundary with a distribution-driven margin derived from a high-dimensional ring/ellipsoid structure and an internal classification center. However, this novelty is not isolated experimentally or theoretically. At present, the manuscript does not convincingly answer:
+\begin{enumerate}
+    \item Why is the ring/ellipsoid hypothesis the right inductive bias?
+    \item Under what assumptions does it hold?
+    \item How sensitive is the method to violations of that assumption?
+    \item How much performance gain is attributable to the new boundary, rather than other pipeline changes?
+\end{enumerate}
+
+\noindent \textbf{Required revision:}
+Include an ablation section that separately compares:
+\begin{align}
+&\text{(A) DBN/PB boundary}, \\
+&\text{(B) random/no boundary}, \\
+&\text{(C) internal-classification-center only}, \\
+&\text{(D) ring/ellipsoid + internal center}, \\
+&\text{(E) ring/ellipsoid + internal center + GDIFSEA}.
+\end{align}
+Without this decomposition, the novelty claim remains under-supported.
+
+\subsection*{3. The mathematical development is not yet top-tier reliable}
+Several definitions, transitions, and equations are presented in a way that is difficult to verify formally. In particular:
+\begin{itemize}
+    \item the presentation of differential privacy is imprecise;
+    \item notation is inconsistent;
+    \item some equations are introduced without a clear derivation path;
+    \item the relationship among margin geometry, Hessian-based arguments, and privacy noise is not cleanly justified;
+    \item the ring/ellipsoid distribution claim is only loosely connected to the downstream classifier.
+\end{itemize}
+
+\noindent \textbf{Required revision:}
+Rewrite the theory section into three clean layers:
+\begin{enumerate}
+    \item \textbf{Representation layer:} assumptions on document vectors;
+    \item \textbf{Geometric layer:} why concentration implies a shell/ring structure;
+    \item \textbf{Learning layer:} how the classifier and privacy mechanism exploit that geometry.
+\end{enumerate}
+
+\noindent Also add a formal proposition of the form:
+\begin{quote}
+Under assumptions \( \mathcal{A}_1,\ldots,\mathcal{A}_k \), the standardized document vectors concentrate with high probability in a shell
+\[
+r_1 \leq \|z\|_2 \leq r_2,
+\]
+where \(r_1, r_2\) are functions of the dimension and covariance structure.
+\end{quote}
+
+\noindent Then explain exactly how this proposition changes the classifier design.
+
+\subsection*{4. The relation between privacy guarantee and algorithmic implementation is unclear}
+The manuscript repeatedly states that privacy is achieved by \(\varepsilon\)-differential privacy and Laplace noise, but the exact release mechanism, sensitivity definition, adjacency relation, and composition accounting are not sufficiently specified. For a top-tier venue, this is a major issue because privacy claims must be operational, not rhetorical.
+
+\noindent \textbf{Required revision:}
+Add a subsection titled:
+\[
+\texttt{Formal Privacy Mechanism and Adjacency Definition}
+\]
+with explicit definitions of:
+\begin{align}
+&\text{dataset adjacency},\\
+&\Delta f = \max_{D \sim D'} \|f(D)-f(D')\|_1,\\
+&\mathcal{M}(D)=f(D)+\eta,\quad \eta \sim \mathrm{Lap}\!\left(\frac{\Delta f}{\varepsilon}\right).
+\end{align}
+
+\noindent Then state clearly:
+\begin{itemize}
+    \item what \(f\) is in the actual implementation,
+    \item where noise is injected,
+    \item whether privacy applies to training, inference, or released outputs,
+    \item whether multiple releases require composition accounting.
+\end{itemize}
+
+\subsection*{5. Experimental evidence is broad but not decisive}
+The manuscript includes multiple datasets and figures, but the empirical story is not yet persuasive by top-tier standards. The current experiments do not fully establish:
+\begin{itemize}
+    \item superiority over strong modern baselines,
+    \item statistical significance,
+    \item robustness to hyperparameters,
+    \item sensitivity to shell-assumption mismatch,
+    \item reproducibility.
+\end{itemize}
+
+\noindent \textbf{Required revision:}
+At minimum, add:
+\begin{enumerate}
+    \item strong baselines (e.g., TF--IDF+linear SVM, CNN/RNN baseline, a transformer baseline, and the prior DBN/PB model if available),
+    \item mean \(\pm\) standard deviation over multiple runs,
+    \item significance tests,
+    \item runtime and memory analysis,
+    \item privacy--utility curves under matched settings.
+\end{enumerate}
+
+\subsection*{6. The paper still contains substantial writing-quality issues}
+The manuscript is currently not polished enough for a top-tier review process. There are many sentences with grammatical problems, vague claims, and informal transitions. In several places, the prose obscures the real contribution.
+
+\noindent \textbf{Required revision:}
+Perform a full technical-language rewrite. In particular:
+\begin{itemize}
+    \item remove conversational or ambiguous wording;
+    \item replace claim-like statements with precise, testable statements;
+    \item ensure every symbol is defined once and used consistently;
+    \item avoid repeating the same motivation across multiple subsections.
+\end{itemize}
+
+\section*{Self-Overlap Risk Mitigation (Ethically Required)}
+
+\noindent The following actions are strongly recommended before submission:
+\begin{enumerate}
+    \item Cite the prior DBN/PB paper prominently in the Introduction and Related Work.
+    \item Add a dedicated ``relationship to prior work'' subsection.
+    \item Re-write all inherited background text from scratch rather than lightly editing prior wording.
+    \item Do not reuse prior figures/tables unless clearly cited and justified.
+    \item Explicitly state whether any datasets, experiments, or sections overlap with the previous paper.
+\end{enumerate}
+
+\noindent A safe disclosure sentence would be:
+\begin{quote}
+This manuscript builds on our prior DBN/PB-based framework, but differs from it in three fundamental ways: (i) the privacy boundary is no longer learned by DBN; (ii) the proposed classifier is driven by a theoretically motivated shell/ring geometry and internal classification center; and (iii) the sequence/dictionary component is reformulated as GDIFSEA without a learned privacy boundary. All overlapping background material has been rewritten and the new experiments are designed to isolate these changes.
+\end{quote}
+
+\section*{Section-by-Section Revision Checklist}
+
+\subsection*{Introduction}
+\begin{itemize}
+    \item Shorten the generic NLP motivation.
+    \item Move immediately to the exact problem: privacy-preserving text classification under incomplete annotation and class imbalance.
+    \item Add a transparent paragraph disclosing the relationship to the prior DBN/PB work.
+    \item Rewrite the contribution list so each item is one sentence with one verifiable claim.
+\end{itemize}
+
+\subsection*{Related Work}
+\begin{itemize}
+    \item Split into: privacy-preserving NLP, DP for text models, SVM/privacy methods, and prior DBN/PB work.
+    \item Avoid using the prior work merely as a strawman; compare fairly.
+    \item Add a table contrasting assumptions, privacy mechanism, and computational cost.
+\end{itemize}
+
+\subsection*{Method}
+\begin{itemize}
+    \item Separate assumptions from algorithm steps.
+    \item Provide pseudocode for GDIFSEA and for the full training pipeline.
+    \item Clarify the role of the internal classification center.
+    \item Define all symbols before use.
+\end{itemize}
+
+\subsection*{Theory}
+\begin{itemize}
+    \item Replace informal geometric claims with propositions/lemmas.
+    \item State all assumptions explicitly.
+    \item Remove or rewrite any equation whose derivation is incomplete.
+\end{itemize}
+
+\subsection*{Experiments}
+\begin{itemize}
+    \item Add strong baselines.
+    \item Add ablations isolating the source of gains.
+    \item Add statistical tests.
+    \item Add reproducibility details: hyperparameters, train/val/test split, seeds, compute budget.
+\end{itemize}
+
+\subsection*{Conclusion}
+\begin{itemize}
+    \item Temper overly broad claims.
+    \item State limitations honestly.
+    \item Clarify what remains unproven theoretically.
+\end{itemize}
+
+\section*{Recommendation}
+
+At present, I would recommend \textbf{Major Revision} at best, and possibly \textbf{Reject} if the submission does not transparently address the overlap with the prior DBN/PB paper. The manuscript has the basis for a publishable idea, but it must substantially improve novelty isolation, mathematical rigor, writing quality, and disclosure of its relationship to prior work.
