@@ -15,4 +15,7 @@ env/
 # Generated figures (paper uses fig/ from run_src)
 paper/fig/
 
+# Local temporary workspace files
+tmp/
+
 __init__.py
