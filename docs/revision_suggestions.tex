@@ -1,222 +1,233 @@
-\section*{Stage 5 Revision Instructions for Cursor}
-\label{sec:stage5_revision_instructions}
+\section*{Stage 6 Revision Instructions for Cursor}
+\label{sec:stage6_revision_instructions}
 
-\subsection*{Overall Goal}
-The manuscript is now structurally coherent as a prompt privacy paper for LLM/VLM-based agents. The next revision should focus on:
+\subsection*{Rule for All Future Revision Feedback}
+From this round onward, every revision suggestion should be written in \LaTeX{} format so that it can be copied directly into Cursor and used as an editing instruction file.
+
+\subsection*{Overall Assessment of the Current Draft}
+The current manuscript is now substantially cleaner and much closer to a submission-ready paper. The main storyline is coherent:
+\begin{itemize}
+    \item the title, abstract, introduction, problem definition, method, experiments, limitations, and conclusion now all describe the same prompt-privacy problem;
+    \item the new workflow figure on page 4 is now the correct visual anchor for the paper;
+    \item the controlled evaluation framing is much more consistent with the new contribution;
+    \item the appendix now functions mainly as pseudocode support plus additional examples.
+\end{itemize}
+
+At the same time, several issues still remain:
+\begin{itemize}
+    \item the appendix still contains too many legacy figures, which weakens the paper stylistically even though they are no longer in the main body;
+    \item Table I and Figure 2 are currently placed too close together conceptually, and their roles should be differentiated more clearly;
+    \item Section VI is already good, but the analysis can be made slightly more rigorous and less descriptive;
+    \item the reference list is still quite thin for a prompt-privacy / LLM-agent paper;
+    \item the acknowledgment and author-bio area should be checked against the target venue style;
+    \item the paper is ready for a final tightening pass on style, emphasis, and citation density.
+\end{itemize}
+
+The current version is clearly far better than the earlier hybrid draft and already reads as a real prompt privacy paper rather than a converted classifier paper. This improvement is visible throughout the current PDF, especially in the workflow figure on page 4, the evaluation tables on pages 6--7, and the now-consistent method/evaluation alignment on pages 3--7. :contentReference[oaicite:0]{index=0}
+
+\subsection*{Priority of the Next Revision}
+The next revision should focus on:
 \begin{enumerate}
-    \item removing the remaining visual traces of the old classifier-centered manuscript from the main paper;
-    \item strengthening the visual and experimental consistency of the prompt privacy story;
-    \item tightening the writing so the paper looks more submission-ready for an IEEE-style venue.
+    \item reducing non-essential legacy material in the appendix;
+    \item strengthening academic polish and venue alignment;
+    \item improving citation support and literature positioning;
+    \item making the results discussion slightly sharper and more publication-like.
 \end{enumerate}
 
-\subsection*{Main Diagnosis of the Current Draft}
-The current manuscript is already much improved, but the following issues remain:
+\subsection*{Mandatory Revision 1: Compress the Legacy Appendix Material}
+The appendix still contains three legacy figure groups:
 \begin{itemize}
-    \item Figures 1--3 are still legacy figures from the previous classifier-centered paper and occupy too much space in the main body.
-    \item The legacy figures are repeatedly described as ``historical motivation,'' but this still weakens the new paper's identity.
-    \item Figure 4 is the correct core workflow figure and should become the dominant visual anchor of the paper.
-    \item Figure 5 is useful, but should be written more clearly as a conceptual illustration rather than an empirical result.
-    \item The results tables are acceptable for a controlled evaluation paper, but the discussion can better connect Table II--V with the policy-aware mediation story.
-    \item The paper should reduce repetition between Introduction, Related Work, and Conclusion.
+    \item legacy pipeline and Doc2Vec projection;
+    \item legacy geometric-distribution context;
+    \item legacy classifier-era margin/spatial sketches.
 \end{itemize}
 
-\subsection*{Mandatory Revision 1: Remove Legacy Figures 1--3 from the Main Paper}
-Please remove Figures 1--3 from the main paper.
+These appear on the appendix pages and still visually remind the reader of the previous manuscript lineage. They are no longer damaging the main paper, but they are still too prominent in the back matter.
 
-These figures include:
+Please revise the appendix as follows:
 \begin{itemize}
-    \item legacy privacy-preserving pipeline view;
-    \item Doc2Vec 2D projection visualization;
-    \item theoretical radius/edge distribution figures;
-    \item ppSVM-style margin sketch;
-    \item internal-category spatial projection.
+    \item keep only one very small legacy subsection;
+    \item keep at most one compact legacy figure panel if continuity is truly necessary;
+    \item remove the remaining legacy figure panels entirely;
+    \item do not keep three separate legacy figure groups.
 \end{itemize}
 
-These figures belong to the old paper logic and should not appear in the main body of the revised prompt privacy paper.
+Recommended replacement text:
+\begin{verbatim}
+\subsection{Legacy Motivation (Brief Historical Note)}
+Earlier privacy-preserving text-processing work by the authors explored classifier-centered and representation-level perspectives. Those ideas motivated the present reformulation toward prompt-level privacy mediation for LLM/VLM-based agents. Legacy visual material is omitted here because it is not part of the core empirical evidence of this paper.
+\end{verbatim}
 
-\paragraph{Replacement rule:}
+\subsection*{Mandatory Revision 2: Strengthen Table I Positioning}
+Table I is useful, but it currently reads partly as an example and partly as evidence. It should be clearly framed as an illustrative example only.
+
+Please add one sentence immediately before Table I:
+\begin{verbatim}
+Table I provides a simple illustrative example of prompt mediation and is intended to clarify the transformation behavior of the framework rather than to report aggregate evaluation performance.
+\end{verbatim}
+
+\subsection*{Mandatory Revision 3: Sharpen the Role of Figure 2}
+Figure 2 is currently good, but it should be tied more explicitly to Section IV-D and Section VI-D.
+
+Please revise the sentence near Figure 2 to:
+\begin{verbatim}
+Figure 2 provides a conceptual summary of the privacy--utility trade-off formalized in Section IV-D and qualitatively reflected by the ablation trends reported in Tables II--IV.
+\end{verbatim}
+
+This is slightly stronger and more integrated than the current wording.
+
+\subsection*{Mandatory Revision 4: Improve Section VI Opening}
+Please rewrite the opening sentence of Section VI so that it sounds more specific and less generic.
+
+Suggested replacement:
+\begin{verbatim}
+This section analyzes how the proposed mediation framework behaves under controlled privacy-sensitive prompting scenarios, with emphasis on residual exposure, downstream utility retention, agent-level robustness, and runtime trade-offs.
+\end{verbatim}
+
+\subsection*{Mandatory Revision 5: Strengthen the Analysis in Section VI-A}
+The current text in Section VI-A is already reasonable, but it can sound more analytical.
+
+Please append the following sentence to the end of Section VI-A:
+\begin{verbatim}
+This result suggests that exposure reduction in practical agent settings depends not only on pattern coverage but also on whether the system can recognize semantically sensitive spans that do not follow stable lexical templates.
+\end{verbatim}
+
+\subsection*{Mandatory Revision 6: Strengthen the Analysis in Section VI-B}
+Please append the following sentence near the end of Section VI-B:
+\begin{verbatim}
+The contrast between generic de-identification and the proposed mediation strategy further indicates that preserving typed or abstracted semantic roles is often more important for downstream utility than preserving the original surface form of sensitive spans.
+\end{verbatim}
+
+\subsection*{Mandatory Revision 7: Strengthen the Analysis in Section VI-C}
+Please append the following sentence near the end of Section VI-C:
+\begin{verbatim}
+This observation supports the design choice of placing privacy mediation before retrieval and tool invocation, since downstream propagation amplifies the cost of early privacy leakage.
+\end{verbatim}
+
+\subsection*{Mandatory Revision 8: Strengthen the Analysis in Section VI-E}
+Please append the following sentence to the runtime subsection:
+\begin{verbatim}
+In deployment terms, this implies that policy-aware mediation can be tuned according to interaction budget, with stronger contextual analysis reserved for domains where privacy risk dominates latency sensitivity.
+\end{verbatim}
+
+\subsection*{Mandatory Revision 9: Tighten the Conclusion Further}
+The conclusion is already strong, but the first paragraph can be made slightly more compact and IEEE-like.
+
+Suggested replacement for the first conclusion paragraph:
+\begin{verbatim}
+This paper reformulates privacy-preserving text processing as a real-time prompt privacy problem for LLM/VLM-based agents. Rather than focusing on classical text classification or training-time privacy alone, the proposed framework protects privacy at the interaction interface before downstream inference. By combining privacy-sensitive span extraction, semantic-preserving prompt sanitization, and agent-level mediation, the framework reduces privacy exposure while preserving downstream response utility.
+\end{verbatim}
+
+\subsection*{Mandatory Revision 10: Expand the Reference Base}
+The current references are functional but still too small for a paper in this area. At present, the bibliography is only a minimal scaffold and should be expanded so that the paper looks less under-cited for an LLM/privacy/agent topic. This is visible in the current reference list on page 8. :contentReference[oaicite:1]{index=1}
+
+Please add more references in the following categories:
 \begin{itemize}
-    \item Keep only the new workflow figure and the privacy--utility trade-off figure in the main paper.
-    \item Move all legacy figures to appendix or supplementary material only if continuity is absolutely necessary.
-    \item If retained in appendix, compress them into a short subsection called ``Legacy Motivation (Non-Core Historical Context)'' without detailed discussion.
+    \item prompt injection / indirect prompt injection;
+    \item LLM memorization and extraction risks;
+    \item privacy risks in retrieval-augmented systems or tool-augmented systems;
+    \item de-identification and clinical text sanitization;
+    \item privacy-preserving NLP beyond the authors' earlier work;
+    \item recent multimodal privacy or OCR-related privacy exposure work.
 \end{itemize}
 
-\subsection*{Mandatory Revision 2: Promote the New Workflow Figure}
-Figure 4 should be renumbered as the first and main figure of the paper.
-
-Please update the manuscript so that the workflow figure becomes:
+\subsection*{Mandatory Revision 11: Citation Expansion Plan}
+Please revise the literature support according to the following structure:
 
 \begin{verbatim}
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=\textwidth]{fig/workflow_figure.png}
-    \caption{Prompt privacy mediation workflow for LLM/VLM-based agents. The middleware intercepts raw user input, detects privacy-sensitive spans, applies policy-aware sanitization, and forwards a protected prompt to downstream model, retrieval, memory, and tool-use components.}
-    \label{fig:workflow}
-\end{figure*}
+Introduction:
+- keep citations for ReAct, Toolformer, memorization, and prompt injection;
+- add 1--2 more citations on LLM privacy or deployment risk.
+
+Related Work A:
+- add 2--3 citations on de-identification / anonymization in NLP or clinical text.
+
+Related Work B:
+- add 1--2 citations on privacy leakage or memorization in generative models.
+
+Related Work C:
+- add 1--2 citations on agent/tool-use risks, retrieval leakage, or LLM application security.
+
+Related Work D:
+- add 1--2 citations on multimodal privacy, OCR leakage, or document understanding risks.
 \end{verbatim}
 
-If the file path differs, adjust the path only, but keep the caption and label.
-
-\subsection*{Mandatory Revision 3: Keep the Trade-Off Figure but Clarify Its Role}
-Keep the conceptual privacy--utility trade-off figure, but make clear that it is an illustrative conceptual figure, not a measured empirical plot.
-
-Please revise the caption to:
-
-\begin{verbatim}
-\caption{Conceptual illustration of the trade-off between privacy reduction and downstream utility preservation under different sanitization strategies. Increasing sanitization strength generally reduces direct exposure but may also reduce task utility when exact identifiers are semantically important.}
-\end{verbatim}
-
-Also revise the in-text discussion so that it explicitly says the figure is a conceptual summary aligned with the controlled evaluation trends reported in Tables II--IV.
-
-\subsection*{Mandatory Revision 4: Tighten the Introduction}
-The Introduction is already strong, but shorten it slightly by:
+\subsection*{Mandatory Revision 12: Suggested Reference Categories for Insertion}
+Please instruct Cursor to search the bibliography and, if needed, add references matching the following themes:
 \begin{itemize}
-    \item removing one repeated statement about prompts being exposed to logging/retrieval/tool-use components;
-    \item reducing repeated mention of multimodal risks if it is already covered later in the section;
-    \item preserving only one clear paragraph on the difference between training-time privacy and prompt-time privacy.
+    \item prompt injection security for LLM-integrated applications;
+    \item privacy leakage in retrieval-augmented generation or memory-augmented systems;
+    \item text de-identification in healthcare NLP;
+    \item PII detection and anonymization in document understanding;
+    \item multimodal LLM/VLM privacy or OCR-based leakage;
+    \item survey or overview papers on trustworthy LLM deployment.
 \end{itemize}
 
-Goal: make the Introduction more concise and less repetitive while keeping the current logic.
+\subsection*{Mandatory Revision 13: Reduce Self-Citation Weight in Related Work}
+Reference [9] is acceptable as part of the historical bridge, but it should not appear overly central to the new literature positioning.
 
-\subsection*{Mandatory Revision 5: Strengthen Section III by Removing Legacy Visual References}
-In the current draft, the Introduction says that legacy visual references are retained for continuity. Please delete that statement from the Introduction.
-
-Delete or rewrite the sentence that says the paper includes legacy visual references from prior work for historical intuition.
-
-The revised paper should not foreground historical continuity in the main text. Instead, the paper should foreground the new framework.
-
-\subsection*{Mandatory Revision 6: Improve Section IV Transitions}
-Please improve the transition sentences between:
+Please ensure that:
 \begin{itemize}
-    \item Privacy Entity Extraction;
-    \item Semantic-Preserving Prompt Sanitization;
-    \item Utility-Constrained Prompt Mediation;
-    \item Policy-Aware Sanitization Selection;
-    \item Agent-Level Integration.
+    \item the authors' earlier paper is cited only as one example of earlier privacy-preserving NLP work;
+    \item it is not the dominant anchor of Related Work A;
+    \item the new paper is positioned primarily against broader literature, not only against prior self-work.
 \end{itemize}
 
-Add short transition sentences such as:
-\begin{verbatim}
-The output of privacy entity extraction is a structured annotation over the prompt, which serves as the basis for policy-aware sanitization.
-\end{verbatim}
-
-\begin{verbatim}
-Once protected surrogates have been selected, the mediation layer must ensure that privacy reduction does not unnecessarily destroy downstream task semantics.
-\end{verbatim}
-
-\begin{verbatim}
-The utility-constrained objective motivates a policy-aware selection mechanism, since different privacy categories and downstream tasks require different protection strengths.
-\end{verbatim}
-
-This will make Section IV feel more unified and less modularly pasted.
-
-\subsection*{Mandatory Revision 7: Strengthen the Experimental Framing}
-Section V is already acceptable, but it should sound slightly more rigorous.
-
-Please add a short paragraph at the end of ``Datasets and Prompt Construction'' stating:
-
-\begin{verbatim}
-To reduce evaluation bias, privacy-sensitive spans are injected across multiple categories and prompt styles, including direct requests, document-oriented instructions, retrieval-style prompts, and tool-oriented agent prompts. This design helps assess whether the mediation framework generalizes across heterogeneous prompt structures rather than only a single task template.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 8: Improve the Discussion Around Table II}
-After Table II, add a short paragraph such as:
-
-\begin{verbatim}
-Table II shows that naive structured redaction reduces only part of the exposure surface because many privacy-bearing spans are contextual rather than purely pattern-based. In contrast, the proposed mediation framework better captures both structured and semantically contextual entities, leading to substantially lower residual exposure.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 9: Improve the Discussion Around Table III}
-After Table III, add a paragraph such as:
-
-\begin{verbatim}
-The utility results in Table III indicate that privacy protection should not be evaluated solely by exposure reduction. Generic de-identification removes sensitive content aggressively, but also damages downstream answer consistency and task success. The proposed utility-constrained mediation strategy preserves more of the semantic structure required for reasoning and agent execution.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 10: Improve the Discussion Around Table IV}
-After Table IV, add a paragraph such as:
-
-\begin{verbatim}
-The ablation results show that no single sanitization mode is uniformly optimal. Typed placeholders are effective when entity type is sufficient for reasoning, semantic abstraction is preferable when contextual meaning must be preserved, and secure symbolic mapping is most useful when exact values are required at authorized downstream boundaries.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 11: Improve the Discussion Around Table V}
-After Table V, add a paragraph such as:
-
-\begin{verbatim}
-The latency results suggest that practical deployment requires policy calibration. Lightweight protection can be applied with modest overhead, whereas more aggressive contextual analysis improves protection coverage at the cost of higher latency. This trade-off is especially important for agent settings that require near-real-time interaction.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 12: Make the Results Section Less Template-Like}
-Please revise Section VI so that it sounds less like a generic benchmark template and more like a paper-specific analysis.
-
-Specifically:
+\subsection*{Mandatory Revision 14: Check Venue-Style Details}
+Please perform a final style check for the following:
 \begin{itemize}
-    \item refer back to the proposed policy-aware selector $\Pi$ when discussing ablation results;
-    \item refer back to the middleware deployment model when discussing latency and agent-level robustness;
-    \item connect multimodal failure cases more explicitly to OCR / visual extraction limitations from Section IV-H.
+    \item consistent use of en-dashes in ``privacy--utility'';
+    \item consistent formatting of mathematical symbols such as $\tilde{x}$, $\Pi$, PER, UPR, AC, and TSR;
+    \item consistent capitalization of subsection titles;
+    \item uniform use of ``LLM/VLM-based agents'' throughout;
+    \item no unnecessary bolding or stylistic inconsistency in tables.
 \end{itemize}
 
-\subsection*{Mandatory Revision 13: Shorten the Legacy Figure Reuse Note}
-The current ``LEGACY FIGURE REUSE NOTE'' near the conclusion should be removed from the main paper body.
-
-If needed, move it to appendix as a one-paragraph note.
-
-The main paper should end cleanly with Conclusion and Acknowledgment, without a separate warning about legacy figure reuse.
-
-\subsection*{Mandatory Revision 14: Improve the Conclusion}
-The Conclusion is already close, but it should end more strongly.
-
-Please replace the final paragraph with:
-
-\begin{verbatim}
-Future work will focus on broader benchmark design for prompt privacy, stronger multimodal privacy grounding for dense and noisy document inputs, adaptive policy learning for context-dependent sensitivity, and deeper evaluation in real-world agent workflows involving enterprise, healthcare, and legal applications.
-\end{verbatim}
-
-Also slightly tighten the preceding paragraph so that it emphasizes:
+\subsection*{Mandatory Revision 15: Acknowledgment and Author Block Check}
+Please check whether the target venue permits:
 \begin{itemize}
-    \item interface-layer deployment;
-    \item controlled evidence;
-    \item practical compatibility with current LLM/VLM agents.
+    \item acknowledgment of individual students in the current form;
+    \item author biographies in the current format;
+    \item corresponding-author note placement as currently written.
 \end{itemize}
 
-\subsection*{Mandatory Revision 15: Appendix Adjustment}
-Please revise the appendix in the following way:
+If the target venue is strict IEEE journal style, the acknowledgment should remain concise and professional, and author biographies should match the journal template exactly.
+
+\subsection*{Mandatory Revision 16: Final Appendix Streamlining}
+Please revise Appendix A as follows:
 \begin{itemize}
-    \item keep Algorithms 1--3;
+    \item keep Sections A--F exactly aligned with the main paper;
     \item keep Table VI;
-    \item move all legacy historical discussion to a final short appendix subsection;
-    \item do not include any legacy classifier figure in the main paper;
-    \item if legacy figures are retained at all, place them only in appendix with a single-sentence explanation.
+    \item replace Section G with a short one-paragraph historical note only;
+    \item delete appendix figures 3--5 unless the target submission explicitly allows broader supplementary historical material.
 \end{itemize}
 
-\subsection*{Mandatory Revision 16: Reference/Citation Cleanup}
-Please check citation placement and strengthen support in the following places:
+Recommended final appendix structure:
+\begin{verbatim}
+APPENDIX A
+IMPLEMENTATION-ORIENTED PSEUDOCODE AND ADDITIONAL EXAMPLES
+A. Notation Consistency
+B. Algorithm 1: Privacy-Sensitive Span Extraction
+C. Algorithm 2: Policy-Aware Prompt Sanitization
+D. Algorithm 3: Authorized Restoration
+E. Additional Prompt Mediation Examples
+F. Multimodal Example
+G. Legacy Motivation (Brief Historical Note)
+\end{verbatim}
+
+\subsection*{Mandatory Revision 17: Final Submission-Oriented Visual Strategy}
+After this revision, the final visual strategy should be:
 \begin{itemize}
-    \item Introduction paragraph on agent systems and tool use should cite [1], [2];
-    \item Introduction paragraph on memorization, logging, and prompt attacks should cite [3], [4], [5], [6];
-    \item Threat model should cite [3], [5], [6];
-    \item design objective paragraph distinguishing practical mediation from DP/cryptographic approaches should cite [7], [8];
-    \item Related Work subsection on prior privacy-preserving NLP may cite [7], [8], [9];
-    \item Results discussion should not over-cite; use citations only when referring back to prior literature or system assumptions.
+    \item main paper: one workflow figure + one conceptual trade-off figure + five tables;
+    \item appendix: one additional example table + pseudocode;
+    \item no legacy classifier-era visuals unless absolutely required by a supervisor for historical continuity.
 \end{itemize}
 
-\subsection*{Mandatory Revision 17: Final Figure Strategy}
-After this revision, the main paper should ideally contain only:
-\begin{itemize}
-    \item one workflow figure;
-    \item one conceptual privacy--utility trade-off figure;
-    \item five main tables.
-\end{itemize}
-
-This is a cleaner and more submission-ready visual strategy than keeping multiple legacy plots from the original manuscript.
-
-\subsection*{Expected Output of This Stage}
+\subsection*{Expected Output of This Round}
 After this round, the manuscript should:
 \begin{enumerate}
-    \item read like a clean prompt privacy paper rather than a partially converted legacy manuscript;
-    \item use the new workflow figure as the core visual anchor;
-    \item keep only prompt-privacy-relevant figures in the main body;
-    \item improve results discussion and reduce repetition;
-    \item be ready for a final submission-polish round.
+    \item look cleaner and less historically burdened;
+    \item have a stronger literature footprint;
+    \item present more rigorous paper-specific discussion in Section VI;
+    \item be very close to a final submission-polish version.
 \end{enumerate}
