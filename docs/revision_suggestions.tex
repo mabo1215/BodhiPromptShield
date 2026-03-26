@@ -1,267 +1,294 @@
-\section*{Stage 7 Revision Instructions for Cursor}
-\label{sec:stage7_revision_instructions}
+\section*{Stage 9 Experimental Review and Recommendations for Cursor}
+\label{sec:stage9_experimental_review}
 
-\subsection*{Overall Assessment of the Current Draft}
-The manuscript is now very close to a clean submission-oriented version. The core prompt-privacy storyline is stable and consistent across the title, abstract, problem formulation, method, evaluation, discussion, and conclusion. In particular:
+\subsection*{Overall Experimental Assessment}
+The current manuscript already has a coherent experimental skeleton. In particular, the paper now includes:
 \begin{itemize}
-    \item the workflow figure on page 4 is now the correct dominant figure and visually matches the method section;
-    \item the evaluation tables on pages 6--7 are coherent with the controlled benchmark framing;
-    \item the appendix pseudocode is aligned with the main text notation;
-    \item the paper no longer reads like a legacy text-classification manuscript in the main body.
+    \item a controlled benchmark definition (CPPB) in Section V-B;
+    \item a paired-comparison protocol in Section V-C;
+    \item representative operational baselines in Section V-D;
+    \item privacy, utility, and latency metrics in Sections V-E and VI;
+    \item ablation and deployment-oriented discussion in Tables III--VI and Section VI.
 \end{itemize}
 
-At the same time, several issues still remain and should be fixed in the next round:
-\begin{itemize}
-    \item the appendix still contains too many legacy figures, especially the full panels on pages 10--11;
-    \item the reference list is still too thin for the current topic and makes the paper look under-cited for an LLM/privacy/agent submission;
-    \item some sections are already good conceptually but still read slightly like a carefully assembled draft rather than a finalized journal paper;
-    \item the acknowledgment line is currently too informal and probably not worth keeping in the present form;
-    \item author biographies should be checked carefully against the exact target venue style.
-\end{itemize}
+This is a strong improvement over earlier drafts, and the experimental narrative is now aligned with the prompt privacy problem rather than the legacy classifier storyline. This is visible in the current PDF, especially in the CPPB construction on page 5, the PER / AC / TSR / UPR tables on pages 6--7, and the deployment interpretation on page 7. :contentReference[oaicite:0]{index=0}
 
-These points are visible in the current PDF, especially in the concise but still thin references on page 8 and the still-prominent legacy appendix figures on pages 10--11. :contentReference[oaicite:0]{index=0}
+\subsection*{Direct Answer to the Question ``What Experiments Still Need to Be Added?''}
+Yes, the paper still needs additional experiments if the goal is to make it more convincing, especially for a stronger venue. The current results are coherent, but they are still relatively compact and prototype-like. The main missing pieces are:
 
-\subsection*{Revision Priority for This Round}
-Please focus on the following four priorities:
 \begin{enumerate}
-    \item remove most of the remaining appendix legacy visuals;
-    \item strengthen literature support and citation density in a targeted way;
-    \item tighten the writing for more journal-like polish;
-    \item clean up peripheral items such as acknowledgment and biographies.
+    \item cross-model validation;
+    \item category-wise detection and protection breakdown;
+    \item stronger multimodal evaluation;
+    \item robustness / stress-test experiments;
+    \item restoration-boundary experiments;
+    \item policy-sensitivity experiments;
+    \item longer or multi-step agent pipeline experiments.
 \end{enumerate}
 
-\subsection*{Mandatory Revision 1: Remove Appendix Figures 4 and 5}
-Appendix Figures 4 and 5 should be removed entirely.
+\subsection*{Most Important Missing Experiment 1: Cross-Model Validation}
+At present, the paper evaluates the framework under a controlled protocol, but it does not yet show whether the mediation behavior is stable across multiple downstream model backends. This is a major gap if the paper claims model-agnostic deployment.
 
-These figures currently show:
+Please add a new experiment subsection in Section V or VI:
+
+\begin{verbatim}
+\subsection{Cross-Model Validation}
+To test whether the mediation framework is robust across downstream model backends, we evaluate the same sanitized prompts on multiple LLM/VLM systems under matched prompt settings. The goal is not to exhaustively benchmark all model families, but to assess whether the privacy--utility trends remain stable across representative downstream models with different reasoning and formatting behaviors.
+\end{verbatim}
+
+Recommended comparison:
 \begin{itemize}
-    \item regenerated geometric-distribution context;
-    \item regenerated ppSVM-style category margin sketch;
-    \item regenerated internal-category spatial projection.
+    \item one stronger general LLM;
+    \item one smaller or lighter LLM;
+    \item if possible, one multimodal model for the image-assisted subset.
 \end{itemize}
 
-They are not needed anymore, even as historical context. Their continued presence on pages 10--11 weakens the identity of the paper and visually reintroduces the old classifier-era lineage. :contentReference[oaicite:1]{index=1}
+Recommended table:
+\begin{verbatim}
+Table X. Cross-model utility retention under the same mediation policy.
+\end{verbatim}
 
-\paragraph{Required action:}
-Delete Appendix Figures 4 and 5 completely, including their captions and any surrounding explanatory text.
-
-\subsection*{Mandatory Revision 2: Compress Appendix Figure 3 or Remove It}
-Appendix Figure 3 may also be too much. If historical continuity is still desired, retain only one compact legacy panel, not two subfigures.
-
-Preferred action:
+Metrics:
 \begin{itemize}
-    \item remove Appendix Figure 3 entirely;
-    \item keep only a one-paragraph note in Section G of the appendix.
+    \item AC;
+    \item TSR;
+    \item optionally UPR.
 \end{itemize}
 
-If a supervisor explicitly wants one retained historical visual, then:
+\subsection*{Why This Experiment Is Important}
+Your abstract and conclusion say the method is model-agnostic and compatible with text-only and multimodal agents. That claim is reasonable, but it is currently supported mostly by architectural argument rather than breadth of empirical validation. A cross-model comparison would make that claim much more credible. This is especially important because the current evaluation protocol on pages 5--7 is still concentrated around a single controlled setup. :contentReference[oaicite:1]{index=1}
+
+\subsection*{Most Important Missing Experiment 2: Category-Wise Breakdown}
+Right now, PER is only reported at the overall method level in Table III. That is useful, but not enough. Since your framework explicitly handles multiple privacy categories, the paper should report category-level behavior.
+
+Please add a new subsection:
+
+\begin{verbatim}
+\subsection{Category-Wise Privacy Protection Analysis}
+We further break down privacy mediation performance by entity category, including person names, addresses, identifiers, financial spans, medical spans, and OCR-derived visual spans. This analysis clarifies which categories are well covered by rule-based recognizers, which benefit from contextual judgment, and which remain challenging under the current framework.
+\end{verbatim}
+
+Recommended table:
+\begin{verbatim}
+Table X. Category-wise Sensitive Span F1 and PER under the proposed framework.
+\end{verbatim}
+
+Suggested columns:
 \begin{itemize}
-    \item keep only the pipeline-style panel;
-    \item remove the Doc2Vec 2D projection panel;
-    \item reduce the caption to one short sentence.
+    \item Category;
+    \item Precision;
+    \item Recall;
+    \item F1;
+    \item PER after mediation.
 \end{itemize}
 
-\subsection*{Mandatory Revision 3: Replace Appendix Section G with a Much Shorter Note}
-Please replace the current Section G with the following text:
+\subsection*{Why This Experiment Is Important}
+Your framework in Section IV-B explicitly distinguishes structured entities, contextual entities, and OCR/VLM-derived spans. Reviewers will expect category-level evidence that these components matter differently. Without this table, the paper still looks slightly too aggregated. The need for this is already implied by the mixed categories listed in pages 3--5 and by the failure cases on page 7. :contentReference[oaicite:2]{index=2}
+
+\subsection*{Most Important Missing Experiment 3: Multimodal Evaluation Must Be Stronger}
+The paper includes a multimodal extension in Section IV-H and mentions OCR-derived visual spans, but the actual experimental evidence for multimodal performance is still thin. The multimodal claim is currently more architectural than empirical.
+
+Please add a dedicated multimodal experiment subsection:
 
 \begin{verbatim}
-\subsection{Legacy Motivation (Brief Historical Note)}
-Earlier privacy-preserving text-processing work by the authors explored classifier-centered and representation-level perspectives. Those ideas motivated the present reformulation toward prompt-level privacy mediation for LLM/VLM-based agents. Legacy visual materials are omitted here because they are not part of the core empirical evidence of this paper.
+\subsection{Multimodal Prompt Mediation Evaluation}
+We evaluate the multimodal branch of the framework on prompts containing screenshots, invoices, forms, or medical-document snippets with OCR-derived private content. The purpose is to test whether visual-entity extraction and sanitization remain effective when privacy-bearing information originates from image content rather than typed text.
 \end{verbatim}
 
-This is cleaner than the current version and avoids re-opening the old storyline in the appendix.
-
-\subsection*{Mandatory Revision 4: Add a Clear Sentence Before Table VI}
-Table VI is useful, but it should be explicitly introduced as an example table rather than quasi-evidence.
-
-Please insert the following sentence immediately before Table VI:
-\begin{verbatim}
-Table VI provides additional illustrative examples of prompt mediation across entity categories and sanitization modes, and is intended to clarify transformation behavior rather than to summarize aggregate benchmark performance.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 5: Strengthen Related Work A}
-Related Work A is conceptually correct, but it is currently too short and still under-cited relative to the field.
-
-Please expand subsection III-A with 1--2 additional paragraphs covering:
+Recommended evaluation tasks:
 \begin{itemize}
-    \item clinical de-identification;
-    \item PII removal in NLP pipelines;
-    \item anonymization and text sanitization beyond differential privacy.
+    \item invoice or receipt summarization;
+    \item ID-card or form description;
+    \item medical image report summarization with OCR text;
+    \item reimbursement or document-understanding prompts.
 \end{itemize}
 
-Suggested insertion text:
-\begin{verbatim}
-Beyond differential privacy in model training, prior work has also explored de-identification and anonymization at the text level, particularly in healthcare and clinical NLP settings where sensitive patient information must be removed before downstream processing. These systems often combine rule-based recognizers, named-entity tagging, and domain-specific post-processing to identify personally identifiable or institution-sensitive content. However, most such approaches were designed for corpus sanitization or offline data release, rather than for real-time mediation of interactive prompts in LLM/VLM systems.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 6: Strengthen Related Work B}
-Please expand subsection III-B with one more paragraph making the distinction between:
+Recommended metrics:
 \begin{itemize}
-    \item memorization risk;
-    \item prompt-time leakage;
-    \item interface-level exposure.
+    \item visual-span Precision / Recall / F1;
+    \item PER on OCR-derived spans;
+    \item AC on multimodal tasks.
 \end{itemize}
 
-Suggested insertion text:
+Recommended table:
 \begin{verbatim}
-It is important to distinguish prompt-time exposure from model memorization. Memorization concerns whether a model can reproduce sensitive content from its training data, whereas prompt-time exposure concerns whether sensitive user inputs are directly observable by the deployed system and its surrounding infrastructure. The latter risk arises even when the model was not trained on the user's private data and is therefore especially relevant for practical agent deployment.
+Table X. Multimodal privacy mediation results on OCR-derived entity spans.
 \end{verbatim}
 
-\subsection*{Mandatory Revision 7: Strengthen Related Work C}
-Please add one sentence in subsection III-C emphasizing that privacy risk in agents is compounded by propagation:
+\subsection*{Why This Experiment Is Important}
+At present, the multimodal claim is plausible, but top reviewers will likely say: ``the paper says VLM, but where is the actual multimodal evidence?'' The current PDF includes the multimodal formulation on page 4 and a multimodal example in the appendix, but the empirical section does not yet match that scope strongly enough. :contentReference[oaicite:3]{index=3}
+
+\subsection*{Important Missing Experiment 4: Policy Sensitivity Analysis}
+The policy selector $\Pi$ is central to the paper, but it is not yet stress-tested enough. Table V helps, but it still reports only three operating modes. A stronger experiment would show how the system behaves as policy aggressiveness changes.
+
+Please add:
 
 \begin{verbatim}
-In agent settings, privacy leakage is not confined to a single model call; instead, it may cascade through retrieval queries, tool arguments, persistent memory, logging, and downstream execution traces, making interface-layer mediation particularly valuable.
+\subsection{Policy Sensitivity Analysis}
+To study how policy strength affects deployment behavior, we vary the mediation policy from conservative to balanced to aggressive settings and measure the resulting changes in PER, AC, TSR, and latency. This experiment tests whether the policy selector $\Pi$ provides a stable and interpretable operating frontier rather than only isolated configuration points.
 \end{verbatim}
 
-\subsection*{Mandatory Revision 8: Strengthen Related Work D}
-Please add one sentence in subsection III-D to make the multimodal framing more concrete:
-
-\begin{verbatim}
-This is especially important in document-centric applications, where OCR and VLM pipelines may expose identifiers, invoice metadata, contact information, or medical annotations that were never explicitly typed by the user.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 9: Improve the Opening of Section III}
-Please replace the opening of Section III with a slightly stronger transition sentence:
-
-\begin{verbatim}
-This section positions the proposed framework against prior work in privacy-preserving NLP, large-model privacy, agent security, and multimodal privacy-aware processing.
-\end{verbatim}
-
-This gives Section III a more journal-like entry point.
-
-\subsection*{Mandatory Revision 10: Improve Section IV-A Opening}
-The current Section IV-A is good, but it can be made slightly more direct.
-
-Please replace its first sentence with:
-\begin{verbatim}
-The proposed framework operates as an interface-layer privacy mediation module positioned between the user and a downstream LLM/VLM-based agent.
-\end{verbatim}
-
-This wording is slightly sharper than ``acts as a privacy mediation layer.''
-
-\subsection*{Mandatory Revision 11: Improve Section IV-F}
-Section IV-F is currently short. Please add one final sentence at the end of the subsection:
-
-\begin{verbatim}
-This middleware view is particularly important for systems that combine generation with retrieval, external APIs, or persistent memory, since privacy leakage at the prompt interface can otherwise propagate across the full execution chain.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 12: Improve Section V-D Baseline Framing}
-The baseline list is good, but one phrase still sounds slightly defensive.
-
-Please replace:
-\begin{verbatim}
-The baseline design reflects common families of privacy handling, including no protection, rule-based redaction, named-entity masking, and privacy-preserving text transformation inspired by earlier privacy-aware NLP studies [9], [7]:
-\end{verbatim}
-
-with:
-\begin{verbatim}
-The baseline design reflects representative families of privacy handling, including no protection, rule-based redaction, named-entity masking, generic de-identification, and prior privacy-aware text transformation paradigms [7], [9]:
-\end{verbatim}
-
-\subsection*{Mandatory Revision 13: Add One Sentence to Section V-F}
-Please append the following sentence to the implementation subsection:
-
-\begin{verbatim}
-For multimodal prompts, OCR-derived text is normalized into the same intermediate span representation used for textual prompts, enabling a unified mediation pipeline across text-only and text-plus-image inputs.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 14: Strengthen Section VI-C}
-Please append the following sentence to the end of Section VI-C:
-
-\begin{verbatim}
-This behavior supports the practical value of authorized restoration only at the final execution boundary, rather than exposing raw identifiers throughout the full reasoning pipeline.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 15: Strengthen Section VI-F}
-The failure case analysis is already useful. Please add one final sentence:
-
-\begin{verbatim}
-More broadly, these failure cases suggest that prompt privacy mediation should be understood as a risk-reduction layer rather than a complete substitute for domain-specific policy controls, secure system design, or cryptographic protection when stronger guarantees are required.
-\end{verbatim}
-
-\subsection*{Mandatory Revision 16: Tighten the Limitations Section}
-Please replace the last sentence of Section VII with:
-
-\begin{verbatim}
-Finally, standardized benchmarks for prompt privacy remain immature, and broader evaluation across diverse domains, prompt structures, model families, and agent configurations is still needed.
-\end{verbatim}
-
-This is slightly more complete and publication-like than the current wording.
-
-\subsection*{Mandatory Revision 17: Remove or Rewrite the Acknowledgment}
-The current acknowledgment reads:
-\begin{verbatim}
-The authors would like to thank Sue Song, who is a master's student at AUT.
-\end{verbatim}
-
-This is too informal and too weak to justify a standalone acknowledgment section in most journal submissions.
-
-Preferred action:
+Recommended outputs:
 \begin{itemize}
-    \item remove the acknowledgment entirely.
+    \item one table with 4 metrics;
+    \item optionally one figure: PER vs AC or PER vs UPR;
+    \item optionally latency vs policy level.
 \end{itemize}
 
-If it must be retained, rewrite it as:
+This can reuse your current conceptual trade-off, but now with empirical points added.
+
+\subsection*{Why This Experiment Is Important}
+Section IV-E says $\Pi$ is the operational core of the framework, and Table V on page 7 already points in that direction. :contentReference[oaicite:4]{index=4}  
+However, to make $\Pi$ feel truly central, you need one experiment showing that changing policy strength leads to predictable exposure--utility trade-offs.
+
+\subsection*{Important Missing Experiment 5: Authorized Restoration Boundary Test}
+Your framework includes symbolic mapping and authorized restoration, but there is still no explicit experiment showing when restoration helps and what risk it introduces.
+
+Please add:
+
 \begin{verbatim}
-The authors thank Sue Song for helpful discussions related to privacy-aware AI systems.
+\subsection{Authorized Restoration Boundary Analysis}
+We evaluate symbolic mapping with and without authorized restoration at the final execution boundary. The goal is to measure whether exact-value restoration improves downstream task completion when tools require precise identifiers, and to quantify how much exposure remains avoided compared with raw prompt forwarding.
 \end{verbatim}
 
-\subsection*{Mandatory Revision 18: Check Author Biography Tone}
-The author biographies are acceptable, but please make them slightly more formal and aligned in rhythm.
+Recommended comparison:
+\begin{itemize}
+    \item raw prompt;
+    \item symbolic mapping without restoration;
+    \item symbolic mapping with restoration only at tool boundary.
+\end{itemize}
 
-Suggested rewrite:
+Recommended metrics:
+\begin{itemize}
+    \item TSR;
+    \item PER;
+    \item optionally a new metric: restored-boundary exposure count.
+\end{itemize}
+
+\subsection*{Why This Experiment Is Important}
+This experiment would strongly support your claim that restoration should happen only at the final boundary rather than earlier in the chain. That idea is already present in Sections IV and VI, but it is not yet experimentally isolated. The argument around tool-boundary restoration on page 6 and in Table V would become much stronger if directly tested. :contentReference[oaicite:5]{index=5}
+
+\subsection*{Important Missing Experiment 6: Robustness to Hard Cases}
+The paper already lists failure modes in Section VI-G, but these are discussed qualitatively. It would help to convert them into a small robustness experiment.
+
+Please add:
+
 \begin{verbatim}
-Bo Ma is with Auckland University of Technology, Auckland, New Zealand. Her research interests include privacy-preserving machine learning, large language models, multimodal intelligence, and trustworthy AI systems for privacy-sensitive applications.
-
-Jinsong Wu is with the Department of Electrical Engineering, University of Chile, Santiago, Chile. His research interests include communication networks, machine learning systems, and intelligent networked computing.
-
-Weiqi Yan is with Auckland University of Technology, Auckland, New Zealand. His research interests include computer vision, machine learning, and applied artificial intelligence.
+\subsection{Robustness Under Hard Privacy Cases}
+We construct a hard subset including context-dependent entities, nested identifiers, partially formatted financial strings, long enterprise-specific names, OCR-noisy spans, and mixed text-image prompts. This subset is used to stress-test the limits of privacy entity extraction and policy-aware sanitization.
 \end{verbatim}
 
-\subsection*{Mandatory Revision 19: Expand the References}
-The reference list is still too short for the current scope. Please add citations in the following categories:
+Recommended metrics:
 \begin{itemize}
-    \item prompt injection and indirect prompt injection beyond the current two citations;
-    \item privacy and security risks in retrieval-augmented or tool-augmented LLM systems;
-    \item text de-identification or clinical anonymization;
-    \item trustworthy or secure deployment surveys for LLMs;
-    \item multimodal privacy or OCR/document privacy where available.
+    \item category-wise F1;
+    \item PER;
+    \item failure-rate percentage.
 \end{itemize}
 
-\subsection*{Mandatory Revision 20: Recommended Citation Expansion Targets}
-Please instruct Cursor to add bibliography entries and citations matching the following themes:
+This can be a small table rather than a full section if space is tight.
+
+\subsection*{Why This Experiment Is Important}
+Right now, your failure case discussion on page 7 is good, but it is still descriptive. :contentReference[oaicite:6]{index=6}  
+Turning at least part of it into a measured hard-case subset would make the paper look more rigorous and less template-like.
+
+\subsection*{Important Missing Experiment 7: Longer Agent-Chain Evaluation}
+The paper claims agent-level integration with retrieval, memory, and tools, but the current experiments still feel mostly single-prompt or short-pipeline oriented.
+
+Please add:
+
+\begin{verbatim}
+\subsection{Multi-Step Agent Propagation Evaluation}
+We simulate a multi-step agent setting in which a protected prompt is passed through retrieval, memory update, and tool argument construction. We then measure whether early mediation reduces downstream propagation of raw sensitive spans across intermediate agent states.
+\end{verbatim}
+
+Recommended metric:
 \begin{itemize}
-    \item survey papers on trustworthy LLMs or secure LLM deployment;
-    \item papers on prompt injection and jailbreak security;
-    \item papers on data extraction, memorization, or privacy leakage in generative models;
-    \item papers on clinical de-identification or PII removal in NLP;
-    \item papers on privacy in multimodal document understanding or OCR pipelines.
+    \item number of raw sensitive-span appearances across intermediate states;
+    \item final TSR;
+    \item PER at each pipeline stage.
 \end{itemize}
 
-\subsection*{Mandatory Revision 21: Keep Self-Citation Limited}
-Reference [9] should remain in the paper, but only as a bridge to earlier privacy-preserving NLP work. It should not carry too much argumentative weight.
+Recommended table:
+\begin{verbatim}
+Table X. Propagation of raw sensitive spans across agent pipeline stages.
+\end{verbatim}
 
-Please ensure:
-\begin{itemize}
-    \item [9] appears only where historical positioning is genuinely needed;
-    \item the paper is mostly anchored in broader literature rather than prior self-work.
-\end{itemize}
+\subsection*{Why This Experiment Is Important}
+Your threat model and framework strongly emphasize propagation risk through memory, retrieval, and tools. That is one of the paper's best ideas. But the current evidence does not yet isolate propagation across stages explicitly. The workflow figure on page 4 clearly motivates this experiment, so adding it would tighten the paper substantially. :contentReference[oaicite:7]{index=7}
 
-\subsection*{Mandatory Revision 22: Final Main-Paper Visual Strategy}
-After this round, the visual strategy should remain:
-\begin{itemize}
-    \item main paper: Fig.~1 workflow + Fig.~2 conceptual trade-off + Tables I--V;
-    \item appendix: pseudocode + Table VI + brief historical note only;
-    \item no legacy scatterplots, classifier sketches, or distribution plots anywhere in the final submission version.
-\end{itemize}
+\subsection*{If You Can Only Add Three Experiments}
+If implementation time is limited, the highest-value additions are:
 
-\subsection*{Expected Output of This Round}
-After this round, the manuscript should:
 \begin{enumerate}
-    \item be visually cleaner, especially in the appendix;
-    \item have stronger and broader literature support;
-    \item read more like a finalized journal draft;
-    \item be ready for a final micro-polish round on title, abstract, captions, and venue-specific formatting.
+    \item category-wise protection analysis;
+    \item multimodal OCR-based evaluation;
+    \item authorized restoration boundary analysis.
 \end{enumerate}
+
+These three would strengthen:
+\begin{itemize}
+    \item the span extraction claim;
+    \item the VLM/multimodal claim;
+    \item the symbolic mapping / restoration claim.
+\end{itemize}
+
+\subsection*{If You Can Add Five Experiments}
+Then add:
+\begin{enumerate}
+    \item category-wise protection analysis;
+    \item cross-model validation;
+    \item multimodal OCR evaluation;
+    \item policy sensitivity analysis;
+    \item authorized restoration boundary analysis.
+\end{enumerate}
+
+This set would make the paper much more convincing.
+
+\subsection*{What Is Less Urgent}
+The following are useful, but lower priority than the experiments above:
+\begin{itemize}
+    \item more latency microbenchmarks;
+    \item more illustrative examples;
+    \item more discussion text without added measurement;
+    \item more appendix pseudocode.
+\end{itemize}
+
+The paper now needs breadth of evidence more than more explanation.
+
+\subsection*{Suggested New Tables and Figures}
+Please consider adding the following:
+
+\begin{verbatim}
+Table VIII. Category-wise Sensitive Span F1 and PER.
+Table IX. Multimodal OCR-derived privacy mediation results.
+Table X. Authorized restoration boundary analysis.
+Table XI. Cross-model utility retention under matched mediation policy.
+Table XII. Propagation of raw sensitive spans across agent pipeline stages.
+
+Fig. 3. Empirical privacy--utility frontier under different policy strengths.
+Fig. 4. Raw sensitive-span propagation across agent stages with and without mediation.
+\end{verbatim}
+
+\subsection*{Suggested Revision to Section V}
+Please add the following sentence near the end of Section V:
+
+\begin{verbatim}
+To further validate deployment realism, future revisions of the evaluation will include category-wise analysis, multimodal OCR-based privacy mediation, restoration-boundary testing, and multi-stage agent propagation measurements under matched policy settings.
+\end{verbatim}
+
+\subsection*{Bottom-Line Review Judgment on Experiments}
+The current experiments are \textbf{coherent but still not broad enough}. They are sufficient for:
+\begin{itemize}
+    \item a strong prototype paper;
+    \item an application/systems-oriented submission;
+    \item a controlled proof-of-concept framing.
+\end{itemize}
+
+They are \textbf{not yet sufficient} for a highly competitive venue if reviewers expect:
+\begin{itemize}
+    \item broader model coverage;
+    \item stronger multimodal evidence;
+    \item category-level transparency;
+    \item restoration-specific validation;
+    \item propagation-aware agent measurements.
+\end{itemize}
