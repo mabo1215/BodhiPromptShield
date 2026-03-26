@@ -1,461 +1,206 @@
-\section*{Stage 2 Revision Instructions for Cursor}
-\label{sec:stage2_revision_instructions}
+\section*{References Patch for \texttt{main.tex}}
+\label{sec:references_patch}
 
-\subsection*{Overall Objective of Stage 2}
-The manuscript has completed the first-stage front-end transition toward prompt privacy for LLM/VLM-based agents. However, the middle and later sections still largely follow the old narrative of traditional NLP text classification, including Word2Vec, ppSVM, GDIFSEA, COVID-19 classification, incomplete annotation, grouping, rMSE-based evaluation, and legacy classifier comparisons.
+This file provides direct citation patch instructions for the current prompt-privacy version of the manuscript. The goal is to make the paper better grounded in the literature while keeping citations aligned with the new story. The references below use keys already available in \texttt{references.bib} whenever possible.
 
-The goal of Stage 2 is to complete the structural transition of the \textbf{main body of the paper}, so that the manuscript reads as a coherent \textbf{LLM/VLM prompt privacy paper from Section III onward}, rather than a hybrid of two unrelated papers.
+\subsection*{Patch Rule 1: Introduction}
+Add or verify the following citations in the corresponding paragraphs.
 
-\subsection*{Main Diagnosis of the Current Draft}
-The current draft already has a revised title, abstract, introduction, and problem definition. However, the following issues remain:
+\paragraph{Paragraph on LLM/VLM agents and tool use}
+At the sentence discussing agent systems, tool-augmented reasoning, and multi-component execution, add:
+\begin{verbatim}
+\cite{yao2022react,schick2023toolformer}
+\end{verbatim}
+Recommended sentence form:
+\begin{verbatim}
+Large language models (LLMs) and vision-language models (VLMs) have become the core reasoning engines of modern intelligent assistants and agent systems, including tool-using and reasoning-acting pipelines \cite{yao2022react,schick2023toolformer}.
+\end{verbatim}
 
+\paragraph{Paragraph on privacy exposure through model interaction}
+At the sentence about raw prompts being exposed during inference, storage, or integration, add:
+\begin{verbatim}
+\cite{carlini2021extracting,mireshghallah2023privacy}
+\end{verbatim}
+Recommended sentence form:
+\begin{verbatim}
+Directly sending unprotected prompts to LLM- or VLM-based systems may lead to unnecessary privacy exposure, especially in settings where memorization, logging, or downstream processing can reveal sensitive content \cite{carlini2021extracting,mireshghallah2023privacy}.
+\end{verbatim}
+
+\paragraph{Paragraph on agent risk and prompt injection / indirect leakage}
+At the sentence about privacy risk being amplified in agent settings, add:
+\begin{verbatim}
+\cite{perez2022ignore,greshake2023not}
+\end{verbatim}
+Recommended sentence form:
+\begin{verbatim}
+In agent settings, the privacy risk may be amplified because sensitive content can propagate across multiple components during reasoning and tool invocation, and indirect prompt-mediated attacks can further enlarge the attack surface \cite{perez2022ignore,greshake2023not}.
+\end{verbatim}
+
+\paragraph{Paragraph on earlier privacy-preserving NLP}
+At the sentence discussing differentially private learning or privacy-preserving text processing, add:
+\begin{verbatim}
+\cite{dwork2014algorithmic,chaudhuri2011differentially,ma2021privacy}
+\end{verbatim}
+Recommended sentence form:
+\begin{verbatim}
+Existing privacy-preserving natural language processing research has mainly focused on training-time data protection, differentially private learning, representation anonymization, or post hoc de-identification \cite{dwork2014algorithmic,chaudhuri2011differentially,ma2021privacy}.
+\end{verbatim}
+
+\subsection*{Patch Rule 2: Problem Definition and Threat Model}
+
+\paragraph{Threat model paragraph on partially trusted deployment}
+At the sentence describing exposure through model logging, retrieval, or external tools, add:
+\begin{verbatim}
+\cite{carlini2021extracting,perez2022ignore,greshake2023not}
+\end{verbatim}
+
+Recommended insertion:
+\begin{verbatim}
+Even if the foundation model itself is not intentionally adversarial, sensitive information may still be exposed through storage, debugging, prompt injection, monitoring, or tool invocation traces \cite{carlini2021extracting,perez2022ignore,greshake2023not}.
+\end{verbatim}
+
+\paragraph{Design objective paragraph}
+At the sentence that contrasts this work with fully cryptographic or formal DP guarantees, add:
+\begin{verbatim}
+\cite{dwork2014algorithmic,rahulamathavan2013privacy}
+\end{verbatim}
+Recommended sentence form:
+\begin{verbatim}
+Unlike differential privacy or cryptographic privacy-preserving inference, which provide different forms of protection under different assumptions, the present work focuses on practical interface-layer mediation before downstream model execution \cite{dwork2014algorithmic,rahulamathavan2013privacy}.
+\end{verbatim}
+
+\subsection*{Patch Rule 3: Related Work}
+The Related Work section should be the most citation-dense section. Use the following mapping.
+
+\paragraph{Subsection: Privacy-Preserving NLP and De-identification}
+Use:
+\begin{verbatim}
+\cite{dwork2014algorithmic,chaudhuri2011differentially,ma2021privacy,rahulamathavan2013privacy}
+\end{verbatim}
+Suggested paragraph form:
+\begin{verbatim}
+Traditional privacy-preserving NLP has largely focused on training-time privacy, feature perturbation, secure inference, and representation-level protection \cite{dwork2014algorithmic,chaudhuri2011differentially,ma2021privacy,rahulamathavan2013privacy}.
+\end{verbatim}
+
+\paragraph{Subsection: Large-Model Privacy and Prompt-Level Risks}
+Use:
+\begin{verbatim}
+\cite{carlini2021extracting,mireshghallah2023privacy,perez2022ignore,greshake2023not}
+\end{verbatim}
+Suggested paragraph form:
+\begin{verbatim}
+Large-model privacy risks arise not only from memorization and data extraction, but also from interface-level prompt handling, indirect prompt injection, and application-layer integration vulnerabilities \cite{carlini2021extracting,mireshghallah2023privacy,perez2022ignore,greshake2023not}.
+\end{verbatim}
+
+\paragraph{Subsection: Privacy-Preserving Agent and Tool-Use Pipelines}
+Use:
+\begin{verbatim}
+\cite{yao2022react,schick2023toolformer,perez2022ignore,greshake2023not}
+\end{verbatim}
+Suggested paragraph form:
+\begin{verbatim}
+Agent frameworks introduce additional privacy risk because prompts may be decomposed into reasoning traces, retrieval queries, tool arguments, and memory updates across multiple execution stages \cite{yao2022react,schick2023toolformer,perez2022ignore,greshake2023not}.
+\end{verbatim}
+
+\paragraph{Subsection: Multimodal and VLM Privacy Protection}
+At present the local bibliography is weak for multimodal privacy. Keep the paragraph modest and cite only general system risk references if needed:
+\begin{verbatim}
+\cite{carlini2021extracting,greshake2023not}
+\end{verbatim}
+Then add a note in comments that stronger multimodal-specific citations should be inserted later if new BibTeX entries are added.
+
+\subsection*{Patch Rule 4: Proposed Framework}
+The method section does not need dense citations in every paragraph, but a few grounding citations help.
+
+\paragraph{System Overview}
+At the sentence describing the framework as middleware before a tool-using agent, add:
+\begin{verbatim}
+\cite{yao2022react,schick2023toolformer}
+\end{verbatim}
+
+\paragraph{Policy-Aware or utility-constrained formulation}
+At the sentence contrasting practical mediation with formal privacy guarantees, add:
+\begin{verbatim}
+\cite{dwork2014algorithmic,chaudhuri2011differentially}
+\end{verbatim}
+
+\paragraph{Agent-Level Integration}
+At the sentence on raw prompts propagating through model, retrieval, memory, and tool components, add:
+\begin{verbatim}
+\cite{yao2022react,schick2023toolformer,greshake2023not}
+\end{verbatim}
+
+\subsection*{Patch Rule 5: Experimental Setup}
+The experimental setup mostly describes the paper's own benchmark construction and does not need many citations. Add citations only where you refer to baseline categories.
+
+\paragraph{Baselines paragraph}
+When describing raw prompting, de-identification, or DP-inspired baselines, add:
+\begin{verbatim}
+\cite{ma2021privacy,dwork2014algorithmic}
+\end{verbatim}
+Suggested sentence form:
+\begin{verbatim}
+The baseline design reflects common families of privacy handling, including no protection, rule-based redaction, named-entity masking, and privacy-preserving text transformation inspired by earlier privacy-aware NLP studies \cite{ma2021privacy,dwork2014algorithmic}.
+\end{verbatim}
+
+\subsection*{Patch Rule 6: Results and Discussion}
+Use citations sparingly in the results section. Only cite prior work when comparing tendencies, not every metric.
+
+\paragraph{Privacy protection effectiveness discussion}
+If you compare your findings to naive masking or broader privacy concerns, add:
+\begin{verbatim}
+\cite{mireshghallah2023privacy,carlini2021extracting}
+\end{verbatim}
+
+\paragraph{Agent robustness discussion}
+If discussing why agent settings amplify prompt privacy risk, add:
+\begin{verbatim}
+\cite{yao2022react,schick2023toolformer,greshake2023not}
+\end{verbatim}
+
+\subsection*{Patch Rule 7: Limitations and Conclusion}
+
+\paragraph{Limitations}
+At the sentence noting that the framework does not provide formal cryptographic guarantees, add:
+\begin{verbatim}
+\cite{dwork2014algorithmic,rahulamathavan2013privacy}
+\end{verbatim}
+
+\paragraph{Conclusion}
+At the sentence describing the framework as interface-layer privacy protection for agent systems, add:
+\begin{verbatim}
+\cite{yao2022react,schick2023toolformer}
+\end{verbatim}
+
+\subsection*{Patch Rule 8: Legacy Motivation in Appendix}
+For the appendix paragraph that briefly references earlier privacy-preserving text-processing work, use:
+\begin{verbatim}
+\cite{ma2021privacy,chaudhuri2011differentially,dwork2014algorithmic,carlini2021extracting,perez2022ignore,greshake2023not,yao2022react,schick2023toolformer}
+\end{verbatim}
+
+\subsection*{Optional BibTeX Upgrade Note}
+The current bibliography already supports a solid baseline reference set for this paper. However, the multimodal/VLM subsection would be stronger with additional vision-language or multimodal privacy references. If you later add such entries to \texttt{references.bib}, prioritize using them only in:
 \begin{itemize}
-    \item Section III (\textbf{Related Work}) is still too short and does not adequately position the paper in the literature of LLM privacy, prompt sanitization, de-identification, privacy-preserving inference, and multimodal privacy.
-    \item Section IV still uses the old title \textbf{``Multi-Category and Multi-Labels Training for Text Classification''}, which is incompatible with the new paper direction.
-    \item Large parts of Sections IV--VI still describe legacy methods such as Word2Vec, Doc2Vec ring structure, internal classification center, ppSVM, GDIFSEA, incomplete annotation, group splitting, GBM, DRF, and COVID-19 corpus classification.
-    \item The current experiments are still dominated by old text-classification metrics and legacy plots/tables, instead of evaluating prompt privacy protection and utility preservation.
-    \item The conclusion still describes the paper as \textbf{IBPPSVM}, a privacy-preserving text classification framework, which conflicts with the new title and abstract.
-    \item The appendices also remain heavily tied to the old classification algorithmic pipeline.
+    \item Related Work: multimodal privacy subsection;
+    \item Method: multimodal extension subsection;
+    \item Limitations: OCR and visual-text extraction discussion.
 \end{itemize}
 
-\subsection*{Stage 2 Core Mission}
-In this stage, the manuscript should be rewritten so that:
-
-\begin{enumerate}
-    \item Section III becomes a proper \textbf{Related Work} section for prompt privacy in LLM/VLM systems.
-    \item Section IV becomes the actual \textbf{Proposed Framework} section for prompt mediation.
-    \item The old classification-method sections are removed from the main storyline.
-    \item The experimental section is redesigned around \textbf{privacy leakage reduction + downstream utility preservation}.
-    \item The conclusion is fully aligned with the new LLM/VLM prompt privacy formulation.
-\end{enumerate}
-
-\subsection*{Required Section Renaming}
-Please rename and reorganize the manuscript as follows:
-
-\begin{verbatim}
-I. Introduction
-II. Problem Definition and Threat Model
-III. Related Work
-IV. Proposed Framework
-    A. System Overview
-    B. Privacy Entity Extraction
-    C. Semantic-Preserving Prompt Sanitization
-    D. Utility-Constrained Prompt Mediation
-    E. Agent-Level Integration
-    F. Optional VLM / Multimodal Extension
-V. Experimental Setup
-VI. Results and Discussion
-VII. Limitations
-VIII. Conclusion
-\end{verbatim}
-
-\subsection*{Critical Deletion Instruction}
-The following old main-body content should be removed from the manuscript body, or moved to a very small legacy-baseline paragraph if absolutely necessary:
+\subsection*{Minimal Citation Bundle by Section}
+If you want the shortest possible patch, use the following citation bundles:
 
 \begin{itemize}
-    \item multi-category and multi-label training for text classification;
-    \item multiple-task deep learning for incomplete annotation;
-    \item internal classification center as the core method;
-    \item Doc2Vec high-dimensional ring derivation as the main theory;
-    \item keyword post-processing for document screening;
-    \item frequent substring threshold selection as a core contribution;
-    \item independent support calculation as a core contribution;
-    \item GDIFSEA as the main method;
-    \item ppSVM as the main method;
-    \item group optimization for text classification;
-    \item GBM / DRF / RNN classification comparison as the primary experiment;
-    \item COVID-19 article category prediction as the core task.
+    \item Introduction: \verb|\cite{yao2022react,schick2023toolformer,carlini2021extracting,mireshghallah2023privacy,perez2022ignore,greshake2023not,dwork2014algorithmic,chaudhuri2011differentially,ma2021privacy}| 
+    \item Related Work: \verb|\cite{dwork2014algorithmic,chaudhuri2011differentially,ma2021privacy,rahulamathavan2013privacy,carlini2021extracting,mireshghallah2023privacy,perez2022ignore,greshake2023not,yao2022react,schick2023toolformer}| 
+    \item Method and Threat Model: \verb|\cite{carlini2021extracting,perez2022ignore,greshake2023not,yao2022react,schick2023toolformer,dwork2014algorithmic}| 
+    \item Appendix legacy note: \verb|\cite{ma2021privacy,dwork2014algorithmic,chaudhuri2011differentially,carlini2021extracting,perez2022ignore,greshake2023not}| 
 \end{itemize}
 
-These components belong to the old paper logic and should no longer dominate the new manuscript.
-
-\subsection*{How Legacy Content May Be Preserved}
-A very small amount of legacy content may remain only in one of the following forms:
-
+\subsection*{Important Reminder}
+Do not reintroduce old classification references such as Word2Vec, Doc2Vec, GBM, DRF, RNN, or COVID-19 classification into the main paper unless they are explicitly discussed as legacy background. The main reference story should now center on:
 \begin{itemize}
-    \item as background in \textbf{Related Work} under traditional privacy-preserving NLP;
-    \item as a \textbf{historical baseline perspective};
-    \item as an \textbf{ablation inspiration} for span filtering or privacy cue mining;
-    \item as supplementary appendix material, if absolutely needed for record continuity.
+    \item privacy risks in large-model interaction,
+    \item prompt-level exposure,
+    \item tool-using or agent pipelines,
+    \item practical privacy mediation before inference.
 \end{itemize}
-
-However, the paper must no longer present ppSVM, GDIFSEA, Word2Vec, or COVID-19 multi-class classification as the main contribution.
-
-\subsection*{New Section III: Related Work}
-Replace the current short Related Work section with a richer literature positioning section organized into four subsections:
-
-\begin{verbatim}
-\section{Related Work}
-\subsection{Privacy-Preserving NLP and De-identification}
-\subsection{Large-Model Privacy and Prompt-Level Risks}
-\subsection{Privacy-Preserving Agent and Tool-Use Pipelines}
-\subsection{Multimodal and VLM Privacy Protection}
-\end{verbatim}
-
-Please write this section in formal academic style and cover the following positioning logic:
-
-\begin{itemize}
-    \item Traditional privacy-preserving NLP mainly focuses on training-time privacy, de-identification, differential privacy, and privacy-aware learning.
-    \item LLM privacy risks arise not only from model parameters, but also from \textbf{prompt submission}, model logging, retrieval, memory, tool invocation, and agent chaining.
-    \item Existing de-identification methods may remove sensitive tokens, but often do not explicitly optimize for \textbf{downstream LLM utility preservation}.
-    \item Existing agent systems usually prioritize capability and tool orchestration, but do not systematically protect prompt privacy before inference.
-    \item Multimodal systems introduce additional risks because sensitive content may appear in images, screenshots, OCR text, forms, receipts, IDs, and medical documents.
-    \item The new paper should be positioned as a \textbf{real-time privacy mediation framework} that sits at the interface between the user and the LLM/VLM-based agent.
-\end{itemize}
-
-\subsection*{New Section IV: Proposed Framework}
-Completely replace the current Section IV with the following new structure:
-
-\begin{verbatim}
-\section{Proposed Framework}
-\subsection{System Overview}
-\subsection{Privacy Entity Extraction}
-\subsection{Semantic-Preserving Prompt Sanitization}
-\subsection{Utility-Constrained Prompt Mediation}
-\subsection{Agent-Level Integration}
-\subsection{Extension to VLM-Based Multimodal Inputs}
-\end{verbatim}
-
-\subsection*{New Section IV-A: System Overview}
-Insert the following text as the starting point of the new method section:
-
-\begin{verbatim}
-\subsection{System Overview}
-
-The proposed framework acts as a privacy mediation layer between the user and a downstream LLM/VLM-based agent. Instead of directly sending the raw prompt $x$ to the model, the framework first analyzes the input for privacy-sensitive content, transforms the identified spans into protected surrogates, and then forwards a sanitized prompt $\tilde{x}$ to the downstream inference pipeline.
-
-The full workflow contains four stages:
-\begin{enumerate}
-    \item privacy-sensitive span extraction;
-    \item semantic-preserving prompt sanitization;
-    \item downstream agent inference on the sanitized prompt;
-    \item optional secure restoration of selected entities under access control.
-\end{enumerate}
-
-This design allows the framework to reduce privacy exposure before model calls, retrieval, tool invocation, or logging, while preserving the semantic intent necessary for useful downstream responses.
-\end{verbatim}
-
-\subsection*{New Section IV-B: Privacy Entity Extraction}
-Insert the following text:
-
-\begin{verbatim}
-\subsection{Privacy Entity Extraction}
-
-Given an input prompt $x$, we first identify candidate privacy-sensitive spans:
-\[
-E(x)=\{(s_i,c_i,p_i)\}_{i=1}^{n},
-\]
-where $s_i$ denotes a detected span, $c_i$ is its privacy category, and $p_i \in [0,1]$ is a confidence score.
-
-The detector may combine multiple signals:
-\begin{itemize}
-    \item rule-based recognizers for structured entities such as email addresses, phone numbers, account numbers, IDs, dates of birth, and addresses;
-    \item named entity recognition for names, organizations, locations, and domain-specific entities;
-    \item LLM-assisted contextual privacy judgment for spans whose sensitivity depends on surrounding semantics;
-    \item optional OCR or VLM-based extraction when privacy-bearing content appears in images or screenshots.
-\end{itemize}
-
-A span is marked for protection when its confidence exceeds a configurable threshold $\tau$ or when it matches a high-risk privacy policy. The output of this stage is a structured privacy annotation over the prompt.
-\end{verbatim}
-
-\subsection*{New Section IV-C: Semantic-Preserving Prompt Sanitization}
-Insert the following text:
-
-\begin{verbatim}
-\subsection{Semantic-Preserving Prompt Sanitization}
-
-After privacy-sensitive spans are detected, the framework transforms them into protected surrogates through a sanitization operator
-\[
-T(s_i,c_i)\rightarrow \hat{s}_i.
-\]
-The sanitized prompt is then
-\[
-\tilde{x}=T(x)=x[s_1 \mapsto \hat{s}_1,\ldots,s_n \mapsto \hat{s}_n].
-\]
-
-We consider three main sanitization modes:
-\begin{enumerate}
-    \item \textbf{Typed placeholder replacement}, such as replacing a real person name with \texttt{<PERSON\_1>};
-    \item \textbf{Semantic abstraction}, such as replacing a full address with ``a residential address in Auckland'';
-    \item \textbf{Secure symbolic mapping}, where protected spans are replaced by reversible secure tokens linked to a local mapping table.
-\end{enumerate}
-
-The choice of sanitization mode depends on the privacy category, downstream task requirement, and whether later restoration is necessary. The key objective is to reduce exposure risk while preserving enough semantic structure for correct downstream reasoning.
-\end{verbatim}
-
-\subsection*{New Section IV-D: Utility-Constrained Prompt Mediation}
-Insert the following text:
-
-\begin{verbatim}
-\subsection{Utility-Constrained Prompt Mediation}
-
-Prompt protection should not destroy the user's original intent. We therefore formulate the mediation stage as a privacy--utility trade-off:
-\[
-\min_{T}\ \mathcal{L}_{privacy}(x,\tilde{x})+\lambda \mathcal{L}_{utility}(f(x),f(\tilde{x})),
-\]
-where $\mathcal{L}_{privacy}$ measures residual exposure after sanitization, $\mathcal{L}_{utility}$ measures task or semantic degradation, and $\lambda$ controls the privacy--utility balance.
-
-In practice, $\mathcal{L}_{privacy}$ can be approximated using exposure rate, recoverability, or redaction success, while $\mathcal{L}_{utility}$ can be measured using semantic similarity, answer consistency, task success rate, or agent execution correctness.
-
-This formulation emphasizes that the goal of the framework is not simply to mask tokens, but to preserve usable intent after protection.
-\end{verbatim}
-
-\subsection*{New Section IV-E: Agent-Level Integration}
-Insert the following text:
-
-\begin{verbatim}
-\subsection{Agent-Level Integration}
-
-The framework is designed for deployment in agent pipelines rather than only standalone prompting. Let the downstream system be represented as
-\[
-\mathcal{A}=\{f_{\mathrm{LLM/VLM}},\mathcal{R},\mathcal{T},\mathcal{M}\},
-\]
-where $f_{\mathrm{LLM/VLM}}$ is the foundation model, $\mathcal{R}$ is an optional retrieval module, $\mathcal{T}$ is the toolset, and $\mathcal{M}$ is memory or logging infrastructure.
-
-Without protection, raw prompts may propagate through all of these components. In the proposed design, the middleware intercepts the user input before downstream execution and only releases the sanitized prompt $\tilde{x}$. This reduces direct exposure of sensitive content in model calls, retrieval queries, memory traces, and tool arguments.
-
-Authorized restoration may optionally occur after the model returns its output, depending on system policy and task requirement.
-\end{verbatim}
-
-\subsection*{New Section IV-F: Extension to VLM-Based Multimodal Inputs}
-Insert the following text:
-
-\begin{verbatim}
-\subsection{Extension to VLM-Based Multimodal Inputs}
-
-For multimodal settings, the user input may contain both text and images:
-\[
-x^{(m)}=(x^{(t)},x^{(v)}).
-\]
-Privacy-sensitive information may appear not only in textual prompts, but also in screenshots, scanned documents, medical reports, invoices, receipts, identity documents, whiteboards, and natural-scene text.
-
-The framework first extracts candidate privacy-bearing visual content using OCR, visual grounding, or VLM-assisted detection, and then applies the same sanitization logic to generate a protected multimodal representation
-\[
-\tilde{x}^{(m)}=(\tilde{x}^{(t)},\tilde{x}^{(v)}).
-\]
-
-This enables privacy-preserving inference for multimodal question answering, visual document understanding, and image-assisted agent systems.
-\end{verbatim}
-
-\subsection*{New Section V: Experimental Setup}
-Completely replace the current experimental setup with a prompt-privacy evaluation section.
-
-Use the following structure:
-
-\begin{verbatim}
-\section{Experimental Setup}
-\subsection{Tasks}
-\subsection{Datasets and Prompt Construction}
-\subsection{Baselines}
-\subsection{Evaluation Metrics}
-\subsection{Implementation and Deployment Setting}
-\end{verbatim}
-
-\subsection*{Text to Insert for Experimental Setup}
-Use the following content as the basis:
-
-\begin{verbatim}
-\section{Experimental Setup}
-
-\subsection{Tasks}
-
-We evaluate the proposed framework under four representative settings:
-\begin{itemize}
-    \item privacy-sensitive prompt understanding;
-    \item question answering with protected prompts;
-    \item agent task execution under sanitized prompts;
-    \item optional multimodal prompt protection for image-assisted inputs.
-\end{itemize}
-
-\subsection{Datasets and Prompt Construction}
-
-Because prompt privacy benchmarks remain limited, we construct evaluation prompts by injecting privacy-sensitive spans into realistic user instructions. The inserted spans include person names, phone numbers, addresses, identifiers, financial references, medical content, organization-specific terms, and image-derived text where applicable.
-
-The prompt set should contain both:
-\begin{itemize}
-    \item prompts where privacy-bearing spans are essential to the task;
-    \item prompts where privacy-bearing spans are incidental and should be removed without affecting the final answer.
-\end{itemize}
-
-\subsection{Baselines}
-
-The proposed method should be compared against:
-\begin{itemize}
-    \item raw prompting without protection;
-    \item regex-only redaction;
-    \item named-entity-only masking;
-    \item generic de-identification without utility-aware reconstruction;
-    \item the proposed semantic-preserving mediation framework.
-\end{itemize}
-
-\subsection{Evaluation Metrics}
-
-We report the following metrics:
-\begin{itemize}
-    \item Sensitive Span Precision / Recall / F1;
-    \item Privacy Exposure Rate (PER);
-    \item Semantic Similarity between original and sanitized prompts;
-    \item Answer Consistency between outputs generated from raw and protected prompts;
-    \item Task Success Rate for downstream agent execution;
-    \item Latency Overhead introduced by the privacy middleware.
-\end{itemize}
-
-Privacy Exposure Rate is defined as
-\[
-\mathrm{PER}=\frac{\#\text{exposed sensitive tokens after sanitization}}{\#\text{sensitive tokens in the original prompt}}.
-\]
-
-A utility preservation ratio may also be reported as
-\[
-\mathrm{UPR}=\frac{\text{task score on sanitized prompt}}{\text{task score on original prompt}}.
-\]
-
-\subsection{Implementation and Deployment Setting}
-
-The framework should be evaluated in a practical agent-style pipeline in which prompt protection occurs before downstream inference. The implementation section should describe detection modules, placeholder design, optional secure mapping, latency measurement, and whether retrieval or tool invocation is included in the pipeline.
-\end{verbatim}
-
-\subsection*{New Section VI: Results and Discussion}
-Replace the legacy results section with a discussion centered on the following questions:
-
-\begin{enumerate}
-    \item How well are sensitive spans detected?
-    \item How much privacy exposure remains after sanitization?
-    \item How much semantic meaning is preserved?
-    \item Does the downstream LLM/VLM still answer correctly?
-    \item Does agent tool use remain correct after protection?
-    \item What are the failure cases?
-\end{enumerate}
-
-Use the following structure:
-
-\begin{verbatim}
-\section{Results and Discussion}
-\subsection{Privacy Protection Effectiveness}
-\subsection{Utility Preservation}
-\subsection{Agent-Level Robustness}
-\subsection{Ablation on Sanitization Modes}
-\subsection{Failure Cases and Error Analysis}
-\end{verbatim}
-
-\subsection*{Suggested Discussion Content}
-Please write the results section so that it emphasizes:
-
-\begin{itemize}
-    \item typed placeholders preserve task structure well when the task does not require exact identifiers;
-    \item semantic abstraction performs better when some contextual meaning must be retained;
-    \item aggressive masking reduces exposure more strongly but may damage utility;
-    \item utility-aware mediation achieves a better privacy--utility trade-off than naive redaction;
-    \item agent pipelines remain usable if protected prompts preserve tool-relevant semantics.
-\end{itemize}
-
-\subsection*{New Section VII: Limitations}
-Replace the current limitations with the following text:
-
-\begin{verbatim}
-\section{Limitations}
-
-Several limitations remain in the current framework. First, privacy sensitivity is context-dependent, and some spans cannot be reliably classified as sensitive without deeper task or user-specific policy knowledge. Second, utility preservation may degrade when exact identifiers are essential for downstream reasoning or tool execution. Third, multimodal privacy extraction remains challenging in images with dense text, handwriting, or weak OCR quality. Fourth, the framework currently prioritizes practical deployment and does not provide a formal cryptographic guarantee against all adversaries. Finally, benchmark construction for prompt privacy is still immature, and broader evaluation across domains is needed.
-\end{verbatim}
-
-\subsection*{New Section VIII: Conclusion}
-Replace the current conclusion completely with the following:
-
-\begin{verbatim}
-\section{Conclusion}
-
-This paper reformulates privacy-preserving text processing as a real-time prompt privacy problem for LLM/VLM-based agents. Instead of focusing on classical text classification or training-time privacy alone, the proposed framework protects privacy at the interaction interface before downstream inference. By combining privacy-sensitive span extraction, semantic-preserving prompt sanitization, and agent-level mediation, the framework reduces privacy exposure while preserving downstream response utility.
-
-The proposed approach is model-agnostic, supports practical deployment as a middleware layer, and can be extended to multimodal settings in which privacy-bearing information appears in both text and images. This establishes prompt-level privacy mediation as a practical direction for privacy-aware large-model systems.
-
-Future work includes stronger benchmark design, richer multimodal privacy grounding, adaptive policy learning, tighter privacy--utility analysis, and broader evaluation in real-world agent workflows.
-\end{verbatim}
-
-\subsection*{Table Redesign Instruction}
-Delete or stop using the old tables about:
-\begin{itemize}
-    \item deep learning performance on COVID category classification;
-    \item distributed random forest performance;
-    \item gradient promotion decision tree performance;
-    \item ppSVM kernel comparison;
-    \item optimal grouping fitness for old classification tasks.
-\end{itemize}
-
-Replace them with new tables of the following style:
-
-\begin{verbatim}
-Table 1. Sensitive span detection performance
-Table 2. Privacy exposure rate under different sanitization modes
-Table 3. Answer consistency and task success rate
-Table 4. Latency overhead of the privacy middleware
-Table 5. Ablation study on placeholder / abstraction / secure mapping
-\end{verbatim}
-
-\subsection*{Figure Redesign Instruction}
-Delete or de-emphasize old figures about:
-\begin{itemize}
-    \item classification margins;
-    \item rMSE histograms;
-    \item random forest learning curves;
-    \item GDIFSEA acceptance curves;
-    \item group-number fitness curves.
-\end{itemize}
-
-Instead, add new conceptual figures such as:
-\begin{itemize}
-    \item privacy mediation workflow in an LLM/VLM agent;
-    \item examples of original prompt vs sanitized prompt;
-    \item privacy--utility trade-off curve;
-    \item multimodal prompt protection pipeline.
-\end{itemize}
-
-\subsection*{Optional Example Table}
-You may add the following example table:
-
-\begin{verbatim}
-\begin{table}[t]
-\centering
-\caption{Example of privacy-preserving prompt mediation.}
-\begin{tabular}{p{2.2cm}p{5.3cm}}
-\toprule
-\textbf{Original Prompt} & Please summarize the MRI report for John Smith, born on 12/03/1980, from 25 Queen Street, Auckland. \\
-\midrule
-\textbf{Sanitized Prompt} & Please summarize the MRI report for \texttt{<PERSON\_1>}, born on \texttt{<DATE\_1>}, from \texttt{<ADDRESS\_1>}. \\
-\midrule
-\textbf{Expected Utility} & The report should still be summarized correctly without exposing real identifiers. \\
-\bottomrule
-\end{tabular}
-\end{table}
-\end{verbatim}
-
-\subsection*{Appendix Handling Instruction}
-The current appendices remain tightly coupled to the old ppSVM/GDIFSEA classification framework. For this stage:
-
-\begin{itemize}
-    \item remove old appendices from the main submission if they are no longer relevant;
-    \item or rewrite the appendix into:
-    \begin{itemize}
-        \item pseudocode for privacy-sensitive span extraction;
-        \item pseudocode for prompt sanitization;
-        \item pseudocode for secure mapping and restoration;
-        \item additional prompt examples;
-        \item more ablation tables.
-    \end{itemize}
-\end{itemize}
-
-\subsection*{Important Consistency Requirement}
-After this stage, the manuscript must be internally consistent:
-\begin{itemize}
-    \item the title, abstract, introduction, method, experiments, results, limitations, and conclusion must all describe the same paper;
-    \item the paper must no longer read like a classical text classification manuscript;
-    \item the method and experiments must both serve the prompt privacy problem.
-\end{itemize}
-
-\subsection*{Expected Output of Stage 2}
-Please directly modify the LaTeX source so that:
-\begin{enumerate}
-    \item the old classification-centered Sections III--VIII are replaced with prompt-privacy-centered content;
-    \item the proposed method becomes a real privacy mediation framework for LLM/VLM agents;
-    \item the experiments evaluate prompt privacy protection rather than classical category prediction;
-    \item the conclusion fully matches the new paper direction.
-\end{enumerate}
