@@ -1,7 +1,7 @@
 # 修订状态
 
 最后更新：2026-03-27  
-对应审稿建议：`docs/revision_suggestions.tex`（当前为 Stage 24）
+对应审稿建议：`docs/revision_suggestions.tex`（当前为 Stage 26）
 
 ---
 
@@ -27,28 +27,28 @@
 ### 1. 论文主线统一为 prompt privacy mediation
 
 - 修改状态：已全部修改
-- 修改说明：主文已经统一围绕 LLM/VLM prompt privacy mediation 展开，不再保留旧的 classifier-era 混合叙事；标题、摘要、问题定义、框架、实验、结论目前属于同一条主线。
+- 修改说明：主文已经统一围绕 LLM/VLM prompt privacy mediation 展开，不再保留旧的 classifier-era 叙事残留；标题、摘要、问题定义、方法框架、实验解释和结论现在属于同一条主线。
 - 涉及文件：
   - `paper/main.tex`
 
-### 2. Section V-D baseline opening 更专业
+### 2. Section V-D 基线开头表述修正
 
 - 修改状态：已全部修改
-- 修改说明：基线开头已使用更正式的 “representative operational baselines” 风格，符合 Stage 24 中对该项“已修好”的判断。
+- 修改说明：基线段落已经采用更正式的 “representative operational baselines” 风格，符合最新版建议对 baseline opening 的要求。
 - 涉及文件：
   - `paper/main.tex`
 
-### 3. Sections VI-B、VI-G、VI-H、VI-I 的解释段补强
+### 3. Sections VI-B / VI-G / VI-H / VI-I 的 deployment-oriented interpretation 补强
 
 - 修改状态：已全部修改
-- 修改说明：相关结果小节已经从“报表式描述”补成“解释 category gradient、OCR bottleneck、cross-model stability、propagation depth 的部署导向分析”。
+- 修改说明：这些结果小节已经不再只是表后复述，而是补成了偏部署视角、威胁模型视角和系统落地视角的解释。
 - 涉及文件：
   - `paper/main.tex`
 
 ### 4. Section VI-L 结尾措辞强化
 
 - 修改状态：已全部修改
-- 修改说明：当前结尾已采用 “practical deployment defense” 的更强措辞，不再是较弱的早期说法。
+- 修改说明：相关段落已经改成更强的 practical deployment defense / deployment-method contribution 风格，不再保留偏弱的收尾。
 - 涉及文件：
   - `paper/main.tex`
 
@@ -56,106 +56,102 @@
 
 - 修改状态：已全部修改
 - 修改说明：
-  - `Table II` 说明句已正确写成 `Tables III--XIII`；
-  - 说明句不再停留在 Section IV 尾部，而是和 `Table II` 一起出现在 Section V 语境中；
+  - `Table II` 的说明句现在正确使用 `Tables III--XIII`。
+  - 说明句不再留在 Section IV 尾部，而是与 `Table II` 浮动体绑定，作为 Section V 的概念引导。
   - 当前 PDF 中，说明句与 `Table II` 一起出现在第 5 页。
 - 涉及文件：
   - `paper/main.tex`
 
-### 6. Appendix / Table XIV 过渡句清理
-
-- 修改状态：已全部修改
-- 修改说明：`Table XIV` 前的过渡句已去重并整理顺畅，不再重复。
-- 涉及文件：
-  - `paper/appendix.tex`
-
-### 7. Appendix B 历史说明精简
-
-- 修改状态：已全部修改
-- 修改说明：Appendix B 目前是简短、正式且不干扰主文叙事的版本，符合 Stage 24 对该项“已修好”的判断。
-- 涉及文件：
-  - `paper/appendix.tex`
-
-### 8. 附录算法标题与 procedure 风格自然化
+### 6. 第 4 页最明显的 box-heavy 问题已做低风险缓解
 
 - 修改状态：已全部修改
 - 修改说明：
-  - Appendix A 中 Algorithm 1--3 的标题本身已保持自然期刊风格；
-  - 本轮通过调整 `algpseudocode` 的 `\textproc` 显示方式，使 `ExtractSpans`、`SanitizePrompt`、`RestoreEntities` 在 PDF 中不再呈现原先那种全大写小型大写体观感；
-  - 当前第 11 页 PDF 已显示为更自然的 procedure 名称风格。
+  - 已将 `Table I` 移到 `\section{Experimental Setup}` 之后，使其不再与第 4 页的 Fig. 1、公式区和后续小节挤在同一页。
+  - 已压缩 Section IV-G / IV-H 的开头与若干长句，并将几个很短的公式改成行内写法，减轻页尾拥挤。
+  - 当前 PDF 中，`Table I` 与 `Table II` 一起出现在第 5 页顶部区域，第 4 页页尾已明显减压。
 - 涉及文件：
   - `paper/main.tex`
 
-### 9. 附录当前版本复核
+### 7. Appendix A 算法名称显示风格自然化
 
 - 修改状态：已全部修改
-- 修改说明：已复核 Appendix A 伪代码、Table XIV、Appendix B 与主文一致性；当前附录内容与主文框架对齐，因此本轮不需要对 `appendix.tex` 再做实质性文字改写。
+- 修改说明：
+  - 已将算法中的 procedure 名称显示风格调整为更接近期刊稿 pseudocode 的形式。
+  - 当前 Appendix A 中显示为 `ExtractSpans`、`SanitizePrompt`、`RestoreEntities`、`RuleRecognizers`、`NamedEntityRecognizer`、`ContextualPrivacyJudge` 等自然命名，不再呈现原先那种过强的全大写过程名观感。
+- 涉及文件：
+  - `paper/main.tex`
+  - `paper/appendix.tex`
+
+### 8. Appendix / Table XIV 过渡句清理
+
+- 修改状态：已全部修改
+- 修改说明：`Table XIV` 前的过渡句已经压缩并整理为单句说明，不再重复、不再断裂，且与主文 `Table I`、`Tables III--XIII` 的定位关系清晰。
 - 涉及文件：
   - `paper/appendix.tex`
+
+### 9. Appendix B 历史说明精简
+
+- 修改状态：已全部修改
+- 修改说明：Appendix B 已保持为简短、正式、不会干扰主文叙事的 brief historical note；同时附录开头也已改为更准确地说明附录包括伪代码、附加示例和简短历史说明。
+- 涉及文件：
+  - `paper/appendix.tex`
+
+### 10. 附录当前版本与主文一致性复核
+
+- 修改状态：已全部修改
+- 修改说明：已复核 Appendix A 伪代码、Table XIV、Appendix B 与主文框架、术语和表格引用链的一致性；当前附录内容已经与主文对齐，不需要再做结构性改写。
+- 涉及文件：
+  - `paper/appendix.tex`
+  - `paper/main.tex`
 
 ---
 
 ## 二、未修改或部分修改的条目
 
-### 1. 第 4 页版面密度
+### 1. 第 4 页整体版面密度的最终 polish
 
 - 修改状态：部分修改
 - 已修改部分：
-  - 已将 `Table II` 的说明句移出第 4 页页尾；
-  - 已压缩 Section IV 后半段若干长句；
-  - 已把 Section IV-G 和 Section IV-H 的开头进一步改短；
-  - 已将几个很短的独立公式改成行内写法，减少垂直占用。
+  - 已将 `Table I` 移出第 4 页。
+  - 已将 `Table II` 的说明句移出第 4 页页尾并绑定到 Section V。
+  - 已压缩 Section IV 后半段若干句子，并将几个很短的显示公式改成行内写法。
 - 尚未修改部分：
-  - 第 4 页整体仍然略显拥挤；
-  - 还没有通过更大幅的版面重排来彻底拉开第 4 页和第 5 页的视觉间距。
-- 未全部修改原因：
-  - 当前建议把这一项定义为 final polish，不是结构性问题；
-  - 这轮优先采用低风险压缩，避免因进一步挪动浮动体而影响主文整体流转。
-- 涉及文件：
-  - `paper/main.tex`
-
-### 2. Table I 仍与 Fig.1 / 公式区域挤在同一页
-
-- 修改状态：未修改
-- 已修改部分：
-  - 已通过压缩 IV-G、IV-H 的开头来尝试减轻该页密度；
-  - 但 `Table I` 目前仍然停留在第 4 页。
-- 尚未修改部分：
-  - 没有把 `Table I` 主动后移到下一页页顶；
-  - 没有额外调整 Figure 1 或相关浮动体参数。
+  - 还没有再做更激进的版面再平衡，例如进一步重排 Fig. 1 周边布局、调整更多段落长度，或做更强的浮动体重排。
+  - 第 4 页虽然已经明显改善，但从最终投稿视觉观感看，仍然略显紧凑。
 - 未修改原因：
-  - Stage 24 明确把这项列为可选优化；
-  - 当前不建议在最后阶段为了一页的观感去大幅扰动浮动体布局。
+  - 最新建议将这部分定义为 final polish，而不是科学性或结构性问题。
+  - 本轮优先采用低风险调整，避免为了进一步挪页而扰动主文结构、浮动体顺序或表格编号。
 - 涉及文件：
   - `paper/main.tex`
 
-### 3. 最终 typography / equation / algorithm 人工通读
+### 2. 最终 typography / equation / algorithm 的逐页人工细读
 
 - 修改状态：部分修改
 - 已修改部分：
-  - 已检查 `\tilde{x}`、`\Pi`、PER、UPR 附近的关键排版；
-  - 已检查第 4 页和第 11 页；
-  - 已重新编译并确认当前没有未解析的引用或交叉引用警告。
+  - 已检查并优化 `\Pi`、PER、UPR 等关键符号附近的排版。
+  - 已检查第 4 页、第 5 页和附录算法页的核心视觉问题。
+  - 已确认 Appendix A 算法 procedure 名称风格比之前更自然。
+  - 已重新编译并确认没有未解析的引用或交叉引用警告。
 - 尚未修改部分：
-  - 还没有做一轮逐页、逐段、以投稿视觉效果为目标的人工细读；
-  - 还没有逐项处理所有 IEEE 模板造成的 `underfull/overfull` 提示。
-- 未全部修改原因：
-  - 这是最后一轮人工视觉 polish，更适合在最终提交前通读整份 PDF 时完成；
-  - 当前版本已经没有实质性引用错误，剩余主要是模板级排版提示。
+  - 还没有完成一轮从首页到附录末尾、以最终投稿视觉效果为目标的逐页人工精修。
+  - 还没有逐项消化所有 IEEE 模板层面的 `underfull/overfull` 提示。
+- 未修改原因：
+  - 这是最后一轮人工视觉 polish，更依赖整篇 PDF 的投稿前人工审阅，而不是继续做大范围文字修改。
+  - 当前版本已经没有实质性的引用错误，剩余主要是模板级排版提示。
 - 涉及文件：
   - `paper/main.tex`
   - `paper/appendix.tex`
 
-### 4. 参考文献进一步增强
+### 3. 参考文献进一步增强
 
 - 修改状态：未修改
 - 已修改部分：
-  - 无新增参考文献条目。
+  - 本轮未新增参考文献条目。
 - 尚未修改部分：
-  - 没有向 `references.bib` 新增 trustworthy deployment、document/OCR privacy、enterprise agent privacy / RAG risk 等方向的额外强引用。
+  - 没有向 `paper/references.bib` 新增 trustworthy / secure LLM deployment、document AI / OCR privacy、enterprise agent / RAG security risk 等方向的额外强引用。
 - 未修改原因：
-  - 最新建议明确指出该项只是 optional literature polish；
-  - 当前 bibliography 已被认为可以投稿，本轮优先处理低风险版面和风格项。
+  - 最新建议明确说明该项属于 optional bibliography polish，不是必改项。
+  - 当前参考文献覆盖面已被认为可以投稿，本轮优先处理版面、浮动体和附录风格的低风险修订。
 - 涉及文件：
   - `paper/references.bib`
 
@@ -164,35 +160,32 @@
 ## 三、本轮实际改动文件
 
 - `paper/main.tex`
+- `paper/appendix.tex`
 - `docs/revision_status.md`
-
-说明：
-
-- `paper/appendix.tex` 本轮已复核，但没有新增文字改动；
-- 附录算法风格的改善是通过 `paper/main.tex` 中对 `algpseudocode` 显示方式的调整实现的。
 
 ---
 
 ## 四、验证结果
 
-- 已在 `paper/` 目录运行 `bibtex main` 与多次 `pdflatex -interaction=nonstopmode main.tex`。
+- 已在 `paper/` 目录重新运行 `bibtex main` 与多次 `pdflatex -interaction=nonstopmode main.tex`。
 - 当前结果确认：
+  - `Table I` 已移到第 5 页顶部区域；
   - `Table II` 说明句与表格一起出现在第 5 页；
   - `Table II` 编号保持正确；
   - `Tables III--XIII` 引用链保持正确；
-  - 第 11 页中 `ExtractSpans`、`SanitizePrompt`、`RestoreEntities` 的显示风格已更自然；
-  - `Table XIV` 和 `APPENDIX B` 正常；
-  - 最终 `main.log` 中没有未解析的引用或交叉引用警告。
-- 当前仍存在少量 IEEE 模板常见的 `underfull/overfull` 排版提示，但不属于结构性问题。
+  - Appendix A 的 procedure 名称显示更自然；
+  - `Table XIV` 和 `APPENDIX B` 正常。
+- 当前编译结果中没有未解析的引用或交叉引用警告。
+- 当前仍存在少量 IEEE 模板常见的 `underfull/overfull` 排版提示，但不属于结构性错误。
 
 ---
 
 ## 五、当前结论
 
-按照 `docs/revision_suggestions.tex` 的当前 Stage 24 版本，这篇论文已经非常接近最终投稿状态。
+按照 `docs/revision_suggestions.tex` 当前版本，这篇论文已经处于接近最终投稿的状态。
 
 本轮之后：
 
 - 必改项已经完成；
-- 新增的附录算法风格优化已经完成；
-- 剩余未做内容主要是可选的版面美化和参考文献增强，而不是必须修的问题。
+- 低风险的版面与附录风格修订已经完成；
+- 剩余未做内容主要是可选参考文献增强和最后一轮人工视觉 polish，而不是必须修复的问题。

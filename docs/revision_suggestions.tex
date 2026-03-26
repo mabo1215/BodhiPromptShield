@@ -1,158 +1,165 @@
-\section*{Stage 24 Review of the Current Version for Cursor}
-\label{sec:stage24_review_current_version}
+\section*{Stage 26 Review of the Latest Version for Cursor}
+\label{sec:stage26_review_latest_version}
 
 \subsection*{Direct Answer}
-\textbf{这次已经很好了，基本可以视为提交前版本。} 从当前 PDF 来看，论文主线、方法、实验、附录、结论已经统一，之前多轮反复提到的大部分核心问题都已经解决。主文已经是一篇完整的 prompt privacy mediation 论文，而不是旧稿改写痕迹明显的混合稿。这个判断可以从以下位置直接看出来：
+\textbf{这次已经非常接近最终提交版本了。}  
+我看了你最新的 PDF，整体判断是：
+
 \begin{itemize}
-    \item 第 1 页：标题、摘要、引言都已经围绕同一个 prompt mediation 贡献展开；
-    \item 第 3--4 页：方法部分与 Fig.~1 工作流图完全匹配；
-    \item 第 5--9 页：实验协议、基线、主结果、扩展实验、限制和结论已形成完整闭环；
-    \item 第 11--12 页：附录只保留伪代码、例子和简短历史说明，不再干扰主文。 :contentReference[oaicite:0]{index=0}
+    \item 主文已经完整统一为一篇 \textbf{prompt privacy mediation} 论文；
+    \item 方法、实验、附录、结论都已经对齐；
+    \item 之前大部分关键修改意见已经落实；
+    \item 现在剩下的主要是 \textbf{最终排版与 submission polish}，而不是科学问题或结构问题。 :contentReference[oaicite:0]{index=0}
 \end{itemize}
 
-\subsection*{已经达到较好状态的部分}
-以下部分已经处于较好状态，不建议再做实质性改写：
-\begin{itemize}
-    \item 题目与摘要；
-    \item Section II 的问题定义与威胁模型；
-    \item Section III 的 related work 结构；
-    \item Section IV 的整体框架设计；
-    \item Fig.~1 工作流图；
-    \item Section V 的 CPPB 构建、protocol、baseline、metrics；
-    \item Section VI 的整体实验结构；
-    \item Section VII 与 Section VIII 的总体方向；
-    \item 附录中的伪代码与示例表。
-\end{itemize}
-
-\subsection*{这次确实已经修掉的关键问题}
-对照前面的修订建议，这一版已经明确修掉了以下问题：
+\subsection*{已经做得很好的部分}
+以下部分现在已经处于很好的状态，不建议再做实质性重写：
 
 \begin{enumerate}
-    \item \textbf{Table II 的范围句已经修正。}  
-    现在已经写成 ``Tables III--XIII''，并且放在 Table II 前面，逻辑一致。第 5 页可见。 :contentReference[oaicite:1]{index=1}
+    \item \textbf{标题、摘要、引言、问题定义已经完全统一。}  
+    第 1--2 页已经清楚地把论文定位成 LLM/VLM agent 的 prompt privacy mediation 问题，而不是旧式文本分类论文。 :contentReference[oaicite:1]{index=1}
 
-    \item \textbf{Section V-D baseline opening 已经明显更专业。}  
-    现在使用的是 ``representative operational baselines'' 风格，不再像早期草稿。第 5 页可见。 :contentReference[oaicite:2]{index=2}
+    \item \textbf{Related Work 结构已经成熟。}  
+    第 2--3 页的四段 related work 已经覆盖了 privacy-preserving NLP、LLM privacy、agent/tool-use、multimodal privacy，结构合理。 :contentReference[oaicite:2]{index=2}
 
-    \item \textbf{Sections VI-B, VI-G, VI-H, VI-I 的解释段已经补强。}  
-    现在这些小节不只是报表，而是明确解释了 category gradient、OCR bottleneck、cross-model stability、propagation depth 等关键点。第 6--9 页可见。 :contentReference[oaicite:3]{index=3}
+    \item \textbf{Section IV 的框架已经是完整可投稿形态。}  
+    System overview、entity extraction、sanitization、utility-constrained objective、policy selector、agent integration、runtime、multimodal extension 都齐全且逻辑顺。第 3--4 页可见。 :contentReference[oaicite:3]{index=3}
 
-    \item \textbf{Section VI-L 的结尾措辞已经变强。}  
-    现在已经使用 ``practical deployment defense'' 方向表述，不再是更弱的 ``first-line defense'' 说法。第 9 页可见。 :contentReference[oaicite:4]{index=4}
+    \item \textbf{实验部分已经足够支撑当前 paper type。}  
+    现在已经有 PER、category-wise analysis、restoration boundary、ablation、policy sensitivity、multimodal OCR、cross-model、propagation、latency、hard-case robustness，这对于一篇 systems/privacy-oriented paper 已经相当完整。第 6--9 页可见。 :contentReference[oaicite:4]{index=4}
+
+    \item \textbf{附录已经很干净。}  
+    Appendix A 只保留伪代码和额外示例，Appendix B 只是简短 historical note，不再拖累主文。第 11--12 页可见。 :contentReference[oaicite:5]{index=5}
+\end{enumerate}
+
+\subsection*{这次已经明确修好的问题}
+和前一轮相比，这次有几项已经明显修好了：
+
+\begin{enumerate}
+    \item \textbf{Table II 的说明句位置和范围都对了。}  
+    现在它已经放在 Table II 前，并且正确写成了 ``Tables III--XIII''。第 5 页可见。 :contentReference[oaicite:6]{index=6}
+
+    \item \textbf{Section V-D 的 baseline opening 已经修成最终稿口吻。}  
+    现在用的是 ``representative operational baselines''，已经符合之前建议。第 5 页可见。 :contentReference[oaicite:7]{index=7}
+
+    \item \textbf{Sections VI-B / VI-G / VI-H / VI-I 的解释已经到位。}  
+    这些小节现在已经不只是“表后一句总结”，而是有 deployment-oriented 解释。第 6--9 页可见。 :contentReference[oaicite:8]{index=8}
 
     \item \textbf{Appendix E 到 Table XIV 的过渡已经修顺。}  
-    现在过渡句已经合并，不再重复。第 11--12 页可见。 :contentReference[oaicite:5]{index=5}
+    现在只剩一句清晰说明，不再重复。第 11 页可见。 :contentReference[oaicite:9]{index=9}
 
-    \item \textbf{Appendix B 已经足够简洁、正式。}  
-    目前是一个很短的历史说明，不再把旧稿主线带回来。第 11 页可见。 :contentReference[oaicite:6]{index=6}
+    \item \textbf{Appendix B 已经是可接受的最终版。}  
+    现在足够短、正式、且不再显得像“解释旧稿来源”的累赘。第 11 页可见。 :contentReference[oaicite:10]{index=10}
 \end{enumerate}
 
-\subsection*{当前还剩下的少量问题}
-现在剩下的问题已经非常少，基本都属于 \textbf{final polish}，不是结构性问题。
+\subsection*{现在还剩下的少量问题}
+这次还剩下的问题已经不多，而且都属于 \textbf{final polish} 级别。
 
-\begin{enumerate}
-    \item \textbf{第 4 页仍然略微拥挤。}  
-    当前第 4 页同时承载了 Fig.~1、Section IV-D 的公式、Section IV-E/F/G/H 开头内容，因此视觉上仍略密。这不是内容错误，而是版面层面的轻微拥挤。第 4 页可见。 :contentReference[oaicite:7]{index=7}
-
-    \item \textbf{Table I 与 Fig.~1/公式区域叠在一起，页面视觉上偏“满”。}  
-    Table I 本身没问题，但在第 4 页与 Fig.~1、两个公式、多个小节标题同时出现，使得该页看上去比较满。这个问题属于版面观感问题，不是逻辑问题。 :contentReference[oaicite:8]{index=8}
-
-    \item \textbf{Appendix A 的 Algorithm 1--3 仍然是全大写 procedure 风格。}  
-    这不是错误，但视觉上仍然比正文显得“工程脚本化”一些。如果你目标是更偏 journal polish，可以稍微改成更自然的 algorithm 命名风格。第 11 页可见。 :contentReference[oaicite:9]{index=9}
-
-    \item \textbf{参考文献已经够用，但还可以再提升一点“气势”。}  
-    当前 references 已经可提交，但如果你希望更像强投稿稿件，可以再加 1--2 篇非常强的 trustworthy deployment 或 document/OCR privacy 相关综述/代表性工作。第 10--11 页可见。 :contentReference[oaicite:10]{index=10}
-\end{enumerate}
-
-\subsection*{我对当前版本的整体判断}
-如果按当前论文类型来判断，这篇稿子现在已经达到：
+\subsubsection*{1. 第 4 页仍然有一点挤}
+第 4 页现在同时放了：
 \begin{itemize}
-    \item \textbf{作为 practical systems/privacy paper：已经比较完整；}
-    \item \textbf{作为 application-oriented journal submission：已经可投；}
-    \item \textbf{作为 top-tier 级别：还不是最强形态，但已经不像未完成稿。}
+    \item Fig.~1；
+    \item PER / UPR 公式；
+    \item Section IV-E / F / G / H；
+    \item Table I。
 \end{itemize}
 
-也就是说，现在的问题已经不是“论文方向对不对”，而是“要不要再为了更强 venue 做最后一点美化和增强”。
+内容都对，但视觉上仍然偏满，尤其 Fig.~1 下方左列公式区域和右列 Table I 并排时，看起来很“满”。这是当前 PDF 最明显的版面问题。 :contentReference[oaicite:11]{index=11}
 
-\subsection*{建议的最后微调}
-如果你还想再做最后一轮，我建议只做非常小的修改，不要再大动。
+\subsubsection*{2. Table I 还在第 4 页和 Fig.~1/公式区抢空间}
+Table I 本身没有问题，但和 Fig.~1、两个公式、小节标题在同一页，造成页面比较 box-heavy。  
+这不是错误，只是观感层面的轻微拥挤。第 4 页可见。 :contentReference[oaicite:12]{index=12}
 
-\subsection*{Tiny Fix 1: 轻微减轻第 4 页密度}
-如果想让整篇更像最终稿，可以做一个最小的版面优化：
+\subsubsection*{3. Appendix 算法仍然偏“工程脚本风格”}
+Appendix A 的算法块已经能正常读，但像
+\begin{verbatim}
+RULERECOGNIZERS
+NAMEDENTITYRECOGNIZER
+CONTEXTUALPRIVACYJUDGE
+\end{verbatim}
+这种全大写过程名，视觉上仍然比较像内部实现伪代码，而不是最终投稿风格的 pseudocode。  
+这不是错误，但如果你还想更像 journal polish，可以微调。第 11 页可见。 :contentReference[oaicite:13]{index=13}
 
+\subsubsection*{4. 参考文献已经够用，但还可以再加一点“气势”}
+现在 reference list 已经可提交，覆盖面也够了。  
+但如果你想让 paper 看起来更像强投稿稿件，可以再加 1--2 篇很强的：
+\begin{itemize}
+    \item trustworthy / secure LLM deployment survey；
+    \item document AI / OCR privacy / visual redaction；
+    \item enterprise / RAG / agent security risk 总结。
+\end{itemize}
+
+不过这已经是 optional，不是必须。第 10--11 页可见。 :contentReference[oaicite:14]{index=14}
+
+\subsection*{我建议的最后微调}
+现在不建议再大动，只建议做非常小的 finishing edits。
+
+\subsection*{Tiny Fix 1: 稍微减轻第 4 页密度}
+如果你还想让版面更舒服，我建议只做最小改动，不要动结构。
+
+可以考虑：
 \begin{itemize}
     \item 保持 Fig.~1 不动；
-    \item 不动 Table I 内容；
-    \item 只把 Section IV-G 的第一句再压短一点，或者把 Section IV-H 的第一句压短一点；
-    \item 不建议再改结构，不建议移动 Figure 1。
+    \item 保持公式不动；
+    \item 只把 Table I 挪到下一页顶部，或者让它延后一点；
+    \item 或者只压短 Section IV-H 第一段的前两句。
 \end{itemize}
 
-可替换为：
-
-\begin{verbatim}
-\subsection{Runtime Considerations}
-Runtime is dominated by span extraction and, when enabled, OCR or contextual privacy judgment.
-\end{verbatim}
-
-以及：
+推荐最小替换：
 
 \begin{verbatim}
 \subsection{Extension to VLM-Based Multimodal Inputs}
-For multimodal settings, user input may contain both text and images.
+For multimodal settings, user input may contain both text and images. Privacy-sensitive content may arise from screenshots, scanned forms, receipts, identity documents, medical reports, or scene text. OCR or VLM-assisted extraction is then used to map visual entities into the same mediation pipeline.
 \end{verbatim}
 
-\subsection*{Tiny Fix 2: 可选地把 Table I 移到下一页顶部}
-如果你特别在意第 4 页观感，可以把 Table I 稍微往后挪，让第 4 页只保留 Fig.~1 和公式区。但这完全是可选项。
-
-\textbf{不建议在现在这个阶段为了这件事扰动浮动体太多。}
-
-\subsection*{Tiny Fix 3: 附录算法标题更自然}
-如果你想让 Appendix A 看起来更像最终稿，可以把算法名从全大写 procedure 风格改得更自然一点。
+\subsection*{Tiny Fix 2: Appendix A 的算法风格更自然}
+如果你想更像最终投稿稿，可以把算法里的过程名从全大写改成驼峰风格。
 
 例如：
 
 \begin{verbatim}
-Algorithm 1 Privacy-Sensitive Span Extraction
-Algorithm 2 Policy-Aware Prompt Sanitization
-Algorithm 3 Authorized Restoration of Protected Entities
+RuleRecognizers
+NamedEntityRecognizer
+ContextualPrivacyJudge
+ExtractVisualTextAndEntities
 \end{verbatim}
 
-并把 procedure 名从：
-\begin{verbatim}
-EXTRACTSPANS
-SANITIZEPROMPT
-RESTOREENTITIES
-\end{verbatim}
+以及：
 
-改成更自然的：
 \begin{verbatim}
 ExtractSpans
 SanitizePrompt
 RestoreEntities
 \end{verbatim}
 
-这不是必须，只是风格优化。
+这样附录会显得更像 academic pseudocode，而不是实现草案。
 
-\subsection*{Tiny Fix 4: 可选增加 1--2 篇强引用}
-如果你还想让 paper 的 literature footprint 更强，只建议加 \textbf{1--2 篇很强的}，不要再大规模堆 citation。
+\subsection*{Tiny Fix 3: 可选增加 1--2 篇强参考文献}
+如果你还要增强 bibliography，只建议加非常少量但质量高的引用。
 
-优先方向：
+建议方向：
 \begin{itemize}
-    \item trustworthy / secure LLM deployment survey；
-    \item document AI / OCR privacy / visual redaction；
-    \item enterprise agent privacy or RAG risk.
+    \item trustworthy LLM deployment / secure deployment survey；
+    \item OCR / document privacy / visual redaction；
+    \item enterprise or RAG security / agent risk governance.
 \end{itemize}
 
-\subsection*{最终结论}
-现在这篇论文的状态可以概括为：
+\subsection*{当前整体评价}
+我对当前版本的评价是：
 
 \begin{itemize}
-    \item \textbf{主线已经稳定；}
-    \item \textbf{实验已经足够支撑当前 paper type；}
-    \item \textbf{附录已经不再拖后腿；}
-    \item \textbf{剩下的问题主要是版面与最终美化。}
+    \item \textbf{作为一篇 practical systems/privacy paper：已经相当成熟；}
+    \item \textbf{作为 application-oriented journal submission：已经可以投；}
+    \item \textbf{作为 very top-tier：还不是最强形态，但已经不再像 unfinished draft。}
 \end{itemize}
 
-\subsection*{Bottom-Line Judgment}
+\subsection*{Bottom-Line Verdict}
 \textbf{这次已经很好。}  
-如果你现在提交到一个 practical systems/privacy 或 application-oriented venue，我认为稿子已经具备较成熟的完成度。再继续修改，也应该只做最后微调，而不是再改故事线。
+如果你现在准备投稿，我认为论文已经具备较成熟的完成度。再继续修改，也只建议做：
+\begin{enumerate}
+    \item 第 4 页版面减压；
+    \item Appendix 算法名称风格优化；
+    \item 可选地补 1--2 篇强参考文献。
+\end{enumerate}
+
+除此之外，我不建议再动论文的主结构、方法叙事和实验设计。
