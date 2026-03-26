@@ -1,132 +1,158 @@
-\section*{Stage 23 Review of the Current Version for Cursor}
-\label{sec:stage23_review_current_version}
+\section*{Stage 24 Review of the Current Version for Cursor}
+\label{sec:stage24_review_current_version}
 
 \subsection*{Direct Answer}
-\textbf{This version is essentially submission-ready for the current paper type.} The manuscript now looks coherent, technically aligned, and clean from the title through the appendix. The core prompt-mediation story is stable, the workflow figure is appropriate, the evaluation is broad enough for a practical systems/privacy paper, and the appendix is concise and supportive rather than distracting. This is visible across the current PDF, especially on pages 1--10 for the main paper and pages 11--12 for the appendix and examples. :contentReference[oaicite:0]{index=0}
-
-\subsection*{What Is Clearly in Good Condition}
-The following parts are now in good shape and do not need another substantive rewrite:
+\textbf{这次已经很好了，基本可以视为提交前版本。} 从当前 PDF 来看，论文主线、方法、实验、附录、结论已经统一，之前多轮反复提到的大部分核心问题都已经解决。主文已经是一篇完整的 prompt privacy mediation 论文，而不是旧稿改写痕迹明显的混合稿。这个判断可以从以下位置直接看出来：
 \begin{itemize}
-    \item title and abstract on page 1;
-    \item Section II problem definition and threat model on page 2;
-    \item Section III related work on pages 2--3;
-    \item Section IV framework design and notation on pages 3--4;
-    \item Figure~1 workflow diagram on page 4;
-    \item Section V CPPB construction and protocol on pages 4--6;
-    \item Section VI results structure on pages 6--9;
-    \item Section VII limitations and Section VIII conclusion on pages 9--10;
-    \item Appendix A pseudocode and Table XIV on pages 11--12. :contentReference[oaicite:1]{index=1}
+    \item 第 1 页：标题、摘要、引言都已经围绕同一个 prompt mediation 贡献展开；
+    \item 第 3--4 页：方法部分与 Fig.~1 工作流图完全匹配；
+    \item 第 5--9 页：实验协议、基线、主结果、扩展实验、限制和结论已形成完整闭环；
+    \item 第 11--12 页：附录只保留伪代码、例子和简短历史说明，不再干扰主文。 :contentReference[oaicite:0]{index=0}
 \end{itemize}
 
-\subsection*{What Has Been Successfully Fixed}
-Relative to the earlier rounds, the following issues are now clearly resolved:
-
-\begin{enumerate}
-    \item \textbf{The paper is fully unified around prompt privacy mediation.}  
-    There is no visible legacy classifier storyline in the main body anymore. The paper now reads as one coherent LLM/VLM prompt privacy manuscript. :contentReference[oaicite:2]{index=2}
-
-    \item \textbf{The baseline paragraph is now corrected.}  
-    Section V-D now uses the stronger ``representative operational baselines'' phrasing and reads much more professionally than before. This is visible on page 5. :contentReference[oaicite:3]{index=3}
-
-    \item \textbf{The table-interpretation subsections are improved.}  
-    Sections VI-B, VI-G, VI-H, and VI-I now each include the stronger deployment-oriented interpretation sentences that were previously missing. These appear on pages 6--9. :contentReference[oaicite:4]{index=4}
-
-    \item \textbf{The softer Section VI-L ending has been replaced.}  
-    The manuscript now uses ``practical deployment defense'' rather than the earlier weaker phrasing. This appears on page 9. :contentReference[oaicite:5]{index=5}
-
-    \item \textbf{The Table II scope sentence is fixed.}  
-    It now correctly refers to ``Tables III--XIII,'' which resolves the earlier internal consistency problem. This appears on page 5. :contentReference[oaicite:6]{index=6}
-
-    \item \textbf{The Appendix E / Table XIV transition is now clean.}  
-    The duplicated wording is gone, and the sentence before Table XIV is now smooth and non-redundant. This appears on pages 11--12. :contentReference[oaicite:7]{index=7}
-
-    \item \textbf{Appendix B is now clean and acceptable.}  
-    The brief historical note is short, formal, and no longer disruptive. This appears on page 12. :contentReference[oaicite:8]{index=8}
-\end{enumerate}
-
-\subsection*{Residual Issues}
-Only a few \textbf{very small} polish issues remain:
-
-\begin{enumerate}
-    \item \textbf{Page 4 is still visually dense.}  
-    The content is correct, but Section IV-D, Figure~1, Sections IV-E--IV-H, and the beginning of Section V still compete for space. This is now a layout issue, not a scientific or structural issue. It is visible on page 4. :contentReference[oaicite:9]{index=9}
-
-    \item \textbf{Table I and Table II are conceptually fine, but slightly box-heavy together.}  
-    On page 5, the two conceptual tables appear back-to-back before the empirical tables begin. This is acceptable, but if the venue is space-sensitive, one of them could be moved to the appendix. :contentReference[oaicite:10]{index=10}
-
-    \item \textbf{A few equations and symbols could still benefit from a last typography check.}  
-    The notation is already consistent, but before submission you should do one last compile-and-read pass for spacing around inline math and displayed equations on pages 2--4, and for algorithm rendering on page 11. :contentReference[oaicite:11]{index=11}
-
-    \item \textbf{The bibliography is acceptable, but not maximal.}  
-    The references on pages 10--11 are now good enough, but one or two additional strong citations on trustworthy deployment or document/OCR privacy would still be reasonable if you want a slightly stronger literature footprint. :contentReference[oaicite:12]{index=12}
-\end{enumerate}
-
-\subsection*{Recommended Final Tiny Fixes}
-If you want the manuscript to look even more finished, only the following micro-edits are worth considering.
-
-\subsection*{Tiny Fix 1: Lighten Page-4 Density}
-If space allows, make one small layout edit:
+\subsection*{已经达到较好状态的部分}
+以下部分已经处于较好状态，不建议再做实质性改写：
 \begin{itemize}
-    \item shorten one sentence near the end of Section IV-D; or
-    \item shorten the first sentence of Section IV-H slightly; or
-    \item move one short sentence from page 4 to page 5 if the template permits.
+    \item 题目与摘要；
+    \item Section II 的问题定义与威胁模型；
+    \item Section III 的 related work 结构；
+    \item Section IV 的整体框架设计；
+    \item Fig.~1 工作流图；
+    \item Section V 的 CPPB 构建、protocol、baseline、metrics；
+    \item Section VI 的整体实验结构；
+    \item Section VII 与 Section VIII 的总体方向；
+    \item 附录中的伪代码与示例表。
 \end{itemize}
 
-Suggested replacement for the opening of Section IV-H:
+\subsection*{这次确实已经修掉的关键问题}
+对照前面的修订建议，这一版已经明确修掉了以下问题：
+
+\begin{enumerate}
+    \item \textbf{Table II 的范围句已经修正。}  
+    现在已经写成 ``Tables III--XIII''，并且放在 Table II 前面，逻辑一致。第 5 页可见。 :contentReference[oaicite:1]{index=1}
+
+    \item \textbf{Section V-D baseline opening 已经明显更专业。}  
+    现在使用的是 ``representative operational baselines'' 风格，不再像早期草稿。第 5 页可见。 :contentReference[oaicite:2]{index=2}
+
+    \item \textbf{Sections VI-B, VI-G, VI-H, VI-I 的解释段已经补强。}  
+    现在这些小节不只是报表，而是明确解释了 category gradient、OCR bottleneck、cross-model stability、propagation depth 等关键点。第 6--9 页可见。 :contentReference[oaicite:3]{index=3}
+
+    \item \textbf{Section VI-L 的结尾措辞已经变强。}  
+    现在已经使用 ``practical deployment defense'' 方向表述，不再是更弱的 ``first-line defense'' 说法。第 9 页可见。 :contentReference[oaicite:4]{index=4}
+
+    \item \textbf{Appendix E 到 Table XIV 的过渡已经修顺。}  
+    现在过渡句已经合并，不再重复。第 11--12 页可见。 :contentReference[oaicite:5]{index=5}
+
+    \item \textbf{Appendix B 已经足够简洁、正式。}  
+    目前是一个很短的历史说明，不再把旧稿主线带回来。第 11 页可见。 :contentReference[oaicite:6]{index=6}
+\end{enumerate}
+
+\subsection*{当前还剩下的少量问题}
+现在剩下的问题已经非常少，基本都属于 \textbf{final polish}，不是结构性问题。
+
+\begin{enumerate}
+    \item \textbf{第 4 页仍然略微拥挤。}  
+    当前第 4 页同时承载了 Fig.~1、Section IV-D 的公式、Section IV-E/F/G/H 开头内容，因此视觉上仍略密。这不是内容错误，而是版面层面的轻微拥挤。第 4 页可见。 :contentReference[oaicite:7]{index=7}
+
+    \item \textbf{Table I 与 Fig.~1/公式区域叠在一起，页面视觉上偏“满”。}  
+    Table I 本身没问题，但在第 4 页与 Fig.~1、两个公式、多个小节标题同时出现，使得该页看上去比较满。这个问题属于版面观感问题，不是逻辑问题。 :contentReference[oaicite:8]{index=8}
+
+    \item \textbf{Appendix A 的 Algorithm 1--3 仍然是全大写 procedure 风格。}  
+    这不是错误，但视觉上仍然比正文显得“工程脚本化”一些。如果你目标是更偏 journal polish，可以稍微改成更自然的 algorithm 命名风格。第 11 页可见。 :contentReference[oaicite:9]{index=9}
+
+    \item \textbf{参考文献已经够用，但还可以再提升一点“气势”。}  
+    当前 references 已经可提交，但如果你希望更像强投稿稿件，可以再加 1--2 篇非常强的 trustworthy deployment 或 document/OCR privacy 相关综述/代表性工作。第 10--11 页可见。 :contentReference[oaicite:10]{index=10}
+\end{enumerate}
+
+\subsection*{我对当前版本的整体判断}
+如果按当前论文类型来判断，这篇稿子现在已经达到：
+\begin{itemize}
+    \item \textbf{作为 practical systems/privacy paper：已经比较完整；}
+    \item \textbf{作为 application-oriented journal submission：已经可投；}
+    \item \textbf{作为 top-tier 级别：还不是最强形态，但已经不像未完成稿。}
+\end{itemize}
+
+也就是说，现在的问题已经不是“论文方向对不对”，而是“要不要再为了更强 venue 做最后一点美化和增强”。
+
+\subsection*{建议的最后微调}
+如果你还想再做最后一轮，我建议只做非常小的修改，不要再大动。
+
+\subsection*{Tiny Fix 1: 轻微减轻第 4 页密度}
+如果想让整篇更像最终稿，可以做一个最小的版面优化：
+
+\begin{itemize}
+    \item 保持 Fig.~1 不动；
+    \item 不动 Table I 内容；
+    \item 只把 Section IV-G 的第一句再压短一点，或者把 Section IV-H 的第一句压短一点；
+    \item 不建议再改结构，不建议移动 Figure 1。
+\end{itemize}
+
+可替换为：
+
 \begin{verbatim}
-For multimodal settings, the user input may contain both text and images.
+\subsection{Runtime Considerations}
+Runtime is dominated by span extraction and, when enabled, OCR or contextual privacy judgment.
 \end{verbatim}
 
-\subsection*{Tiny Fix 2: Optional Table Placement Adjustment}
-If the venue is page-sensitive or you want slightly cleaner flow, consider:
+以及：
+
+\begin{verbatim}
+\subsection{Extension to VLM-Based Multimodal Inputs}
+For multimodal settings, user input may contain both text and images.
+\end{verbatim}
+
+\subsection*{Tiny Fix 2: 可选地把 Table I 移到下一页顶部}
+如果你特别在意第 4 页观感，可以把 Table I 稍微往后挪，让第 4 页只保留 Fig.~1 和公式区。但这完全是可选项。
+
+\textbf{不建议在现在这个阶段为了这件事扰动浮动体太多。}
+
+\subsection*{Tiny Fix 3: 附录算法标题更自然}
+如果你想让 Appendix A 看起来更像最终稿，可以把算法名从全大写 procedure 风格改得更自然一点。
+
+例如：
+
+\begin{verbatim}
+Algorithm 1 Privacy-Sensitive Span Extraction
+Algorithm 2 Policy-Aware Prompt Sanitization
+Algorithm 3 Authorized Restoration of Protected Entities
+\end{verbatim}
+
+并把 procedure 名从：
+\begin{verbatim}
+EXTRACTSPANS
+SANITIZEPROMPT
+RESTOREENTITIES
+\end{verbatim}
+
+改成更自然的：
+\begin{verbatim}
+ExtractSpans
+SanitizePrompt
+RestoreEntities
+\end{verbatim}
+
+这不是必须，只是风格优化。
+
+\subsection*{Tiny Fix 4: 可选增加 1--2 篇强引用}
+如果你还想让 paper 的 literature footprint 更强，只建议加 \textbf{1--2 篇很强的}，不要再大规模堆 citation。
+
+优先方向：
 \begin{itemize}
-    \item keeping Table I in the main paper;
-    \item moving Table II to the appendix as a conceptual operating-regime summary.
+    \item trustworthy / secure LLM deployment survey；
+    \item document AI / OCR privacy / visual redaction；
+    \item enterprise agent privacy or RAG risk.
 \end{itemize}
 
-This is optional only. The current placement is acceptable.
+\subsection*{最终结论}
+现在这篇论文的状态可以概括为：
 
-\subsection*{Tiny Fix 3: Final Typography Pass}
-Please do one final manual pass for:
 \begin{itemize}
-    \item equation spacing on pages 2 and 4;
-    \item line breaks around symbols such as $\tilde{x}$, $\Pi$, and PER/UPR;
-    \item algorithm formatting consistency in Appendix A;
-    \item any awkward hyphenation introduced by the IEEE template.
+    \item \textbf{主线已经稳定；}
+    \item \textbf{实验已经足够支撑当前 paper type；}
+    \item \textbf{附录已经不再拖后腿；}
+    \item \textbf{剩下的问题主要是版面与最终美化。}
 \end{itemize}
 
-\subsection*{Tiny Fix 4: Optional Bibliography Upgrade}
-Only if you want one last literature polish, add one or two strong references in:
-\begin{itemize}
-    \item trustworthy or secure LLM deployment surveys;
-    \item document AI / OCR privacy or visual document redaction.
-\end{itemize}
-
-Do not add weak references just to increase count.
-
-\subsection*{Final Verdict}
-\textbf{Yes, this version is good.} More specifically:
-\begin{itemize}
-    \item the important earlier revision requests have been implemented;
-    \item there are no meaningful structural or scientific problems left;
-    \item the remaining issues are almost entirely cosmetic or layout-related.
-\end{itemize}
-
-\subsection*{Bottom-Line Summary}
-The manuscript is now:
-\begin{itemize}
-    \item coherent;
-    \item experimentally broad enough for its intended venue type;
-    \item visually clean overall;
-    \item very close to final submission form. :contentReference[oaicite:13]{index=13}
-\end{itemize}
-
-The only remaining recommended actions are:
-\begin{enumerate}
-    \item optionally lighten page 4 slightly;
-    \item optionally move Table II if you want cleaner main-body flow;
-    \item do one final typography pass;
-    \item optionally add one or two very strong references.
-\end{enumerate}
-
-So overall: \textbf{this version is essentially finished.}
+\subsection*{Bottom-Line Judgment}
+\textbf{这次已经很好。}  
+如果你现在提交到一个 practical systems/privacy 或 application-oriented venue，我认为稿子已经具备较成熟的完成度。再继续修改，也应该只做最后微调，而不是再改故事线。
