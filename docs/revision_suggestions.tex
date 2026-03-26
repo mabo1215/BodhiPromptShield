@@ -1,68 +1,77 @@
-\section*{Stage 17 Review of the Current Version for Cursor}
-\label{sec:stage17_review_current_version}
+\section*{Stage 19 Review of the Current Version for Cursor}
+\label{sec:stage19_review_current_version}
 
 \subsection*{Overall Assessment}
-This version is \textbf{stronger and cleaner} than the previous round. The manuscript now reads as a coherent deployment-oriented prompt privacy paper with a stable story from title through appendix. In particular:
+This version is \textbf{the most complete and mature version so far}. The manuscript is now internally consistent, technically coherent, and close to submission-ready for a practical systems/privacy venue. The central strengths are now clear:
 \begin{itemize}
-    \item the title, abstract, threat model, framework, evaluation, and conclusion are aligned;
-    \item the workflow diagram on page 4 is now the correct and dominant architectural figure;
-    \item the empirical section covers the right dimensions for this paper type: exposure reduction, utility preservation, restoration-boundary behavior, multimodal OCR settings, cross-model stability, propagation, runtime, and hard-case robustness;
-    \item the appendix is concise and now supports the main framework rather than distracting from it.
+    \item the title, abstract, problem definition, threat model, framework, evaluation protocol, results, limitations, and conclusion all support the same prompt-mediation contribution;
+    \item the workflow figure on page 4 is effective and remains the correct main architectural anchor;
+    \item the empirical section is broad enough for the current paper type, covering privacy exposure, category-wise detection, utility preservation, restoration-boundary behavior, multimodal OCR evaluation, cross-model stability, stage-wise propagation, runtime, and hard-case robustness;
+    \item the appendix is short, implementation-oriented, and no longer pulls the paper back toward the legacy classifier story.
 \end{itemize}
 
-These strengths are clearly visible across the current PDF, especially in the unified logic on pages 1--9, the workflow figure on page 4, the expanded evaluation tables on pages 6--9, and the streamlined appendix on pages 11--12. :contentReference[oaicite:0]{index=0}
+These strengths are visible across the full PDF, especially in the unified problem-to-results flow on pages 1--9, the workflow diagram on page 4, the main tables on pages 6--9, and the concise appendix on pages 11--12. :contentReference[oaicite:0]{index=0}
 
 \subsection*{Direct Judgment}
-The paper is now \textbf{close to final} for a practical systems/privacy submission. There are no major scientific gaps left in the current framing. The remaining issues are mostly:
+At this point, the paper has \textbf{no major structural or conceptual problem}. What remains is mainly:
 \begin{enumerate}
     \item final wording polish;
-    \item slightly stronger interpretation around a few tables;
-    \item one baseline paragraph that still sounds a little less polished than the rest;
-    \item small appendix/end-matter smoothing;
-    \item a modest bibliography upgrade if you want a stronger literature footprint.
+    \item several short interpretation upgrades;
+    \item one baseline subsection that still sounds slightly less polished than the rest;
+    \item appendix/end-matter smoothing;
+    \item optional bibliography strengthening.
 \end{enumerate}
 
-\subsection*{What Has Improved Since the Last Round}
-Relative to the previous version, the following are now better:
+So the answer is: \textbf{yes, it is now good}, and the remaining issues are \textbf{final-polish issues only}, not core-paper issues.
+
+\subsection*{What Is Already Strong Enough}
+The following parts are now strong enough and should not be materially rewritten again:
 \begin{itemize}
-    \item the conclusion is more compact and more aligned with the controlled CPPB framing;
-    \item Section VII is stronger and more honest about the controlled nature of the evidence;
-    \item the appendix is cleaner and no longer visually drags legacy material into the paper;
-    \item the results section is broader and more persuasive as a deployment-oriented evaluation.
+    \item title and abstract;
+    \item Section II problem definition and threat model;
+    \item Section III related-work structure and literature positioning;
+    \item Section IV overall framework design and notation;
+    \item Figure~1 workflow diagram;
+    \item Section V CPPB construction and paired-comparison protocol;
+    \item the overall results design in Section VI;
+    \item Appendix A pseudocode structure.
 \end{itemize}
 
 \subsection*{Main Remaining Issues}
 Only a few issues still stand out:
 
 \begin{enumerate}
-    \item \textbf{Section V-D Baselines still reads slightly less polished than the rest of the paper.}  
-    The current opening on page 5,
+    \item \textbf{Section V-D Baselines still reads slightly weaker than the rest of the paper.}  
+    On page 5, the current opening
     \begin{quote}
-    ``We compare the proposed framework with representative baseline families spanning increasingly strong privacy intervention...''
+    ``We compare the proposed framework with representative baseline families spanning increasingly strong privacy intervention \ldots''
     \end{quote}
-    is serviceable, but still sounds slightly more like an evolving draft than a final journal paragraph. :contentReference[oaicite:1]{index=1}
+    is acceptable, but still sounds slightly more like an intermediate draft sentence than a finished journal-style paragraph. :contentReference[oaicite:1]{index=1}
 
     \item \textbf{Section VI-B still under-interprets Table IV slightly.}  
-    The category-wise table is strong, but the text can still link the observed gradient more explicitly to the architecture of the extraction stage. This appears on page 6. :contentReference[oaicite:2]{index=2}
+    Table IV is strong, but the text after it should connect the observed category-wise gradient more explicitly to the structure of the extraction stage. This appears on page 6. :contentReference[oaicite:2]{index=2}
 
-    \item \textbf{Sections VI-G, VI-H, and VI-I are good but still a bit concise relative to Tables IX--XI.}  
-    These are among the strongest additions in the whole paper, and each deserves one more deployment-oriented interpretation sentence. These appear on pages 8--9. :contentReference[oaicite:3]{index=3}
+    \item \textbf{Sections VI-G, VI-H, and VI-I are strong but still slightly too concise relative to Tables IX--XI.}  
+    These three tables are among the strongest additions in the paper, and each deserves one more deployment-oriented interpretation sentence. These appear on pages 8--9. :contentReference[oaicite:3]{index=3}
 
-    \item \textbf{Section VI-L still ends a little softer than the rest of the manuscript.}  
+    \item \textbf{Section VI-L still ends a bit softer than the rest of the manuscript.}  
     The phrase
     \begin{quote}
     ``interface-layer mediation remains a practical first-line defense''
     \end{quote}
-    is reasonable, but still slightly weaker than the tone of the surrounding sections. This appears on page 9. :contentReference[oaicite:4]{index=4}
+    is reasonable, but still slightly weaker and more report-like than the tone used elsewhere. This appears on page 9. :contentReference[oaicite:4]{index=4}
+
+    \item \textbf{The conclusion is good, but still can be sharpened slightly.}  
+    It is coherent and compact, but it can sound a bit more final-paper-like and a bit less conservative in wording. This appears on page 9. :contentReference[oaicite:5]{index=5}
 
     \item \textbf{Appendix B is acceptable but still abrupt.}  
-    The historical note is short and appropriate, but it could sound slightly smoother and more formal. This appears on page 11. :contentReference[oaicite:5]{index=5}
+    The historical note is short and appropriate, but the heading and prose can be made a bit more formal and better integrated with the appendix flow. This appears on page 11. :contentReference[oaicite:6]{index=6}
 
-    \item \textbf{Table XIV still appears a little detached.}  
-    It is useful, but it would read more smoothly if it were introduced by one explicit sentence right before the table. This appears on page 12. :contentReference[oaicite:6]{index=6}
+    \item \textbf{Table XIV still appears detached from the preceding appendix prose.}  
+    The table itself is useful, but it should be introduced by one explicit sentence immediately before it. This appears on page 12. :contentReference[oaicite:7]{index=7}
 
-    \item \textbf{The bibliography is good, but one or two more high-value references could still help.}  
-    The reference list is already much improved, but because the paper spans prompt injection, LLM privacy, retrieval/tool propagation, document OCR privacy, and governance together, a few additional carefully chosen references would strengthen the literature footprint. This is visible on pages 10--11. :contentReference[oaicite:7]{index=7}
+    \item \textbf{The bibliography is solid, but one or two more high-value references could still help.}  
+    The references on pages 10--11 are already much improved, but since the paper spans prompt injection, LLM privacy, RAG/tool propagation, OCR privacy, and governance together, one or two carefully chosen additions would still strengthen the literature footprint. :contentReference[oaicite:8]{index=8}
 \end{enumerate}
 
 \subsection*{Mandatory Revision 1: Rewrite the Opening of Section V-D}
@@ -109,7 +118,20 @@ Please replace the final paragraph of Section VI-L with:
 The proposed framework is particularly relevant for deployment scenarios in which prompts may contain operationally useful but privacy-sensitive information, such as healthcare assistance, legal drafting, enterprise copilots, multimodal document understanding, and tool-using agents with persistent logging or memory. In such settings, interface-layer privacy mediation provides a practical deployment defense even when the downstream model provider is only partially trusted.
 \end{verbatim}
 
-\subsection*{Mandatory Revision 7: Improve Appendix B Wording}
+\subsection*{Mandatory Revision 7: Tighten the Conclusion}
+Please replace Section VIII with the following slightly sharper version:
+
+\begin{verbatim}
+\section{Conclusion}
+
+This paper reframes privacy-preserving text processing as a real-time prompt mediation problem for LLM/VLM-based agents. The proposed framework protects privacy at the interaction interface before downstream inference by combining privacy-sensitive span extraction, semantic-preserving prompt sanitization, policy-aware routing, and controlled restoration.
+
+Across the controlled CPPB protocol, the results indicate that prompt-level mediation materially reduces direct exposure of sensitive content while preserving downstream utility better than naive redaction and generic de-identification baselines. The framework is model-agnostic, middleware-compatible, and extensible to multimodal and tool-using agent settings.
+
+The main contribution is therefore a deployable mediation architecture with explicit and measurable privacy--utility trade-offs under stated threat assumptions. Future work will focus on broader benchmark coverage, stronger multimodal grounding for dense and noisy document inputs, adaptive policy learning for context-dependent sensitivity, and deeper evaluation under adversarial testing and production-scale agent execution.
+\end{verbatim}
+
+\subsection*{Mandatory Revision 8: Improve Appendix B Wording}
 Please replace Appendix B with the following slightly smoother wording:
 
 \begin{verbatim}
@@ -118,14 +140,14 @@ Please replace Appendix B with the following slightly smoother wording:
 This manuscript evolved from earlier privacy-preserving text-processing prototypes explored by the authors. In the present submission-oriented revision, classifier-era materials and representation-level discussions were intentionally removed from the empirical narrative so that the paper remains focused on prompt-time privacy mediation for LLM/VLM-based agents. Legacy materials remain archived for provenance but do not form part of the evidence presented here.
 \end{verbatim}
 
-\subsection*{Mandatory Revision 8: Improve the Transition to Table XIV}
+\subsection*{Mandatory Revision 9: Improve the Transition to Table XIV}
 Please insert the following sentence immediately before Table XIV:
 
 \begin{verbatim}
 Table XIV provides additional illustrative prompt fragments across entity categories and sanitization modes, complementing the conceptual example in Table I and the controlled benchmark results in Tables III--XIII.
 \end{verbatim}
 
-\subsection*{Mandatory Revision 9: Tighten the Acknowledgment}
+\subsection*{Mandatory Revision 10: Tighten the Acknowledgment}
 Please replace the acknowledgment with:
 
 \begin{verbatim}
@@ -133,7 +155,7 @@ Please replace the acknowledgment with:
 The authors thank colleagues for constructive feedback on earlier versions of this manuscript.
 \end{verbatim}
 
-\subsection*{Mandatory Revision 10: Global Tone Cleanup}
+\subsection*{Mandatory Revision 11: Global Tone Cleanup}
 Please do one final global search for the following weak phrases:
 \begin{itemize}
     \item ``with representative baseline families spanning increasingly strong privacy intervention'';
@@ -149,11 +171,11 @@ Where appropriate, replace them with more final-paper-like alternatives such as:
     \item ``The controlled results indicate'';
     \item ``provides a practical deployment defense'';
     \item ``supports'';
-    \item ``serves as'' or simply remove the auxiliary phrase.
+    \item remove the auxiliary phrase entirely if unnecessary.
 \end{itemize}
 
-\subsection*{Mandatory Revision 11: Small Bibliography Strengthening}
-If you want one last bibliography improvement, add only a few strong references in the following categories:
+\subsection*{Mandatory Revision 12: Small Bibliography Strengthening}
+If you want one final bibliography improvement, add only a few strong references in the following categories:
 \begin{itemize}
     \item trustworthy or secure LLM deployment surveys;
     \item document AI / OCR privacy or visual document redaction;
@@ -162,7 +184,7 @@ If you want one last bibliography improvement, add only a few strong references 
 
 Do not add many weak references.
 
-\subsection*{Mandatory Revision 12: Final Submission-Mode Check}
+\subsection*{Mandatory Revision 13: Final Submission-Mode Check}
 Before submission, make one final decision:
 \begin{itemize}
     \item if this is a review submission, remove biographies;
@@ -170,7 +192,7 @@ Before submission, make one final decision:
 \end{itemize}
 
 \subsection*{Bottom-Line Assessment}
-This version is \textbf{very close}. The paper is already strong for a practical systems/privacy submission. The remaining work is mostly:
+This version is \textbf{very close}. The remaining issues are final-polish issues rather than core-paper issues. The main remaining work is:
 \begin{enumerate}
     \item polish the Section V-D opening;
     \item add one more interpretation sentence after Tables IV, IX, X, and XI;
