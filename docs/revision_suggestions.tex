@@ -1,148 +1,132 @@
-\section*{Stage 21 Check of Whether the Previous Revisions Were Applied}
-\label{sec:stage21_check_applied_revisions}
+\section*{Stage 23 Review of the Current Version for Cursor}
+\label{sec:stage23_review_current_version}
 
 \subsection*{Direct Answer}
-\textbf{Mostly yes.} This version has incorporated \textbf{most of the important earlier revision requests}, and the manuscript is now in a strong final-polish state. The core paper is coherent, the old classifier storyline is gone from the main body, the evaluation is broad, and the appendix is concise and aligned with the new framework. This is visible across the current PDF: the title/abstract and introduction on page 1, the framework on pages 3--4, the experimental design on pages 5--6, the expanded result tables on pages 6--9, and the streamlined appendix on pages 11--13. :contentReference[oaicite:0]{index=0}
+\textbf{This version is essentially submission-ready for the current paper type.} The manuscript now looks coherent, technically aligned, and clean from the title through the appendix. The core prompt-mediation story is stable, the workflow figure is appropriate, the evaluation is broad enough for a practical systems/privacy paper, and the appendix is concise and supportive rather than distracting. This is visible across the current PDF, especially on pages 1--10 for the main paper and pages 11--12 for the appendix and examples. :contentReference[oaicite:0]{index=0}
 
-\subsection*{What Has Definitely Been Fixed}
-The following earlier suggestions appear to have been implemented successfully:
+\subsection*{What Is Clearly in Good Condition}
+The following parts are now in good shape and do not need another substantive rewrite:
+\begin{itemize}
+    \item title and abstract on page 1;
+    \item Section II problem definition and threat model on page 2;
+    \item Section III related work on pages 2--3;
+    \item Section IV framework design and notation on pages 3--4;
+    \item Figure~1 workflow diagram on page 4;
+    \item Section V CPPB construction and protocol on pages 4--6;
+    \item Section VI results structure on pages 6--9;
+    \item Section VII limitations and Section VIII conclusion on pages 9--10;
+    \item Appendix A pseudocode and Table XIV on pages 11--12. :contentReference[oaicite:1]{index=1}
+\end{itemize}
+
+\subsection*{What Has Been Successfully Fixed}
+Relative to the earlier rounds, the following issues are now clearly resolved:
 
 \begin{enumerate}
-    \item \textbf{The paper is now fully unified around prompt privacy mediation.}  
-    The manuscript no longer reads like a half-converted classifier paper. Title, abstract, threat model, method, experiments, and conclusion now all support the same deployment-oriented prompt-mediation contribution. :contentReference[oaicite:1]{index=1}
+    \item \textbf{The paper is fully unified around prompt privacy mediation.}  
+    There is no visible legacy classifier storyline in the main body anymore. The paper now reads as one coherent LLM/VLM prompt privacy manuscript. :contentReference[oaicite:2]{index=2}
 
-    \item \textbf{The workflow figure is correctly positioned as the main architectural figure.}  
-    Figure~1 on page 4 is now the correct main visual anchor and matches the system description in Section IV. :contentReference[oaicite:2]{index=2}
+    \item \textbf{The baseline paragraph is now corrected.}  
+    Section V-D now uses the stronger ``representative operational baselines'' phrasing and reads much more professionally than before. This is visible on page 5. :contentReference[oaicite:3]{index=3}
 
-    \item \textbf{The baseline section is improved.}  
-    Section V-D now uses the stronger phrasing
-    \begin{quote}
-    ``representative operational baselines''
-    \end{quote}
-    and no longer sounds as draft-like as before. This is visible on page 5. :contentReference[oaicite:3]{index=3}
+    \item \textbf{The table-interpretation subsections are improved.}  
+    Sections VI-B, VI-G, VI-H, and VI-I now each include the stronger deployment-oriented interpretation sentences that were previously missing. These appear on pages 6--9. :contentReference[oaicite:4]{index=4}
 
-    \item \textbf{The evaluation has been expanded substantially.}  
-    The paper now includes category-wise analysis, restoration-boundary testing, policy sensitivity, multimodal OCR evaluation, cross-model validation, multi-step propagation, runtime analysis, and hard-case robustness. This directly addresses earlier concerns about insufficient experimental breadth. Pages 6--9 now show a much stronger evaluation profile. :contentReference[oaicite:4]{index=4}
+    \item \textbf{The softer Section VI-L ending has been replaced.}  
+    The manuscript now uses ``practical deployment defense'' rather than the earlier weaker phrasing. This appears on page 9. :contentReference[oaicite:5]{index=5}
 
-    \item \textbf{The tone of Section VI-L is improved.}  
-    The final paragraph now uses the stronger ``practical deployment defense'' language rather than the softer ``practical first-line defense'' wording. This is visible on page 9. :contentReference[oaicite:5]{index=5}
+    \item \textbf{The Table II scope sentence is fixed.}  
+    It now correctly refers to ``Tables III--XIII,'' which resolves the earlier internal consistency problem. This appears on page 5. :contentReference[oaicite:6]{index=6}
 
-    \item \textbf{The conclusion is already in good shape.}  
-    Section VIII is compact, aligned with the CPPB framing, and appropriately positions the work as a deployable architecture with measurable privacy--utility trade-offs rather than as a universal guarantee. This is visible on pages 9--10. :contentReference[oaicite:6]{index=6}
+    \item \textbf{The Appendix E / Table XIV transition is now clean.}  
+    The duplicated wording is gone, and the sentence before Table XIV is now smooth and non-redundant. This appears on pages 11--12. :contentReference[oaicite:7]{index=7}
 
-    \item \textbf{Appendix B has already been cleaned.}  
-    The historical note is now short, formal, and no longer drags legacy material back into the paper. This is visible on page 12. :contentReference[oaicite:7]{index=7}
+    \item \textbf{Appendix B is now clean and acceptable.}  
+    The brief historical note is short, formal, and no longer disruptive. This appears on page 12. :contentReference[oaicite:8]{index=8}
 \end{enumerate}
 
-\subsection*{What Is Still Not Fully Fixed}
-A few earlier suggestions are \textbf{not fully implemented yet}, or are only partially implemented:
+\subsection*{Residual Issues}
+Only a few \textbf{very small} polish issues remain:
 
 \begin{enumerate}
-    \item \textbf{Table II explanatory sentence is still outdated.}  
-    The sentence under Table II still says:
-    \begin{quote}
-    ``Tables III--VII''
-    \end{quote}
-    but your empirical analysis now clearly runs through Tables III--XIII. This is a small but real internal consistency issue on page 5. :contentReference[oaicite:8]{index=8}
-
     \item \textbf{Page 4 is still visually dense.}  
-    The content is correct, but Section IV-D, Figure~1, and Sections IV-E--IV-H remain crowded together. This was one of the repeated layout concerns, and it is still only partially improved. The crowding is visible on page 4. :contentReference[oaicite:9]{index=9}
+    The content is correct, but Section IV-D, Figure~1, Sections IV-E--IV-H, and the beginning of Section V still compete for space. This is now a layout issue, not a scientific or structural issue. It is visible on page 4. :contentReference[oaicite:9]{index=9}
 
-    \item \textbf{Appendix E still has duplicated transition wording before Table XIV.}  
-    You currently have both:
-    \begin{quote}
-    ``The table is intended as implementation guidance \ldots''
-    \end{quote}
-    and then immediately:
-    \begin{quote}
-    ``Table XIV provides additional illustrative prompt fragments \ldots''
-    \end{quote}
-    This is redundant and was one of the specific polish issues previously flagged. The duplication is visible on pages 11--12. :contentReference[oaicite:10]{index=10}
+    \item \textbf{Table I and Table II are conceptually fine, but slightly box-heavy together.}  
+    On page 5, the two conceptual tables appear back-to-back before the empirical tables begin. This is acceptable, but if the venue is space-sensitive, one of them could be moved to the appendix. :contentReference[oaicite:10]{index=10}
 
-    \item \textbf{The suggested extra interpretation sentences after Tables IX--XI are only partly reflected.}  
-    The sections are much better than before, but if you compare against the earlier recommended wording, some of the more deployment-oriented interpretation sentences are still not fully present in the exact form suggested. Pages 8--9 are already good, but could still be one step sharper. :contentReference[oaicite:11]{index=11}
+    \item \textbf{A few equations and symbols could still benefit from a last typography check.}  
+    The notation is already consistent, but before submission you should do one last compile-and-read pass for spacing around inline math and displayed equations on pages 2--4, and for algorithm rendering on page 11. :contentReference[oaicite:11]{index=11}
+
+    \item \textbf{The bibliography is acceptable, but not maximal.}  
+    The references on pages 10--11 are now good enough, but one or two additional strong citations on trustworthy deployment or document/OCR privacy would still be reasonable if you want a slightly stronger literature footprint. :contentReference[oaicite:12]{index=12}
 \end{enumerate}
 
-\subsection*{Current Bottom-Line Evaluation}
-The manuscript has now addressed \textbf{the major revisions} and \textbf{most of the final-polish revisions}. What remains is no longer a scientific issue. It is now mostly:
+\subsection*{Recommended Final Tiny Fixes}
+If you want the manuscript to look even more finished, only the following micro-edits are worth considering.
+
+\subsection*{Tiny Fix 1: Lighten Page-4 Density}
+If space allows, make one small layout edit:
 \begin{itemize}
-    \item one small internal consistency fix;
-    \item one appendix wording cleanup;
-    \item one minor layout refinement;
-    \item optional sharpening of a few result-interpretation sentences.
+    \item shorten one sentence near the end of Section IV-D; or
+    \item shorten the first sentence of Section IV-H slightly; or
+    \item move one short sentence from page 4 to page 5 if the template permits.
 \end{itemize}
 
-\subsection*{Mandatory Final Fix 1: Update the Table II Scope Sentence}
-Please replace the sentence after Table II with:
-
+Suggested replacement for the opening of Section IV-H:
 \begin{verbatim}
-Table II is provided as a conceptual anchor for the privacy--utility operating regimes used in the later empirical analysis (Tables III--XIII), rather than as a standalone empirical result.
+For multimodal settings, the user input may contain both text and images.
 \end{verbatim}
 
-This fixes the only obvious table-number inconsistency still present in the main body.
-
-\subsection*{Mandatory Final Fix 2: Smooth the Appendix E Transition to Table XIV}
-Please replace the current two-sentence transition before Table XIV with the following single smoother sentence:
-
-\begin{verbatim}
-Table XIV provides additional illustrative prompt fragments across entity categories and sanitization modes, complementing the conceptual example in Table I and the controlled benchmark results in Tables III--XIII; it is intended as implementation guidance rather than as standalone empirical evidence.
-\end{verbatim}
-
-This removes the current duplication between pages 11 and 12.
-
-\subsection*{Mandatory Final Fix 3: Lightly Reduce Page-4 Density}
-The content on page 4 is correct, but the page is still slightly dense. Please make one minimal layout-oriented edit:
+\subsection*{Tiny Fix 2: Optional Table Placement Adjustment}
+If the venue is page-sensitive or you want slightly cleaner flow, consider:
 \begin{itemize}
-    \item shorten the opening sentence of Section IV-E;
-    \item optionally trim one sentence near the end of Section IV-D.
+    \item keeping Table I in the main paper;
+    \item moving Table II to the appendix as a conceptual operating-regime summary.
 \end{itemize}
 
-Suggested shorter opening of Section IV-E:
-\begin{verbatim}
-In deployment, sanitization mode should be selected by policy rather than applied uniformly.
-\end{verbatim}
+This is optional only. The current placement is acceptable.
 
-\subsection*{Optional Final Fix 4: Slightly Sharpen Sections VI-G, VI-H, and VI-I}
-These subsections are already good. If you want one last refinement, append the following final-paper-style interpretation sentences:
-
-\begin{verbatim}
-Section VI-G addition:
-Compared with text-only mediation, multimodal protection introduces an additional extraction bottleneck because OCR and layout parsing errors can distort visual span boundaries before sanitization is applied. Even so, the proposed multimodal setting maintains a favorable privacy--utility balance relative to OCR-only masking and generic OCR-driven de-identification.
-\end{verbatim}
-
-\begin{verbatim}
-Section VI-H addition:
-Although the absolute values vary slightly across backends, the stability of method ordering suggests that the dominant effect arises from mediation policy rather than from any single downstream implementation. This strengthens the claim that interface-layer privacy mediation can generalize across heterogeneous model backends under controlled CPPB conditions.
-\end{verbatim}
-
-\begin{verbatim}
-Section VI-I addition:
-This result is especially important because privacy risk in practical agent systems is often determined by propagation depth across intermediate states rather than by any single model invocation in isolation.
-\end{verbatim}
-
-\subsection*{Overall Verdict}
-So the answer is:
-
+\subsection*{Tiny Fix 3: Final Typography Pass}
+Please do one final manual pass for:
 \begin{itemize}
-    \item \textbf{Yes, the paper has already incorporated most of the earlier revision suggestions.}
-    \item \textbf{No, not absolutely every small final-polish suggestion has been fully applied yet.}
-    \item \textbf{What remains is minor and easy to finish.}
+    \item equation spacing on pages 2 and 4;
+    \item line breaks around symbols such as $\tilde{x}$, $\Pi$, and PER/UPR;
+    \item algorithm formatting consistency in Appendix A;
+    \item any awkward hyphenation introduced by the IEEE template.
+\end{itemize}
+
+\subsection*{Tiny Fix 4: Optional Bibliography Upgrade}
+Only if you want one last literature polish, add one or two strong references in:
+\begin{itemize}
+    \item trustworthy or secure LLM deployment surveys;
+    \item document AI / OCR privacy or visual document redaction.
+\end{itemize}
+
+Do not add weak references just to increase count.
+
+\subsection*{Final Verdict}
+\textbf{Yes, this version is good.} More specifically:
+\begin{itemize}
+    \item the important earlier revision requests have been implemented;
+    \item there are no meaningful structural or scientific problems left;
+    \item the remaining issues are almost entirely cosmetic or layout-related.
 \end{itemize}
 
 \subsection*{Bottom-Line Summary}
-At this stage, the paper is:
+The manuscript is now:
 \begin{itemize}
-    \item scientifically coherent;
-    \item experimentally much stronger than before;
-    \item visually and structurally clean enough for submission after one more tiny polish round.
+    \item coherent;
+    \item experimentally broad enough for its intended venue type;
+    \item visually clean overall;
+    \item very close to final submission form. :contentReference[oaicite:13]{index=13}
 \end{itemize}
 
-The main remaining fixes are:
+The only remaining recommended actions are:
 \begin{enumerate}
-    \item update ``Tables III--VII'' to ``Tables III--XIII'';
-    \item merge the duplicated appendix transition before Table XIV;
-    \item optionally lighten page-4 density;
-    \item optionally sharpen the prose after Tables IX--XI.
+    \item optionally lighten page 4 slightly;
+    \item optionally move Table II if you want cleaner main-body flow;
+    \item do one final typography pass;
+    \item optionally add one or two very strong references.
 \end{enumerate}
 
-So overall: \textbf{you are essentially at the finish line.}
+So overall: \textbf{this version is essentially finished.}
