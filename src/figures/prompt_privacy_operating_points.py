@@ -42,7 +42,11 @@ def plot_operating_points(out_path: str):
         marker = "o" if "Proposed" in label else "s"
         size = 52 if "utility-constrained" in label else 42
         ax.scatter(x, y, s=size, c=color, marker=marker, edgecolors="black", linewidths=0.4, zorder=3)
-        short_label = label.replace("Proposed ", "").replace("Generic de-identification", "Generic de-id")
+        short_label = (
+            label.replace("Proposed ", "")
+            .replace("Generic de-identification", "Generic de-id")
+            .replace("Enterprise staged redaction", "Enterprise staged")
+        )
         ax.annotate(short_label, (x, y), xytext=(4, 4), textcoords="offset points", fontsize=7)
     ax.set_title("Method-Level Operating Points", fontsize=10)
     ax.set_xlabel("Direct Exposure Reduction (%)", fontsize=9)

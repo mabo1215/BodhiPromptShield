@@ -3,6 +3,6 @@ No protection,100.0,1.00,1.00
 Regex-only,61.3,0.97,0.96
 NER-only masking,48.7,0.91,0.89
 Generic de-identification,12.4,0.73,0.71
-Proposed (typed placeholder),8.1,0.92,0.90
+Enterprise staged redaction,8.1,0.92,0.90
 Proposed (semantic abstraction),14.6,0.88,0.86
 Proposed (utility-constrained),9.3,0.94,0.92
