@@ -1,183 +1,188 @@
 """
-Run experiments (ablation and/or baselines), then update paper/main.tex table bodies
-with the generated results. This enables "run code -> fill paper" in one step.
+Fill code-backed empirical tables in paper/main.tex from CSV files under src/experiments.
 
-Usage (from repo root):
-  python -m experiments.fill_paper_tables
-  python -m experiments.fill_paper_tables --reaedp C:/source/REAEDP/data
-  python -m experiments.fill_paper_tables --paper paper/main.tex --ablation-csv out/ablation_table.csv
+This script only updates tables that are directly backed by repository CSVs:
+  - tab:per              <- prompt_method_comparison.csv
+  - tab:utility          <- prompt_method_comparison.csv
+  - tab:pi_sensitivity   <- policy_sensitivity.csv
+  - tab:propagation      <- agent_pipeline_metrics.csv
+  - tab:latency          <- latency_overhead.csv
 
-Options:
-  --reaedp DIR     Run ablation with prior_ablation_table --reaedp DIR and use output for tab:ablation.
-  --paper PATH     Path to main.tex (default: paper/main.tex from repo root).
-  --run-ablation   Run prior_ablation_table (with --reaedp if given) and write ablation CSV to --out-dir.
-  --ablation-csv   Use this CSV for tab:ablation instead of running (ignored if --run-ablation).
-  --run-baselines  Run run_baselines.py if present and use its output for tab:baselines.
-  --baseline-csv   Use this CSV for tab:baselines (optional).
-  --out-dir DIR    Directory for ablation_table.csv / baseline_table.csv (default: same dir as script).
-  --dry-run        Only run experiments and print would-be table content; do not modify main.tex.
+It intentionally does NOT touch illustrative or manually curated tables such as:
+  - tab:example
+  - tab:tradeoff
+  - tab:catwise
+  - tab:restore
+  - tab:ablation
+  - tab:multimodal
+  - tab:crossmodel
+  - tab:hardcase
+
+Usage:
+  python src/experiments/fill_paper_tables.py
+  python src/experiments/fill_paper_tables.py --paper paper/main.tex --dry-run
 """
 from __future__ import annotations
 
 import argparse
 import csv
 import os
-import subprocess
-import sys
+import re
+from typing import Callable
+
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+EXPERIMENTS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def _escape_tex(s: str) -> str:
-    """Escape & and preserve backslash for LaTeX cell content."""
-    if not isinstance(s, str):
-        s = str(s)
-    return s.replace("&", "\\&").replace("%", "\\%")
+def _read_csv(name: str) -> list[dict[str, str]]:
+    path = os.path.join(EXPERIMENTS_DIR, name)
+    with open(path, "r", encoding="utf-8", newline="") as f:
+        return list(csv.DictReader(f))
 
 
-def _config_latex(config: str) -> str:
-    """Format Config column for ablation table: (A) -> DBN/PB with cite."""
-    s = (config or "").strip()
-    if "(A)" in s and ("DBN" in s or "PB" in s):
-        return "(A) DBN/PB~\\cite{ma2021privacy}"
-    if s == "(E) Full (ours)" or s == "(E)":
-        return "(E) Full (ours)"
-    if s == "(B)":
-        return "(B) No boundary"
-    if s == "(C)":
-        return "(C) Internal center only"
-    if s == "(D)":
-        return "(D) Ring + center"
-    return _escape_tex(s)
+def _paper_path(path: str) -> str:
+    return path if os.path.isabs(path) else os.path.join(REPO_ROOT, path)
 
 
-def run_ablation(reaedp_dir: str, out_dir: str) -> str | None:
-    """Run prior_ablation_table and return path to ablation_table.csv."""
-    csv_path = os.path.join(out_dir, "ablation_table.csv")
-    cmd = [sys.executable, "-m", "experiments.prior_ablation_table", "--out", csv_path]
-    if reaedp_dir and os.path.isdir(reaedp_dir):
-        cmd.extend(["--reaedp", reaedp_dir])
-    env = os.environ.copy()
-    env["PYTHONPATH"] = os.path.join(REPO_ROOT, "src")
-    try:
-        subprocess.run(cmd, cwd=REPO_ROOT, check=True, capture_output=True, text=True, env=env)
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return None
-    return csv_path if os.path.isfile(csv_path) else None
+def _replace_table_block(content: str, label: str, replacement: str) -> str:
+    label_idx = content.find(f"\\label{{{label}}}")
+    if label_idx == -1:
+        raise ValueError(f"Label not found: {label}")
+
+    begin_match = re.search(r"\\begin\{tabularx?\}", content[label_idx:])
+    if not begin_match:
+        raise ValueError(f"No tabular/tabularx found after {label}")
+    begin_idx = label_idx + begin_match.start()
+    begin_env = begin_match.group(0)
+    end_env = "\\end{tabularx}" if begin_env == "\\begin{tabularx}" else "\\end{tabular}"
+    end_idx = content.find(end_env, begin_idx)
+    if end_idx == -1:
+        raise ValueError(f"No matching {end_env} found for {label}")
+    end_idx += len(end_env)
+    return content[:begin_idx] + replacement + content[end_idx:]
 
 
-def build_ablation_tabular(csv_path: str) -> str:
-    """Build full \\begin{tabular}...\\end{tabular} body from ablation CSV."""
-    rows = []
-    with open(csv_path, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for r in reader:
-            config = _config_latex(r.get("Config", ""))
-            train = r.get("Train_acc", "--")
-            val = r.get("Val_acc", "--")
-            notes = _escape_tex(r.get("Notes", ""))
-            rows.append(f"{config} & {train} & {val} & {notes} \\\\")
-    header = "Config & Train acc. & Val acc. & Notes \\\\\n\\hline\n"
-    body = "\n\\hline\n".join(rows) + "\n\\hline\n"
+def _fmt_float(value: str, digits: int = 1) -> str:
+    return f"{float(value):.{digits}f}"
+
+
+def build_per_table() -> str:
+    rows = _read_csv("prompt_method_comparison.csv")
+    body = "\n".join(f"{r['method']} & {_fmt_float(r['per'])} \\\\" for r in rows)
     return (
-        "\\begin{tabular}{|l|c|c|l|}\n"
-        "\\hline\n"
-        + header
-        + "\\hline\n"
-        + body
-        + "\\end{tabular}"
+        "\\begin{tabular}{lc}\n"
+        "\\toprule\n"
+        "Method & PER (\\%) \\\\\n"
+        "\\midrule\n"
+        f"{body}\n"
+        "\\bottomrule\n"
+        "\\end{tabular}"
     )
 
 
-def patch_main_tex(paper_path: str, label: str, new_tabular: str, dry_run: bool) -> bool:
-    """Replace the tabular block for the given table label in main.tex."""
-    path = os.path.join(REPO_ROOT, paper_path) if not os.path.isabs(paper_path) else paper_path
-    if not os.path.isfile(path):
-        print("Paper not found:", path, file=sys.stderr)
-        return False
-    with open(path, "r", encoding="utf-8") as f:
+def build_utility_table() -> str:
+    rows = _read_csv("prompt_method_comparison.csv")
+    body = "\n".join(
+        f"{r['method']} & {float(r['ac']):.2f} & {float(r['tsr']):.2f} \\\\" for r in rows
+    )
+    return (
+        "\\begin{tabular}{lcc}\n"
+        "\\toprule\n"
+        "Method & AC & TSR \\\\\n"
+        "\\midrule\n"
+        f"{body}\n"
+        "\\bottomrule\n"
+        "\\end{tabular}"
+    )
+
+
+def build_pi_table() -> str:
+    tau_map = {"Lenient": "0.70", "Balanced": "0.55", "Strict": "0.40"}
+    rows = _read_csv("policy_sensitivity.csv")
+    body_lines = []
+    for r in rows:
+        profile = r["profile"]
+        tau = tau_map.get(profile, "--")
+        profile_label = f"{profile} ($\\tau={tau}$)"
+        body_lines.append(
+            f"{profile_label} & {_fmt_float(r['per'])} & {float(r['upr']):.2f} & {float(r['tsr']):.2f} \\\\"
+        )
+    return (
+        "\\begin{tabular}{lccc}\n"
+        "\\toprule\n"
+        "Policy profile & PER (\\%) & UPR & TSR \\\\\n"
+        "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        "\\end{tabular}"
+    )
+
+
+def build_propagation_table() -> str:
+    rows = _read_csv("agent_pipeline_metrics.csv")
+    body = "\n".join(
+        f"{r['method']} & {_fmt_float(r['retrieval'])} & {_fmt_float(r['memory'])} & {_fmt_float(r['tool'])} \\\\"
+        for r in rows
+    )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccc}\n"
+        "\\toprule\n"
+        "Method & \\makecell[c]{SPE@Retrieval\\\\(\\%)} & \\makecell[c]{SPE@Memory\\\\(\\%)} & \\makecell[c]{SPE@Tool\\\\(\\%)} \\\\\n"
+        "\\midrule\n"
+        f"{body}\n"
+        "\\bottomrule\n"
+        "\\end{tabularx}"
+    )
+
+
+def build_latency_table() -> str:
+    rows = _read_csv("latency_overhead.csv")
+    body = "\n".join(
+        f"{r['pipeline']} & {int(float(r['mean_ms']))} & {int(float(r['p95_ms']))} \\\\" for r in rows
+    )
+    return (
+        "\\begin{tabular}{lcc}\n"
+        "\\toprule\n"
+        "Pipeline & Mean Latency (ms) & P95 (ms) \\\\\n"
+        "\\midrule\n"
+        f"{body}\n"
+        "\\bottomrule\n"
+        "\\end{tabular}"
+    )
+
+
+TABLE_BUILDERS: dict[str, Callable[[], str]] = {
+    "tab:per": build_per_table,
+    "tab:utility": build_utility_table,
+    "tab:pi_sensitivity": build_pi_table,
+    "tab:propagation": build_propagation_table,
+    "tab:latency": build_latency_table,
+}
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Fill code-backed paper tables from experiment CSVs.")
+    parser.add_argument("--paper", default="paper/main.tex", help="Path to paper/main.tex")
+    parser.add_argument("--dry-run", action="store_true", help="Print updated labels without writing file")
+    args = parser.parse_args()
+
+    paper_path = _paper_path(args.paper)
+    with open(paper_path, "r", encoding="utf-8") as f:
         content = f.read()
-    # Find table: after \label{...} find the next \begin{tabular}...\end{tabular}
-    label_needle = "\\label{" + label + "}"
-    idx = content.find(label_needle)
-    if idx == -1:
-        print(f"Table {label} not found in {path}", file=sys.stderr)
-        return False
-    tab_begin = content.find("\\begin{tabular}", idx)
-    if tab_begin == -1:
-        print(f"Table {label}: no \\begin{{tabular}} after label.", file=sys.stderr)
-        return False
-    end_marker = "\\end{tabular}"
-    tab_end = content.find(end_marker, tab_begin)
-    if tab_end == -1:
-        print(f"Table {label}: no \\end{{tabular}}.", file=sys.stderr)
-        return False
-    tab_end += len(end_marker)
-    new_content = content[:tab_begin] + new_tabular + content[tab_end:]
-    if dry_run:
-        print("[dry-run] Would replace", label, "tabular with:\n", new_tabular[:300], "...")
-        return True
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(new_content)
-    print("Updated", label, "in", path)
-    return True
 
+    for label, builder in TABLE_BUILDERS.items():
+        content = _replace_table_block(content, label, builder())
 
-def main():
-    ap = argparse.ArgumentParser(description="Run experiments and fill paper tables")
-    ap.add_argument("--reaedp", default="", help="Path to REAEDP/data for ablation placeholder run")
-    ap.add_argument("--paper", default="paper/main.tex", help="Path to main.tex")
-    ap.add_argument("--run-ablation", action="store_true", help="Run prior_ablation_table and use output")
-    ap.add_argument("--ablation-csv", default="", help="Use this CSV for tab:ablation (skip running)")
-    ap.add_argument("--run-baselines", action="store_true", help="Run run_baselines.py if present")
-    ap.add_argument("--baseline-csv", default="", help="Use this CSV for tab:baselines")
-    ap.add_argument("--out-dir", default="", help="Output dir for CSVs (default: experiments dir)")
-    ap.add_argument("--dry-run", action="store_true", help="Do not modify main.tex")
-    args = ap.parse_args()
+    if args.dry_run:
+        print("Would update:", ", ".join(TABLE_BUILDERS))
+        return 0
 
-    out_dir = args.out_dir or os.path.dirname(os.path.abspath(__file__))
-    os.makedirs(out_dir, exist_ok=True)
-
-    # Ablation: run or use provided CSV (run if --run-ablation or --reaedp given and no --ablation-csv)
-    ablation_csv = args.ablation_csv
-    if (args.run_ablation or args.reaedp) and not args.ablation_csv:
-        csv_path = run_ablation(args.reaedp, out_dir)
-        if csv_path:
-            ablation_csv = csv_path
-    if ablation_csv and os.path.isfile(ablation_csv):
-        tabular = build_ablation_tabular(ablation_csv)
-        patch_main_tex(args.paper, "tab:ablation", tabular, args.dry_run)
-    elif args.run_ablation or args.ablation_csv:
-        print("No ablation CSV produced or found; skipping tab:ablation.", file=sys.stderr)
-
-    # Baselines: optional run + CSV -> tab:baselines (stub: only if baseline CSV exists)
-    if args.baseline_csv and os.path.isfile(args.baseline_csv):
-        # Build tab:baselines from CSV (columns: Method, Accuracy, Epsilon, Notes)
-        try:
-            with open(args.baseline_csv, "r", encoding="utf-8") as f:
-                reader = csv.DictReader(f)
-                rows = []
-                for r in reader:
-                    m = _escape_tex(r.get("Method", ""))
-                    acc = _escape_tex(r.get("Accuracy", "--"))
-                    eps = _escape_tex(r.get("Epsilon", "N/A"))
-                    notes = _escape_tex(r.get("Notes", ""))
-                    rows.append(f"{m} & {acc} & {eps} & {notes} \\\\")
-                body = "\n\\hline\n".join(rows) + "\n\\hline\n"
-                tabular = (
-                    "\\begin{tabular}{|l|c|c|l|}\n"
-                    "\\hline\n"
-                    "Method & Accuracy (mean $\\pm$ std) & $\\varepsilon$ / privacy & Notes \\\\\n"
-                    "\\hline\n"
-                    + body
-                    + "\\end{tabular}"
-                )
-                patch_main_tex(args.paper, "tab:baselines", tabular, args.dry_run)
-        except Exception as e:
-            print("Baseline table update failed:", e, file=sys.stderr)
-
+    with open(paper_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("Updated code-backed tables in", paper_path)
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

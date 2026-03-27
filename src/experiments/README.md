@@ -1,20 +1,48 @@
-# 实验与消融表
+# 当前论文实验数据说明
 
-## prior_ablation_table.py
+本目录当前保存的是与 prompt privacy mediation 论文直接对齐的实验结果 CSV，以及一个用于把这些结果回填进 `paper/main.tex` 的脚本。
 
-生成论文中 Ablation 表（Table tab:ablation）所需数值。
+## CSV 与论文表格的映射
 
-- **(A) DBN/PB**：来自 prior 论文 [ma2021privacy]（MTAPBoMa）Table 1（MIMIC）与 Fig.9（COVID-19）。脚本内硬编码该表数据，运行后输出 (A) 行的 Train/Val 与 LaTeX 片段。
-- **(B)(C)(D)(E)**：若指定 `--reaedp` 指向 `REAEDP/data`，会用该目录下 CSV（如 CDC BRFSS、tabular-feature-engineering）跑一个简单分类基线，输出占位数值；否则输出 `--`。真实消融 (B)--(E) 需用 IBPPSVM 代码在相应配置下跑实验后替换。
+- `prompt_method_comparison.csv`
+  - Table III `tab:per`
+  - Table V `tab:utility`
+  - Figure `prompt_privacy_operating_points.png`
+- `policy_sensitivity.csv`
+  - Table VIII `tab:pi_sensitivity`
+  - Figure `prompt_privacy_operating_points.png`
+- `agent_pipeline_metrics.csv`
+  - Table XI `tab:propagation`
+  - Figure `agent_propagation_curves.png`
+  - Figure `agent_pipeline_summary.png`
+- `latency_overhead.csv`
+  - Table XII `tab:latency`
+  - Figure `agent_pipeline_summary.png`
 
-**用法**
+## 回填主文表格
+
+执行：
 
 ```bash
-# 仅输出 (A) 及 (B)--(E) 占位
-python src/experiments/prior_ablation_table.py
-
-# 使用 REAEDP 数据跑占位基线并写出 CSV
-python src/experiments/prior_ablation_table.py --reaedp C:/source/REAEDP/data --out ablation_table.csv
+python src/experiments/fill_paper_tables.py --paper paper/main.tex
 ```
 
-依赖：无（仅 (A)）；若使用 `--reaedp` 需 `pandas`, `scikit-learn`, `numpy`。
+该脚本只会更新当前仓库中有明确 CSV 支撑的表格：
+
+- `tab:per`
+- `tab:utility`
+- `tab:pi_sensitivity`
+- `tab:propagation`
+- `tab:latency`
+
+它不会改动以下内容：
+
+- 概念性或示意性表格，如 `tab:example`、`tab:tradeoff`
+- 当前仓库尚未补齐自动生成脚本的表格，如 `tab:catwise`、`tab:restore`、`tab:ablation`、`tab:multimodal`、`tab:crossmodel`、`tab:hardcase`
+
+## 诚实性说明
+
+如果某个表格当前没有对应 CSV 或实验脚本，就不应在论文中被表述为“已由仓库代码自动再现”。这类表格应被视为：
+
+- 手工整理的受控实验结果，或
+- 说明性/概念性内容。
