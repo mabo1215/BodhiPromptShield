@@ -1,0 +1,33 @@
+template_id,prompt_family,prompt_source,downstream_task_type,primary_privacy_category,template_stub
+T01,Direct requests,Dialogue templates,Prompt QA,Person names,Direct request centered on person names.
+T02,Direct requests,Dialogue templates,Prompt QA,Contact details,Direct request centered on contact details.
+T03,Direct requests,Dialogue templates,Prompt QA,Postal addresses,Direct request centered on postal addresses.
+T04,Direct requests,Dialogue templates,Prompt QA,National/account identifiers,Direct request centered on national/account identifiers.
+T05,Direct requests,Dialogue templates,Prompt QA,Financial references,Direct request centered on financial references.
+T06,Direct requests,Dialogue templates,Prompt QA,Medical content,Direct request centered on medical content.
+T07,Direct requests,Dialogue templates,Prompt QA,Organization/project terms,Direct request centered on organization/project terms.
+T08,Direct requests,Dialogue templates,Prompt QA,Context-dependent confidential spans,Direct request centered on context-dependent confidential spans.
+T09,Document-oriented,Document scenarios,Document QA,Person names,Document-oriented instruction centered on person names.
+T10,Document-oriented,Document scenarios,Document QA,Contact details,Document-oriented instruction centered on contact details.
+T11,Document-oriented,Document scenarios,Document QA,Postal addresses,Document-oriented instruction centered on postal addresses.
+T12,Document-oriented,Document scenarios,Document QA,National/account identifiers,Document-oriented instruction centered on national/account identifiers.
+T13,Document-oriented,Document scenarios,Document QA,Financial references,Document-oriented instruction centered on financial references.
+T14,Document-oriented,Document scenarios,Document QA,Medical content,Document-oriented instruction centered on medical content.
+T15,Document-oriented,Document scenarios,Document QA,Organization/project terms,Document-oriented instruction centered on organization/project terms.
+T16,Document-oriented,Document scenarios,Document QA,Context-dependent confidential spans,Document-oriented instruction centered on context-dependent confidential spans.
+T17,Retrieval-style,Public task sources,Retrieval QA,Person names,Retrieval-style prompt centered on person names.
+T18,Retrieval-style,Public task sources,Retrieval QA,Contact details,Retrieval-style prompt centered on contact details.
+T19,Retrieval-style,Public task sources,Retrieval QA,Postal addresses,Retrieval-style prompt centered on postal addresses.
+T20,Retrieval-style,Public task sources,Retrieval QA,National/account identifiers,Retrieval-style prompt centered on national/account identifiers.
+T21,Retrieval-style,Public task sources,Retrieval QA,Financial references,Retrieval-style prompt centered on financial references.
+T22,Retrieval-style,Public task sources,Retrieval QA,Medical content,Retrieval-style prompt centered on medical content.
+T23,Retrieval-style,Public task sources,Retrieval QA,Organization/project terms,Retrieval-style prompt centered on organization/project terms.
+T24,Retrieval-style,Public task sources,Retrieval QA,Context-dependent confidential spans,Retrieval-style prompt centered on context-dependent confidential spans.
+T25,Tool-oriented agent,Agent workflow traces,Agent execution,Person names,Tool-oriented agent prompt centered on person names.
+T26,Tool-oriented agent,Agent workflow traces,Agent execution,Contact details,Tool-oriented agent prompt centered on contact details.
+T27,Tool-oriented agent,Agent workflow traces,Agent execution,Postal addresses,Tool-oriented agent prompt centered on postal addresses.
+T28,Tool-oriented agent,Agent workflow traces,Agent execution,National/account identifiers,Tool-oriented agent prompt centered on national/account identifiers.
+T29,Tool-oriented agent,Agent workflow traces,Agent execution,Financial references,Tool-oriented agent prompt centered on financial references.
+T30,Tool-oriented agent,Agent workflow traces,Agent execution,Medical content,Tool-oriented agent prompt centered on medical content.
+T31,Tool-oriented agent,Agent workflow traces,Agent execution,Organization/project terms,Tool-oriented agent prompt centered on organization/project terms.
+T32,Tool-oriented agent,Agent workflow traces,Agent execution,Context-dependent confidential spans,Tool-oriented agent prompt centered on context-dependent confidential spans.

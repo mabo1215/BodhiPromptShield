@@ -1,0 +1,21 @@
+group_order,item_order,group_name,item,count,share_percent
+1,1,subset,Essential-privacy,128,50.0
+1,2,subset,Incidental-privacy,128,50.0
+2,1,prompt_family,Direct requests,64,25.0
+2,2,prompt_family,Document-oriented,64,25.0
+2,3,prompt_family,Retrieval-style,64,25.0
+2,4,prompt_family,Tool-oriented agent,64,25.0
+3,1,primary_privacy_category,Contact details,32,12.5
+3,2,primary_privacy_category,Context-dependent confidential spans,32,12.5
+3,3,primary_privacy_category,Financial references,32,12.5
+3,4,primary_privacy_category,Medical content,32,12.5
+3,5,primary_privacy_category,National/account identifiers,32,12.5
+3,6,primary_privacy_category,Organization/project terms,32,12.5
+3,7,primary_privacy_category,Person names,32,12.5
+3,8,primary_privacy_category,Postal addresses,32,12.5
+4,1,prompt_source,Agent workflow traces,64,25.0
+4,2,prompt_source,Dialogue templates,64,25.0
+4,3,prompt_source,Document scenarios,64,25.0
+4,4,prompt_source,Public task sources,64,25.0
+5,1,modality,OCR-mediated text-plus-image,64,25.0
+5,2,modality,Text-only,192,75.0

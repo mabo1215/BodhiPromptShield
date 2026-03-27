@@ -1,0 +1,8 @@
+order,axis,breakdown
+1,Benchmark total,256 prompts
+2,Subsets,Essential-privacy 128 (50.0%); Incidental-privacy 128 (50.0%)
+3,Prompt families,Direct requests 64 (25.0%); Document-oriented 64 (25.0%); Retrieval-style 64 (25.0%); Tool-oriented agent 64 (25.0%)
+4,Privacy categories,Person names 32 (12.5%); Contact details 32 (12.5%); Postal addresses 32 (12.5%); National/account identifiers 32 (12.5%); Financial references 32 (12.5%); Medical content 32 (12.5%); Organization/project terms 32 (12.5%); Context-dependent confidential spans 32 (12.5%)
+5,Prompt sources,Dialogue templates 64 (25.0%); Public task sources 64 (25.0%); Document scenarios 64 (25.0%); Agent workflow traces 64 (25.0%)
+6,Modality,Text-only 192 (75.0%); OCR-mediated text-plus-image 64 (25.0%)
+7,Template/variant accounting,32 templates x 8 injected variants

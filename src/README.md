@@ -1,10 +1,15 @@
 # PromptShield 论文配套代码
 
-当前仓库中的 `src/` 只应被理解为当前 prompt privacy mediation 论文的可复现辅助代码，而不是整篇论文所有实验的完整训练流水线。为避免过度声称，下面按“当前仍直接服务于论文”的内容说明。
+当前仓库中的 `src/` 只是可复现代码，未完成整篇论文所有实验的完整训练流水线。
 
 ## 目录说明
 
 - `experiments/`
+  - `build_cppb_manifest.py`：生成 CPPB 的 template inventory、prompt-level manifest，以及主文 benchmark accounting 表所需的汇总 CSV。
+  - `cppb_accounting_summary.csv`：主文 `tab:cppb_accounting` 的精确 benchmark accounting。
+  - `cppb_template_inventory.csv`：CPPB template 级清单。
+  - `cppb_prompt_manifest.csv`：CPPB prompt 级 manifest。
+  - `cppb_distribution_breakdown.csv`：CPPB 在 subset / family / category / source / modality 维度上的精确计数与占比。
   - `prompt_method_comparison.csv`：主文方法级对比结果，用于 Table III（PER）、Table V（AC/TSR）以及主文 operating-points 图。
   - `policy_sensitivity.csv`：主文 policy sensitivity 结果，用于 Table VIII 和 operating-points 图。
   - `agent_pipeline_metrics.csv`：主文 multi-step propagation 结果，用于 Table XI、主文 propagation 曲线和附录 deployment 图。
@@ -25,6 +30,7 @@
 - 主文 Table VIII `tab:pi_sensitivity`
 - 主文 Table XI `tab:propagation`
 - 主文 Table XII `tab:latency`
+- 主文 `tab:cppb_accounting`
 - 主文 `prompt_privacy_operating_points.png`
 - 主文 `agent_propagation_curves.png`
 - 附录 `agent_pipeline_summary.png`
@@ -38,6 +44,8 @@
 
 - 生成论文图：
   - `python src/figures/run_all_figures.py --out-dir paper/fig`
+- 生成 CPPB benchmark accounting 工件：
+  - `python src/experiments/build_cppb_manifest.py`
 - 用 CSV 回填主文中已代码支撑的表格：
   - `python src/experiments/fill_paper_tables.py --paper paper/main.tex`
 - 运行仓库内轻量代码检查：

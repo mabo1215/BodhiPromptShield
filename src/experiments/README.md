@@ -4,6 +4,14 @@
 
 ## CSV 与论文表格的映射
 
+- `cppb_accounting_summary.csv`
+  - Table `tab:cppb_card`
+- `cppb_template_inventory.csv`
+  - CPPB template inventory for benchmark accounting
+- `cppb_prompt_manifest.csv`
+  - Prompt-level CPPB manifest for benchmark accounting
+- `cppb_distribution_breakdown.csv`
+  - Exact count / percentage breakdown by subset, family, category, source, and modality
 - `prompt_method_comparison.csv`
   - Table III `tab:per`
   - Table V `tab:utility`
@@ -24,11 +32,13 @@
 执行：
 
 ```bash
+python src/experiments/build_cppb_manifest.py
 python src/experiments/fill_paper_tables.py --paper paper/main.tex
 ```
 
 该脚本只会更新当前仓库中有明确 CSV 支撑的表格：
 
+- `tab:cppb_card`
 - `tab:per`
 - `tab:utility`
 - `tab:pi_sensitivity`

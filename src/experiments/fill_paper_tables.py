@@ -2,6 +2,7 @@
 Fill code-backed empirical tables in paper/main.tex from CSV files under src/experiments.
 
 This script only updates tables that are directly backed by repository CSVs:
+  - tab:cppb_card        <- cppb_accounting_summary.csv
   - tab:per              <- prompt_method_comparison.csv
   - tab:utility          <- prompt_method_comparison.csv
   - tab:pi_sensitivity   <- policy_sensitivity.csv
@@ -65,6 +66,31 @@ def _replace_table_block(content: str, label: str, replacement: str) -> str:
 
 def _fmt_float(value: str, digits: int = 1) -> str:
     return f"{float(value):.{digits}f}"
+
+
+def _tex_escape(text: str) -> str:
+    return (
+        text.replace("\\", "\\textbackslash{}")
+        .replace("&", "\\&")
+        .replace("%", "\\%")
+        .replace("_", "\\_")
+    )
+
+
+def build_cppb_accounting_table() -> str:
+    rows = sorted(_read_csv("cppb_accounting_summary.csv"), key=lambda r: int(r["order"]))
+    body = "\n".join(
+        f"{_tex_escape(r['axis'])} & {_tex_escape(r['breakdown'])} \\\\" for r in rows
+    )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}p{1.65cm}X}\n"
+        "\\toprule\n"
+        "Axis & Exact accounting \\\\\n"
+        "\\midrule\n"
+        f"{body}\n"
+        "\\bottomrule\n"
+        "\\end{tabularx}"
+    )
 
 
 def build_per_table() -> str:
@@ -153,6 +179,7 @@ def build_latency_table() -> str:
 
 
 TABLE_BUILDERS: dict[str, Callable[[], str]] = {
+    "tab:cppb_card": build_cppb_accounting_table,
     "tab:per": build_per_table,
     "tab:utility": build_utility_table,
     "tab:pi_sensitivity": build_pi_table,

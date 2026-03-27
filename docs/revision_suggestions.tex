@@ -1,227 +1,242 @@
-\section*{Second-Round Top-Tier Revision Checklist for the Revised Manuscript}
+\section*{Top-Tier Section-by-Section Revision Checklist for the Revised Manuscript}
 
-\subsection*{Overall Assessment of the Revised Version}
-The revised manuscript is substantially improved. In particular, it now calibrates claims more carefully, explicitly distinguishes controlled evidence from formal guarantees, strengthens the propagation analysis as a systems-level contribution, and provides a more transparent reproducibility scope. These are meaningful advances toward submission quality.
-
-However, the paper is \textbf{still not fully top-tier ready}. The remaining issues are no longer primarily about tone, but about \textbf{evidence density, benchmark hardness, and baseline strength}. The next revision should therefore focus less on general polishing and more on tightening the empirical backbone of the paper.
-
-\subsection*{Highest-Priority Remaining Issues}
-
-\paragraph{1. Move conceptual tables out of the main paper.}
-Although Table~I and Table~II are now clearly labeled as conceptual/illustrative, they still occupy prominent space in the main text. For a top-tier submission, this reduces empirical density and may give the impression that the paper still relies too heavily on conceptual framing.
-
-\textbf{Required revision:}
+\subsection*{Overall Assessment}
+The manuscript has improved substantially and is now much closer to a serious submission. In particular, the revised version:
 \begin{itemize}
-    \item Move Table~I and Table~II to the appendix.
-    \item Replace them in the main text with a brief one- or two-sentence summary.
-    \item If needed, retain a short forward reference such as:
+    \item moves conceptual/illustrative material out of the empirical foreground;
+    \item reframes CPPB as a controlled benchmark rather than an implied public benchmark;
+    \item elevates propagation suppression to a central systems result;
+    \item includes a stronger deployment-style comparator via enterprise staged redaction;
+    \item calibrates claims more carefully in terms of privacy scope, reproducibility, and external validity.
+\end{itemize}
+
+However, the paper is still \textbf{not fully top-tier ready}. The remaining weaknesses are now concentrated in:
+\begin{enumerate}
+    \item incomplete benchmark accounting for CPPB,
+    \item the lack of at least one stronger external practical baseline,
+    \item partial rather than end-to-end reproducibility for several reported results.
+\end{enumerate}
+
+The next revision should therefore focus on \textbf{hardening empirical credibility}, not only on polishing narrative structure.
+
+\subsection*{Abstract}
+\textbf{What is already improved:}
+\begin{itemize}
+    \item The abstract now clearly frames the problem as pre-inference mediation in LLM/VLM agents.
+    \item The propagation result is explicitly stated.
+    \item The conclusion is more calibrated and no longer sounds like a universal guarantee claim.
+\end{itemize}
+
+\textbf{What still needs revision:}
+\begin{itemize}
+    \item Move the propagation result even earlier in the abstract, ideally as the main validated claim rather than as a later supporting detail.
+    \item Replace any remaining broad wording such as ``model-agnostic'' with more qualified language unless the exact backend scope is specified.
+    \item Keep the controlled nature of CPPB explicit, but compress it more efficiently so that the abstract does not over-spend words on caveats.
+    \item End on one sharp claim:
     \begin{quote}
-        Illustrative examples and conceptual operating regimes are provided in the appendix for reader orientation.
+        controlled systems evidence that pre-inference mediation reduces cross-stage propagation while preserving useful downstream behavior.
     \end{quote}
 \end{itemize}
 
-\paragraph{2. Harden the CPPB benchmark description with explicit sample accounting.}
-The current CPPB description is much improved conceptually, but it still lacks the hard benchmark details expected by top-tier reviewers. The manuscript should report exact counts rather than only benchmark design principles.
+\textbf{Target abstract structure:}
+\begin{enumerate}
+    \item agent-pipeline privacy problem,
+    \item why propagation matters,
+    \item proposed pre-inference mediation framework,
+    \item main propagation + privacy--utility findings,
+    \item scope-calibrated concluding claim.
+\end{enumerate}
 
-\textbf{Required revision:}
+\subsection*{Introduction}
+\textbf{What is already improved:}
 \begin{itemize}
-    \item Add the total number of prompts in CPPB.
-    \item Add the number of prompts in each subset:
-    \begin{itemize}
-        \item essential-privacy,
-        \item incidental-privacy,
-        \item multimodal/OCR-mediated,
-        \item hard-case subsets.
-    \end{itemize}
-    \item Add category-level counts or percentages for:
-    \begin{itemize}
-        \item person identifiers,
-        \item financial identifiers,
-        \item medical entities,
-        \item addresses/locations,
-        \item organization/project terms,
-        \item context-dependent spans,
-        \item OCR-derived spans.
-    \end{itemize}
-    \item Add prompt-source composition:
-    \begin{itemize}
-        \item direct user requests,
-        \item document-oriented prompts,
-        \item retrieval-style prompts,
-        \item tool-oriented prompts,
-        \item multimodal prompts.
-    \end{itemize}
-    \item Add the number of prompt templates and generated variants.
-    \item State clearly whether each raw prompt is paired with one mediated version per baseline under the same downstream setting.
+    \item The introduction now frames propagation across logging, retrieval, memory, and tools as the central risk.
+    \item The novelty is explicitly described as deployment-oriented rather than guarantee-oriented.
+    \item The contribution list is more disciplined than in the earlier draft.
 \end{itemize}
 
-\paragraph{3. Add a benchmark reproducibility map with script-level linkage.}
-The reproducibility language is now more transparent, but top-tier standards require a more operational mapping between manuscript artifacts and released scripts.
-
-\textbf{Required revision:}
+\textbf{What still needs revision:}
 \begin{itemize}
-    \item Add a compact table in the appendix of the form:
-    \begin{center}
-    Artifact $\rightarrow$ Script/CSV $\rightarrow$ Reproducible in current repository? $\rightarrow$ Notes
-    \end{center}
-    \item Include all main tables and figures.
-    \item Explicitly distinguish:
-    \begin{enumerate}
-        \item fully regenerated artifacts,
-        \item CSV-backed artifacts,
-        \item controlled manuscript artifacts not yet end-to-end regenerated.
-    \end{enumerate}
-    \item Add one command summary for rebuilding the reproducible subset.
+    \item Further sharpen the contrast against enterprise redaction middleware and ordinary de-identification pipelines.
+    \item Make the stage-of-protection distinction even more explicit:
+    \begin{itemize}
+        \item training-time privacy,
+        \item stored-text de-identification,
+        \item prompt security,
+        \item pre-inference agent-boundary mediation.
+    \end{itemize}
+    \item Tighten the contribution list further so that every listed contribution maps to a directly validated experiment or a clearly labeled scope statement.
+    \item Consider shortening the local-DP contribution wording if the optional span-level bound is not experimentally central in this paper.
 \end{itemize}
 
-\paragraph{4. Add at least one stronger deployment-relevant baseline as an actual experiment.}
-The revised manuscript honestly states that stronger baselines such as Presidio-class systems or prompt-native privacy tools are not yet included. This is good transparency, but it is still a weakness for top-tier review.
+\textbf{Top-tier goal for the introduction:}
+The introduction should leave no ambiguity that the paper's main scientific question is:
+\begin{quote}
+Can pre-inference mediation suppress privacy propagation across agent boundaries without unacceptable degradation of downstream task behavior?
+\end{quote}
 
-\textbf{Required revision:}
+\subsection*{Related Work}
+\textbf{What is already improved:}
 \begin{itemize}
-    \item Add one stronger baseline that is actually benchmarked, not only discussed.
-    \item The best practical option is a staged enterprise-style baseline:
+    \item The related work now has a clearer stage-of-protection logic.
+    \item It better distinguishes this paper from training-time privacy and stored-text de-identification.
+\end{itemize}
+
+\textbf{What still needs revision:}
+\begin{itemize}
+    \item Add a sharper contrast paragraph focused specifically on why conventional enterprise redaction and clinical de-identification pipelines are insufficient once prompt fragments propagate into retrieval, memory, and tool arguments.
+    \item Expand the discussion of closest practical comparators, especially deployment-oriented systems rather than only academic privacy categories.
+    \item If space permits, add a compact appendix comparison table listing:
+    \begin{itemize}
+        \item protection stage,
+        \item supports agents,
+        \item supports multimodal input,
+        \item restoration-aware,
+        \item propagation-aware evaluation.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Top-tier goal for related work:}
+A reviewer should finish this section understanding precisely why this paper is \emph{not} just another masking pipeline and why the propagation-aware evaluation is a meaningful distinction.
+
+\subsection*{Method}
+\textbf{What is already improved:}
+\begin{itemize}
+    \item The method section is cleaner now that conceptual tables have been moved to the appendix.
+    \item The implementation-vs-validation distinction is much stronger than before.
+    \item The policy selector $\Pi$ is more operationally described.
+\end{itemize}
+
+\textbf{What still needs revision:}
+\begin{itemize}
+    \item Tighten the formal status of the optional span-level LDP section. If it remains, make its scope even more explicit:
+    it applies only to the randomized replacement layer and is not central evidence for the main system result.
+    \item Add one short paragraph explicitly stating which components are:
     \begin{enumerate}
-        \item regex/pattern matching,
-        \item NER,
-        \item category-aware replacement,
-        \item no semantic abstraction,
-        \item no controlled boundary restoration.
+        \item implemented and benchmarked,
+        \item implemented but not fully benchmarked in the current snapshot,
+        \item deployment guidance only.
     \end{enumerate}
-    \item If feasible, add one external practical comparator such as:
+    \item Strengthen the methodological role of restoration timing by emphasizing that it is a first-class security control rather than a post-processing convenience.
+    \item Ensure the workflow figure caption states clearly that it is an architectural overview, not an empirical result.
+\end{itemize}
+
+\textbf{Top-tier goal for method:}
+The method section should read as a rigorous systems design with clearly bounded claims, not as a mixture of prototype features and aspirational deployment notes.
+
+\subsection*{Experiments}
+\textbf{What is already improved:}
+\begin{itemize}
+    \item CPPB is now explicitly presented as a controlled benchmark.
+    \item The paired-comparison protocol is much clearer.
+    \item The stronger enterprise staged redaction baseline is a meaningful improvement over the previous draft.
+    \item The reproducibility scope is now much more transparent.
+\end{itemize}
+
+\textbf{What still needs revision:}
+\begin{itemize}
+    \item This section remains the biggest bottleneck for a top-tier submission.
+    \item Add exact CPPB accounting:
+    \begin{itemize}
+        \item total prompt count,
+        \item subset counts,
+        \item privacy-category counts or percentages,
+        \item prompt-source composition,
+        \item number of templates and generated variants,
+        \item text-only vs multimodal counts.
+    \end{itemize}
+    \item Add one stronger external practical baseline if at all feasible, for example:
     \begin{itemize}
         \item Microsoft Presidio-style pipeline,
         \item prompted LLM zero-shot de-identification,
-        \item strong contextual redaction pipeline.
+        \item a stronger contextual redaction baseline.
     \end{itemize}
-    \item In the paper, explain why this new baseline is more representative of realistic deployment than the current lightweight comparators.
+    \item Add a compact artifact map pointer in the main paper, not only in the appendix, so readers immediately know which results are code-backed and which remain controlled manuscript results.
+    \item If possible, add a small repeated-run or sensitivity analysis for at least one key operating-point result so that the paper is not entirely deterministic-profile based.
 \end{itemize}
 
-\paragraph{5. Make propagation suppression the undisputed central contribution.}
-The revised manuscript greatly strengthens the propagation experiment, but the paper can still push this further. The propagation result is the most distinctive systems contribution and should dominate the narrative.
+\textbf{Top-tier goal for experiments:}
+This section should convince a skeptical reviewer that CPPB is not merely a well-written benchmark idea, but a sufficiently specified and auditable controlled evaluation protocol.
 
-\textbf{Required revision:}
+\subsection*{Results}
+\textbf{What is already improved:}
 \begin{itemize}
-    \item Mention propagation suppression explicitly in the title candidate discussion, abstract, introduction, and conclusion.
-    \item In the introduction, present the core problem as:
+    \item The results section now explicitly identifies propagation suppression as the central systems result.
+    \item The propagation table and figure are now much better positioned as the paper's main evidence.
+    \item Many subsections now end with concrete practical takeaways.
+\end{itemize}
+
+\textbf{What still needs revision:}
+\begin{itemize}
+    \item Make the propagation subsection the first major result permanently, before general PER comparisons if possible.
+    \item Add one-sentence claim-validation statements at the end of each subsection:
     \begin{quote}
-        prompt privacy risk is amplified by propagation across retrieval, memory, and tool boundaries.
+        This subsection validates X under controlled CPPB conditions.
     \end{quote}
-    \item In the abstract, state the stage-wise propagation result directly.
-    \item In the conclusion, restate propagation suppression as the strongest validated finding.
-    \item Consider moving the propagation experiment earlier within the results section.
+    \item Reduce the number of tables that remain labeled as controlled manuscript results in the main paper if some can be moved to the appendix.
+    \item For cross-model and multimodal results, further tighten the wording so that they read as controlled portability signals rather than robust generalization claims.
 \end{itemize}
 
-\subsection*{Section-by-Section Final Tightening}
-
-\paragraph{Abstract}
-The abstract is now more careful, but it can still be sharpened.
-
-\textbf{Required revision:}
-\begin{itemize}
-    \item Move the propagation claim earlier.
-    \item Explicitly state that the evaluation is based on a controlled benchmark.
-    \item Reduce generic phrasing such as ``model-agnostic'' unless the cross-model scope is precisely qualified.
-    \item End with a narrower conclusion centered on controlled evidence for reduced cross-stage propagation and preserved task behavior.
-\end{itemize}
-
-\paragraph{Introduction}
-The introduction is stronger than before, especially in claim calibration.
-
-\textbf{Required revision:}
-\begin{itemize}
-    \item Further sharpen the gap against enterprise redaction middleware and ordinary de-identification pipelines.
-    \item Emphasize earlier that the main novelty is \emph{pre-inference mediation under propagation risk}, not merely prompt sanitization.
-    \item Shorten any residual general discussion that does not directly support the central propagation narrative.
-\end{itemize}
-
-\paragraph{Related Work}
-This section is adequate, but still somewhat descriptive.
-
-\textbf{Required revision:}
-\begin{itemize}
-    \item Add a sharper contrast paragraph focused on stage of protection:
-    \begin{itemize}
-        \item training-time protection,
-        \item stored-text de-identification,
-        \item inference-time prompt security,
-        \item agent-boundary mediation.
-    \end{itemize}
-    \item Make clearer why existing de-identification pipelines are insufficient once prompt content can propagate into memory, retrieval, and tool arguments.
-\end{itemize}
-
-\paragraph{Method}
-The method section is clear, but still slightly overloaded by explanatory material.
-
-\textbf{Required revision:}
-\begin{itemize}
-    \item Remove conceptual tables from this section.
-    \item Add one explicit paragraph clarifying which components are:
-    \begin{enumerate}
-        \item currently implemented,
-        \item experimentally validated,
-        \item proposed as deployment guidance only.
-    \end{enumerate}
-    \item Make the policy selector $\Pi$ slightly more operational:
-    what features or signals does it practically consume?
-\end{itemize}
-
-\paragraph{Experiments}
-This section improved substantially, but it is still the main bottleneck.
-
-\textbf{Required revision:}
-\begin{itemize}
-    \item Add exact CPPB counts and distributions.
-    \item Add one stronger benchmarked baseline.
-    \item Add an appendix reproducibility table linking artifacts to scripts.
-    \item If possible, add one small repeated-run or robustness analysis to strengthen the credibility of the operating-point figures.
-\end{itemize}
-
-\paragraph{Results}
-The revised results section is one of the strongest parts of the paper.
-
-\textbf{Required revision:}
-\begin{itemize}
-    \item Move the propagation subsection earlier, or explicitly announce it as the central systems result.
-    \item Add one short takeaway sentence at the end of each subsection.
-    \item Trim any explanatory repetition once the key claim has been established.
-\end{itemize}
-
-\paragraph{Limitations}
-The limitations section is now mature and top-tier in tone.
-
-\textbf{Required revision:}
-\begin{itemize}
-    \item Keep the current honesty.
-    \item Add one sentence clarifying that the present evidence should be interpreted as controlled systems validation rather than a deployment certification.
-    \item Explicitly mention that the absence of stronger matched baselines remains part of the present scope limitation.
-\end{itemize}
-
-\paragraph{Conclusion}
-The conclusion is much improved, but can still be more memorable.
-
-\textbf{Required revision:}
-\begin{itemize}
-    \item Restate only the strongest validated result.
-    \item Make propagation suppression the centerpiece of the concluding claim.
-    \item Avoid broad wording such as universal middleware compatibility unless tightly qualified.
-    \item End with a concrete next milestone: stronger baselines, fuller CPPB release, and broader external validation.
-\end{itemize}
-
-\subsection*{Recommended Final Reframing Sentence}
-A strong manuscript-level calibration sentence would be:
-
+\textbf{Top-tier goal for results:}
+The section should read as a coherent argument centered on one principal validated claim:
 \begin{quote}
-This paper should be interpreted as controlled systems evidence that policy-aware pre-inference mediation can reduce privacy propagation across agent boundaries while preserving useful downstream behavior, rather than as a universal privacy guarantee for all LLM/VLM deployments.
+privacy control is most effective before sensitive content propagates across agent boundaries.
 \end{quote}
 
-\subsection*{Recommended Final Submission Priorities}
+\subsection*{Limitations}
+\textbf{What is already improved:}
+\begin{itemize}
+    \item The paper is now substantially more mature and honest about its limitations.
+    \item The distinction between controlled validation and deployment certification is much better stated.
+    \item Reproducibility gaps are named explicitly rather than hidden.
+\end{itemize}
+
+\textbf{What still needs revision:}
+\begin{itemize}
+    \item Explicitly list the missing benchmark-accounting items as current artifact gaps.
+    \item Explicitly acknowledge that the absence of stronger external baselines remains a nontrivial scope limitation.
+    \item Clarify that some results should be read as controlled evidence under fixed CPPB assumptions rather than community-benchmark-ready findings.
+    \item Keep the multimodal limitations concrete by mentioning OCR/layout dependence, image-source scope, and missing engine/version manifests.
+\end{itemize}
+
+\textbf{Top-tier goal for limitations:}
+The limitations section should make the paper appear more credible, not weaker, by showing precise control over what is and is not claimed.
+
+\subsection*{Conclusion}
+\textbf{What is already improved:}
+\begin{itemize}
+    \item The conclusion is more cautious than before.
+    \item It is better aligned with the controlled-evidence framing.
+\end{itemize}
+
+\textbf{What still needs revision:}
+\begin{itemize}
+    \item Make propagation suppression the single centerpiece of the concluding claim.
+    \item Avoid ending on broad deployment language unless it is immediately qualified.
+    \item End with one concrete next milestone, such as:
+    \begin{itemize}
+        \item full CPPB data-card release,
+        \item stronger external baselines,
+        \item broader real-world workflow validation.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Top-tier goal for conclusion:}
+The conclusion should be short, memorable, and disciplined:
+\begin{quote}
+pre-inference mediation reduces cross-stage privacy propagation under controlled agent-style settings, while preserving useful downstream behavior, but stronger benchmark release and broader external validation remain necessary.
+\end{quote}
+
+\subsection*{Priority Actions Before Submission}
 If revision time is limited, the final priorities should be:
 
 \begin{enumerate}
-    \item move conceptual tables to the appendix;
-    \item add exact CPPB counts, distributions, and source composition;
-    \item add an artifact-to-script reproducibility map;
-    \item benchmark one stronger deployment-relevant baseline;
-    \item promote propagation suppression to the dominant narrative in abstract, introduction, results, and conclusion.
+    \item add exact CPPB sample accounting and category/source distributions;
+    \item add one stronger external practical baseline if feasible;
+    \item reduce the number of main-text results that remain only controlled manuscript artifacts;
+    \item further foreground the propagation result in abstract, introduction, results, and conclusion;
+    \item add one more explicit artifact-scope sentence in the main paper pointing to the appendix reproducibility map.
 \end{enumerate}
+
+\subsection*{Bottom-Line Recommendation}
+The revised manuscript is now \textbf{materially stronger and closer to submission quality}. It is no longer mainly blocked by framing. Its remaining gap to a top-tier submission lies in \textbf{benchmark hardness, baseline strength, and reproducibility completeness}. If these final empirical issues are improved, the paper's case will become substantially more competitive.
