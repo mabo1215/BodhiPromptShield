@@ -1,0 +1,5 @@
+method,retrieval,memory,tool
+No protection,100.0,100.0,100.0
+Regex-only,62.7,61.4,59.8
+Generic de-identification,14.9,13.6,12.8
+Proposed (boundary restoration),10.7,8.9,7.1

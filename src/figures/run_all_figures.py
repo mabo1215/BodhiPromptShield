@@ -40,6 +40,15 @@ def main():
         out_path=os.path.join(out_dir, "Spatial_distribution_of_internal_categories.png")
     )
 
+    from figures.prompt_privacy_operating_points import plot_operating_points
+    plot_operating_points(out_path=os.path.join(out_dir, "prompt_privacy_operating_points.png"))
+
+    from figures.agent_pipeline_summary import plot_agent_pipeline_summary
+    plot_agent_pipeline_summary(out_path=os.path.join(out_dir, "agent_pipeline_summary.png"))
+
+    from figures.agent_propagation_curves import plot_agent_propagation_curves
+    plot_agent_propagation_curves(out_path=os.path.join(out_dir, "agent_propagation_curves.png"))
+
     print("All figures generated.")
 
 

@@ -1,0 +1,6 @@
+pipeline,mean_ms,p95_ms
+Raw prompting (no middleware),0,0
+Regex-only redaction,7,14
+NER-only masking,26,49
+Proposed (policy-aware balanced),41,78
+Proposed (aggressive contextual),63,117

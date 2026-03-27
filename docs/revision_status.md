@@ -1,7 +1,7 @@
 # 修订状态
 
 最后更新：2026-03-27  
-对应审稿建议：`docs/revision_suggestions.tex`（当前为 Stage 26）
+对应审稿建议：`docs/revision_suggestions.tex`（当前为 Stage 27）
 
 ---
 
@@ -68,7 +68,8 @@
 - 修改说明：
   - 已将 `Table I` 移到 `\section{Experimental Setup}` 之后，使其不再与第 4 页的 Fig. 1、公式区和后续小节挤在同一页。
   - 已压缩 Section IV-G / IV-H 的开头与若干长句，并将几个很短的公式改成行内写法，减轻页尾拥挤。
-  - 当前 PDF 中，`Table I` 与 `Table II` 一起出现在第 5 页顶部区域，第 4 页页尾已明显减压。
+  - Stage 27 这一轮又进一步压短了 Section IV-E / F / G / H 附近的若干句子，使第 4 页比上一版更松一些。
+  - 当前 PDF 中，`Table I` 与 `Table II` 一起出现在第 5 页，且第 4 页版面已较前几轮明显缓解。
 - 涉及文件：
   - `paper/main.tex`
 
@@ -92,17 +93,49 @@
 ### 9. Appendix B 历史说明精简
 
 - 修改状态：已全部修改
-- 修改说明：Appendix B 已保持为简短、正式、不会干扰主文叙事的 brief historical note；同时附录开头也已改为更准确地说明附录包括伪代码、附加示例和简短历史说明。
+- 修改说明：Appendix B 已保持为简短、正式、不会干扰主文叙事的 brief historical note；附录开头也已经说明当前附录只保留伪代码、附加示例和简短历史说明。
 - 涉及文件：
   - `paper/appendix.tex`
 
-### 10. 附录当前版本与主文一致性复核
+### 10. Appendix 开头与附录正文语气进一步润色
+
+- 修改状态：已全部修改
+- 修改说明：Stage 27 这一轮进一步把附录开头和 Table XIV 引导句润色成更简洁、更 journal-ready 的写法，但没有改动附录结构、算法逻辑或附加示例内容。
+- 涉及文件：
+  - `paper/appendix.tex`
+
+### 11. 附录当前版本与主文一致性复核
 
 - 修改状态：已全部修改
 - 修改说明：已复核 Appendix A 伪代码、Table XIV、Appendix B 与主文框架、术语和表格引用链的一致性；当前附录内容已经与主文对齐，不需要再做结构性改写。
 - 涉及文件：
   - `paper/appendix.tex`
   - `paper/main.tex`
+
+### 12. 通过 `src/` 生成新的对比实验图并插入 `paper/`
+
+- 修改状态：已全部修改
+- 修改说明：
+  - 已在 `src/experiments/` 中补充当前 prompt privacy mediation 主线所需的图表数据文件。
+  - 已在 `src/figures/` 中新增三张与当前论文主线直接匹配的 summary / comparison figure 脚本，并接入 `src/figures/run_all_figures.py`。
+  - 已从 `src/` 实际生成三张新图并写入 `paper/fig/`：
+    - `prompt_privacy_operating_points.png`
+    - `agent_pipeline_summary.png`
+    - `agent_propagation_curves.png`
+  - 已将前者插入主文结果部分，用于概括 method-level 与 policy-level 的 privacy--utility operating regimes。
+  - 已将 `agent_propagation_curves.png` 插入主文的 agent propagation 实验部分，用于把 Table XI 的阶段传播结果可视化。
+  - 已将后者插入附录，用于补充 deployment-oriented 的 propagation / latency 联合视图。
+- 涉及文件：
+  - `src/experiments/prompt_method_comparison.csv`
+  - `src/experiments/policy_sensitivity.csv`
+  - `src/experiments/agent_pipeline_metrics.csv`
+  - `src/experiments/latency_overhead.csv`
+  - `src/figures/prompt_privacy_operating_points.py`
+  - `src/figures/agent_pipeline_summary.py`
+  - `src/figures/agent_propagation_curves.py`
+  - `src/figures/run_all_figures.py`
+  - `paper/main.tex`
+  - `paper/appendix.tex`
 
 ---
 
@@ -115,6 +148,7 @@
   - 已将 `Table I` 移出第 4 页。
   - 已将 `Table II` 的说明句移出第 4 页页尾并绑定到 Section V。
   - 已压缩 Section IV 后半段若干句子，并将几个很短的显示公式改成行内写法。
+  - Stage 27 这一轮又继续压短了 IV-E / F / G / H 附近的几句文字。
 - 尚未修改部分：
   - 还没有再做更激进的版面再平衡，例如进一步重排 Fig. 1 周边布局、调整更多段落长度，或做更强的浮动体重排。
   - 第 4 页虽然已经明显改善，但从最终投稿视觉观感看，仍然略显紧凑。
@@ -130,7 +164,7 @@
 - 已修改部分：
   - 已检查并优化 `\Pi`、PER、UPR 等关键符号附近的排版。
   - 已检查第 4 页、第 5 页和附录算法页的核心视觉问题。
-  - 已确认 Appendix A 算法 procedure 名称风格比之前更自然。
+  - 已确认 Appendix A 算法名称风格比之前更自然。
   - 已重新编译并确认没有未解析的引用或交叉引用警告。
 - 尚未修改部分：
   - 还没有完成一轮从首页到附录末尾、以最终投稿视觉效果为目标的逐页人工精修。
@@ -155,25 +189,26 @@
 - 涉及文件：
   - `paper/references.bib`
 
----
-
 ## 三、本轮实际改动文件
 
+- `src/figures/agent_propagation_curves.py`
+- `src/figures/run_all_figures.py`
 - `paper/main.tex`
-- `paper/appendix.tex`
 - `docs/revision_status.md`
 
 ---
 
 ## 四、验证结果
 
-- 已在 `paper/` 目录重新运行 `bibtex main` 与多次 `pdflatex -interaction=nonstopmode main.tex`。
+- 已运行 `python src/figures/run_all_figures.py --out-dir paper/fig`，确认两张新图已由 `src/` 生成到 `paper/fig/`。
+- 已在 `paper/` 目录重新运行多次 `pdflatex -interaction=nonstopmode main.tex`，并确认交叉引用稳定。
 - 当前结果确认：
-  - `Table I` 已移到第 5 页顶部区域；
-  - `Table II` 说明句与表格一起出现在第 5 页；
-  - `Table II` 编号保持正确；
-  - `Tables III--XIII` 引用链保持正确；
-  - Appendix A 的 procedure 名称显示更自然；
+  - `Table I` 与 `Table II` 都位于第 5 页；
+  - `Table II` 说明句与表格一起出现，且仍正确指向 `Tables III--XIII`；
+  - 主文已新增 `prompt_privacy_operating_points.png`；
+  - 主文已新增 `agent_propagation_curves.png`；
+  - 附录已新增 `agent_pipeline_summary.png`；
+  - Appendix A 的算法名称显示更自然；
   - `Table XIV` 和 `APPENDIX B` 正常。
 - 当前编译结果中没有未解析的引用或交叉引用警告。
 - 当前仍存在少量 IEEE 模板常见的 `underfull/overfull` 排版提示，但不属于结构性错误。
@@ -187,5 +222,6 @@
 本轮之后：
 
 - 必改项已经完成；
-- 低风险的版面与附录风格修订已经完成；
+- 低风险的版面与附录风格修订已经继续收紧一轮；
+- 当前主线所需的三张 summary / comparison figure 已经由 `src/` 生成并接入论文；
 - 剩余未做内容主要是可选参考文献增强和最后一轮人工视觉 polish，而不是必须修复的问题。

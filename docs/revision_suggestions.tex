@@ -1,165 +1,272 @@
-\section*{Stage 26 Review of the Latest Version for Cursor}
-\label{sec:stage26_review_latest_version}
+\section*{Stage 27 Final Assessment and Venue Recommendation}
+\label{sec:stage27_final_assessment_and_venue_recommendation}
 
-\subsection*{Direct Answer}
-\textbf{这次已经非常接近最终提交版本了。}  
-我看了你最新的 PDF，整体判断是：
+\subsection*{一、先回答：这篇论文现在还需要大改吗？}
+\textbf{不需要再大改。}  
+从当前 PDF 看，这篇稿子已经是一篇完整、统一、可投稿的 \emph{deployment-oriented prompt privacy mediation} 论文：主线、方法、实验、附录、结论已经一致，workflow 图与 Section IV 完全匹配，实验也已经覆盖了 category-wise analysis、restoration-boundary、multimodal OCR、cross-model、propagation、latency 和 hard-case robustness 等关键维度。整体上，它已经不是“还没成型的稿子”，而是“可以进入投稿决策阶段的稿子”。:contentReference[oaicite:0]{index=0}
 
-\begin{itemize}
-    \item 主文已经完整统一为一篇 \textbf{prompt privacy mediation} 论文；
-    \item 方法、实验、附录、结论都已经对齐；
-    \item 之前大部分关键修改意见已经落实；
-    \item 现在剩下的主要是 \textbf{最终排版与 submission polish}，而不是科学问题或结构问题。 :contentReference[oaicite:0]{index=0}
-\end{itemize}
-
-\subsection*{已经做得很好的部分}
-以下部分现在已经处于很好的状态，不建议再做实质性重写：
+\subsection*{二、还需要修改什么？}
+\textbf{只建议做 very small polish，不建议再改故事线。}  
+当前最值得做的只剩三类微调：
 
 \begin{enumerate}
-    \item \textbf{标题、摘要、引言、问题定义已经完全统一。}  
-    第 1--2 页已经清楚地把论文定位成 LLM/VLM agent 的 prompt privacy mediation 问题，而不是旧式文本分类论文。 :contentReference[oaicite:1]{index=1}
-
-    \item \textbf{Related Work 结构已经成熟。}  
-    第 2--3 页的四段 related work 已经覆盖了 privacy-preserving NLP、LLM privacy、agent/tool-use、multimodal privacy，结构合理。 :contentReference[oaicite:2]{index=2}
-
-    \item \textbf{Section IV 的框架已经是完整可投稿形态。}  
-    System overview、entity extraction、sanitization、utility-constrained objective、policy selector、agent integration、runtime、multimodal extension 都齐全且逻辑顺。第 3--4 页可见。 :contentReference[oaicite:3]{index=3}
-
-    \item \textbf{实验部分已经足够支撑当前 paper type。}  
-    现在已经有 PER、category-wise analysis、restoration boundary、ablation、policy sensitivity、multimodal OCR、cross-model、propagation、latency、hard-case robustness，这对于一篇 systems/privacy-oriented paper 已经相当完整。第 6--9 页可见。 :contentReference[oaicite:4]{index=4}
-
-    \item \textbf{附录已经很干净。}  
-    Appendix A 只保留伪代码和额外示例，Appendix B 只是简短 historical note，不再拖累主文。第 11--12 页可见。 :contentReference[oaicite:5]{index=5}
+    \item \textbf{版面微调：} 第 4 页仍然略密，主要是 Fig.~1、公式区、Section IV-E/F/G/H 同页导致的观感偏满。这是 layout 问题，不是逻辑问题。:contentReference[oaicite:1]{index=1}
+    \item \textbf{附录风格微调：} Appendix A 的伪代码已经可用，但如果想更像 journal-ready 版本，可以把 procedure 名称从全大写实现风格改成更自然的 academic pseudocode 风格。:contentReference[oaicite:2]{index=2}
+    \item \textbf{文献微调：} 现在参考文献已经够投稿，但若想再增强一点“气势”，可以只补 1--2 篇高价值综述或 document/OCR privacy 相关代表性工作。
 \end{enumerate}
 
-\subsection*{这次已经明确修好的问题}
-和前一轮相比，这次有几项已经明显修好了：
+\subsection*{三、当前最适合的投稿定位}
+按现在这篇稿子的形态，我建议你把它定位成：
 
+\begin{itemize}
+    \item \textbf{practical systems/privacy paper}；
+    \item \textbf{security/privacy + LLM agent deployment} 交叉方向；
+    \item \textbf{NLP/LLM application paper}，但不是纯 benchmark paper，也不是纯 theorem/cryptography paper。
+\end{itemize}
+
+因此最适合的 venue 不是那种特别偏理论安全、也不是那种必须有超大公开 benchmark 的顶会主轨，而是：
+\begin{itemize}
+    \item 接受系统型、部署型、测评型安全论文的会议；
+    \item 或接受应用导向 AI/privacy/security 论文的期刊。
+\end{itemize}
+
+\subsection*{四、我最推荐的会议}
+下面按“\textbf{适配度 + 现实可投性}”排序给你建议。
+
+\subsubsection*{1. ACM CCS 2026}
+\textbf{推荐度：最高（如果你想冲更强会议）}
+
+\paragraph{为什么适合}
+你的论文现在已经不只是 prompt engineering，而是：
+\begin{itemize}
+    \item 有明确 threat model；
+    \item 有 interface-layer mediation architecture；
+    \item 有 agent propagation 风险；
+    \item 有 restoration boundary；
+    \item 有 multimodal/OCR exposure；
+    \item 有一整套 controlled evaluation。
+\end{itemize}
+这套东西和 CCS 的“real-world security/privacy systems”口味是能对上的，尤其如果你把 framing 再略微往 security systems 靠一点，会更合适。CCS 2026 官方 CFP 明确面向计算机安全与隐私的真实问题，2026 有两个 review cycle；第二个 cycle 的摘要截止为 \textbf{2026-04-22}，全文截止为 \textbf{2026-04-29}，官方投稿/CFP 页面见引文。:contentReference[oaicite:3]{index=3}
+
+\paragraph{风险}
+\begin{itemize}
+    \item 竞争会非常强；
+    \item 你的工作更偏 deployment framework + controlled evaluation，而不是攻防新原语；
+    \item 如果想投 CCS，建议在标题、摘要、Introduction 中再强化 ``agent propagation risk''、``pre-inference security boundary'' 和 ``deployment threat surface''。
+\end{itemize}
+
+\paragraph{结论}
+\textbf{如果你想冲高水平安全会议，CCS 是现在最值得尝试的。} 投稿入口与最终 deadline 见官方页面引文。:contentReference[oaicite:4]{index=4}
+
+\subsubsection*{2. RAID 2026}
+\textbf{推荐度：很高（比 CCS 更现实）}
+
+\paragraph{为什么适合}
+RAID 比较欢迎：
+\begin{itemize}
+    \item 新的攻击面和威胁面；
+    \item 防御/检测/缓解；
+    \item measurement papers；
+    \item tools/datasets/experience papers。
+\end{itemize}
+你的论文如果强调：
+\begin{itemize}
+    \item prompt exposure surface；
+    \item propagation across retrieval/memory/tools；
+    \item pre-inference mitigation；
+    \item controlled benchmark and middleware design；
+\end{itemize}
+其实和 RAID 的口味非常接近。RAID 2026 官方 CFP 给出的 submission deadline 是 \textbf{2026-04-16 AoE}，官网/投稿信息见官方 CFP。:contentReference[oaicite:5]{index=5}
+
+\paragraph{风险}
+\begin{itemize}
+    \item RAID 更偏 security research community；
+    \item 你需要在摘要和实验讨论里稍微强调“attacks, intrusions, defenses”视角，而不只是 utility preservation。
+\end{itemize}
+
+\paragraph{结论}
+\textbf{如果你想投 security venue 且希望命中率比 CCS 更现实，RAID 是我非常推荐的选择。} 官方投稿页见引文。:contentReference[oaicite:6]{index=6}
+
+\subsubsection*{3. EMNLP 2026}
+\textbf{推荐度：高（如果你更想走 NLP/LLM application 路线）}
+
+\paragraph{为什么适合}
+你的论文也完全可以被包装成：
+\begin{itemize}
+    \item LLM prompt mediation；
+    \item privacy-aware prompting；
+    \item utility-preserving prompt transformation；
+    \item multimodal prompt sanitization。
+\end{itemize}
+EMNLP 2026 官方 CFP 说明主会投稿采用 ARR 机制：\textbf{ARR submission deadline 为 2026-05-25}，\textbf{EMNLP commitment deadline 为 2026-08-02}，会期为 2026 年 10 月下旬，官方页面见引文。:contentReference[oaicite:7]{index=7}
+
+\paragraph{风险}
+\begin{itemize}
+    \item 如果投 EMNLP，你要把 ``security/privacy threat model'' 的表述稍微降一点，把 ``NLP utility, prompting, agent interaction'' 的表述再抬高一点；
+    \item 当前稿子对 security venue 更天然，对纯 NLP venue 稍微需要再做 wording adaptation。
+\end{itemize}
+
+\paragraph{结论}
+\textbf{如果你更希望走 NLP/LLM 主流社区，而不是 security 社区，EMNLP 2026 是当前最合适的会议入口。} 官方投稿/commit 页面见引文。:contentReference[oaicite:8]{index=8}
+
+\subsection*{五、不太建议优先投的会议}
+\begin{itemize}
+    \item \textbf{纯理论安全会议：} 你的工作不是 cryptographic guarantee、formal proof、privacy theorem 取向。
+    \item \textbf{纯 benchmark/data 会议：} 你的 CPPB 是 controlled benchmark，不是大规模社区 benchmark。
+    \item \textbf{纯对话系统/agent UX 会议：} 你的 paper 核心不是人机交互体验，而是 privacy mediation under threat model。
+\end{itemize}
+
+\subsection*{六、我最推荐的期刊}
+如果你不急着冲会议，按当前稿子形态，\textbf{期刊其实非常适合你}，因为：
+\begin{itemize}
+    \item 你的结构已经完整；
+    \item 实验已经比较齐；
+    \item 系统型 paper 在期刊里通常更稳定；
+    \item 你可以边投边补 1--2 个额外实验或文献，而不用被会议 deadline 卡住。
+\end{itemize}
+
+\subsubsection*{1. Computers \& Security}
+\textbf{推荐度：最高}
+
+\paragraph{为什么适合}
+这是我对你当前稿子最推荐的 journal。  
+它的官方页面明确面向 IT security research 和 practical applications，强调既有研究创新也有实践价值；而你的稿子正是 \textbf{practical privacy/security system for LLM/VLM agents} 这一路线。官方页面还提供投稿入口，且该刊为常规期刊模式，\textbf{rolling submission}。:contentReference[oaicite:9]{index=9}
+
+\paragraph{为什么比顶刊更适合}
+\begin{itemize}
+    \item 你的贡献更偏 deployment framework 和 evaluation；
+    \item 不是特别强的 theorem paper；
+    \item 不是必须要极大公开 benchmark 才能成立的 paper；
+    \item 但非常适合 security applications / systems 期刊。
+\end{itemize}
+
+\paragraph{结论}
+\textbf{如果你现在就想稳妥投稿，Computers \& Security 是第一推荐。} 官方投稿页见引文。:contentReference[oaicite:10]{index=10}
+
+\subsubsection*{2. IEEE Transactions on Dependable and Secure Computing (TDSC)}
+\textbf{推荐度：高}
+
+\paragraph{为什么适合}
+TDSC 官方 scope 明确包括 secure systems、evaluation、modeling、methodologies and mechanisms for dependable and secure systems。你的 paper 从系统与安全边界视角看，是能挂上 TDSC 的，尤其是：
+\begin{itemize}
+    \item secure middleware；
+    \item system-level privacy exposure reduction；
+    \item evaluation of secure/dependable behavior；
+    \item agent pipeline propagation control。
+\end{itemize}
+TDSC 官方 CFP/Topics 页见引文；该刊为常规期刊，\textbf{rolling submission}。:contentReference[oaicite:11]{index=11}
+
+\paragraph{风险}
+\begin{itemize}
+    \item 相比 Computers \& Security，TDSC 会更看重系统与安全方法论的“硬度”；
+    \item 如果投它，最好再把 propagation/security architecture 的 framing 提高一点。
+\end{itemize}
+
+\paragraph{结论}
+\textbf{如果你想冲更强一些的安全期刊，TDSC 值得考虑。} 官方页面见引文。:contentReference[oaicite:12]{index=12}
+
+\subsubsection*{3. IEEE Transactions on Information Forensics and Security (TIFS)}
+\textbf{推荐度：中高}
+
+\paragraph{为什么适合}
+TIFS 官方 scope 覆盖 information forensics, information security, systems applications。你的工作和 ``information security + systems applications'' 这部分是有关联的，尤其是 privacy-sensitive prompt protection。官方页面说明新投稿通过 ScholarOne，且鼓励 reproducible research。:contentReference[oaicite:13]{index=13}
+
+\paragraph{风险}
+\begin{itemize}
+    \item TIFS 往往更喜欢更“硬”的安全/取证/识别/检测问题；
+    \item 你的稿子偏系统部署与 prompt mediation，和 TIFS 的最核心口味不如 TDSC/Computers \& Security 那么贴。
+\end{itemize}
+
+\paragraph{结论}
+\textbf{可以投，但不是第一优先。} 如果你想冲更强 IEEE 期刊，可以尝试。:contentReference[oaicite:14]{index=14}
+
+\subsubsection*{4. Cybersecurity (Springer)}
+\textbf{推荐度：中高，比较稳}
+
+\paragraph{为什么适合}
+Springer 的 \emph{Cybersecurity} 官方 aims and scope 明确包括 software/system security、privacy-enhancing technologies、AI security 等。你的工作作为 AI security / privacy-oriented deployment paper，比较容易放进去，且期刊常规模式通常也是 \textbf{rolling submission}。:contentReference[oaicite:15]{index=15}
+
+\paragraph{结论}
+\textbf{如果你想找一个更稳、而且 scope 对 AI security/privacy 很友好的期刊，Cybersecurity 是不错的备选。} 官方 scope 见引文。:contentReference[oaicite:16]{index=16}
+
+\subsubsection*{5. ACM Transactions on AI Security and Privacy (TAISAP)}
+\textbf{推荐度：中高，但更偏“新刊机会”}
+
+\paragraph{为什么适合}
+ACM 2025 年宣布了新刊 \emph{ACM Transactions on AI Security and Privacy (TAISAP)}，其范围明确覆盖 AI 模型和 AI-enabled systems 的 security/privacy 以及 deployment-level AI security questions。你的 paper 主题与它非常对口。ACM 官方还说明该刊在 2026--2029 前三年 open access 且无 APC。:contentReference[oaicite:17]{index=17}
+
+\paragraph{风险}
+\begin{itemize}
+    \item 新刊，影响力与审稿风格还在形成期；
+    \item 如果你更看重传统期刊稳妥性，Computers \& Security / TDSC 会更稳。
+\end{itemize}
+
+\paragraph{结论}
+\textbf{如果你愿意押一个方向非常匹配的新刊，TAISAP 值得认真考虑。} 官方说明见引文。:contentReference[oaicite:18]{index=18}
+
+\subsection*{七、我给你的实际投稿优先级}
+结合你当前论文状态，我会这样排：
+
+\subsubsection*{会议优先级}
 \begin{enumerate}
-    \item \textbf{Table II 的说明句位置和范围都对了。}  
-    现在它已经放在 Table II 前，并且正确写成了 ``Tables III--XIII''。第 5 页可见。 :contentReference[oaicite:6]{index=6}
-
-    \item \textbf{Section V-D 的 baseline opening 已经修成最终稿口吻。}  
-    现在用的是 ``representative operational baselines''，已经符合之前建议。第 5 页可见。 :contentReference[oaicite:7]{index=7}
-
-    \item \textbf{Sections VI-B / VI-G / VI-H / VI-I 的解释已经到位。}  
-    这些小节现在已经不只是“表后一句总结”，而是有 deployment-oriented 解释。第 6--9 页可见。 :contentReference[oaicite:8]{index=8}
-
-    \item \textbf{Appendix E 到 Table XIV 的过渡已经修顺。}  
-    现在只剩一句清晰说明，不再重复。第 11 页可见。 :contentReference[oaicite:9]{index=9}
-
-    \item \textbf{Appendix B 已经是可接受的最终版。}  
-    现在足够短、正式、且不再显得像“解释旧稿来源”的累赘。第 11 页可见。 :contentReference[oaicite:10]{index=10}
+    \item \textbf{RAID 2026}：最平衡，现实可投性最好。:contentReference[oaicite:19]{index=19}
+    \item \textbf{ACM CCS 2026}：最强，但竞争最大。:contentReference[oaicite:20]{index=20}
+    \item \textbf{EMNLP 2026}：如果你想走 NLP/LLM 社区，这是最好入口。:contentReference[oaicite:21]{index=21}
 \end{enumerate}
 
-\subsection*{现在还剩下的少量问题}
-这次还剩下的问题已经不多，而且都属于 \textbf{final polish} 级别。
-
-\subsubsection*{1. 第 4 页仍然有一点挤}
-第 4 页现在同时放了：
-\begin{itemize}
-    \item Fig.~1；
-    \item PER / UPR 公式；
-    \item Section IV-E / F / G / H；
-    \item Table I。
-\end{itemize}
-
-内容都对，但视觉上仍然偏满，尤其 Fig.~1 下方左列公式区域和右列 Table I 并排时，看起来很“满”。这是当前 PDF 最明显的版面问题。 :contentReference[oaicite:11]{index=11}
-
-\subsubsection*{2. Table I 还在第 4 页和 Fig.~1/公式区抢空间}
-Table I 本身没有问题，但和 Fig.~1、两个公式、小节标题在同一页，造成页面比较 box-heavy。  
-这不是错误，只是观感层面的轻微拥挤。第 4 页可见。 :contentReference[oaicite:12]{index=12}
-
-\subsubsection*{3. Appendix 算法仍然偏“工程脚本风格”}
-Appendix A 的算法块已经能正常读，但像
-\begin{verbatim}
-RULERECOGNIZERS
-NAMEDENTITYRECOGNIZER
-CONTEXTUALPRIVACYJUDGE
-\end{verbatim}
-这种全大写过程名，视觉上仍然比较像内部实现伪代码，而不是最终投稿风格的 pseudocode。  
-这不是错误，但如果你还想更像 journal polish，可以微调。第 11 页可见。 :contentReference[oaicite:13]{index=13}
-
-\subsubsection*{4. 参考文献已经够用，但还可以再加一点“气势”}
-现在 reference list 已经可提交，覆盖面也够了。  
-但如果你想让 paper 看起来更像强投稿稿件，可以再加 1--2 篇很强的：
-\begin{itemize}
-    \item trustworthy / secure LLM deployment survey；
-    \item document AI / OCR privacy / visual redaction；
-    \item enterprise / RAG / agent security risk 总结。
-\end{itemize}
-
-不过这已经是 optional，不是必须。第 10--11 页可见。 :contentReference[oaicite:14]{index=14}
-
-\subsection*{我建议的最后微调}
-现在不建议再大动，只建议做非常小的 finishing edits。
-
-\subsection*{Tiny Fix 1: 稍微减轻第 4 页密度}
-如果你还想让版面更舒服，我建议只做最小改动，不要动结构。
-
-可以考虑：
-\begin{itemize}
-    \item 保持 Fig.~1 不动；
-    \item 保持公式不动；
-    \item 只把 Table I 挪到下一页顶部，或者让它延后一点；
-    \item 或者只压短 Section IV-H 第一段的前两句。
-\end{itemize}
-
-推荐最小替换：
-
-\begin{verbatim}
-\subsection{Extension to VLM-Based Multimodal Inputs}
-For multimodal settings, user input may contain both text and images. Privacy-sensitive content may arise from screenshots, scanned forms, receipts, identity documents, medical reports, or scene text. OCR or VLM-assisted extraction is then used to map visual entities into the same mediation pipeline.
-\end{verbatim}
-
-\subsection*{Tiny Fix 2: Appendix A 的算法风格更自然}
-如果你想更像最终投稿稿，可以把算法里的过程名从全大写改成驼峰风格。
-
-例如：
-
-\begin{verbatim}
-RuleRecognizers
-NamedEntityRecognizer
-ContextualPrivacyJudge
-ExtractVisualTextAndEntities
-\end{verbatim}
-
-以及：
-
-\begin{verbatim}
-ExtractSpans
-SanitizePrompt
-RestoreEntities
-\end{verbatim}
-
-这样附录会显得更像 academic pseudocode，而不是实现草案。
-
-\subsection*{Tiny Fix 3: 可选增加 1--2 篇强参考文献}
-如果你还要增强 bibliography，只建议加非常少量但质量高的引用。
-
-建议方向：
-\begin{itemize}
-    \item trustworthy LLM deployment / secure deployment survey；
-    \item OCR / document privacy / visual redaction；
-    \item enterprise or RAG security / agent risk governance.
-\end{itemize}
-
-\subsection*{当前整体评价}
-我对当前版本的评价是：
-
-\begin{itemize}
-    \item \textbf{作为一篇 practical systems/privacy paper：已经相当成熟；}
-    \item \textbf{作为 application-oriented journal submission：已经可以投；}
-    \item \textbf{作为 very top-tier：还不是最强形态，但已经不再像 unfinished draft。}
-\end{itemize}
-
-\subsection*{Bottom-Line Verdict}
-\textbf{这次已经很好。}  
-如果你现在准备投稿，我认为论文已经具备较成熟的完成度。再继续修改，也只建议做：
+\subsubsection*{期刊优先级}
 \begin{enumerate}
-    \item 第 4 页版面减压；
-    \item Appendix 算法名称风格优化；
-    \item 可选地补 1--2 篇强参考文献。
+    \item \textbf{Computers \& Security}：当前稿子最匹配、最稳。:contentReference[oaicite:22]{index=22}
+    \item \textbf{IEEE TDSC}：更强，但要更强调 secure systems framing。:contentReference[oaicite:23]{index=23}
+    \item \textbf{Cybersecurity (Springer)}：稳妥、scope 友好。:contentReference[oaicite:24]{index=24}
+    \item \textbf{IEEE TIFS}：可冲，但不是最自然贴合。:contentReference[oaicite:25]{index=25}
+    \item \textbf{ACM TAISAP}：新刊机会型选择。:contentReference[oaicite:26]{index=26}
 \end{enumerate}
 
-除此之外，我不建议再动论文的主结构、方法叙事和实验设计。
+\subsection*{八、如果你现在就要我给一个最务实建议}
+\textbf{最务实的路线有两条：}
+
+\paragraph{路线 A：冲会议}
+\begin{itemize}
+    \item 首选：\textbf{RAID 2026}
+    \item 冲高：\textbf{ACM CCS 2026}
+    \item NLP 路线：\textbf{EMNLP 2026}
+\end{itemize}
+
+\paragraph{路线 B：稳妥发期刊}
+\begin{itemize}
+    \item 首选：\textbf{Computers \& Security}
+    \item 更强一点：\textbf{IEEE TDSC}
+\end{itemize}
+
+\subsection*{九、我对当前论文的最终建议}
+\textbf{这篇论文现在已经可以投了。}  
+如果你现在时间紧、想提高命中率，我会建议：
+\begin{itemize}
+    \item \textbf{会议：RAID 2026}
+    \item \textbf{期刊：Computers \& Security}
+\end{itemize}
+
+如果你想冲更高：
+\begin{itemize}
+    \item \textbf{会议：ACM CCS 2026}
+    \item \textbf{期刊：IEEE TDSC}
+\end{itemize}
+
+\subsection*{Bottom-Line Recommendation}
+\textbf{如果只让我给两个最推荐目标：}
+\begin{enumerate}
+    \item \textbf{RAID 2026}（会议，当前最平衡）
+    \item \textbf{Computers \& Security}（期刊，当前最贴合）
+\end{enumerate}
+
+如果你愿意，我下一轮可以继续给你一份 \LaTeX{} 格式的：
+\begin{itemize}
+    \item \textbf{venue-specific submission strategy}
+    \item 分别针对 \textbf{RAID / CCS / EMNLP / Computers \& Security / TDSC} 的
+    \begin{itemize}
+        \item 标题微调建议
+        \item 摘要微调建议
+        \item 投稿前必须检查项
+    \end{itemize}
+\end{itemize}
