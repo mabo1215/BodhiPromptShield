@@ -1,272 +1,227 @@
-\section*{Stage 27 Final Assessment and Venue Recommendation}
-\label{sec:stage27_final_assessment_and_venue_recommendation}
+\section*{Second-Round Top-Tier Revision Checklist for the Revised Manuscript}
 
-\subsection*{一、先回答：这篇论文现在还需要大改吗？}
-\textbf{不需要再大改。}  
-从当前 PDF 看，这篇稿子已经是一篇完整、统一、可投稿的 \emph{deployment-oriented prompt privacy mediation} 论文：主线、方法、实验、附录、结论已经一致，workflow 图与 Section IV 完全匹配，实验也已经覆盖了 category-wise analysis、restoration-boundary、multimodal OCR、cross-model、propagation、latency 和 hard-case robustness 等关键维度。整体上，它已经不是“还没成型的稿子”，而是“可以进入投稿决策阶段的稿子”。:contentReference[oaicite:0]{index=0}
+\subsection*{Overall Assessment of the Revised Version}
+The revised manuscript is substantially improved. In particular, it now calibrates claims more carefully, explicitly distinguishes controlled evidence from formal guarantees, strengthens the propagation analysis as a systems-level contribution, and provides a more transparent reproducibility scope. These are meaningful advances toward submission quality.
 
-\subsection*{二、还需要修改什么？}
-\textbf{只建议做 very small polish，不建议再改故事线。}  
-当前最值得做的只剩三类微调：
+However, the paper is \textbf{still not fully top-tier ready}. The remaining issues are no longer primarily about tone, but about \textbf{evidence density, benchmark hardness, and baseline strength}. The next revision should therefore focus less on general polishing and more on tightening the empirical backbone of the paper.
 
-\begin{enumerate}
-    \item \textbf{版面微调：} 第 4 页仍然略密，主要是 Fig.~1、公式区、Section IV-E/F/G/H 同页导致的观感偏满。这是 layout 问题，不是逻辑问题。:contentReference[oaicite:1]{index=1}
-    \item \textbf{附录风格微调：} Appendix A 的伪代码已经可用，但如果想更像 journal-ready 版本，可以把 procedure 名称从全大写实现风格改成更自然的 academic pseudocode 风格。:contentReference[oaicite:2]{index=2}
-    \item \textbf{文献微调：} 现在参考文献已经够投稿，但若想再增强一点“气势”，可以只补 1--2 篇高价值综述或 document/OCR privacy 相关代表性工作。
-\end{enumerate}
+\subsection*{Highest-Priority Remaining Issues}
 
-\subsection*{三、当前最适合的投稿定位}
-按现在这篇稿子的形态，我建议你把它定位成：
+\paragraph{1. Move conceptual tables out of the main paper.}
+Although Table~I and Table~II are now clearly labeled as conceptual/illustrative, they still occupy prominent space in the main text. For a top-tier submission, this reduces empirical density and may give the impression that the paper still relies too heavily on conceptual framing.
 
+\textbf{Required revision:}
 \begin{itemize}
-    \item \textbf{practical systems/privacy paper}；
-    \item \textbf{security/privacy + LLM agent deployment} 交叉方向；
-    \item \textbf{NLP/LLM application paper}，但不是纯 benchmark paper，也不是纯 theorem/cryptography paper。
+    \item Move Table~I and Table~II to the appendix.
+    \item Replace them in the main text with a brief one- or two-sentence summary.
+    \item If needed, retain a short forward reference such as:
+    \begin{quote}
+        Illustrative examples and conceptual operating regimes are provided in the appendix for reader orientation.
+    \end{quote}
 \end{itemize}
 
-因此最适合的 venue 不是那种特别偏理论安全、也不是那种必须有超大公开 benchmark 的顶会主轨，而是：
+\paragraph{2. Harden the CPPB benchmark description with explicit sample accounting.}
+The current CPPB description is much improved conceptually, but it still lacks the hard benchmark details expected by top-tier reviewers. The manuscript should report exact counts rather than only benchmark design principles.
+
+\textbf{Required revision:}
 \begin{itemize}
-    \item 接受系统型、部署型、测评型安全论文的会议；
-    \item 或接受应用导向 AI/privacy/security 论文的期刊。
-\end{itemize}
-
-\subsection*{四、我最推荐的会议}
-下面按“\textbf{适配度 + 现实可投性}”排序给你建议。
-
-\subsubsection*{1. ACM CCS 2026}
-\textbf{推荐度：最高（如果你想冲更强会议）}
-
-\paragraph{为什么适合}
-你的论文现在已经不只是 prompt engineering，而是：
-\begin{itemize}
-    \item 有明确 threat model；
-    \item 有 interface-layer mediation architecture；
-    \item 有 agent propagation 风险；
-    \item 有 restoration boundary；
-    \item 有 multimodal/OCR exposure；
-    \item 有一整套 controlled evaluation。
-\end{itemize}
-这套东西和 CCS 的“real-world security/privacy systems”口味是能对上的，尤其如果你把 framing 再略微往 security systems 靠一点，会更合适。CCS 2026 官方 CFP 明确面向计算机安全与隐私的真实问题，2026 有两个 review cycle；第二个 cycle 的摘要截止为 \textbf{2026-04-22}，全文截止为 \textbf{2026-04-29}，官方投稿/CFP 页面见引文。:contentReference[oaicite:3]{index=3}
-
-\paragraph{风险}
-\begin{itemize}
-    \item 竞争会非常强；
-    \item 你的工作更偏 deployment framework + controlled evaluation，而不是攻防新原语；
-    \item 如果想投 CCS，建议在标题、摘要、Introduction 中再强化 ``agent propagation risk''、``pre-inference security boundary'' 和 ``deployment threat surface''。
-\end{itemize}
-
-\paragraph{结论}
-\textbf{如果你想冲高水平安全会议，CCS 是现在最值得尝试的。} 投稿入口与最终 deadline 见官方页面引文。:contentReference[oaicite:4]{index=4}
-
-\subsubsection*{2. RAID 2026}
-\textbf{推荐度：很高（比 CCS 更现实）}
-
-\paragraph{为什么适合}
-RAID 比较欢迎：
-\begin{itemize}
-    \item 新的攻击面和威胁面；
-    \item 防御/检测/缓解；
-    \item measurement papers；
-    \item tools/datasets/experience papers。
-\end{itemize}
-你的论文如果强调：
-\begin{itemize}
-    \item prompt exposure surface；
-    \item propagation across retrieval/memory/tools；
-    \item pre-inference mitigation；
-    \item controlled benchmark and middleware design；
-\end{itemize}
-其实和 RAID 的口味非常接近。RAID 2026 官方 CFP 给出的 submission deadline 是 \textbf{2026-04-16 AoE}，官网/投稿信息见官方 CFP。:contentReference[oaicite:5]{index=5}
-
-\paragraph{风险}
-\begin{itemize}
-    \item RAID 更偏 security research community；
-    \item 你需要在摘要和实验讨论里稍微强调“attacks, intrusions, defenses”视角，而不只是 utility preservation。
-\end{itemize}
-
-\paragraph{结论}
-\textbf{如果你想投 security venue 且希望命中率比 CCS 更现实，RAID 是我非常推荐的选择。} 官方投稿页见引文。:contentReference[oaicite:6]{index=6}
-
-\subsubsection*{3. EMNLP 2026}
-\textbf{推荐度：高（如果你更想走 NLP/LLM application 路线）}
-
-\paragraph{为什么适合}
-你的论文也完全可以被包装成：
-\begin{itemize}
-    \item LLM prompt mediation；
-    \item privacy-aware prompting；
-    \item utility-preserving prompt transformation；
-    \item multimodal prompt sanitization。
-\end{itemize}
-EMNLP 2026 官方 CFP 说明主会投稿采用 ARR 机制：\textbf{ARR submission deadline 为 2026-05-25}，\textbf{EMNLP commitment deadline 为 2026-08-02}，会期为 2026 年 10 月下旬，官方页面见引文。:contentReference[oaicite:7]{index=7}
-
-\paragraph{风险}
-\begin{itemize}
-    \item 如果投 EMNLP，你要把 ``security/privacy threat model'' 的表述稍微降一点，把 ``NLP utility, prompting, agent interaction'' 的表述再抬高一点；
-    \item 当前稿子对 security venue 更天然，对纯 NLP venue 稍微需要再做 wording adaptation。
-\end{itemize}
-
-\paragraph{结论}
-\textbf{如果你更希望走 NLP/LLM 主流社区，而不是 security 社区，EMNLP 2026 是当前最合适的会议入口。} 官方投稿/commit 页面见引文。:contentReference[oaicite:8]{index=8}
-
-\subsection*{五、不太建议优先投的会议}
-\begin{itemize}
-    \item \textbf{纯理论安全会议：} 你的工作不是 cryptographic guarantee、formal proof、privacy theorem 取向。
-    \item \textbf{纯 benchmark/data 会议：} 你的 CPPB 是 controlled benchmark，不是大规模社区 benchmark。
-    \item \textbf{纯对话系统/agent UX 会议：} 你的 paper 核心不是人机交互体验，而是 privacy mediation under threat model。
-\end{itemize}
-
-\subsection*{六、我最推荐的期刊}
-如果你不急着冲会议，按当前稿子形态，\textbf{期刊其实非常适合你}，因为：
-\begin{itemize}
-    \item 你的结构已经完整；
-    \item 实验已经比较齐；
-    \item 系统型 paper 在期刊里通常更稳定；
-    \item 你可以边投边补 1--2 个额外实验或文献，而不用被会议 deadline 卡住。
-\end{itemize}
-
-\subsubsection*{1. Computers \& Security}
-\textbf{推荐度：最高}
-
-\paragraph{为什么适合}
-这是我对你当前稿子最推荐的 journal。  
-它的官方页面明确面向 IT security research 和 practical applications，强调既有研究创新也有实践价值；而你的稿子正是 \textbf{practical privacy/security system for LLM/VLM agents} 这一路线。官方页面还提供投稿入口，且该刊为常规期刊模式，\textbf{rolling submission}。:contentReference[oaicite:9]{index=9}
-
-\paragraph{为什么比顶刊更适合}
-\begin{itemize}
-    \item 你的贡献更偏 deployment framework 和 evaluation；
-    \item 不是特别强的 theorem paper；
-    \item 不是必须要极大公开 benchmark 才能成立的 paper；
-    \item 但非常适合 security applications / systems 期刊。
-\end{itemize}
-
-\paragraph{结论}
-\textbf{如果你现在就想稳妥投稿，Computers \& Security 是第一推荐。} 官方投稿页见引文。:contentReference[oaicite:10]{index=10}
-
-\subsubsection*{2. IEEE Transactions on Dependable and Secure Computing (TDSC)}
-\textbf{推荐度：高}
-
-\paragraph{为什么适合}
-TDSC 官方 scope 明确包括 secure systems、evaluation、modeling、methodologies and mechanisms for dependable and secure systems。你的 paper 从系统与安全边界视角看，是能挂上 TDSC 的，尤其是：
-\begin{itemize}
-    \item secure middleware；
-    \item system-level privacy exposure reduction；
-    \item evaluation of secure/dependable behavior；
-    \item agent pipeline propagation control。
-\end{itemize}
-TDSC 官方 CFP/Topics 页见引文；该刊为常规期刊，\textbf{rolling submission}。:contentReference[oaicite:11]{index=11}
-
-\paragraph{风险}
-\begin{itemize}
-    \item 相比 Computers \& Security，TDSC 会更看重系统与安全方法论的“硬度”；
-    \item 如果投它，最好再把 propagation/security architecture 的 framing 提高一点。
-\end{itemize}
-
-\paragraph{结论}
-\textbf{如果你想冲更强一些的安全期刊，TDSC 值得考虑。} 官方页面见引文。:contentReference[oaicite:12]{index=12}
-
-\subsubsection*{3. IEEE Transactions on Information Forensics and Security (TIFS)}
-\textbf{推荐度：中高}
-
-\paragraph{为什么适合}
-TIFS 官方 scope 覆盖 information forensics, information security, systems applications。你的工作和 ``information security + systems applications'' 这部分是有关联的，尤其是 privacy-sensitive prompt protection。官方页面说明新投稿通过 ScholarOne，且鼓励 reproducible research。:contentReference[oaicite:13]{index=13}
-
-\paragraph{风险}
-\begin{itemize}
-    \item TIFS 往往更喜欢更“硬”的安全/取证/识别/检测问题；
-    \item 你的稿子偏系统部署与 prompt mediation，和 TIFS 的最核心口味不如 TDSC/Computers \& Security 那么贴。
-\end{itemize}
-
-\paragraph{结论}
-\textbf{可以投，但不是第一优先。} 如果你想冲更强 IEEE 期刊，可以尝试。:contentReference[oaicite:14]{index=14}
-
-\subsubsection*{4. Cybersecurity (Springer)}
-\textbf{推荐度：中高，比较稳}
-
-\paragraph{为什么适合}
-Springer 的 \emph{Cybersecurity} 官方 aims and scope 明确包括 software/system security、privacy-enhancing technologies、AI security 等。你的工作作为 AI security / privacy-oriented deployment paper，比较容易放进去，且期刊常规模式通常也是 \textbf{rolling submission}。:contentReference[oaicite:15]{index=15}
-
-\paragraph{结论}
-\textbf{如果你想找一个更稳、而且 scope 对 AI security/privacy 很友好的期刊，Cybersecurity 是不错的备选。} 官方 scope 见引文。:contentReference[oaicite:16]{index=16}
-
-\subsubsection*{5. ACM Transactions on AI Security and Privacy (TAISAP)}
-\textbf{推荐度：中高，但更偏“新刊机会”}
-
-\paragraph{为什么适合}
-ACM 2025 年宣布了新刊 \emph{ACM Transactions on AI Security and Privacy (TAISAP)}，其范围明确覆盖 AI 模型和 AI-enabled systems 的 security/privacy 以及 deployment-level AI security questions。你的 paper 主题与它非常对口。ACM 官方还说明该刊在 2026--2029 前三年 open access 且无 APC。:contentReference[oaicite:17]{index=17}
-
-\paragraph{风险}
-\begin{itemize}
-    \item 新刊，影响力与审稿风格还在形成期；
-    \item 如果你更看重传统期刊稳妥性，Computers \& Security / TDSC 会更稳。
-\end{itemize}
-
-\paragraph{结论}
-\textbf{如果你愿意押一个方向非常匹配的新刊，TAISAP 值得认真考虑。} 官方说明见引文。:contentReference[oaicite:18]{index=18}
-
-\subsection*{七、我给你的实际投稿优先级}
-结合你当前论文状态，我会这样排：
-
-\subsubsection*{会议优先级}
-\begin{enumerate}
-    \item \textbf{RAID 2026}：最平衡，现实可投性最好。:contentReference[oaicite:19]{index=19}
-    \item \textbf{ACM CCS 2026}：最强，但竞争最大。:contentReference[oaicite:20]{index=20}
-    \item \textbf{EMNLP 2026}：如果你想走 NLP/LLM 社区，这是最好入口。:contentReference[oaicite:21]{index=21}
-\end{enumerate}
-
-\subsubsection*{期刊优先级}
-\begin{enumerate}
-    \item \textbf{Computers \& Security}：当前稿子最匹配、最稳。:contentReference[oaicite:22]{index=22}
-    \item \textbf{IEEE TDSC}：更强，但要更强调 secure systems framing。:contentReference[oaicite:23]{index=23}
-    \item \textbf{Cybersecurity (Springer)}：稳妥、scope 友好。:contentReference[oaicite:24]{index=24}
-    \item \textbf{IEEE TIFS}：可冲，但不是最自然贴合。:contentReference[oaicite:25]{index=25}
-    \item \textbf{ACM TAISAP}：新刊机会型选择。:contentReference[oaicite:26]{index=26}
-\end{enumerate}
-
-\subsection*{八、如果你现在就要我给一个最务实建议}
-\textbf{最务实的路线有两条：}
-
-\paragraph{路线 A：冲会议}
-\begin{itemize}
-    \item 首选：\textbf{RAID 2026}
-    \item 冲高：\textbf{ACM CCS 2026}
-    \item NLP 路线：\textbf{EMNLP 2026}
-\end{itemize}
-
-\paragraph{路线 B：稳妥发期刊}
-\begin{itemize}
-    \item 首选：\textbf{Computers \& Security}
-    \item 更强一点：\textbf{IEEE TDSC}
-\end{itemize}
-
-\subsection*{九、我对当前论文的最终建议}
-\textbf{这篇论文现在已经可以投了。}  
-如果你现在时间紧、想提高命中率，我会建议：
-\begin{itemize}
-    \item \textbf{会议：RAID 2026}
-    \item \textbf{期刊：Computers \& Security}
-\end{itemize}
-
-如果你想冲更高：
-\begin{itemize}
-    \item \textbf{会议：ACM CCS 2026}
-    \item \textbf{期刊：IEEE TDSC}
-\end{itemize}
-
-\subsection*{Bottom-Line Recommendation}
-\textbf{如果只让我给两个最推荐目标：}
-\begin{enumerate}
-    \item \textbf{RAID 2026}（会议，当前最平衡）
-    \item \textbf{Computers \& Security}（期刊，当前最贴合）
-\end{enumerate}
-
-如果你愿意，我下一轮可以继续给你一份 \LaTeX{} 格式的：
-\begin{itemize}
-    \item \textbf{venue-specific submission strategy}
-    \item 分别针对 \textbf{RAID / CCS / EMNLP / Computers \& Security / TDSC} 的
+    \item Add the total number of prompts in CPPB.
+    \item Add the number of prompts in each subset:
     \begin{itemize}
-        \item 标题微调建议
-        \item 摘要微调建议
-        \item 投稿前必须检查项
+        \item essential-privacy,
+        \item incidental-privacy,
+        \item multimodal/OCR-mediated,
+        \item hard-case subsets.
     \end{itemize}
+    \item Add category-level counts or percentages for:
+    \begin{itemize}
+        \item person identifiers,
+        \item financial identifiers,
+        \item medical entities,
+        \item addresses/locations,
+        \item organization/project terms,
+        \item context-dependent spans,
+        \item OCR-derived spans.
+    \end{itemize}
+    \item Add prompt-source composition:
+    \begin{itemize}
+        \item direct user requests,
+        \item document-oriented prompts,
+        \item retrieval-style prompts,
+        \item tool-oriented prompts,
+        \item multimodal prompts.
+    \end{itemize}
+    \item Add the number of prompt templates and generated variants.
+    \item State clearly whether each raw prompt is paired with one mediated version per baseline under the same downstream setting.
 \end{itemize}
+
+\paragraph{3. Add a benchmark reproducibility map with script-level linkage.}
+The reproducibility language is now more transparent, but top-tier standards require a more operational mapping between manuscript artifacts and released scripts.
+
+\textbf{Required revision:}
+\begin{itemize}
+    \item Add a compact table in the appendix of the form:
+    \begin{center}
+    Artifact $\rightarrow$ Script/CSV $\rightarrow$ Reproducible in current repository? $\rightarrow$ Notes
+    \end{center}
+    \item Include all main tables and figures.
+    \item Explicitly distinguish:
+    \begin{enumerate}
+        \item fully regenerated artifacts,
+        \item CSV-backed artifacts,
+        \item controlled manuscript artifacts not yet end-to-end regenerated.
+    \end{enumerate}
+    \item Add one command summary for rebuilding the reproducible subset.
+\end{itemize}
+
+\paragraph{4. Add at least one stronger deployment-relevant baseline as an actual experiment.}
+The revised manuscript honestly states that stronger baselines such as Presidio-class systems or prompt-native privacy tools are not yet included. This is good transparency, but it is still a weakness for top-tier review.
+
+\textbf{Required revision:}
+\begin{itemize}
+    \item Add one stronger baseline that is actually benchmarked, not only discussed.
+    \item The best practical option is a staged enterprise-style baseline:
+    \begin{enumerate}
+        \item regex/pattern matching,
+        \item NER,
+        \item category-aware replacement,
+        \item no semantic abstraction,
+        \item no controlled boundary restoration.
+    \end{enumerate}
+    \item If feasible, add one external practical comparator such as:
+    \begin{itemize}
+        \item Microsoft Presidio-style pipeline,
+        \item prompted LLM zero-shot de-identification,
+        \item strong contextual redaction pipeline.
+    \end{itemize}
+    \item In the paper, explain why this new baseline is more representative of realistic deployment than the current lightweight comparators.
+\end{itemize}
+
+\paragraph{5. Make propagation suppression the undisputed central contribution.}
+The revised manuscript greatly strengthens the propagation experiment, but the paper can still push this further. The propagation result is the most distinctive systems contribution and should dominate the narrative.
+
+\textbf{Required revision:}
+\begin{itemize}
+    \item Mention propagation suppression explicitly in the title candidate discussion, abstract, introduction, and conclusion.
+    \item In the introduction, present the core problem as:
+    \begin{quote}
+        prompt privacy risk is amplified by propagation across retrieval, memory, and tool boundaries.
+    \end{quote}
+    \item In the abstract, state the stage-wise propagation result directly.
+    \item In the conclusion, restate propagation suppression as the strongest validated finding.
+    \item Consider moving the propagation experiment earlier within the results section.
+\end{itemize}
+
+\subsection*{Section-by-Section Final Tightening}
+
+\paragraph{Abstract}
+The abstract is now more careful, but it can still be sharpened.
+
+\textbf{Required revision:}
+\begin{itemize}
+    \item Move the propagation claim earlier.
+    \item Explicitly state that the evaluation is based on a controlled benchmark.
+    \item Reduce generic phrasing such as ``model-agnostic'' unless the cross-model scope is precisely qualified.
+    \item End with a narrower conclusion centered on controlled evidence for reduced cross-stage propagation and preserved task behavior.
+\end{itemize}
+
+\paragraph{Introduction}
+The introduction is stronger than before, especially in claim calibration.
+
+\textbf{Required revision:}
+\begin{itemize}
+    \item Further sharpen the gap against enterprise redaction middleware and ordinary de-identification pipelines.
+    \item Emphasize earlier that the main novelty is \emph{pre-inference mediation under propagation risk}, not merely prompt sanitization.
+    \item Shorten any residual general discussion that does not directly support the central propagation narrative.
+\end{itemize}
+
+\paragraph{Related Work}
+This section is adequate, but still somewhat descriptive.
+
+\textbf{Required revision:}
+\begin{itemize}
+    \item Add a sharper contrast paragraph focused on stage of protection:
+    \begin{itemize}
+        \item training-time protection,
+        \item stored-text de-identification,
+        \item inference-time prompt security,
+        \item agent-boundary mediation.
+    \end{itemize}
+    \item Make clearer why existing de-identification pipelines are insufficient once prompt content can propagate into memory, retrieval, and tool arguments.
+\end{itemize}
+
+\paragraph{Method}
+The method section is clear, but still slightly overloaded by explanatory material.
+
+\textbf{Required revision:}
+\begin{itemize}
+    \item Remove conceptual tables from this section.
+    \item Add one explicit paragraph clarifying which components are:
+    \begin{enumerate}
+        \item currently implemented,
+        \item experimentally validated,
+        \item proposed as deployment guidance only.
+    \end{enumerate}
+    \item Make the policy selector $\Pi$ slightly more operational:
+    what features or signals does it practically consume?
+\end{itemize}
+
+\paragraph{Experiments}
+This section improved substantially, but it is still the main bottleneck.
+
+\textbf{Required revision:}
+\begin{itemize}
+    \item Add exact CPPB counts and distributions.
+    \item Add one stronger benchmarked baseline.
+    \item Add an appendix reproducibility table linking artifacts to scripts.
+    \item If possible, add one small repeated-run or robustness analysis to strengthen the credibility of the operating-point figures.
+\end{itemize}
+
+\paragraph{Results}
+The revised results section is one of the strongest parts of the paper.
+
+\textbf{Required revision:}
+\begin{itemize}
+    \item Move the propagation subsection earlier, or explicitly announce it as the central systems result.
+    \item Add one short takeaway sentence at the end of each subsection.
+    \item Trim any explanatory repetition once the key claim has been established.
+\end{itemize}
+
+\paragraph{Limitations}
+The limitations section is now mature and top-tier in tone.
+
+\textbf{Required revision:}
+\begin{itemize}
+    \item Keep the current honesty.
+    \item Add one sentence clarifying that the present evidence should be interpreted as controlled systems validation rather than a deployment certification.
+    \item Explicitly mention that the absence of stronger matched baselines remains part of the present scope limitation.
+\end{itemize}
+
+\paragraph{Conclusion}
+The conclusion is much improved, but can still be more memorable.
+
+\textbf{Required revision:}
+\begin{itemize}
+    \item Restate only the strongest validated result.
+    \item Make propagation suppression the centerpiece of the concluding claim.
+    \item Avoid broad wording such as universal middleware compatibility unless tightly qualified.
+    \item End with a concrete next milestone: stronger baselines, fuller CPPB release, and broader external validation.
+\end{itemize}
+
+\subsection*{Recommended Final Reframing Sentence}
+A strong manuscript-level calibration sentence would be:
+
+\begin{quote}
+This paper should be interpreted as controlled systems evidence that policy-aware pre-inference mediation can reduce privacy propagation across agent boundaries while preserving useful downstream behavior, rather than as a universal privacy guarantee for all LLM/VLM deployments.
+\end{quote}
+
+\subsection*{Recommended Final Submission Priorities}
+If revision time is limited, the final priorities should be:
+
+\begin{enumerate}
+    \item move conceptual tables to the appendix;
+    \item add exact CPPB counts, distributions, and source composition;
+    \item add an artifact-to-script reproducibility map;
+    \item benchmark one stronger deployment-relevant baseline;
+    \item promote propagation suppression to the dominant narrative in abstract, introduction, results, and conclusion.
+\end{enumerate}
