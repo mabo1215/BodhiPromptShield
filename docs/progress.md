@@ -215,3 +215,37 @@
   - `Hard-case robustness analysis in CPPB`
 
 - 本轮目标不是新增实验，而是把现有表述进一步收紧到更接近顶刊投稿版的 caption 风格，并修正 appendix 中 reviewer 一眼能看到的版面问题。
+
+## 本轮补充（按 revision checklist 继续收紧）
+
+- `paper/main.tex` 已继续按 `docs/revision_suggestions.tex` 的 top-tier checklist 收紧，重点不是再堆新段落，而是把主叙事改得更像投稿终稿：
+  - abstract 第一段进一步前置 propagation result，不再先铺很长的背景
+  - related work 对 enterprise redaction / clinical de-identification 的不足又补了一句更明确的对比：这些系统通常在单一文本边界设计和评估，而不是 propagation-aware agent traces
+  - experiments 里补了一句更明确的 repeated-run 边界说明：当前公开仓库没有 prompt-level multi-seed / repeated-run logs，所以本文诚实地报告 deterministic matched-profile comparisons + routing sweep，而不是假装已有方差分析
+  - main text 里关于 appendix reproducibility map 的提示也更直接了，明确告诉读者它是用来区分 code-backed / record-backed / controlled manuscript slices 的
+
+- `paper/appendix.tex` 的 comparator table 继续朝 checklist 要求靠拢：
+  - 现在不再用解释性 `Summary` 列，而是改成更符合 checklist 的 `Propagation-aware eval.` 维度
+  - 这样这张表现在直接覆盖了：
+    - protection stage
+    - supports agents
+    - supports multimodal input
+    - restoration-aware
+    - propagation-aware evaluation
+  - 表下方新增了一句简短说明，强调只有 agent-boundary mediation 同时把 restoration control 和 propagation-aware evaluation 作为中心设计点
+
+- `paper/main.tex` 的 limitations 与 conclusion 也进一步收紧：
+  - limitations 里更明确列出了 benchmark card 仍缺哪些 artifact 级内容：
+    - annotation instructions
+    - sanitization-policy labels
+    - split metadata
+    - per-source provenance / licensing notes
+    - known-failure documentation
+    - repeated-run operating-point logs
+  - conclusion 改成更短、更集中，以 propagation suppression 作为唯一中心结论，不再把未来工作写成长串功能愿景
+
+- 关于“是否新增实验”：
+  - 本轮没有新增外部 baseline 实验，也没有新补 Kaggle / 外部数据实验
+  - 原因不是忽略建议，而是当前仓库公开工件主要是聚合后的 CSV 与 manifest stub，不是完整逐样本 evaluation log
+  - 在这种前提下，如果硬补 Presidio-class / prompted-LLM / repeated-run 结果，很容易出现“文中有数，但仓库无法充分核验”的问题
+  - 因此本轮选择的是：继续提高正文的可信度与边界表达，而不是引入一组当前仓库支撑不足的新数字
