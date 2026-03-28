@@ -1,11 +1,32 @@
 # 论文进度
 
-最后更新：2026-03-28  
-当前目标：继续按 `docs/revision_suggestions.tex` 收紧 `paper/`，但避免正文出现明显的“revision/修改过程”痕迹；本轮重点是把 CPPB 的 exact accounting 真正补进仓库工件和主文，而不是只在正文里解释为什么没有数字。
+最后更新：2026-03-29  
+当前目标：继续按 `docs/revision_suggestions.tex` 自动收紧 `paper/`；本轮优先统一 problem formulation，把正文主线稳定到 “pre-inference agent-boundary mediation as propagation-control”，再把最值钱的 supporting experiment/table/figure 往 repo-backed artifact 推进一步。
 
 ---
 
 ## 本轮已完成
+
+- 已把 problem formulation 从 Introduction、Section II、Section IV 到 appendix notation 统一成同一条主线，而不再是“引言讲 propagation、问题定义像一般去标识化、方法再单独讲 policy”的分裂结构：
+  - `paper/main.tex` 现在把问题定义明确写成 agent-boundary graph 上的 propagation-control problem
+  - 问题对象统一为 `T_{\pi}`、`\Pi_{\pi}`、`\rho`、`K`
+  - 设计目标不再只是 document-boundary 的 `privacy + utility`，而是统一成 `direct exposure + propagation risk + utility`
+  - policy profile 现在明确是 `lenient / balanced / strict` 三种实例化，而不是只把 `\Pi` 写成抽象选择器
+  - `paper/appendix.tex` 的 notation 与算法伪代码也已同步到相同符号体系
+
+- 已把一个高价值 supporting slice 从“附录手填结果”推进到“仓库可回填、可作图、可编译验证”的 repo-backed artifact：
+  - 新增 `src/experiments/restoration_boundary_analysis.csv`
+  - 新增 `src/experiments/sanitization_mode_ablation.csv`
+  - `src/experiments/fill_paper_tables.py` 现在不仅能回填 `paper/main.tex`，也能回填 `paper/appendix.tex`
+  - `paper/appendix.tex` 中的 `tab:restore`、`tab:ablation` 现在由 CSV 回填，而不再只是 manuscript-local table
+  - appendix 的 reproducibility map 已同步把这两张表的状态改成 record-backed
+
+- 已新增一个直接服务于方法主张的 supporting figure，而不是只新增静态表格：
+  - 新增 `src/figures/restoration_ablation_tradeoffs.py`
+  - 新增 `paper/fig/restoration_ablation_tradeoffs.png`
+  - 左图把 restoration timing 的 `BLR`/`TSR` trade-off 可视化
+  - 右图把 typed placeholder / semantic abstraction / symbolic mapping 的 `PER`/`UPR` operating points 可视化
+  - `paper/appendix.tex` 已插入该图，并将其定位为 repository-backed supporting figure
 
 - 已为 CPPB 新增可审计的 benchmark accounting 工件，而不再停留在“缺 manifest”的状态：
   - 新增 `src/experiments/build_cppb_manifest.py`
@@ -48,16 +69,16 @@
     - `tab:pi_sensitivity`
     - `tab:propagation`
     - `tab:latency`
-    - 以及仍保留在主文中的 `tab:restore`
   - 这一步直接回应了 `revision_suggestions.tex` 里“Reduce the number of main-text controlled manuscript artifacts”的要求
 
-- 用户随后确认前一轮判断基于错误的 revision notes，因此本轮已按最新要求把几张结果表移回正文：
+- 当前仓库状态已重新收束为“主文保留 record-backed backbone，supporting slices 放回 appendix”：
+  - `tab:restore`
   - `tab:ablation`
   - `tab:multimodal`
   - `tab:crossmodel`
-  - `paper/main.tex` 重新恢复“表格 + 文字分析”的正文结构
-  - `paper/appendix.tex` 删除对应重复表，避免正文和附录双份冲突
-  - appendix 的 reproducibility scope 文字也同步改回“若干 main-text controlled tables”
+  - `tab:catwise`
+  - `tab:hardcase`
+  - 其中 `tab:restore` 与 `tab:ablation` 已进一步升级为 repo-backed supporting artifacts，不再只是 manuscript-local tables
 
 - `paper/main.tex` 的限制与结论也已同步对齐新的事实边界：
   - limitations 不再说仓库“仍然没有 CPPB prompt-accounting manifest”
@@ -72,7 +93,8 @@
 - `paper/appendix.tex` 已同步更新可复现性边界说明：
   - appendix 现在明确写明仓库已经包含 deterministic CPPB template inventory、prompt manifest 和 accounting summary
   - artifact-to-script reproducibility map 新增了 `tab:cppb_card` 的脚本映射
-  - 当前 appendix 主要保留 `tab:catwise`、`tab:hardcase` 等 supporting controlled results；`tab:ablation`、`tab:multimodal`、`tab:crossmodel` 已按最新要求恢复到 main text
+  - 当前 appendix 保留 `tab:restore`、`tab:ablation`、`tab:multimodal`、`tab:crossmodel`、`tab:catwise`、`tab:hardcase` 等 supporting slices
+  - 其中 `tab:restore`、`tab:ablation` 以及 `restoration_ablation_tradeoffs.png` 已有仓库脚本和 CSV 支撑
 
 - appendix 本轮又做了两项投稿口径修正：
   - 为避免 `Algorithm 1` 等算法环境在页尾被 `[H]` 强制挤出页面，算法块改为可浮动并在算法区前显式断页
@@ -93,11 +115,12 @@
 ## 本轮没有做的事
 
 - 本轮没有新增新的下游模型实验结果，也没有重跑新的外部 baseline。
-- 本轮新增的是 benchmark accounting 工件与主文表格，而不是新的 PER / TSR / propagation 数值切片。
+- 本轮没有补出新的 adversarial surface-form robustness suite。
+- 本轮新增的是问题定义统一、appendix supporting artifact 升级，以及新的 restoration/ablation supporting figure，而不是新的外部 PER / TSR / propagation 数值切片。
 - 原因是这次用户指出的核心问题首先是：
-  - 正文里不能再写 `this revision`
-  - CPPB 需要 exact counts
-  - 这些问题优先级高于继续扩展新的对比实验
+  - 先把 problem formulation 统一，避免引言、问题定义、方法和 appendix notation 各写各的
+  - 先把最值钱的 supporting tables 往 repo-backed artifact 推进
+  - 在此基础上再补 adversarial suite / external baseline 会更稳
 
 ## 当前仍未彻底解决的点
 
@@ -106,8 +129,6 @@
    - 但 external Presidio-class pipeline、prompted LLM zero-shot de-identification 仍未做 matched benchmark
 
 2. 部分 controlled manuscript results 仍未实现 end-to-end public regeneration：
-   - `tab:restore`
-   - `tab:ablation`
    - `tab:multimodal`
    - `tab:crossmodel`
    - `tab:catwise`
@@ -132,20 +153,27 @@
 - `src/experiments/cppb_distribution_breakdown.csv`
 - `src/experiments/cppb_accounting_summary.csv`
 - `src/experiments/fill_paper_tables.py`
+- `src/experiments/restoration_boundary_analysis.csv`
+- `src/experiments/sanitization_mode_ablation.csv`
 - `src/experiments/README.md`
 - `src/README.md`
+- `src/figures/restoration_ablation_tradeoffs.py`
 - `docs/progress.md`
 
 ## 本轮执行与验证
 
 - 已运行 `python src/experiments/build_cppb_manifest.py`
 - 已运行 `python src/experiments/fill_paper_tables.py --paper paper/main.tex`
+- 已运行 `python src/experiments/fill_paper_tables.py --paper paper/appendix.tex`
+- 已运行 `python src/figures/run_all_figures.py --out-dir paper/fig`
 - 已运行 `bash paper/build.sh`
 
 - 当前结果：
   - `paper/main.pdf` 成功生成
   - `paper/appendix.pdf` 成功生成
   - 新增的 `tab:cppb_card` 已成功进入主文
+  - `tab:restore` 与 `tab:ablation` 已成功由 CSV 回填进入附录
+  - `restoration_ablation_tradeoffs.png` 已成功生成并进入附录
   - 主文未出现新的未解析引用
   - appendix 仍有少量版式 warning，但没有构建失败
 
@@ -165,10 +193,9 @@
   - 但外部 stronger baseline 仍未补
 
 - Reduce the number of main-text controlled manuscript artifacts  
-  - 当前按最新用户要求回退了其中一部分
-  - `tab:catwise` 与 `tab:hardcase` 仍在 appendix
-  - `tab:ablation`、`tab:multimodal`、`tab:crossmodel` 已恢复到 main text
-  - 当前主文中的 controlled manuscript tables 包括 `tab:restore`、`tab:ablation`、`tab:multimodal`、`tab:crossmodel`
+  - 当前主文已重新聚焦 record-backed backbone
+  - `tab:restore`、`tab:ablation`、`tab:multimodal`、`tab:crossmodel`、`tab:catwise`、`tab:hardcase` 当前都位于 appendix
+  - 其中 `tab:restore`、`tab:ablation` 已从 pure controlled manuscript table 升级为 repo-backed supporting artifact
 
 - Make propagation suppression the undisputed central contribution  
   - 已继续保持

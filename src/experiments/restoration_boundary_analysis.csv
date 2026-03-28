@@ -1,0 +1,4 @@
+setting,tsr,rsr,blr
+No restoration,0.84,,0.0
+Late boundary restoration (proposed),0.93,0.97,1.8
+Early restoration (before memory/tool planning),0.94,0.98,9.7

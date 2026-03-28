@@ -42,12 +42,23 @@ def main():
 
     from figures.prompt_privacy_operating_points import plot_operating_points
     plot_operating_points(out_path=os.path.join(out_dir, "prompt_privacy_operating_points.png"))
+    print("Saved", os.path.join(out_dir, "prompt_privacy_operating_points.png"))
 
     from figures.agent_pipeline_summary import plot_agent_pipeline_summary
     plot_agent_pipeline_summary(out_path=os.path.join(out_dir, "agent_pipeline_summary.png"))
+    print("Saved", os.path.join(out_dir, "agent_pipeline_summary.png"))
 
     from figures.agent_propagation_curves import plot_agent_propagation_curves
     plot_agent_propagation_curves(out_path=os.path.join(out_dir, "agent_propagation_curves.png"))
+    print("Saved", os.path.join(out_dir, "agent_propagation_curves.png"))
+
+    from figures.cppb_benchmark_composition import plot_cppb_benchmark_composition
+    plot_cppb_benchmark_composition(out_path=os.path.join(out_dir, "cppb_benchmark_composition.png"))
+    print("Saved", os.path.join(out_dir, "cppb_benchmark_composition.png"))
+
+    from figures.restoration_ablation_tradeoffs import plot_restoration_ablation_tradeoffs
+    plot_restoration_ablation_tradeoffs(out_path=os.path.join(out_dir, "restoration_ablation_tradeoffs.png"))
+    print("Saved", os.path.join(out_dir, "restoration_ablation_tradeoffs.png"))
 
     print("All figures generated.")
 

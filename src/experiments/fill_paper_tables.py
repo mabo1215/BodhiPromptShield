@@ -8,13 +8,13 @@ This script only updates tables that are directly backed by repository CSVs:
   - tab:pi_sensitivity   <- policy_sensitivity.csv
   - tab:propagation      <- agent_pipeline_metrics.csv
   - tab:latency          <- latency_overhead.csv
+  - tab:restore          <- restoration_boundary_analysis.csv
+  - tab:ablation         <- sanitization_mode_ablation.csv
 
 It intentionally does NOT touch illustrative or manually curated tables such as:
   - tab:example
   - tab:tradeoff
   - tab:catwise
-  - tab:restore
-  - tab:ablation
   - tab:multimodal
   - tab:crossmodel
   - tab:hardcase
@@ -178,6 +178,41 @@ def build_latency_table() -> str:
     )
 
 
+def build_restore_table() -> str:
+    rows = _read_csv("restoration_boundary_analysis.csv")
+    body_lines = []
+    for r in rows:
+        rsr = "--" if not r["rsr"] else f"{float(r['rsr']):.2f}"
+        body_lines.append(
+            f"{r['setting']} & {float(r['tsr']):.2f} & {rsr} & {_fmt_float(r['blr'])} \\\\"
+        )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccc}\n"
+        "\\toprule\n"
+        "Setting & TSR & RSR & BLR (\\%) \\\\\n"
+        "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        "\\end{tabularx}"
+    )
+
+
+def build_ablation_table() -> str:
+    rows = _read_csv("sanitization_mode_ablation.csv")
+    body = "\n".join(
+        f"{r['mode']} & {_fmt_float(r['per'])} & {float(r['upr']):.2f} \\\\" for r in rows
+    )
+    return (
+        "\\begin{tabular}{lcc}\n"
+        "\\toprule\n"
+        "Sanitization Mode & PER (\\%) & UPR \\\\\n"
+        "\\midrule\n"
+        f"{body}\n"
+        "\\bottomrule\n"
+        "\\end{tabular}"
+    )
+
+
 TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:cppb_card": build_cppb_accounting_table,
     "tab:per": build_per_table,
@@ -185,6 +220,8 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:pi_sensitivity": build_pi_table,
     "tab:propagation": build_propagation_table,
     "tab:latency": build_latency_table,
+    "tab:restore": build_restore_table,
+    "tab:ablation": build_ablation_table,
 }
 
 
@@ -198,16 +235,23 @@ def main() -> int:
     with open(paper_path, "r", encoding="utf-8") as f:
         content = f.read()
 
+    updated_labels = []
     for label, builder in TABLE_BUILDERS.items():
+        if f"\\label{{{label}}}" not in content:
+            continue
         content = _replace_table_block(content, label, builder())
+        updated_labels.append(label)
+
+    if not updated_labels:
+        raise ValueError(f"No known code-backed labels found in {paper_path}")
 
     if args.dry_run:
-        print("Would update:", ", ".join(TABLE_BUILDERS))
+        print("Would update:", ", ".join(updated_labels))
         return 0
 
     with open(paper_path, "w", encoding="utf-8") as f:
         f.write(content)
-    print("Updated code-backed tables in", paper_path)
+    print("Updated code-backed tables in", paper_path, "->", ", ".join(updated_labels))
     return 0
 
 

@@ -6,12 +6,14 @@
 
 - `cppb_accounting_summary.csv`
   - Table `tab:cppb_card`
+  - Figure `cppb_benchmark_composition.png`
 - `cppb_template_inventory.csv`
   - CPPB template inventory for benchmark accounting
 - `cppb_prompt_manifest.csv`
   - Prompt-level CPPB manifest for benchmark accounting
 - `cppb_distribution_breakdown.csv`
   - Exact count / percentage breakdown by subset, family, category, source, and modality
+  - Figure `cppb_benchmark_composition.png`
 - `prompt_method_comparison.csv`
   - Table III `tab:per`
   - Table V `tab:utility`
@@ -26,6 +28,12 @@
 - `latency_overhead.csv`
   - Table XII `tab:latency`
   - Figure `agent_pipeline_summary.png`
+- `restoration_boundary_analysis.csv`
+  - Appendix table `tab:restore`
+  - Figure `restoration_ablation_tradeoffs.png`
+- `sanitization_mode_ablation.csv`
+  - Appendix table `tab:ablation`
+  - Figure `restoration_ablation_tradeoffs.png`
 
 ## 回填主文表格
 
@@ -34,6 +42,7 @@
 ```bash
 python src/experiments/build_cppb_manifest.py
 python src/experiments/fill_paper_tables.py --paper paper/main.tex
+python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 ```
 
 该脚本只会更新当前仓库中有明确 CSV 支撑的表格：
@@ -44,11 +53,13 @@ python src/experiments/fill_paper_tables.py --paper paper/main.tex
 - `tab:pi_sensitivity`
 - `tab:propagation`
 - `tab:latency`
+- `tab:restore`
+- `tab:ablation`
 
 它不会改动以下内容：
 
 - 概念性或示意性表格，如 `tab:example`、`tab:tradeoff`
-- 当前仓库尚未补齐自动生成脚本的表格，如 `tab:catwise`、`tab:restore`、`tab:ablation`、`tab:multimodal`、`tab:crossmodel`、`tab:hardcase`
+- 当前仓库尚未补齐自动生成脚本的表格，如 `tab:catwise`、`tab:multimodal`、`tab:crossmodel`、`tab:hardcase`
 
 ## 诚实性说明
 
