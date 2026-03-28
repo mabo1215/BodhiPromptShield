@@ -6,7 +6,7 @@
 
 - `experiments/`
   - `build_cppb_manifest.py`：生成 CPPB 的 template inventory、prompt-level manifest，以及主文 benchmark accounting 表所需的汇总 CSV。
-  - `cppb_accounting_summary.csv`：主文 `tab:cppb_accounting` 的精确 benchmark accounting。
+  - `cppb_accounting_summary.csv`：主文 `tab:cppb_card` 的精确 benchmark accounting。
   - `cppb_template_inventory.csv`：CPPB template 级清单。
   - `cppb_prompt_manifest.csv`：CPPB prompt 级 manifest。
   - `cppb_distribution_breakdown.csv`：CPPB 在 subset / family / category / source / modality 维度上的精确计数与占比。
@@ -30,7 +30,7 @@
 - 主文 Table VIII `tab:pi_sensitivity`
 - 主文 Table XI `tab:propagation`
 - 主文 Table XII `tab:latency`
-- 主文 `tab:cppb_accounting`
+- 主文 `tab:cppb_card`
 - 主文 `prompt_privacy_operating_points.png`
 - 主文 `agent_propagation_curves.png`
 - 附录 `agent_pipeline_summary.png`

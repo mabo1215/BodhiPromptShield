@@ -34,6 +34,30 @@
     - `the released repository snapshot now bundles ...`
     - `future work`
     - `the current evaluation benchmarks ...`
+  - 实验协议和 multimodal 小节也继续做了去过程化润色：
+    - 把 `future artifact-complete work` 改成更自然的 `future work`
+    - multimodal 小节不再只说“current snapshot subset”，而是直接写明 released manifest 中的 multimodal slice 大小为 `64 prompts`
+
+- `paper/main.tex` 又进一步按 top-tier checklist 收紧了一轮主证据链：
+  - 将 `tab:ablation`、`tab:multimodal`、`tab:crossmodel` 三张 controlled supporting tables 从主文下沉到 appendix
+  - 主文对应小节改为保留关键数字和结论性解释，不再让这些非代码直生的表格占据 main-text 证据中心
+  - 当前主文更集中于：
+    - `tab:cppb_card`
+    - `tab:per`
+    - `tab:utility`
+    - `tab:pi_sensitivity`
+    - `tab:propagation`
+    - `tab:latency`
+    - 以及仍保留在主文中的 `tab:restore`
+  - 这一步直接回应了 `revision_suggestions.tex` 里“Reduce the number of main-text controlled manuscript artifacts”的要求
+
+- 用户随后确认前一轮判断基于错误的 revision notes，因此本轮已按最新要求把几张结果表移回正文：
+  - `tab:ablation`
+  - `tab:multimodal`
+  - `tab:crossmodel`
+  - `paper/main.tex` 重新恢复“表格 + 文字分析”的正文结构
+  - `paper/appendix.tex` 删除对应重复表，避免正文和附录双份冲突
+  - appendix 的 reproducibility scope 文字也同步改回“若干 main-text controlled tables”
 
 - `paper/main.tex` 的限制与结论也已同步对齐新的事实边界：
   - limitations 不再说仓库“仍然没有 CPPB prompt-accounting manifest”
@@ -48,6 +72,13 @@
 - `paper/appendix.tex` 已同步更新可复现性边界说明：
   - appendix 现在明确写明仓库已经包含 deterministic CPPB template inventory、prompt manifest 和 accounting summary
   - artifact-to-script reproducibility map 新增了 `tab:cppb_card` 的脚本映射
+  - 当前 appendix 主要保留 `tab:catwise`、`tab:hardcase` 等 supporting controlled results；`tab:ablation`、`tab:multimodal`、`tab:crossmodel` 已按最新要求恢复到 main text
+
+- appendix 本轮又做了两项投稿口径修正：
+  - 为避免 `Algorithm 1` 等算法环境在页尾被 `[H]` 强制挤出页面，算法块改为可浮动并在算法区前显式断页
+  - `TABLE IV` 不再强调仓库内部具体脚本名/CSV 名，而改成更适合投稿的 artifact-basis / evidence-basis 描述，保留“哪些结果可再现、哪些只是 controlled manuscript results”的核心信息
+  - `Artifact` 列也去掉了 `tab:per`、`fig:workflow` 这类 LaTeX 内部 label，只保留审稿人可直接理解的表/图名称
+  - appendix 末尾的 `Supplementary deployment-oriented summary` 图改为原位放置并略微缩小，避免再单独浮动到新页
 
 - `src/experiments/fill_paper_tables.py` 已扩展：
   - 新增 `tab:cppb_card <- cppb_accounting_summary.csv`
@@ -57,6 +88,7 @@
   - 记录了新加的 CPPB manifest / accounting 工件
   - 增加了生成命令
   - 明确 `tab:cppb_card` 已属于代码支撑表格
+  - 修正了 `src/README.md` 中旧的 `tab:cppb_accounting` 标记，使其与正文实际 label `tab:cppb_card` 一致
 
 ## 本轮没有做的事
 
@@ -133,9 +165,10 @@
   - 但外部 stronger baseline 仍未补
 
 - Reduce the number of main-text controlled manuscript artifacts  
-  - 仍为部分完成
-  - `tab:catwise` 与 `tab:hardcase` 已在之前移至 appendix
-  - 但主文里仍有若干 controlled manuscript result
+  - 当前按最新用户要求回退了其中一部分
+  - `tab:catwise` 与 `tab:hardcase` 仍在 appendix
+  - `tab:ablation`、`tab:multimodal`、`tab:crossmodel` 已恢复到 main text
+  - 当前主文中的 controlled manuscript tables 包括 `tab:restore`、`tab:ablation`、`tab:multimodal`、`tab:crossmodel`
 
 - Make propagation suppression the undisputed central contribution  
   - 已继续保持
@@ -153,3 +186,32 @@
    - latency hardware/concurrency manifest
 
 3. 若继续收紧投稿版本，建议再压一轮 appendix 版面 warning，但这属于排版优化，不再是“缺硬数字”的核心 blocker。
+
+## 本轮补充（表题与 appendix 排版）
+
+- `paper/appendix.tex` 已继续按投稿口径收紧表题：
+  - 将 `Compact comparison of the closest practical comparator families discussed in the paper` 改为更正式的 `Practical comparator families for prompt privacy mediation`
+  - 将说明性、过程化、仓库导向的表达移到 caption 第二句，不再把这类说明直接写进表名
+  - `Artifact-availability reproducibility map...` 也改成更正式的表名 `Artifact availability and reproducibility status for the current repository snapshot`
+
+- appendix 的 comparator landscape 表已修正最后一列表头显示问题：
+  - 将最后一列表头从 `Notes` 改为更明确的 `Summary`
+  - 同时缩窄前几列宽度，并把 `Multi-modal`、`Restoration-aware` 改成可换行表头
+  - 目的就是避免 PDF 中最后一列看起来像“没有列名”
+
+- `paper/main.tex` 的主文表题也已统一收紧：
+  - 改成“正式标题 + 第二句简要说明”的结构
+  - 避免 `discussed in the paper`、`controlled manuscript result` 直接出现在标题主句中
+  - 例如：
+    - `CPPB benchmark card and composition`
+    - `Stage-wise propagation exposure across a multi-step CPPB agent pipeline`
+    - `Sanitization-mode ablation in CPPB`
+    - `Cross-model validation under a fixed CPPB mediation policy`
+
+- `paper/appendix.tex` 的附录表题也同步统一：
+  - `Illustrative prompt mediation examples`
+  - `Policy profiles for prompt mediation deployment`
+  - `Category-wise span detection and exposure analysis in CPPB`
+  - `Hard-case robustness analysis in CPPB`
+
+- 本轮目标不是新增实验，而是把现有表述进一步收紧到更接近顶刊投稿版的 caption 风格，并修正 appendix 中 reviewer 一眼能看到的版面问题。
