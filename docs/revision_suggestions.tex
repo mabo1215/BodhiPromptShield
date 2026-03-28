@@ -1,242 +1,511 @@
-\section*{Top-Tier Section-by-Section Revision Checklist for the Revised Manuscript}
+\section*{Top-tier Review Summary}
 
-\subsection*{Overall Assessment}
-The manuscript has improved substantially and is now much closer to a serious submission. In particular, the revised version:
-\begin{itemize}
-    \item moves conceptual/illustrative material out of the empirical foreground;
-    \item reframes CPPB as a controlled benchmark rather than an implied public benchmark;
-    \item elevates propagation suppression to a central systems result;
-    \item includes a stronger deployment-style comparator via enterprise staged redaction;
-    \item calibrates claims more carefully in terms of privacy scope, reproducibility, and external validity.
-\end{itemize}
+本文选题具有现实意义，聚焦于 LLM/VLM agent 在推理前（pre-inference）阶段的隐私传播抑制问题，强调 retrieval、memory、tool 三类 agent 边界上的 prompt privacy propagation，这一 framing 具有一定新意。论文的优点包括：问题动机较清晰，威胁模型与贡献边界表述较谨慎，实验主线围绕 propagation suppression 展开，且作者主动区分了 code-backed results 与 controlled manuscript results，体现出一定的学术诚实性。
 
-However, the paper is still \textbf{not fully top-tier ready}. The remaining weaknesses are now concentrated in:
+然而，若按顶刊/顶会标准评审，当前稿件仍存在较明显短板，主要集中在：
+(1) 实验验证的外部说服力不足；
+(2) 基线强度不足，缺少真正有公信力的外部系统对比；
+(3) 自建 CPPB benchmark 的规模、开放性、迁移性与统计稳健性仍不足以支撑较强结论；
+(4) 多个关键结果尚未做到完全可复现；
+(5) 论文当前更像是“有价值的系统型研究原型”，但离“顶级 venue 所要求的强证据、强可复现、强外部有效性”仍有距离。
+
+因此，本文目前更适合继续强化实验与复现链条后再投，而不是直接以当前版本冲击最顶级 venue。
+
+\section*{Overall Recommendation}
+
+\textbf{当前结论：需要大修（Major Revision）}。
+
+如果作者希望达到顶刊/顶会水准，建议优先补强如下四个方面：
 \begin{enumerate}
-    \item incomplete benchmark accounting for CPPB,
-    \item the lack of at least one stronger external practical baseline,
-    \item partial rather than end-to-end reproducibility for several reported results.
+    \item \textbf{把“controlled evidence”尽可能转化为“externally validated evidence”}；
+    \item \textbf{补齐强外部 baseline}；
+    \item \textbf{把目前的 controlled manuscript tables 尽量全部变成 code-backed / fully regenerated artifacts}；
+    \item \textbf{补上统计稳健性、真实部署场景、公开 benchmark 迁移验证}。
 \end{enumerate}
 
-The next revision should therefore focus on \textbf{hardening empirical credibility}, not only on polishing narrative structure.
+\section*{Major Strengths}
 
-\subsection*{Abstract}
-\textbf{What is already improved:}
-\begin{itemize}
-    \item The abstract now clearly frames the problem as pre-inference mediation in LLM/VLM agents.
-    \item The propagation result is explicitly stated.
-    \item The conclusion is more calibrated and no longer sounds like a universal guarantee claim.
-\end{itemize}
-
-\textbf{What still needs revision:}
-\begin{itemize}
-    \item Move the propagation result even earlier in the abstract, ideally as the main validated claim rather than as a later supporting detail.
-    \item Replace any remaining broad wording such as ``model-agnostic'' with more qualified language unless the exact backend scope is specified.
-    \item Keep the controlled nature of CPPB explicit, but compress it more efficiently so that the abstract does not over-spend words on caveats.
-    \item End on one sharp claim:
-    \begin{quote}
-        controlled systems evidence that pre-inference mediation reduces cross-stage propagation while preserving useful downstream behavior.
-    \end{quote}
-\end{itemize}
-
-\textbf{Target abstract structure:}
 \begin{enumerate}
-    \item agent-pipeline privacy problem,
-    \item why propagation matters,
-    \item proposed pre-inference mediation framework,
-    \item main propagation + privacy--utility findings,
-    \item scope-calibrated concluding claim.
+    \item \textbf{问题切入点合理。} 论文不是泛泛讨论隐私，而是聚焦于 agent pipeline 中 retrieval、memory、tool-use 三个传播边界之前的 pre-inference mediation，这一 stage-of-protection framing 是清楚的。
+    \item \textbf{贡献边界表述较诚实。} 论文明确说明本文不是 cryptographic guarantee，也不是 end-to-end DP guarantee，而是 deployment-oriented, interface-layer mediation。
+    \item \textbf{主结果比较集中。} 当前最强结果是 stage-wise propagation suppression，这比泛泛报告一个总体 F1 或总体 privacy score 更有系统论文味道。
+    \item \textbf{结构比很多同类稿件更规范。} introduction、threat model、framework、experimental protocol、limitations 基本完整。
+\end{enumerate}
+
+\section*{Critical Weaknesses Requiring Major Revision}
+
+\subsection*{1. External validity is still weak}
+
+当前实验核心仍建立在自建 CPPB 上，而 CPPB 明确被论文自己界定为 \emph{controlled benchmark specification}，并非成熟公开 community benchmark。虽然这是一种诚实表述，但在顶级审稿中会被直接追问：\textbf{为什么审稿人应当相信该方法能泛化到真实世界 prompt / document / agent traces？}
+
+你现在已经在文中承认：
+\begin{itemize}
+    \item CPPB 只有 256 prompts；
+    \item 来自 32 templates $\times$ 8 injected variants；
+    \item 仍缺 annotation instructions、policy labels、split metadata、multimodal licensing notes；
+    \item 对 TAB / i2b2-style 等公开资源的 external transfer 仍是 future work。
+\end{itemize}
+
+这会让顶级审稿人认为：\textbf{benchmark 设计是合理的，但还不足以单独承载强学术结论。}
+
+\textbf{必须新增的实验：}
+\begin{enumerate}
+    \item 在至少 \textbf{2 个公开 benchmark / dataset} 上做迁移验证，而不是只停留在 CPPB。
+    \item 至少包含一个 \textbf{text anonymization / de-identification benchmark}，以及一个 \textbf{document / OCR / multimodal privacy} 场景。
+    \item 明确报告：在公开数据上，你的方法相对强 baseline 的提升是否仍成立。
+\end{enumerate}
+
+\textbf{建议可补的数据方向：}
+\begin{itemize}
+    \item \textbf{TAB (Text Anonymization Benchmark)}：用于文本 anonymization / de-identification 迁移评测。
+    \item \textbf{i2b2-style clinical de-identification datasets}：用于医疗文本敏感实体保护验证。
+    \item \textbf{公开文档理解/OCR数据}（如发票、表单、收据、身份证件类公开样本集，或 Kaggle 上的 invoice / receipt / form understanding 数据）：用于 multimodal/OCR 场景。
+    \item \textbf{真实 agent traces 或合成 tool-use trajectories}：至少补一个外部 agent workflow benchmark。
+\end{itemize}
+
+\subsection*{2. Strong baselines are still insufficient}
+
+论文虽然比之前好了，已经加入了 enterprise staged redaction baseline，但你自己也明确承认：\textbf{external Presidio-class systems、privacy auditing suites、prompted LLM zero-shot de-identification、public clinical de-id pipelines 仍未在 matched setting 下完成对比。}
+
+这在顶刊/顶会里会成为非常致命的问题，因为审稿人会问：
+\begin{quote}
+你的方法到底是比“真正行业可用的方法”更好，还是只是比弱化后的内部 baseline 更好？
+\end{quote}
+
+\textbf{必须新增的 baseline：}
+\begin{enumerate}
+    \item \textbf{Microsoft Presidio 或同类工业级 PII de-identification system}；
+    \item \textbf{至少一个 LLM-based zero-shot / prompted de-identification baseline}；
+    \item \textbf{至少一个 prompt privacy auditing / privacy risk assessment comparator}；
+    \item 如果强调 multimodal，需增加 \textbf{OCR+de-id pipeline} 的强比较。
+\end{enumerate}
+
+\textbf{建议的对比方式：}
+\begin{itemize}
+    \item 在完全相同 prompt / model / tool / retrieval setting 下对齐比较；
+    \item 不仅报 PER，也要报 utility、latency、robustness；
+    \item 尤其要比较 context-dependent spans 与 OCR-noisy subsets。
+\end{itemize}
+
+\subsection*{3. Too many important results are still controlled manuscript results}
+
+这是当前稿件最危险的问题之一。appendix 的 artifact map 已经明确写出：
+\begin{itemize}
+    \item category-wise table：controlled manuscript；
+    \item authorized restoration table：controlled manuscript；
+    \item sanitization-mode ablation：controlled manuscript；
+    \item multimodal evaluation table：controlled manuscript；
+    \item cross-model validation table：controlled manuscript；
+    \item hard-case robustness table：controlled manuscript。
+\end{itemize}
+
+也就是说，\textbf{你论文里相当多“最能打动审稿人”的结果，目前并不是 fully regenerated artifacts。}
+
+这在顶级 venue 会被认为：
+\begin{quote}
+主结论可复现性尚可，但 supporting evidence 仍然偏手工维护，证据链不完整。
+\end{quote}
+
+\textbf{必须新增的工作：}
+\begin{enumerate}
+    \item 把 Table V, VI, VIII, IX 及 appendix 对应 supporting tables 尽量全部转为 \textbf{record-backed 或 fully regenerated}。
+    \item 对每张表给出 \textbf{生成脚本、输入记录文件、随机种子、模型版本、OCR版本、硬件环境}。
+    \item 在 repo 中加入 \textbf{one-command reproduction path}，确保审稿人可以从 raw records 生成全部主表和主图。
+\end{enumerate}
+
+\subsection*{4. Statistical robustness is not yet strong enough}
+
+论文自己承认：
+\begin{itemize}
+    \item 当前主要是 deterministic matched-profile comparisons；
+    \item 缺少 prompt-level multi-seed logs；
+    \item 图中没有 error bars；
+    \item $\lambda$ sensitivity 还没有完整 sweep。
+\end{itemize}
+
+对于顶级 venue，这会导致一个直接质疑：\textbf{你报告的 improvement 是稳定现象，还是特定 profile / 特定 run 的结果？}
+
+\textbf{必须新增的实验：}
+\begin{enumerate}
+    \item \textbf{多随机种子重复实验}（至少 3--5 seeds）；
+    \item 对 PER、AC、TSR、SPE 报告 \textbf{均值 $\pm$ 标准差 / 95\% CI}；
+    \item 增加 \textbf{$\tau$ 与 $\lambda$ 的二维 sweep}；
+    \item 对关键结果做 \textbf{显著性检验}（如 paired bootstrap / permutation test / t-test，取决于指标定义）；
+    \item 图 2 和图 3 增加 \textbf{error bars 或 confidence bands}。
+\end{enumerate}
+
+\subsection*{5. The benchmark scale is still too small for strong claims}
+
+CPPB 目前总量仅 256 prompts，且由 32 templates 扩展而来。这个规模对于系统原型展示可以接受，但对顶刊/顶会来说，仍偏小。尤其当论文要支撑以下主张时：
+\begin{itemize}
+    \item generalization across heterogeneous prompt structures；
+    \item multimodal portability；
+    \item cross-model stability；
+    \item policy sensitivity；
+    \item hard-case robustness。
+\end{itemize}
+
+\textbf{建议至少把实验规模补到：}
+\begin{itemize}
+    \item 文本侧：\textbf{1k--5k prompt level}；
+    \item multimodal/OCR 侧：\textbf{200--500 samples}；
+    \item 每个主要 privacy category 至少 \textbf{100+ examples}；
+    \item 每个 prompt family 至少 \textbf{100+ examples}。
+\end{itemize}
+
+如果短期做不到这么大，也应：
+\begin{enumerate}
+    \item 提供更强的 \textbf{template diversity analysis}；
+    \item 报告 \textbf{leave-template-out} 泛化实验；
+    \item 报告 \textbf{cross-source transfer}，避免审稿人怀疑方法只是适配模板。
+\end{enumerate}
+
+\subsection*{6. Current utility evaluation is still too coarse}
+
+目前 AC 与 TSR 作为 utility 指标是合理的，但仍偏粗。顶级审稿人会继续问：
+\begin{quote}
+对于需要 exact values 的 tool tasks、for retrieval queries、for long-horizon agent planning，AC/TSR 能否真正刻画 utility retention？
+\end{quote}
+
+\textbf{建议新增：}
+\begin{enumerate}
+    \item \textbf{task-specific utility metrics}，例如 tool argument correctness、retrieval hit quality、memory consistency；
+    \item 对 retrieval 场景增加 \textbf{Recall@k / MRR / hit rate}；
+    \item 对 tool-use 场景增加 \textbf{argument correctness / execution success / restoration correctness}；
+    \item 对 summarization / QA 场景增加 \textbf{LLM-as-a-judge + human spot check}；
+    \item 增加 \textbf{semantic drift analysis}，分析 abstraction 是否引入 task-misalignment。
+\end{enumerate}
+
+\subsection*{7. Adversarial robustness is acknowledged but not truly tested}
+
+论文 threat model 提到了：
+\begin{itemize}
+    \item paraphrase evasion；
+    \item Unicode / homoglyph substitutions；
+    \item mixed-language mentions；
+    \item prompt-injection-style instructions。
+\end{itemize}
+
+但目前并没有看到足够系统的 adversarial red-team experiments。顶级审稿会认为 threat model 写了，但没有真正打。
+
+\textbf{必须新增的实验：}
+\begin{enumerate}
+    \item \textbf{Unicode/homoglyph attack set}；
+    \item \textbf{paraphrase-based sensitive span evasion}；
+    \item \textbf{mixed-language / code-switching privacy mentions}；
+    \item \textbf{prompt injection inducing early restoration / leakage}；
+    \item \textbf{context-only inference attacks}：即使 direct exposure 低，是否仍能通过上下文推回敏感实体。
+\end{enumerate}
+
+\textbf{建议报告：}
+\begin{itemize}
+    \item attack success rate；
+    \item detection drop under attack；
+    \item PER / BLR / RSR change under attack；
+    \item failure case taxonomy 与对应修复策略。
+\end{itemize}
+
+\subsection*{8. Cross-model validation is currently too weak for a top-tier claim}
+
+你现在的 cross-model table 有一个根本问题：\textbf{backbone 匿名化且没有 exact version / decoding settings / logs}。这在论文里虽然被诚实承认，但对顶级 venue 仍不够。
+
+\textbf{建议：}
+\begin{enumerate}
+    \item 至少报告 \textbf{3--5 个明确命名的模型后端}；
+    \item 包含 \textbf{不同家族}（闭源 API、开源 instruct model、较小模型、较强模型）；
+    \item 明确说明 \textbf{temperature、decoding、context length、tool-calling setting}；
+    \item 加入 \textbf{model-by-policy interaction analysis}。
+\end{enumerate}
+
+否则“cross-model portability”这部分很容易被认为证据不够硬。
+
+\subsection*{9. Multimodal evaluation is promising but not yet convincing enough}
+
+当前 multimodal 部分的主要问题不是方向不对，而是：
+\begin{itemize}
+    \item 样本量小；
+    \item 仍是 controlled manuscript result；
+    \item OCR engine/version/manifests 缺失；
+    \item 缺少公开可验证数据与 license/provenance 说明。
+\end{itemize}
+
+\textbf{建议新增的 multimodal 实验：}
+\begin{enumerate}
+    \item 分开报告 \textbf{OCR extraction error} 与 \textbf{sanitization error}；
+    \item 做 \textbf{layout complexity stratification}：表格、扫描件、手写、低清晰度、遮挡；
+    \item 做 \textbf{document type stratification}：invoice、receipt、ID-like form、medical report；
+    \item 增加 \textbf{OCR engine ablation}：至少两个 OCR backends；
+    \item 增加 \textbf{visual grounding / VLM-assisted extraction} 与纯 OCR 的对比。
+\end{enumerate}
+
+\subsection*{10. The novelty statement is honest, but still academically vulnerable}
+
+论文现在把 novelty 说成：
+\begin{itemize}
+    \item deployment-oriented；
+    \item interface-layer mediation；
+    \item propagation-aware evaluation；
+    \item not cryptographic / not end-to-end DP。
+\end{itemize}
+
+这很诚实，但也会让审稿人容易给出这样的评价：
+\begin{quote}
+The paper presents a sensible systems integration and evaluation framing, but the algorithmic novelty is moderate.
+\end{quote}
+
+所以必须通过实验把“系统创新”打强。否则顶级 venue 很可能认为是“good engineering, limited scientific novelty”。
+
+\textbf{建议强化 novelty 的方式：}
+\begin{enumerate}
+    \item 把 \textbf{policy selector $\Pi$} 做得更像一个系统性机制，而不是仅仅一个 routing abstraction；
+    \item 给出 \textbf{formalized policy-routing design space}；
+    \item 增加 \textbf{restoration timing as a controllable security variable} 的系统分析；
+    \item 增加 \textbf{propagation-aware evaluation protocol} 相较传统 de-id evaluation 的独特价值证明；
+    \item 最好补一个 \textbf{theory-lite but nontrivial analysis}，例如 propagation graph / leakage path abstraction / risk decomposition。
+\end{enumerate}
+
+\section*{Section-by-Section Revision Checklist}
+
+\subsection*{Title and Abstract}
+
+\textbf{问题：}
+标题与摘要已经较清楚，但摘要仍然偏“结论陈述型”，顶级 venue 更希望看到：
+\begin{itemize}
+    \item 为什么现有方法不够；
+    \item 你的独特方法元素是什么；
+    \item 最强证据是什么；
+    \item 实验证据边界是什么。
+\end{itemize}
+
+\textbf{建议：}
+\begin{enumerate}
+    \item 在摘要中更明确写出 \textbf{相比 enterprise staged redaction，多出来的关键能力是什么}；
+    \item 用一两句话点出 \textbf{为什么 propagation-aware evaluation 不是普通 de-identification evaluation 的重复}；
+    \item 缩短“免责声明式”表述，避免摘要过于 defensive。
 \end{enumerate}
 
 \subsection*{Introduction}
-\textbf{What is already improved:}
-\begin{itemize}
-    \item The introduction now frames propagation across logging, retrieval, memory, and tools as the central risk.
-    \item The novelty is explicitly described as deployment-oriented rather than guarantee-oriented.
-    \item The contribution list is more disciplined than in the earlier draft.
-\end{itemize}
 
-\textbf{What still needs revision:}
-\begin{itemize}
-    \item Further sharpen the contrast against enterprise redaction middleware and ordinary de-identification pipelines.
-    \item Make the stage-of-protection distinction even more explicit:
-    \begin{itemize}
-        \item training-time privacy,
-        \item stored-text de-identification,
-        \item prompt security,
-        \item pre-inference agent-boundary mediation.
-    \end{itemize}
-    \item Tighten the contribution list further so that every listed contribution maps to a directly validated experiment or a clearly labeled scope statement.
-    \item Consider shortening the local-DP contribution wording if the optional span-level bound is not experimentally central in this paper.
-\end{itemize}
+\textbf{问题：}
+Introduction 的 stage-of-protection framing 基本成立，但仍然需要进一步加强“为什么这是一个值得顶级 venue 接受的问题”。
 
-\textbf{Top-tier goal for the introduction:}
-The introduction should leave no ambiguity that the paper's main scientific question is:
-\begin{quote}
-Can pre-inference mediation suppress privacy propagation across agent boundaries without unacceptable degradation of downstream task behavior?
-\end{quote}
-
-\subsection*{Related Work}
-\textbf{What is already improved:}
-\begin{itemize}
-    \item The related work now has a clearer stage-of-protection logic.
-    \item It better distinguishes this paper from training-time privacy and stored-text de-identification.
-\end{itemize}
-
-\textbf{What still needs revision:}
-\begin{itemize}
-    \item Add a sharper contrast paragraph focused specifically on why conventional enterprise redaction and clinical de-identification pipelines are insufficient once prompt fragments propagate into retrieval, memory, and tool arguments.
-    \item Expand the discussion of closest practical comparators, especially deployment-oriented systems rather than only academic privacy categories.
-    \item If space permits, add a compact appendix comparison table listing:
-    \begin{itemize}
-        \item protection stage,
-        \item supports agents,
-        \item supports multimodal input,
-        \item restoration-aware,
-        \item propagation-aware evaluation.
-    \end{itemize}
-\end{itemize}
-
-\textbf{Top-tier goal for related work:}
-A reviewer should finish this section understanding precisely why this paper is \emph{not} just another masking pipeline and why the propagation-aware evaluation is a meaningful distinction.
-
-\subsection*{Method}
-\textbf{What is already improved:}
-\begin{itemize}
-    \item The method section is cleaner now that conceptual tables have been moved to the appendix.
-    \item The implementation-vs-validation distinction is much stronger than before.
-    \item The policy selector $\Pi$ is more operationally described.
-\end{itemize}
-
-\textbf{What still needs revision:}
-\begin{itemize}
-    \item Tighten the formal status of the optional span-level LDP section. If it remains, make its scope even more explicit:
-    it applies only to the randomized replacement layer and is not central evidence for the main system result.
-    \item Add one short paragraph explicitly stating which components are:
-    \begin{enumerate}
-        \item implemented and benchmarked,
-        \item implemented but not fully benchmarked in the current snapshot,
-        \item deployment guidance only.
-    \end{enumerate}
-    \item Strengthen the methodological role of restoration timing by emphasizing that it is a first-class security control rather than a post-processing convenience.
-    \item Ensure the workflow figure caption states clearly that it is an architectural overview, not an empirical result.
-\end{itemize}
-
-\textbf{Top-tier goal for method:}
-The method section should read as a rigorous systems design with clearly bounded claims, not as a mixture of prototype features and aspirational deployment notes.
-
-\subsection*{Experiments}
-\textbf{What is already improved:}
-\begin{itemize}
-    \item CPPB is now explicitly presented as a controlled benchmark.
-    \item The paired-comparison protocol is much clearer.
-    \item The stronger enterprise staged redaction baseline is a meaningful improvement over the previous draft.
-    \item The reproducibility scope is now much more transparent.
-\end{itemize}
-
-\textbf{What still needs revision:}
-\begin{itemize}
-    \item This section remains the biggest bottleneck for a top-tier submission.
-    \item Add exact CPPB accounting:
-    \begin{itemize}
-        \item total prompt count,
-        \item subset counts,
-        \item privacy-category counts or percentages,
-        \item prompt-source composition,
-        \item number of templates and generated variants,
-        \item text-only vs multimodal counts.
-    \end{itemize}
-    \item Add one stronger external practical baseline if at all feasible, for example:
-    \begin{itemize}
-        \item Microsoft Presidio-style pipeline,
-        \item prompted LLM zero-shot de-identification,
-        \item a stronger contextual redaction baseline.
-    \end{itemize}
-    \item Add a compact artifact map pointer in the main paper, not only in the appendix, so readers immediately know which results are code-backed and which remain controlled manuscript results.
-    \item If possible, add a small repeated-run or sensitivity analysis for at least one key operating-point result so that the paper is not entirely deterministic-profile based.
-\end{itemize}
-
-\textbf{Top-tier goal for experiments:}
-This section should convince a skeptical reviewer that CPPB is not merely a well-written benchmark idea, but a sufficiently specified and auditable controlled evaluation protocol.
-
-\subsection*{Results}
-\textbf{What is already improved:}
-\begin{itemize}
-    \item The results section now explicitly identifies propagation suppression as the central systems result.
-    \item The propagation table and figure are now much better positioned as the paper's main evidence.
-    \item Many subsections now end with concrete practical takeaways.
-\end{itemize}
-
-\textbf{What still needs revision:}
-\begin{itemize}
-    \item Make the propagation subsection the first major result permanently, before general PER comparisons if possible.
-    \item Add one-sentence claim-validation statements at the end of each subsection:
-    \begin{quote}
-        This subsection validates X under controlled CPPB conditions.
-    \end{quote}
-    \item Reduce the number of tables that remain labeled as controlled manuscript results in the main paper if some can be moved to the appendix.
-    \item For cross-model and multimodal results, further tighten the wording so that they read as controlled portability signals rather than robust generalization claims.
-\end{itemize}
-
-\textbf{Top-tier goal for results:}
-The section should read as a coherent argument centered on one principal validated claim:
-\begin{quote}
-privacy control is most effective before sensitive content propagates across agent boundaries.
-\end{quote}
-
-\subsection*{Limitations}
-\textbf{What is already improved:}
-\begin{itemize}
-    \item The paper is now substantially more mature and honest about its limitations.
-    \item The distinction between controlled validation and deployment certification is much better stated.
-    \item Reproducibility gaps are named explicitly rather than hidden.
-\end{itemize}
-
-\textbf{What still needs revision:}
-\begin{itemize}
-    \item Explicitly list the missing benchmark-accounting items as current artifact gaps.
-    \item Explicitly acknowledge that the absence of stronger external baselines remains a nontrivial scope limitation.
-    \item Clarify that some results should be read as controlled evidence under fixed CPPB assumptions rather than community-benchmark-ready findings.
-    \item Keep the multimodal limitations concrete by mentioning OCR/layout dependence, image-source scope, and missing engine/version manifests.
-\end{itemize}
-
-\textbf{Top-tier goal for limitations:}
-The limitations section should make the paper appear more credible, not weaker, by showing precise control over what is and is not claimed.
-
-\subsection*{Conclusion}
-\textbf{What is already improved:}
-\begin{itemize}
-    \item The conclusion is more cautious than before.
-    \item It is better aligned with the controlled-evidence framing.
-\end{itemize}
-
-\textbf{What still needs revision:}
-\begin{itemize}
-    \item Make propagation suppression the single centerpiece of the concluding claim.
-    \item Avoid ending on broad deployment language unless it is immediately qualified.
-    \item End with one concrete next milestone, such as:
-    \begin{itemize}
-        \item full CPPB data-card release,
-        \item stronger external baselines,
-        \item broader real-world workflow validation.
-    \end{itemize}
-\end{itemize}
-
-\textbf{Top-tier goal for conclusion:}
-The conclusion should be short, memorable, and disciplined:
-\begin{quote}
-pre-inference mediation reduces cross-stage privacy propagation under controlled agent-style settings, while preserving useful downstream behavior, but stronger benchmark release and broader external validation remain necessary.
-\end{quote}
-
-\subsection*{Priority Actions Before Submission}
-If revision time is limited, the final priorities should be:
-
+\textbf{建议：}
 \begin{enumerate}
-    \item add exact CPPB sample accounting and category/source distributions;
-    \item add one stronger external practical baseline if feasible;
-    \item reduce the number of main-text results that remain only controlled manuscript artifacts;
-    \item further foreground the propagation result in abstract, introduction, results, and conclusion;
-    \item add one more explicit artifact-scope sentence in the main paper pointing to the appendix reproducibility map.
+    \item 增加一个更 sharp 的 \textbf{research gap paragraph}，明确指出：
+    现有 de-identification 评估集中在 document boundary，而不是 propagation across agent states。
+    \item 增加一个更具体的 \textbf{real deployment example}，比如 retrieval-memory-tool pipeline 中的 leakage chain。
+    \item 把当前 contribution list 改得更像“可验证科学贡献”，而不是“系统描述 + 谨慎边界”。
 \end{enumerate}
 
-\subsection*{Bottom-Line Recommendation}
-The revised manuscript is now \textbf{materially stronger and closer to submission quality}. It is no longer mainly blocked by framing. Its remaining gap to a top-tier submission lies in \textbf{benchmark hardness, baseline strength, and reproducibility completeness}. If these final empirical issues are improved, the paper's case will become substantially more competitive.
+\subsection*{Threat Model and Problem Formulation}
+
+\textbf{问题：}
+threat model 写得比较完整，但缺少真正对应 threat model 的实验验证矩阵。
+
+\textbf{建议：}
+\begin{enumerate}
+    \item 增加 threat-to-evaluation mapping table；
+    \item 说明每类 adversary 分别对应哪些实验；
+    \item 若某类 threat 未评测，明确写成 future work，不要只写在 threat model 中。
+\end{enumerate}
+
+\subsection*{Related Work}
+
+\textbf{问题：}
+相关工作总体够用，但当前更像“分组综述”，还不够“对比式综述”。
+
+\textbf{建议：}
+\begin{enumerate}
+    \item 加一个更明确的 \textbf{comparison paragraph}：
+    与 training-time privacy、stored-text de-id、prompt security、agent frameworks 的关键差异分别是什么。
+    \item 增加和 \textbf{industrial de-identification systems / privacy auditing tools} 的关系与差异。
+    \item 如果能补最新的 prompt privacy / agent privacy / multimodal privacy work，会更强。
+\end{enumerate}
+
+\subsection*{Method Section}
+
+\textbf{问题：}
+方法整体合理，但当前更偏系统流程描述，缺少“为什么这样设计会优于 baseline”的机制解释。
+
+\textbf{建议：}
+\begin{enumerate}
+    \item 更正式定义 policy selector $\Pi$ 的输入与决策逻辑；
+    \item 增加 sanitization mode selection 的决策表或规则图；
+    \item 对 restoration timing 给出更系统的 design rationale；
+    \item 若 possible，增加一个 propagation-risk graph 的抽象图或公式化描述。
+\end{enumerate}
+
+\subsection*{Experimental Setup}
+
+\textbf{问题：}
+目前是全文最大短板之一。
+
+\textbf{必须补充：}
+\begin{enumerate}
+    \item 公开 benchmark 迁移实验；
+    \item 更强 external baselines；
+    \item 多随机种子；
+    \item $\tau$--$\lambda$ 二维 sensitivity；
+    \item leave-template-out generalization；
+    \item adversarial attack suite；
+    \item 更多真实或半真实 agent traces。
+\end{enumerate}
+
+\subsection*{Results and Discussion}
+
+\textbf{问题：}
+结果主线是好的，但 supporting evidence 太多依赖 controlled manuscript tables。
+
+\textbf{建议：}
+\begin{enumerate}
+    \item 主文只保留最硬、最 fully reproducible 的结果；
+    \item 其余 supporting tables 必须尽快转成 reproducible artifacts；
+    \item 所有关键图表补充 variance / confidence intervals；
+    \item 增加更深入的 failure analysis 与 case study。
+\end{enumerate}
+
+\subsection*{Limitations}
+
+\textbf{评价：}
+这一节写得比较好，也比较诚实。
+
+\textbf{建议：}
+\begin{enumerate}
+    \item 继续保留，但可以稍微压缩；
+    \item 不要让 limitations 的篇幅和力度超过 main contribution 的说服力；
+    \item 更重要的是把 limitations 中提到的关键缺口，尽量通过新增实验补掉。
+\end{enumerate}
+
+\section*{Most Important Experiments to Add First}
+
+如果时间有限，建议按下面优先级补实验：
+
+\subsection*{Priority A: 必补}
+
+\begin{enumerate}
+    \item \textbf{External strong baselines}：
+    Presidio-class、LLM zero-shot de-id、OCR+de-id pipeline。
+    \item \textbf{Public benchmark transfer}：
+    TAB + 一个 i2b2-style / clinical de-id / public document-OCR privacy set。
+    \item \textbf{Multi-seed statistics}：
+    PER / AC / TSR / SPE with mean $\pm$ std / CI。
+    \item \textbf{Convert controlled manuscript tables into reproducible artifacts}。
+\end{enumerate}
+
+\subsection*{Priority B: 很强烈建议补}
+
+\begin{enumerate}
+    \item \textbf{Adversarial robustness suite}；
+    \item \textbf{Leave-template-out / cross-source generalization}；
+    \item \textbf{$\tau$--$\lambda$ sweep}；
+    \item \textbf{Tool-boundary exact-value tasks} 的更细粒度 utility evaluation。
+\end{enumerate}
+
+\subsection*{Priority C: 能显著提升顶会说服力}
+
+\begin{enumerate}
+    \item \textbf{More realistic long-horizon agent workflows}；
+    \item \textbf{Human evaluation / expert spot-check}；
+    \item \textbf{Cross-model evaluation with explicit model names and settings}；
+    \item \textbf{OCR engine ablation + document complexity breakdown}。
+\end{enumerate}
+
+\section*{Concrete Experimental Design Suggestions}
+
+\subsection*{A. External Benchmark Transfer}
+
+\textbf{目标：} 证明方法不是只对 CPPB 有效。
+
+\textbf{设计：}
+\begin{enumerate}
+    \item 选 1 个文本匿名化 benchmark（如 TAB）；
+    \item 选 1 个医疗或敏感文本 de-id benchmark（如 i2b2-style）；
+    \item 将其中适合 agent-style 的输入改写成 prompt form；
+    \item 比较 raw / regex / NER / generic de-id / enterprise staged / Presidio / LLM zero-shot / proposed；
+    \item 报告 span-F1、PER、AC、TSR（若任务允许）。
+\end{enumerate}
+
+\subsection*{B. Adversarial Prompt Privacy Stress Test}
+
+\textbf{目标：} 验证 threat model 不是停留在文字层面。
+
+\textbf{攻击类型：}
+\begin{itemize}
+    \item homoglyph / Unicode substitution；
+    \item paraphrase-sensitive entities；
+    \item code-switching（中英混杂等）；
+    \item prompt injection asking for restoration；
+    \item inferential context leakage。
+\end{itemize}
+
+\textbf{报告指标：}
+\begin{itemize}
+    \item attack success rate；
+    \item span recall drop；
+    \item PER increase；
+    \item BLR increase；
+    \item task utility change。
+\end{itemize}
+
+\subsection*{C. Multimodal/OCR Breakdown}
+
+\textbf{目标：} 把 multimodal 从“有一个结果表”提升到“有说服力的子研究”。
+
+\textbf{分层：}
+\begin{enumerate}
+    \item document types: invoice / receipt / form / ID-like / medical note；
+    \item OCR difficulty: clean / noisy / low-resolution / table-rich / handwriting；
+    \item extractor: OCR-only vs OCR+layout vs VLM-assisted。
+\end{enumerate}
+
+\textbf{报告：}
+\begin{itemize}
+    \item extraction F1；
+    \item sanitization PER；
+    \item AC / downstream utility；
+    \item end-to-end latency；
+    \item representative failure cases。
+\end{itemize}
+
+\subsection*{D. Policy Routing Study}
+
+\textbf{目标：} 把 $\Pi$ 从“工程 heuristic”升级为“论文核心机制”。
+
+\textbf{设计：}
+\begin{enumerate}
+    \item 做 $\tau$ 与 $\lambda$ 二维网格实验；
+    \item 做 category-specific routing；
+    \item 做 task-specific routing；
+    \item 可视化 privacy--utility frontier；
+    \item 分析不同类别为何适合 placeholder / abstract / symbolic。
+\end{enumerate}
+
+\section*{Writing-Level Issues}
+
+\begin{enumerate}
+    \item 论文现在有些段落 \textbf{重复强调 controlled evidence / practical takeaway}，略显冗余。
+    \item 多处结果讨论写法偏“defensive”，建议保留诚实边界，但减少重复免责声明。
+    \item 有些段落在解释同一个点时篇幅过长，可以进一步压缩，让主文更锋利。
+    \item 若投稿顶会，主文应尽量更聚焦于：
+    \begin{itemize}
+        \item 问题为何重要；
+        \item 方法为何必要；
+        \item 结果为何可信；
+        \item 为什么现有方法做不到。
+    \end{itemize}
+\end{enumerate}
+
+\section*{Bottom-Line Verdict}
+
+\textbf{结论：}
+当前稿件已经具备投稿潜力，但若按顶刊/顶会标准，\textbf{仍需大修}。最核心不是再继续润色 wording，而是必须补强：
+\begin{enumerate}
+    \item 强外部 baseline；
+    \item 公开 benchmark 迁移；
+    \item 统计稳健性；
+    \item 全链条可复现；
+    \item adversarial robustness；
+    \item 更强 multimodal 和 cross-model 证据。
+\end{enumerate}
+
+如果这些补上，论文会从“一个合理且诚实的系统原型稿”明显提升到“有竞争力的高水平系统论文”。
