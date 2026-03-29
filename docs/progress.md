@@ -7,6 +7,8 @@
 
 ## 本轮已完成
 
+- 已将 `paper/build.bat` 改为可独立运行的 Windows 构建脚本，不再依赖 `latexmk`/`perl`，而是直接执行 `pdflatex -> bibtex(按需) -> pdflatex -> pdflatex`，将中间文件与 PDF 输出到 `paper/build/`，并把最终 `main.pdf`、`appendix.pdf` 自动复制回 `paper/`。
+
 - 已把 problem formulation 从 Introduction、Section II、Section IV 到 appendix notation 统一成同一条主线，而不再是“引言讲 propagation、问题定义像一般去标识化、方法再单独讲 policy”的分裂结构：
   - `paper/main.tex` 现在把问题定义明确写成 agent-boundary graph 上的 propagation-control problem
   - 问题对象统一为 `T_{\pi}`、`\Pi_{\pi}`、`\rho`、`K`
@@ -145,6 +147,7 @@
 
 ## 本轮实际改动文件
 
+- `paper/build.bat`
 - `paper/main.tex`
 - `paper/appendix.tex`
 - `src/experiments/build_cppb_manifest.py`
@@ -162,6 +165,7 @@
 
 ## 本轮执行与验证
 
+- 已运行 `cmd /c paper\build.bat`
 - 已运行 `python src/experiments/build_cppb_manifest.py`
 - 已运行 `python src/experiments/fill_paper_tables.py --paper paper/main.tex`
 - 已运行 `python src/experiments/fill_paper_tables.py --paper paper/appendix.tex`
@@ -169,6 +173,7 @@
 - 已运行 `bash paper/build.sh`
 
 - 当前结果：
+  - `paper/build.bat` 现已可在 Windows 下独立完成构建，`paper/build/main.pdf`、`paper/build/appendix.pdf` 与 `paper/main.pdf`、`paper/appendix.pdf` 已同步生成
   - `paper/main.pdf` 成功生成
   - `paper/appendix.pdf` 成功生成
   - 新增的 `tab:cppb_card` 已成功进入主文
