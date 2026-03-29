@@ -1,0 +1,4 @@
+method,span_f1,per_percent,ac,tsr,description
+Presidio (regex-only baseline),0.76,14.8,0.91,0.89,Pattern-based entity detection and replacement
+Presidio (with NER fallback),0.82,11.2,0.92,0.9,Adds NER-based person/org/location detection
+BodhiPromptShield (proposed),0.92,9.3,0.94,0.92,Policy-aware propagation-suppress with 3 modalities

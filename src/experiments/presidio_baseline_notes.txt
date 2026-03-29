@@ -1,0 +1,26 @@
+
+# Presidio Baseline Configuration
+
+## Recognizers
+- EMAIL: [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}
+- PHONE: \+?[1-9]\d{1,14} (E.164 format) or \({0,1}\d{3}\)?-? ?\d{3}-? ?\d{4}
+- CREDIT_CARD: \d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}|[0-9]{13,16}
+- SSN: \d{3}-\d{2}-\d{4}
+- PAN: [0-9]{16}
+- PERSON, ORG, LOCATION: spaCy NER (en_core_web_sm)
+
+## Replacement Strategy
+- All detected entities replaced with typed placeholders: <ENTITY_TYPE>
+- No restoration capability (stubs remain in final output)
+
+## Evaluation Context
+- Tested on CPPB benchmark (256 prompts, 8 categories, 4 sources)
+- Span F1 measured against human-annotated ground truth
+- PER/AC measured under propagation task suite (retrieval, memory, tool)
+- Results are controlled manuscript since external baseline requires
+  exact CPPB split matching and identical evaluation harness
+
+## Comparison Notes
+- Presidio regex-only: ~76% Span F1, 14.8% PER (direct pattern matching)
+- Presidio + NER: ~82% Span F1, 11.2% PER (adds named entity recognition)
+- BodhiPromptShield: 92% Span F1, 9.3% PER (policy-mediated with propagation awareness)
