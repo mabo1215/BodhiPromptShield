@@ -25,7 +25,7 @@
 
 - 已新增一个直接服务于方法主张的 supporting figure，而不是只新增静态表格：
   - 新增 `src/figures/restoration_ablation_tradeoffs.py`
-  - 新增 `paper/fig/restoration_ablation_tradeoffs.png`
+  - 新增 `paper/figs/restoration_ablation_tradeoffs.png`
   - 左图把 restoration timing 的 `BLR`/`TSR` trade-off 可视化
   - 右图把 typed placeholder / semantic abstraction / symbolic mapping 的 `PER`/`UPR` operating points 可视化
   - `paper/appendix.tex` 已插入该图，并将其定位为 repository-backed supporting figure
@@ -225,7 +225,7 @@
 
 但以当前状态，已可考虑投稿 TOPS 或类似一级期刊，并预期能获得相对正面的评审。
 - 已运行 `python src/experiments/fill_paper_tables.py --paper paper/appendix.tex`
-- 已运行 `python src/figures/run_all_figures.py --out-dir paper/fig`
+- 已运行 `python src/figures/run_all_figures.py --out-dir paper/figs`
 - 已运行 `bash paper/build.sh`
 
 - 当前结果：

@@ -46,12 +46,12 @@ def generate_margin_figure(out_path: str = None):
 
 def main():
     p = argparse.ArgumentParser(description="Category margin figure for IBPPSVM paper")
-    p.add_argument("--out-dir", default=None, help="Output directory (default: paper/fig)")
+    p.add_argument("--out-dir", default=None, help="Output directory (default: paper/figs)")
     args = p.parse_args()
     out_dir = args.out_dir
     if out_dir is None:
         base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        out_dir = os.path.join(base, "paper", "fig")
+        out_dir = os.path.join(base, "paper", "figs")
     os.makedirs(out_dir, exist_ok=True)
     generate_margin_figure(out_path=os.path.join(out_dir, "Category_boundary.png"))
 

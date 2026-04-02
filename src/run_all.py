@@ -15,8 +15,8 @@ if SRC_DIR not in sys.path:
 
 
 def main():
-    print("Running figure generation (paper/fig) ...")
-    # Run figure script with default out-dir (paper/fig)
+    print("Running figure generation (paper/figs) ...")
+    # Run figure script with default out-dir (paper/figs)
     import figures.run_all_figures as run_figures_mod
     run_figures_mod.main()
 

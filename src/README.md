@@ -51,7 +51,7 @@
 ## 推荐命令
 
 - 生成论文图：
-  - `python src/figures/run_all_figures.py --out-dir paper/fig`
+  - `python src/figures/run_all_figures.py --out-dir paper/figs`
 - 生成 CPPB benchmark accounting 工件：
   - `python src/experiments/build_cppb_manifest.py`
 - 用 CSV 回填主文中已代码支撑的表格：

@@ -2,7 +2,7 @@
 Generate figures for paper: high-dimensional ring/ellipsoid distribution of Doc2Vec.
 - Theoretical chi-square distribution (radius ~ k, variance ~ 2k).
 - 2D projection showing ring structure (documents on a ring).
-Outputs to paper/fig/ (or path given by --out).
+Outputs to paper/figs/ (or path given by --out).
 """
 import argparse
 import os
@@ -79,12 +79,12 @@ def plot_edge_distribution(out_path: str = None, k: int = 213, n_samples: int = 
 
 def main():
     p = argparse.ArgumentParser(description="Doc2Vec distribution figures for IBPPSVM paper")
-    p.add_argument("--out-dir", default=None, help="Output directory (default: paper/fig)")
+    p.add_argument("--out-dir", default=None, help="Output directory (default: paper/figs)")
     args = p.parse_args()
     out_dir = args.out_dir
     if out_dir is None:
         base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        out_dir = os.path.join(base, "paper", "fig")
+        out_dir = os.path.join(base, "paper", "figs")
     os.makedirs(out_dir, exist_ok=True)
     plot_chi2_theoretical(k=213, out_path=os.path.join(out_dir, "chi2_theoretical_Doc2Vec.png"))
     plot_ring_2d_projection(out_path=os.path.join(out_dir, "Doc2Vec_ring_2d_projection.png"))

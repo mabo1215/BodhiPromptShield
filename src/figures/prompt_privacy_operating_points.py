@@ -81,13 +81,13 @@ def plot_operating_points(out_path: str):
 
 def main():
     parser = argparse.ArgumentParser(description="Generate prompt privacy operating-point summary figure.")
-    parser.add_argument("--out-dir", default=None, help="Output directory (default: repo_root/paper/fig)")
+    parser.add_argument("--out-dir", default=None, help="Output directory (default: repo_root/paper/figs)")
     args = parser.parse_args()
 
     out_dir = args.out_dir
     if out_dir is None:
         repo_root = os.path.dirname(os.path.dirname(SRC_DIR))
-        out_dir = os.path.join(repo_root, "paper", "fig")
+        out_dir = os.path.join(repo_root, "paper", "figs")
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, "prompt_privacy_operating_points.png")
     plot_operating_points(out_path)

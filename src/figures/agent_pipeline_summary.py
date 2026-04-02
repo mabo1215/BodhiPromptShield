@@ -81,13 +81,13 @@ def plot_agent_pipeline_summary(out_path: str):
 
 def main():
     parser = argparse.ArgumentParser(description="Generate deployment summary figure for prompt privacy mediation.")
-    parser.add_argument("--out-dir", default=None, help="Output directory (default: repo_root/paper/fig)")
+    parser.add_argument("--out-dir", default=None, help="Output directory (default: repo_root/paper/figs)")
     args = parser.parse_args()
 
     out_dir = args.out_dir
     if out_dir is None:
         repo_root = os.path.dirname(os.path.dirname(SRC_DIR))
-        out_dir = os.path.join(repo_root, "paper", "fig")
+        out_dir = os.path.join(repo_root, "paper", "figs")
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, "agent_pipeline_summary.png")
     plot_agent_pipeline_summary(out_path)

@@ -21,13 +21,8 @@ tmp/
 __init__.py
 
 # Codex local rules
-AGENTS.md
-USAGE_codex.md
-.codex/*
-CLAUDE.md
-USAGE_claude.md
-.claude/*
-.github/agents/*
+agents/*
+USAGE.md
 
 run_src.bat
 run_src.ps1

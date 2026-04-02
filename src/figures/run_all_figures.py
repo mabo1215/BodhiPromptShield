@@ -1,6 +1,6 @@
 """
-Run all figure scripts and write outputs to paper/fig/.
-Usage: python run_all_figures.py [--out-dir paper/fig]
+Run all figure scripts and write outputs to paper/figs/.
+Usage: python run_all_figures.py [--out-dir paper/figs]
 """
 import argparse
 import os
@@ -14,12 +14,12 @@ if SRC_DIR not in sys.path:
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--out-dir", default=None, help="Output directory for figures (default: repo_root/paper/fig)")
+    p.add_argument("--out-dir", default=None, help="Output directory for figures (default: repo_root/paper/figs)")
     args = p.parse_args()
     out_dir = args.out_dir
     if out_dir is None:
         repo = os.path.dirname(os.path.dirname(SCRIPT_DIR))
-        out_dir = os.path.join(repo, "paper", "fig")
+        out_dir = os.path.join(repo, "paper", "figs")
     os.makedirs(out_dir, exist_ok=True)
     print("Output directory:", out_dir)
 

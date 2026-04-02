@@ -33,12 +33,12 @@ def plot_internal_categories_ring(out_path: str = None, n_per_class: int = 150, 
 
 def main():
     p = argparse.ArgumentParser(description="Internal categories spatial distribution figure")
-    p.add_argument("--out-dir", default=None, help="Output directory (default: paper/fig)")
+    p.add_argument("--out-dir", default=None, help="Output directory (default: paper/figs)")
     args = p.parse_args()
     out_dir = args.out_dir
     if out_dir is None:
         base = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        out_dir = os.path.join(base, "paper", "fig")
+        out_dir = os.path.join(base, "paper", "figs")
     os.makedirs(out_dir, exist_ok=True)
     plot_internal_categories_ring(
         out_path=os.path.join(out_dir, "Spatial_distribution_of_internal_categories.png")

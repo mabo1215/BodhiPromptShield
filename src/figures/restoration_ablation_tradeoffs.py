@@ -102,13 +102,13 @@ def plot_restoration_ablation_tradeoffs(out_path: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate supporting restoration/ablation trade-off figure.")
-    parser.add_argument("--out-dir", default=None, help="Output directory (default: repo_root/paper/fig)")
+    parser.add_argument("--out-dir", default=None, help="Output directory (default: repo_root/paper/figs)")
     args = parser.parse_args()
 
     out_dir = args.out_dir
     if out_dir is None:
         repo_root = os.path.dirname(os.path.dirname(SRC_DIR))
-        out_dir = os.path.join(repo_root, "paper", "fig")
+        out_dir = os.path.join(repo_root, "paper", "figs")
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, "restoration_ablation_tradeoffs.png")
     plot_restoration_ablation_tradeoffs(out_path)
