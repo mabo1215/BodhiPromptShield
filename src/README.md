@@ -16,6 +16,11 @@
   - `latency_overhead.csv`：主文 latency 结果，用于 Table XII 和附录 deployment 图。
   - `restoration_boundary_analysis.csv`：附录 restoration boundary supporting table 与 supporting figure 的记录文件。
   - `sanitization_mode_ablation.csv`：附录 sanitization-mode ablation supporting table 与 supporting figure 的记录文件。
+  - `multiseed_evaluation.py`：生成 method / policy operating-point 的多随机种子稳定性记录、汇总 CSV 和 prompt-level logs。
+  - `multiseed_method_summary.csv`：附录 repeated-run stability 表，并为主文 operating-points 图提供误差线。
+  - `multiseed_policy_summary.csv`：policy profile repeated-run stability 汇总，并为主文 operating-points 图提供误差线。
+  - `leavetemplateout_evaluation.py`：生成 CPPB leave-template-out 泛化结果与汇总表。
+  - `leavetemplateout_summary.csv`：附录 held-out-template generalization 表。
   - `fill_paper_tables.py`：把上述 CSV 回填到 `paper/main.tex` 与 `paper/appendix.tex` 中对应的代码支撑表格。
 - `figures/`
   - `prompt_privacy_operating_points.py`：生成主文 `prompt_privacy_operating_points.png`。
@@ -41,6 +46,8 @@
 - 附录 `cppb_benchmark_composition.png`
 - 附录 `tab:restore`
 - 附录 `tab:ablation`
+- 附录 `tab:multiseed`
+- 附录 `tab:lto`
 - 附录 `restoration_ablation_tradeoffs.png`
 
 其余表格目前仍属于：
@@ -54,6 +61,10 @@
   - `python src/figures/run_all_figures.py --out-dir paper/figs`
 - 生成 CPPB benchmark accounting 工件：
   - `python src/experiments/build_cppb_manifest.py`
+- 生成 multi-seed 稳定性工件：
+  - `python src/experiments/multiseed_evaluation.py`
+- 生成 leave-template-out 泛化工件：
+  - `python src/experiments/leavetemplateout_evaluation.py`
 - 用 CSV 回填主文中已代码支撑的表格：
   - `python src/experiments/fill_paper_tables.py --paper paper/main.tex`
 - 用 CSV 回填附录中已代码支撑的表格：

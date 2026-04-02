@@ -3,6 +3,8 @@ Generate a compact visual summary of prompt privacy mediation operating points.
 
 Panel A: method-level operating points from Tables III and V.
 Panel B: policy-profile operating points from Table VIII.
+
+If multi-seed summaries are available, plot 95% confidence intervals.
 """
 import argparse
 import csv
@@ -23,6 +25,13 @@ def _load_csv(path):
         return list(csv.DictReader(f))
 
 
+def _load_optional_summary(path, key_name):
+    if not os.path.exists(path):
+        return {}
+    rows = _load_csv(path)
+    return {row[key_name]: row for row in rows}
+
+
 def _exposure_reduction(per_value):
     return 100.0 - float(per_value)
 
@@ -30,6 +39,14 @@ def _exposure_reduction(per_value):
 def plot_operating_points(out_path: str):
     methods = _load_csv(os.path.join(EXPERIMENTS_DIR, "prompt_method_comparison.csv"))
     policies = _load_csv(os.path.join(EXPERIMENTS_DIR, "policy_sensitivity.csv"))
+    method_summary = _load_optional_summary(
+        os.path.join(EXPERIMENTS_DIR, "multiseed_method_summary.csv"),
+        "setting",
+    )
+    policy_summary = _load_optional_summary(
+        os.path.join(EXPERIMENTS_DIR, "multiseed_policy_summary.csv"),
+        "profile",
+    )
 
     fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.3))
 
@@ -41,6 +58,19 @@ def plot_operating_points(out_path: str):
         color = "tab:red" if "utility-constrained" in label else "tab:blue"
         marker = "o" if "Proposed" in label else "s"
         size = 52 if "utility-constrained" in label else 42
+        summary = method_summary.get(label)
+        if summary:
+            ax.errorbar(
+                x,
+                y,
+                xerr=float(summary["per_ci95"]),
+                yerr=float(summary["tsr_ci95"]),
+                fmt="none",
+                ecolor="0.45",
+                elinewidth=0.8,
+                capsize=2,
+                zorder=1,
+            )
         ax.scatter(x, y, s=size, c=color, marker=marker, edgecolors="black", linewidths=0.4, zorder=3)
         short_label = (
             label.replace("Proposed ", "")
@@ -61,6 +91,19 @@ def plot_operating_points(out_path: str):
         x = _exposure_reduction(row["per"])
         y = float(row["tsr"])
         label = row["profile"]
+        summary = policy_summary.get(label)
+        if summary:
+            ax.errorbar(
+                x,
+                y,
+                xerr=float(summary["per_ci95"]),
+                yerr=float(summary["tsr_ci95"]),
+                fmt="none",
+                ecolor="0.45",
+                elinewidth=0.8,
+                capsize=2,
+                zorder=1,
+            )
         ax.scatter(x, y, s=52, c=order[label], edgecolors="black", linewidths=0.4, zorder=3)
         ax.annotate(label, (x, y), xytext=(4, 4), textcoords="offset points", fontsize=7)
     xs = [_exposure_reduction(row["per"]) for row in policies]

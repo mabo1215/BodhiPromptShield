@@ -10,6 +10,8 @@ This script only updates tables that are directly backed by repository CSVs:
   - tab:latency          <- latency_overhead.csv
   - tab:restore          <- restoration_boundary_analysis.csv
   - tab:ablation         <- sanitization_mode_ablation.csv
+    - tab:multiseed        <- multiseed_method_summary.csv
+    - tab:lto             <- leavetemplateout_summary.csv
 
 It intentionally does NOT touch illustrative or manually curated tables such as:
   - tab:example
@@ -154,7 +156,7 @@ def build_propagation_table() -> str:
     return (
         "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccc}\n"
         "\\toprule\n"
-        "Method & \\makecell[c]{SPE@Retrieval\\\\(\\%)} & \\makecell[c]{SPE@Memory\\\\(\\%)} & \\makecell[c]{SPE@Tool\\\\(\\%)} \\\\\n"
+        "Setting & PER (\\%) & AC & TSR & Mean Latency (ms) \\\\\n"
         "\\midrule\n"
         f"{body}\n"
         "\\bottomrule\n"
@@ -213,6 +215,66 @@ def build_ablation_table() -> str:
     )
 
 
+def _fmt_pm(mean_key: str, std_key: str, row: dict[str, str], digits: int = 2) -> str:
+    return f"{float(row[mean_key]):.{digits}f} $\\pm$ {float(row[std_key]):.{digits}f}"
+
+
+def build_multiseed_table() -> str:
+    rows = _read_csv("multiseed_method_summary.csv")
+    body_lines = []
+    for row in rows:
+        body_lines.append(
+            " & ".join(
+                [
+                    row["setting"],
+                    _fmt_pm("per_mean", "per_std", row, digits=1),
+                    _fmt_pm("ac_mean", "ac_std", row),
+                    _fmt_pm("tsr_mean", "tsr_std", row),
+                    f"{float(row['latency_mean_ms']):.1f} $\\pm$ {float(row['latency_std_ms']):.1f}",
+                ]
+            )
+            + " \\\\"
+        )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccc}\n"
+        "\\toprule\n"
+        "Setting & PER (\\%) & AC & TSR & Mean Latency (ms) \\\\\n"
+        "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        "\\end{tabularx}"
+    )
+
+
+def build_lto_table() -> str:
+    rows = _read_csv("leavetemplateout_summary.csv")
+    display_rows = [row for row in rows if row["group"] in {"Direct requests", "Document-oriented", "Retrieval-style", "Tool-oriented agent", "Overall"}]
+    body_lines = []
+    for row in display_rows:
+        body_lines.append(
+            " & ".join(
+                [
+                    row["group"],
+                    row["held_out_prompts"],
+                    f"{float(row['span_f1_mean']):.2f}",
+                    _fmt_pm("per_mean", "per_std", row, digits=1),
+                    f"{float(row['ac_mean']):.2f}",
+                    f"{float(row['tsr_mean']):.2f}",
+                ]
+            )
+            + " \\\\"
+        )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccccc}\n"
+        "\\toprule\n"
+        "Held-out split & Prompts & Span F1 & PER (\\%) & AC & TSR \\\\\n"
+        "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        "\\end{tabularx}"
+    )
+
+
 TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:cppb_card": build_cppb_accounting_table,
     "tab:per": build_per_table,
@@ -222,6 +284,8 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:latency": build_latency_table,
     "tab:restore": build_restore_table,
     "tab:ablation": build_ablation_table,
+    "tab:multiseed": build_multiseed_table,
+    "tab:lto": build_lto_table,
 }
 
 

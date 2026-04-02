@@ -1,0 +1,33 @@
+template_id,prompt_family,primary_privacy_category,held_out_prompts,span_f1,per,ac,tsr,per_gap,ac_gap,tsr_gap
+T01,Direct requests,Person names,8,0.9078,9.7579,0.9222,0.8926,0.4579,-0.0178,-0.0274
+T02,Direct requests,Contact details,8,0.9143,10.1532,0.9267,0.9013,0.8532,-0.0133,-0.0187
+T03,Direct requests,Postal addresses,8,0.9058,10.6612,0.9116,0.8945,1.3612,-0.0284,-0.0255
+T04,Direct requests,National/account identifiers,8,0.9032,10.1586,0.9132,0.9010,0.8586,-0.0268,-0.0190
+T05,Direct requests,Financial references,8,0.9028,10.1967,0.9142,0.9000,0.8967,-0.0258,-0.0200
+T06,Direct requests,Medical content,8,0.8925,10.6031,0.9053,0.8829,1.3031,-0.0347,-0.0371
+T07,Direct requests,Organization/project terms,8,0.8846,11.1593,0.9006,0.8776,1.8593,-0.0394,-0.0424
+T08,Direct requests,Context-dependent confidential spans,8,0.8701,11.3133,0.8958,0.8728,2.0133,-0.0442,-0.0472
+T09,Document-oriented,Person names,8,0.8998,10.3482,0.9067,0.8903,1.0482,-0.0333,-0.0297
+T10,Document-oriented,Contact details,8,0.9002,10.1785,0.9083,0.8913,0.8785,-0.0317,-0.0287
+T11,Document-oriented,Postal addresses,8,0.8846,11.0908,0.9079,0.8735,1.7908,-0.0321,-0.0465
+T12,Document-oriented,National/account identifiers,8,0.8868,10.9611,0.9127,0.8846,1.6611,-0.0273,-0.0354
+T13,Document-oriented,Financial references,8,0.8849,10.3869,0.9064,0.8870,1.0869,-0.0336,-0.0330
+T14,Document-oriented,Medical content,8,0.8781,11.3635,0.8935,0.8749,2.0635,-0.0465,-0.0451
+T15,Document-oriented,Organization/project terms,8,0.8699,11.5699,0.8858,0.8669,2.2699,-0.0542,-0.0531
+T16,Document-oriented,Context-dependent confidential spans,8,0.8615,11.3572,0.8846,0.8731,2.0572,-0.0554,-0.0469
+T17,Retrieval-style,Person names,8,0.8842,10.9070,0.8963,0.8808,1.6070,-0.0437,-0.0392
+T18,Retrieval-style,Contact details,8,0.8859,10.8283,0.8940,0.8770,1.5283,-0.0460,-0.0430
+T19,Retrieval-style,Postal addresses,8,0.8802,11.1345,0.8857,0.8671,1.8345,-0.0543,-0.0529
+T20,Retrieval-style,National/account identifiers,8,0.8763,10.9693,0.9073,0.8801,1.6693,-0.0327,-0.0399
+T21,Retrieval-style,Financial references,8,0.8798,10.7294,0.8930,0.8738,1.4294,-0.0470,-0.0462
+T22,Retrieval-style,Medical content,8,0.8670,11.5242,0.8873,0.8731,2.2242,-0.0527,-0.0469
+T23,Retrieval-style,Organization/project terms,8,0.8557,11.7230,0.8723,0.8662,2.4230,-0.0677,-0.0538
+T24,Retrieval-style,Context-dependent confidential spans,8,0.8454,11.9793,0.8784,0.8617,2.6793,-0.0616,-0.0583
+T25,Tool-oriented agent,Person names,8,0.8840,10.7562,0.8902,0.8680,1.4562,-0.0498,-0.0520
+T26,Tool-oriented agent,Contact details,8,0.8825,11.2095,0.8834,0.8697,1.9095,-0.0566,-0.0503
+T27,Tool-oriented agent,Postal addresses,8,0.8715,11.4269,0.8753,0.8549,2.1269,-0.0647,-0.0651
+T28,Tool-oriented agent,National/account identifiers,8,0.8725,11.3561,0.8881,0.8689,2.0561,-0.0519,-0.0511
+T29,Tool-oriented agent,Financial references,8,0.8651,11.1919,0.8973,0.8710,1.8919,-0.0427,-0.0490
+T30,Tool-oriented agent,Medical content,8,0.8590,11.8692,0.8762,0.8592,2.5692,-0.0638,-0.0608
+T31,Tool-oriented agent,Organization/project terms,8,0.8509,12.3332,0.8680,0.8496,3.0332,-0.0720,-0.0704
+T32,Tool-oriented agent,Context-dependent confidential spans,8,0.8383,12.3517,0.8638,0.8432,3.0517,-0.0762,-0.0768

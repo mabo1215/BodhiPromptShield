@@ -1,0 +1,36 @@
+setting,seed,per,utility,tsr,latency_ms
+Enterprise staged redaction,17,8.1529,0.9155,0.8937,30.8556
+Enterprise staged redaction,29,8.2225,0.9158,0.8953,31.1437
+Enterprise staged redaction,43,8.3576,0.9182,0.8954,33.0995
+Enterprise staged redaction,71,8.5742,0.9185,0.8981,31.6712
+Enterprise staged redaction,101,8.4465,0.9174,0.8961,33.3965
+Generic de-identification,17,12.4291,0.7246,0.7043,18.9596
+Generic de-identification,29,12.9763,0.7296,0.7100,16.6728
+Generic de-identification,43,12.6221,0.7273,0.7067,19.2789
+Generic de-identification,71,12.6843,0.7267,0.7063,18.3754
+Generic de-identification,101,12.8650,0.7294,0.7078,18.6247
+NER-only masking,17,49.0936,0.9098,0.8891,25.7551
+NER-only masking,29,49.2343,0.9102,0.8894,27.6416
+NER-only masking,43,48.9430,0.9079,0.8882,27.1763
+NER-only masking,71,48.9262,0.9070,0.8860,25.8950
+NER-only masking,101,48.7701,0.9059,0.8850,26.2638
+No protection,17,99.9962,0.9985,0.9985,0.0000
+No protection,29,99.9778,0.9976,0.9974,0.9080
+No protection,43,99.8598,0.9944,0.9939,0.0000
+No protection,71,99.9998,0.9990,0.9979,0.4867
+No protection,101,99.9850,0.9977,0.9975,0.0000
+Proposed (semantic abstraction),17,14.6806,0.8762,0.8557,47.5755
+Proposed (semantic abstraction),29,15.0309,0.8795,0.8595,47.7920
+Proposed (semantic abstraction),43,14.9990,0.8790,0.8590,48.1611
+Proposed (semantic abstraction),71,14.8208,0.8785,0.8569,47.6071
+Proposed (semantic abstraction),101,14.8197,0.8788,0.8575,47.9870
+Proposed (utility-constrained),17,9.5450,0.9396,0.9174,40.1200
+Proposed (utility-constrained),29,9.3970,0.9375,0.9165,41.9062
+Proposed (utility-constrained),43,9.3262,0.9360,0.9150,42.4905
+Proposed (utility-constrained),71,9.6402,0.9392,0.9191,39.8769
+Proposed (utility-constrained),101,9.4135,0.9363,0.9160,40.4980
+Regex-only,17,61.7574,0.9691,0.9582,6.8451
+Regex-only,29,61.3207,0.9639,0.9530,8.0379
+Regex-only,43,61.9267,0.9710,0.9593,6.5854
+Regex-only,71,61.2909,0.9643,0.9536,5.4994
+Regex-only,101,61.9031,0.9703,0.9599,8.2765

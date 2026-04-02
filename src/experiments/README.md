@@ -34,6 +34,19 @@
 - `sanitization_mode_ablation.csv`
   - Appendix table `tab:ablation`
   - Figure `restoration_ablation_tradeoffs.png`
+- `multiseed_method_summary.csv`
+  - Appendix table `tab:multiseed`
+  - Figure `prompt_privacy_operating_points.png` error bars (method panel)
+- `multiseed_policy_summary.csv`
+  - Figure `prompt_privacy_operating_points.png` error bars (policy panel)
+- `multiseed_method_prompt_logs.csv`
+  - Prompt-level repeated-run records for method operating points
+- `multiseed_policy_prompt_logs.csv`
+  - Prompt-level repeated-run records for policy operating points
+- `leavetemplateout_summary.csv`
+  - Appendix table `tab:lto`
+- `leavetemplateout_results.csv`
+  - Held-out-template fold records for CPPB generalization
 
 ## 回填主文表格
 
@@ -41,6 +54,8 @@
 
 ```bash
 python src/experiments/build_cppb_manifest.py
+python src/experiments/multiseed_evaluation.py
+python src/experiments/leavetemplateout_evaluation.py
 python src/experiments/fill_paper_tables.py --paper paper/main.tex
 python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 ```
@@ -55,6 +70,8 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 - `tab:latency`
 - `tab:restore`
 - `tab:ablation`
+- `tab:multiseed`
+- `tab:lto`
 
 它不会改动以下内容：
 
