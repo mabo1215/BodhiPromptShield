@@ -16,6 +16,10 @@
   - Figure `cppb_benchmark_composition.png`
 - `artifact_metadata_notes.md`
   - Supplementary CPPB data-card and reproducibility notes for split semantics, multimodal slice membership, cross-model scope, and latency assumptions
+- `external_resource_acquisition_card.md`
+  - Consolidated note for official public/resource-gated access paths, acquisition modes, and the boundary between acquisition metadata and executed evidence
+- `external_resource_acquisition_manifest.json`
+  - Machine-readable registry of official external dataset, baseline, OCR-engine, and model-documentation access paths
 - `cppb_release_card.md`
   - Consolidated benchmark-card note for release scope, provenance, annotation examples, and wrapper semantics
 - `ocr_slice_manifest.md`
@@ -116,6 +120,7 @@ python src/experiments/tab_matched_baseline_suite.py
 python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl
 python src/experiments/i2b2_external_transfer.py
 python src/experiments/i2b2_matched_baseline_suite.py
+python src/experiments/acquire_external_resources.py
 python src/experiments/fill_paper_tables.py --paper paper/main.tex
 python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 ```
@@ -152,3 +157,5 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 - 说明性/概念性内容。
 
 同时，release-card / manifest 类文件主要用于界定证据边界与可复现性范围；它们不是新的 benchmark 结果，不应被误读为额外实验得分。
+
+对于 public OCR/document benchmarks、baseline repositories、request-gated clinical corpora，以及 closed-model documentation 的官方访问入口，优先通过 `acquire_external_resources.py` 生成当前 acquisition manifest；只有在 wrapper 对齐、runtime logging 和结果文件落盘后，这些资源才应被提升为论文中的 executed evidence。

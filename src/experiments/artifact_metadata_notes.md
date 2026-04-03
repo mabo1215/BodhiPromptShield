@@ -55,3 +55,9 @@
 - The timing rows are intended for single-request serial processing comparisons across the listed mediation pipelines.
 - `latency_environment_manifest.md` records the current interpretation boundary for those timing rows.
 - The current repository does not yet bundle host identifiers or service-scale concurrency traces, so the latency table is not a portable infrastructure benchmark.
+
+## External Resource Acquisition Note
+
+- `external_resource_acquisition_card.md` now consolidates official access paths for public OCR/document benchmarks, request-gated datasets, open baseline repositories, OCR engines, and closed-model documentation sources.
+- `external_resource_acquisition_manifest.json` records the machine-readable acquisition surface for those resources, including which ones are directly downloadable and which remain landing-page-only or licensed access.
+- Acquisition metadata should be read as reproducibility support rather than as executed benchmark evidence.

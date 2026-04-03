@@ -1,49 +1,188 @@
-\section*{Revision Direction: Honest Closure of the Current External-Validation Cycle}
+\section{External Datasets, Baselines, and Provenance Resources}
+\label{app:external_resources}
 
-\subsection*{Overall Principle}
-The current revision cycle should now prioritize \emph{evidence-boundary consistency} rather than further speculative expansion. The paper, appendix, and repository artifacts are already materially stronger than earlier snapshots, but the remaining work must distinguish carefully between three states:
-\begin{enumerate}
-	\item \textbf{Executed and record-backed}: CPPB backbone results, supporting appendix slices, and the released TAB matched-baseline transfer roster.
-	\item \textbf{Executable but not yet executed in the public snapshot}: the i2b2 normalization path, the i2b2 matched-wrapper runner, and protocol-frozen prompted or clinical external baselines that still await licensed data or external runtime logs.
-	\item \textbf{Still future work}: OCR-heavy public transfer, fully named cross-model reruns, and broader auditor-style external suites.
-\end{enumerate}
+To ensure reproducibility and external validity, this study references
+licensed clinical corpora, publicly available OCR-heavy datasets,
+and executable baseline pipelines. Table~\ref{tab:external_resources}
+summarizes the major resources and their official access URLs.
 
-No manuscript text in the current cycle should promote state (2) items into state (1). The revision goal is to close the wording gap, not to overclaim external execution that the repository cannot presently verify.
+\begin{table*}[htbp]
+\centering
+\small
+\begin{tabular}{p{3.2cm} p{3.2cm} p{6.5cm} p{4.5cm}}
+\hline
 
-\subsection*{Main Paper Patches}
-The main paper should keep its current conservative structure and only add wording that is directly supported by the released artifacts. In particular:
-\begin{enumerate}
-	\item keep Section IV-B explicit that TAB is executed, while i2b2, prompted baselines, and named clinical pipelines are only licensed-data-ready or runtime-ready in the public snapshot;
-	\item add or retain a short paragraph in Section V-B that defines the \emph{licensed-data-ready i2b2 schema surface} using the normalization helper, schema template, and execution-status artifacts, without claiming that public clinical notes or executed i2b2 result files are bundled;
-	\item add or retain a short paragraph near the baselines or reproducibility scope explaining that external runtime conditions count as evidence only when accompanied by execution manifests and run logs, which currently applies to the released TAB heuristic roster and to the waiting-state i2b2 execution surface, but not yet to prompted LLM or named clinical-pipeline baselines.
-\end{enumerate}
+\textbf{Category}
+&
+\textbf{Resource}
+&
+\textbf{Purpose in This Study}
+&
+\textbf{Official URL}
+\\
 
-\subsection*{Appendix Patches}
-The appendix should continue to serve as the canonical location for the external-validation boundary. The current cycle should therefore keep or add the following items:
-\begin{enumerate}
-	\item a \textbf{Licensed Normalized i2b2 Export Schema} subsection that describes the expected normalized record fields and the licensing boundary honestly;
-	\item an \textbf{External Runtime Conditions and Execution Surface} subsection that distinguishes executed TAB records from waiting-state i2b2 records and protocol-only baselines;
-	\item one concise status table summarizing which gaps are now closed in the public snapshot and which still remain blocked by licensed data or external runtime dependencies.
-\end{enumerate}
+\hline
 
-The transfer and baseline plan matrices should remain future-facing, but their status columns must stay conservative. ``Protocol + execution manifest only'' and ``licensed-data-ready'' are acceptable final states for the current cycle when no actual rerun logs or result files exist.
+Clinical Corpus
+&
+i2b2 / n2c2 Clinical NLP Datasets
+&
+Primary licensed PHI-style corpus used to construct
+normalized clinical document exports.
+Access requires approved Data Use Agreement (DUA).
+&
+\texttt{https://www.i2b2.org/NLP/DataSets/}
+\\
 
-\subsection*{Remaining Actionable Work Only If Dependencies Become Available}
-The following items are still scientifically useful, but they are actionable only when the missing dependencies are available:
-\begin{enumerate}
-	\item \textbf{Prompted LLM zero-shot de-identification on TAB and i2b2}: execute only when a fixed runtime, frozen decoding settings, and releasable runtime logs can be bundled.
-	\item \textbf{Named clinical-pipeline comparator on i2b2}: execute only when both licensed normalized notes and the external clinical pipeline runtime are available.
-	\item \textbf{OCR-heavy public transfer}: promote SROIE/CORD/FUNSD-style slices only after exact OCR engine/version, source-asset provenance, and matched wrapper outputs can be logged.
-	\item \textbf{Named cross-model reruns}: promote the current alias-level portability slice only after the released manifest template can be filled with exact vendor/model/version/runtime identifiers.
-\end{enumerate}
+Clinical Corpus
+&
+Harvard DBMI Data Portal
+&
+Official distribution portal for licensed i2b2/n2c2 datasets.
+Used to obtain approved source corpora for local normalization.
+&
+\texttt{https://portal.dbmi.hms.harvard.edu/}
+\\
 
-\subsection*{Completion Criterion for This Revision Cycle}
-The current revision cycle should be considered complete once the manuscript, appendix, progress tracker, and revision file all agree on the same evidentiary boundary:
-\begin{enumerate}
-	\item executed TAB heuristic transfer is treated as record-backed external evidence;
-	\item i2b2 is treated as a licensed-data-ready execution surface rather than an executed public result slice;
-	\item prompted LLM and named clinical baselines are treated as protocol-frozen but not yet executed in the public snapshot;
-	\item OCR-heavy transfer, named cross-model reruns, and broader auditor-style suites remain explicit future extensions.
-\end{enumerate}
+\hline
 
-Once that consistency is achieved, the next revision cycle should begin only after new external data, runtime logs, or provenance manifests become available.
+OCR-heavy Dataset
+&
+CORD (Consolidated Receipt Dataset)
+&
+Public receipt dataset used to evaluate OCR-heavy
+document parsing and entity extraction robustness.
+&
+\texttt{https://github.com/clovaai/cord}
+\\
+
+OCR-heavy Dataset
+&
+FUNSD (Form Understanding Dataset)
+&
+Noisy scanned form benchmark used to validate
+post-OCR structured extraction pipelines.
+&
+\texttt{https://huggingface.co/datasets/funsd}
+\\
+
+OCR-heavy Dataset
+&
+SROIE (Scanned Receipt OCR and IE)
+&
+Receipt-style OCR benchmark supporting
+information extraction and layout parsing evaluation.
+&
+\texttt{https://huggingface.co/datasets/sroie}
+\\
+
+OCR-heavy Dataset
+&
+DocILE Benchmark
+&
+Large-scale business document dataset used for
+invoice and reimbursement-style workflow validation.
+&
+\texttt{https://docile.rossum.ai/}
+\\
+
+\hline
+
+External Baseline
+&
+Presidio (Microsoft)
+&
+Enterprise-style PII detection and redaction pipeline
+supporting text, structured data, and image workflows.
+&
+\texttt{https://microsoft.github.io/presidio/}
+\\
+
+External Baseline
+&
+Philter-lite
+&
+Open-source clinical de-identification pipeline
+used as a local clinical baseline comparator.
+&
+\texttt{https://github.com/SironaMedical/philter-lite}
+\\
+
+External Baseline
+&
+CliniDeID
+&
+Clinical text de-identification toolkit supporting
+named-entity-based PHI removal.
+&
+\texttt{https://github.com/Clinacuity/CliniDeID}
+\\
+
+External Pipeline
+&
+medSpaCy
+&
+Clinical NLP pipeline toolkit used to construct
+rule-based clinical extraction workflows.
+&
+\texttt{https://github.com/medspacy/medspacy}
+\\
+
+\hline
+
+OCR Engine
+&
+Tesseract OCR
+&
+Primary open-source OCR engine used for
+image-to-text transformation stages.
+Version-specific runs recorded in provenance logs.
+&
+\texttt{https://tesseract-ocr.github.io/tessdoc/}
+\\
+
+OCR Engine
+&
+PaddleOCR
+&
+Alternative OCR engine used for benchmarking
+pipeline throughput and layout extraction.
+&
+\texttt{https://www.paddleocr.ai/}
+\\
+
+\hline
+
+Closed Model Documentation
+&
+OpenAI Model Documentation
+&
+Reference documentation used to record
+exact deployed model IDs and API behavior.
+&
+\texttt{https://developers.openai.com/api/docs/models}
+\\
+
+Closed Model Documentation
+&
+Anthropic Model Documentation
+&
+Reference documentation for specifying
+snapshot-based Claude model identifiers.
+&
+\texttt{https://docs.anthropic.com/en/docs/models-overview}
+\\
+
+\hline
+
+\end{tabular}
+
+\caption{
+External datasets, executable baselines, and provenance
+documentation sources referenced in this study.
+All resources are either publicly accessible or
+available through institutional licensing.
+}
+\label{tab:external_resources}
+
+\end{table*}
