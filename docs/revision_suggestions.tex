@@ -1,182 +1,49 @@
-\section*{Revision Direction: External Benchmarks, External Validation, and Supporting-Artifact Upgrade Plan}
+\section*{Revision Direction: Honest Closure of the Current External-Validation Cycle}
 
-\subsection*{Overall Revision Principle}
-The next revision stage should prioritize \emph{protocol-compatible external validation} rather than adding a large number of disconnected benchmarks. The core principle is to preserve the current CPPB evaluation logic, matched-setting comparison protocol, and evidence-bounded claim scope, while gradually extending the manuscript from controlled evidence to externally checkable evidence. In practical terms, the next round of revision should focus on three coordinated goals:
+\subsection*{Overall Principle}
+The current revision cycle should now prioritize \emph{evidence-boundary consistency} rather than further speculative expansion. The paper, appendix, and repository artifacts are already materially stronger than earlier snapshots, but the remaining work must distinguish carefully between three states:
 \begin{enumerate}
-    \item adding one or two protocol-compatible external benchmarks that can be mapped into the current PER/AC/TSR-style evaluation pipeline;
-    \item strengthening the external practical baseline family under the same downstream setting;
-    \item upgrading the remaining high-value supporting tables from manuscript-level controlled slices into CSV-backed, script-filled, and reproducible appendix artifacts.
+	\item \textbf{Executed and record-backed}: CPPB backbone results, supporting appendix slices, and the released TAB matched-baseline transfer roster.
+	\item \textbf{Executable but not yet executed in the public snapshot}: the i2b2 normalization path, the i2b2 matched-wrapper runner, and protocol-frozen prompted or clinical external baselines that still await licensed data or external runtime logs.
+	\item \textbf{Still future work}: OCR-heavy public transfer, fully named cross-model reruns, and broader auditor-style external suites.
 \end{enumerate}
 
-\subsection*{Priority 1: Add a Protocol-Compatible Text Anonymization Benchmark}
-The highest-priority external benchmark candidate is a \emph{text anonymization benchmark} that is naturally compatible with the current span-level privacy mediation setup. The best immediate target is a benchmark of the TAB family. This direction is attractive because it is already aligned with anonymization-oriented evaluation rather than generic NER alone. Therefore, it can be adapted into the present paper with relatively limited protocol drift.
+No manuscript text in the current cycle should promote state (2) items into state (1). The revision goal is to close the wording gap, not to overclaim external execution that the repository cannot presently verify.
 
-The recommended revision strategy is:
+\subsection*{Main Paper Patches}
+The main paper should keep its current conservative structure and only add wording that is directly supported by the released artifacts. In particular:
 \begin{enumerate}
-    \item convert benchmark instances into prompt-style inputs;
-    \item preserve the current matched comparison setting across raw, regex-only, NER-only, generic de-identification, enterprise staged redaction, and the proposed method;
-    \item report direct-exposure and utility-preservation results under the same output protocol as CPPB;
-    \item use this benchmark primarily as the first external transfer slice for text-only validation.
+	\item keep Section IV-B explicit that TAB is executed, while i2b2, prompted baselines, and named clinical pipelines are only licensed-data-ready or runtime-ready in the public snapshot;
+	\item add or retain a short paragraph in Section V-B that defines the \emph{licensed-data-ready i2b2 schema surface} using the normalization helper, schema template, and execution-status artifacts, without claiming that public clinical notes or executed i2b2 result files are bundled;
+	\item add or retain a short paragraph near the baselines or reproducibility scope explaining that external runtime conditions count as evidence only when accompanied by execution manifests and run logs, which currently applies to the released TAB heuristic roster and to the waiting-state i2b2 execution surface, but not yet to prompted LLM or named clinical-pipeline baselines.
 \end{enumerate}
 
-This benchmark should be used first to support three manuscript goals:
+\subsection*{Appendix Patches}
+The appendix should continue to serve as the canonical location for the external-validation boundary. The current cycle should therefore keep or add the following items:
 \begin{enumerate}
-    \item stronger external transfer beyond CPPB;
-    \item stronger external practical baseline comparison;
-    \item a more credible category-wise supporting analysis.
+	\item a \textbf{Licensed Normalized i2b2 Export Schema} subsection that describes the expected normalized record fields and the licensing boundary honestly;
+	\item an \textbf{External Runtime Conditions and Execution Surface} subsection that distinguishes executed TAB records from waiting-state i2b2 records and protocol-only baselines;
+	\item one concise status table summarizing which gaps are now closed in the public snapshot and which still remain blocked by licensed data or external runtime dependencies.
 \end{enumerate}
 
-\subsection*{Priority 2: Add a Clinical PHI Benchmark for External Generalization}
-The next strongest external validation direction is a \emph{clinical de-identification benchmark}, especially one in the i2b2-style PHI benchmark family. This is not as directly agent-oriented as CPPB, but it provides a strong external domain where privacy-sensitive spans are real, context-dependent, and widely recognized by the community.
+The transfer and baseline plan matrices should remain future-facing, but their status columns must stay conservative. ``Protocol + execution manifest only'' and ``licensed-data-ready'' are acceptable final states for the current cycle when no actual rerun logs or result files exist.
 
-The manuscript should not claim that such a benchmark is inherently agent-compatible. Instead, the revision should explicitly state that:
+\subsection*{Remaining Actionable Work Only If Dependencies Become Available}
+The following items are still scientifically useful, but they are actionable only when the missing dependencies are available:
 \begin{enumerate}
-    \item the benchmark is used as an external de-identification transfer setting;
-    \item benchmark samples are wrapped into prompt-style tasks so that the same mediation pipeline can be evaluated under matched conditions;
-    \item the goal is external validation of span protection and utility preservation, not a claim of native agent-workflow equivalence.
+	\item \textbf{Prompted LLM zero-shot de-identification on TAB and i2b2}: execute only when a fixed runtime, frozen decoding settings, and releasable runtime logs can be bundled.
+	\item \textbf{Named clinical-pipeline comparator on i2b2}: execute only when both licensed normalized notes and the external clinical pipeline runtime are available.
+	\item \textbf{OCR-heavy public transfer}: promote SROIE/CORD/FUNSD-style slices only after exact OCR engine/version, source-asset provenance, and matched wrapper outputs can be logged.
+	\item \textbf{Named cross-model reruns}: promote the current alias-level portability slice only after the released manifest template can be filled with exact vendor/model/version/runtime identifiers.
 \end{enumerate}
 
-This benchmark is especially valuable for strengthening the medical-content story already present in the paper and for reducing the risk that the current evaluation is perceived as CPPB-only.
-
-\subsection*{Priority 3: Add OCR/Document Benchmarks for the Multimodal Slice}
-To improve the current multimodal appendix slice, the revision should move from manuscript-level controlled multimodal evidence toward at least one \emph{public OCR/document benchmark}. The most useful candidates are datasets in the form-understanding, receipt-understanding, or document-VQA family.
-
-A practical strategy is to separate the multimodal gap into two sub-problems:
+\subsection*{Completion Criterion for This Revision Cycle}
+The current revision cycle should be considered complete once the manuscript, appendix, progress tracker, and revision file all agree on the same evidentiary boundary:
 \begin{enumerate}
-    \item \textbf{OCR/document extraction robustness:} use a noisy scanned-document or receipt-style benchmark to test OCR-mediated sensitive span extraction and sanitization under layout noise, OCR noise, and semi-structured documents;
-    \item \textbf{Downstream utility preservation:} use a document question-answering benchmark to test whether the protected prompt/document representation still supports useful downstream answers.
+	\item executed TAB heuristic transfer is treated as record-backed external evidence;
+	\item i2b2 is treated as a licensed-data-ready execution surface rather than an executed public result slice;
+	\item prompted LLM and named clinical baselines are treated as protocol-frozen but not yet executed in the public snapshot;
+	\item OCR-heavy transfer, named cross-model reruns, and broader auditor-style suites remain explicit future extensions.
 \end{enumerate}
 
-Under this design, the multimodal revision does not need to be a perfect one-shot benchmark package. It is sufficient to:
-\begin{enumerate}
-    \item choose one public document/OCR benchmark for extraction-focused validation;
-    \item optionally choose one public document-QA benchmark for utility-focused validation;
-    \item convert both into the existing protected-vs-raw matched evaluation format;
-    \item report them honestly as external multimodal supporting validation rather than as a replacement for CPPB.
-\end{enumerate}
-
-\subsection*{Priority 4: Use an Agent Security Environment for Boundary-Misuse Validation}
-The current paper’s distinctive contribution is not only span masking, but also \emph{propagation control across retrieval, memory, and tool boundaries}. Therefore, a separate external validation track should be considered for \emph{boundary misuse, restoration misuse, and tool-stage leakage}. For this purpose, a benchmark or environment in the agent security / tool-using agent family is useful.
-
-This direction should not be presented as a replacement for anonymization benchmarks. Instead, it should be framed as:
-\begin{enumerate}
-    \item an external robustness environment for the threat model;
-    \item a way to test restoration-trigger attacks, unsafe early restoration, and boundary-policy bypass attempts;
-    \item a complementary validation track for BLR/RSR-style claims.
-\end{enumerate}
-
-In short, anonymization-style external benchmarks should validate \emph{text privacy mediation}, while agent-security-style environments should validate \emph{boundary control and restoration policy robustness}.
-
-\subsection*{Revision Direction for the External Practical Baseline Family}
-The current manuscript still needs a stronger external practical baseline family. The recommended strategy is incremental rather than open-ended. The next revision should not add many unrelated baselines at once. Instead, it should proceed in the following order:
-\begin{enumerate}
-    \item keep the current enterprise staged redaction comparator as the internal practical baseline;
-    \item add one engineering-recognizable external de-identification pipeline under matched CPPB-style evaluation;
-    \item add one prompted LLM zero-shot de-identification baseline with a fixed prompt template and frozen downstream setting;
-    \item only after these are stable, consider additional enterprise-grade or more generic external pipelines.
-\end{enumerate}
-
-The key requirement is that all new baselines must be evaluated under:
-\begin{enumerate}
-    \item the same prompt slice;
-    \item the same downstream backend condition;
-    \item the same metric family;
-    \item the same evidence boundary.
-\end{enumerate}
-
-This prevents benchmark drift and avoids introducing comparisons that look stronger superficially but are not truly matched.
-
-\subsection*{Revision Direction for the Remaining Controlled Supporting Tables}
-The manuscript still contains several supporting tables that are not yet fully regenerated. These should not all be upgraded at once. A staged priority order is recommended.
-
-\subsubsection*{Stage A: High-Value Supporting Slices}
-The first upgrade targets should be the appendix slices that most directly affect reviewer confidence in the central claim:
-\begin{enumerate}
-    \item multimodal evaluation;
-    \item hard-case robustness analysis;
-    \item category-wise analysis.
-\end{enumerate}
-
-These slices are more valuable than lower-priority appendix material because they explain \emph{where the method succeeds, where it degrades, and what remains risky}. Each should be upgraded into:
-\begin{enumerate}
-    \item a CSV-backed record file;
-    \item a deterministic fill-table script;
-    \item a clear status note in the appendix reproducibility map.
-\end{enumerate}
-
-\subsubsection*{Stage B: Cross-Model Supporting Slice}
-The cross-model table is important, but its main gap is not the absence of a new benchmark. Its main gap is the lack of exact provenance metadata. Therefore, the next revision should prioritize:
-\begin{enumerate}
-    \item exact backbone identifiers;
-    \item decoding settings;
-    \item configuration logs;
-    \item rerun manifests.
-\end{enumerate}
-
-This means the cross-model slice should be upgraded primarily through \emph{metadata completion and rerun traceability}, not through benchmark expansion alone.
-
-\subsection*{Revision Direction for External Transfer and External Validation}
-The manuscript should explicitly present external transfer as a \emph{staged validation roadmap}. A recommended three-step structure is:
-\begin{enumerate}
-    \item \textbf{Text-only transfer:} add one anonymization-oriented external benchmark;
-    \item \textbf{Domain transfer:} add one clinical PHI benchmark;
-    \item \textbf{Multimodal transfer:} add one OCR/document benchmark and optionally one document-QA benchmark.
-\end{enumerate}
-
-If the revision cycle can only support two external additions, the recommended pair is:
-\begin{enumerate}
-    \item one anonymization-oriented text benchmark;
-    \item one OCR/document or document-QA benchmark.
-\end{enumerate}
-
-This gives the paper the strongest improvement per unit effort while remaining aligned with the current story.
-
-\subsection*{Revision Direction for Reproducibility Metadata}
-Several remaining weaknesses are primarily \emph{metadata completeness problems}, not scientific-claim problems. These should be addressed through explicit manifest generation rather than prose-only acknowledgement. The revision should create separate reproducibility manifests for:
-\begin{enumerate}
-    \item cross-model backbone identifiers and decoding settings;
-    \item multimodal OCR engine, version, and preprocessing pipeline;
-    \item latency host hardware, concurrency condition, and prompt-length distribution.
-\end{enumerate}
-
-The manuscript should then reference these manifests explicitly in the appendix reproducibility map. This is preferable to leaving such information only in descriptive text, because it turns a prose limitation into a checkable artifact boundary.
-
-\subsection*{Revision Direction for the CPPB Data Card}
-The CPPB data card can be strengthened further without changing the core benchmark. The next revision should expand the data-card section in the following order:
-\begin{enumerate}
-    \item source-level release metadata;
-    \item clearer annotation examples;
-    \item fuller split and label semantics;
-    \item multimodal provenance and licensing notes;
-    \item release-scope statement aligned with the appendix reproducibility section.
-\end{enumerate}
-
-The goal is not to oversell CPPB as a mature community benchmark. The goal is to make the benchmark documentation sufficiently explicit that the paper’s evidence boundary is transparent and reviewer-facing concerns about hidden assumptions are reduced.
-
-\subsection*{Recommended Execution Order}
-A practical execution order for the next revision cycle is:
-\begin{enumerate}
-    \item add one external text anonymization benchmark;
-    \item add one stronger external practical baseline under the same protocol;
-    \item upgrade the multimodal, hard-case, and category-wise tables to repo-backed supporting artifacts;
-    \item complete cross-model and multimodal metadata manifests;
-    \item add one external OCR/document validation slice;
-    \item optionally add one agent-security robustness environment for boundary-misuse validation.
-\end{enumerate}
-
-\subsection*{Suggested Paper-Level Positioning After Revision}
-After the above modifications, the manuscript can be positioned more strongly as follows:
-\begin{quote}
-The paper provides controlled systems evidence on CPPB, extends the validation with protocol-compatible external anonymization and document benchmarks, strengthens the external practical baseline family under matched conditions, and upgrades the main supporting appendix slices into reproducible artifacts while preserving an evidence-bounded claim scope.
-\end{quote}
-
-\subsection*{Concise Summary for the Next Revision Round}
-In summary, the next revision should not aim for uncontrolled benchmark expansion. Instead, it should follow a disciplined external-validation pathway:
-\begin{enumerate}
-    \item first strengthen text-side external transfer;
-    \item then strengthen multimodal/OCR validation;
-    \item then strengthen boundary-robustness validation;
-    \item and in parallel convert the highest-value remaining controlled slices into reproducible supporting artifacts with explicit manifests.
-\end{enumerate}
-
-This strategy is the most efficient way to improve reviewer confidence without distorting the current architecture, evaluation protocol, or evidence scope of the manuscript.
+Once that consistency is achieved, the next revision cycle should begin only after new external data, runtime logs, or provenance manifests become available.

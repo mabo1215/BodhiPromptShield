@@ -47,6 +47,7 @@
 - 已补 TAB / i2b2 原始运行记录；修改说明：仓库现已新增 `tab_transfer_run_log.csv` 与 `i2b2_transfer_run_log.csv`，把 wrapper 输入范围、split 计数、输出文件、rerun command template 与 execution status 统一落盘，不再只保留 summary/execution manifest。
 - 已补更强 released hybrid comparator family；修改说明：TAB runner 现已新增 `Hybrid rule+context de-identification`，i2b2 runner 现已新增 `Clinical hybrid heuristic de-identification`，二者都在同一 wrapper/protocol 下落到统一结果/运行记录表面。
 - 已继续补 fuller data-card / provenance 文档；修改说明：仓库已新增 `external_wrapper_release_card.md` 与 `multimodal_provenance_card.md`，把 TAB/i2b2 wrapper invariants、comparator roster、licensing boundary，以及 multimodal slice 的 rendering/OCR provenance 边界集中写成可检查说明，并已同步纳入论文附录口径。
+- 已完成 external-validation 口径再同步；修改说明：`paper/main.tex` 与 `paper/appendix.tex` 现已显式补入 licensed-data-ready i2b2 schema surface、external runtime conditions 与一张诚实的 external-closure 状态表，`docs/revision_suggestions.tex` 也已改写为只保留与当前仓库证据一致的剩余任务，不再把 protocol-ready / waiting-state slice 误写成 executed。
 
 ## 未修改或部分修改
 
