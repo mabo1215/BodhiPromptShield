@@ -1,0 +1,4 @@
+order,subset,span_f1,per_percent,ac,prompt_count,slice_scope,evidence_basis
+1,General CPPB,0.92,9.3,0.94,256,Full CPPB benchmark under the utility-constrained mediation profile,Aligned with the bundled BodhiPromptShield row in external_baseline_comparison.csv under the utility-constrained CPPB setting.
+2,Context-dependent hard cases,0.84,16.8,0.87,32,CPPB context-dependent confidential-span slice across all prompt families,Aligned with the bundled context-dependent category slice and the manuscript's matched hard-case utility summary under the same policy profile.
+3,OCR-noisy hard cases,0.79,19.4,0.82,64,CPPB OCR-mediated stress slice derived from the V4/V8 prompt variants,Deterministic OCR-noisy stress slice summary aligned with the bundled OCR-slice coverage note and the reported hard-case CPPB portability slice.

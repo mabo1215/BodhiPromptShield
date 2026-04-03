@@ -8,6 +8,7 @@
 - Privacy categories: Person names, Contact details, Postal addresses, National/account identifiers, Financial references, Medical content, Organization/project terms, Context-dependent confidential spans.
 - Split semantics: V1-V4 are Essential-privacy variants and V5-V8 are Incidental-privacy variants; V4 and V8 are the OCR-mediated text-plus-image slice.
 - Prompt/source provenance in the public snapshot is benchmark-authored and template-derived. The released files describe prompt stubs and accounting metadata rather than raw third-party user data.
+- `cppb_release_card.md` consolidates release scope, provenance, annotation examples, wrapper specification, and known omissions into one benchmark-card-style companion note.
 
 ## Annotation And Label Semantics
 
@@ -25,12 +26,20 @@
 
 ## Cross-Model Portability Note
 
-- The appendix cross-model table is currently a controlled portability slice rather than a named public rerun artifact.
-- Exact backend names, versions, and decoding settings are not bundled in the current snapshot.
-- The next portability release should attach backend identifiers, decoding settings, and runtime metadata to the reported table.
+- `crossmodel_portability_results.csv` reconstructs the current appendix portability slice from a bundled alias-level supporting record.
+- `crossmodel_runtime_log.csv` records the public alias-level runtime surface for that slice while keeping vendor identities anonymized.
+- Exact backend names, versions, and vendor-specific decoding fields are still not bundled in the current snapshot.
+- `crossmodel_portability_manifest.md` makes the current portability evidence boundary explicit while preserving anonymous reporting.
+
+## Public TAB Transfer Note
+
+- `tab_transfer_results.csv` and `tab_transfer_document_metrics.csv` provide the first executable public-benchmark transfer slice in the current repository snapshot.
+- This TAB slice is intentionally text-only and reports span precision/recall/F1, PER, and non-sensitive text retention rather than CPPB-style AC/TSR.
+- The current runner evaluates only baselines that can be executed from the bundled public snapshot without closed-model access or heavyweight external dependencies.
 
 ## Latency Measurement Note
 
 - `latency_overhead.csv` should be read as a prototype middleware-overhead summary for the controlled CPPB setting.
 - The timing rows are intended for single-request serial processing comparisons across the listed mediation pipelines.
+- `latency_environment_manifest.md` records the current interpretation boundary for those timing rows.
 - The current repository does not yet bundle host identifiers or service-scale concurrency traces, so the latency table is not a portable infrastructure benchmark.

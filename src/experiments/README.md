@@ -16,6 +16,14 @@
   - Figure `cppb_benchmark_composition.png`
 - `artifact_metadata_notes.md`
   - Supplementary CPPB data-card and reproducibility notes for split semantics, multimodal slice membership, cross-model scope, and latency assumptions
+- `cppb_release_card.md`
+  - Consolidated benchmark-card note for release scope, provenance, annotation examples, and wrapper semantics
+- `ocr_slice_manifest.md`
+  - Explicit evidence boundary for the OCR-mediated slice and its remaining regeneration gaps
+- `crossmodel_portability_manifest.md`
+  - Explicit evidence boundary for the anonymous cross-model portability slice
+- `latency_environment_manifest.md`
+  - Explicit evidence boundary for prototype latency measurements
 - `prompt_method_comparison.csv`
   - Table III `tab:per`
   - Table V `tab:utility`
@@ -34,6 +42,12 @@
   - Appendix table `tab:catwise`
 - `multimodal_analysis.csv`
   - Appendix table `tab:multimodal`
+- `crossmodel_portability_results.csv`
+  - Appendix table `tab:crossmodel`
+- `crossmodel_runtime_log.csv`
+  - Alias-level runtime log for the appendix cross-model portability slice
+- `hardcase_analysis.csv`
+  - Appendix table `tab:hardcase`
 - `restoration_boundary_analysis.csv`
   - Appendix table `tab:restore`
   - Figure `restoration_ablation_tradeoffs.png`
@@ -61,6 +75,10 @@
   - Protocol scaffold for TAB prompt-wrapper external transfer
 - `tab_prompt_wrapped_manifest.csv`
   - Real TAB prompt-wrapper manifest generated from the public ECHR JSON files
+- `tab_transfer_results.csv`
+  - Appendix table `tab:tabtransfer`
+- `tab_transfer_document_metrics.csv`
+  - Per-document TAB transfer metrics emitted by the lightweight matched-baseline runner
 - `i2b2_matched_baseline_protocol.json`
   - Protocol scaffold for i2b2 prompt-wrapper external transfer
 - `i2b2_normalized_export_template.jsonl`
@@ -74,10 +92,13 @@
 python src/experiments/build_cppb_manifest.py
 python src/experiments/categorywise_analysis.py
 python src/experiments/multimodal_analysis.py
+python src/experiments/crossmodel_analysis.py
+python src/experiments/hardcase_analysis.py
 python src/experiments/multiseed_evaluation.py
 python src/experiments/leavetemplateout_evaluation.py
 python src/experiments/external_baseline_suite.py
 python src/experiments/tab_external_transfer.py src/experiments/external_data/tab
+python src/experiments/tab_matched_baseline_suite.py
 python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl
 python src/experiments/i2b2_external_transfer.py
 python src/experiments/fill_paper_tables.py --paper paper/main.tex
@@ -94,16 +115,19 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 - `tab:latency`
 - `tab:catwise`
 - `tab:multimodal`
+- `tab:crossmodel`
+- `tab:hardcase`
 - `tab:restore`
 - `tab:ablation`
 - `tab:multiseed`
 - `tab:lto`
 - `tab:baseline`
+- `tab:tabtransfer`
 
 它不会改动以下内容：
 
 - 概念性或示意性表格，如 `tab:example`、`tab:tradeoff`
-- 当前仓库尚未补齐自动生成脚本的表格，如 `tab:crossmodel`、`tab:hardcase`
+- 纯说明性 appendix 内容，如 `tab:app-concept-example`、`tab:app-regimes`、`tab:app-examples`
 
 ## 诚实性说明
 
@@ -111,3 +135,5 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 
 - 手工整理的受控实验结果，或
 - 说明性/概念性内容。
+
+同时，release-card / manifest 类文件主要用于界定证据边界与可复现性范围；它们不是新的 benchmark 结果，不应被误读为额外实验得分。

@@ -1,0 +1,4 @@
+order,backend_alias,per_percent,ac,tsr,mediation_policy,evaluation_scope,evidence_basis
+1,LLM-A,9.3,0.94,0.92,CPPB utility-constrained mediation profile,Alias-level cross-backend portability slice under one fixed prompt interface,Deterministic appendix portability slice aligned with the current anonymous three-backend report.
+2,LLM-B,10.1,0.92,0.90,CPPB utility-constrained mediation profile,Alias-level cross-backend portability slice under one fixed prompt interface,Deterministic appendix portability slice aligned with the current anonymous three-backend report.
+3,LLM-C,8.9,0.93,0.91,CPPB utility-constrained mediation profile,Alias-level cross-backend portability slice under one fixed prompt interface,Deterministic appendix portability slice aligned with the current anonymous three-backend report.

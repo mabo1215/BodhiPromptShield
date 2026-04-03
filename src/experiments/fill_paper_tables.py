@@ -10,17 +10,18 @@ This script only updates tables that are directly backed by repository CSVs:
   - tab:latency          <- latency_overhead.csv
     - tab:catwise          <- categorywise_analysis.csv
     - tab:multimodal       <- multimodal_analysis.csv
+    - tab:crossmodel       <- crossmodel_portability_results.csv
+    - tab:hardcase         <- hardcase_analysis.csv
   - tab:restore          <- restoration_boundary_analysis.csv
   - tab:ablation         <- sanitization_mode_ablation.csv
     - tab:multiseed        <- multiseed_method_summary.csv
     - tab:lto              <- leavetemplateout_summary.csv
     - tab:baseline         <- external_baseline_comparison.csv
+    - tab:tabtransfer      <- tab_transfer_results.csv
 
 It intentionally does NOT touch illustrative or manually curated tables such as:
   - tab:example
   - tab:tradeoff
-  - tab:crossmodel
-  - tab:hardcase
 
 Usage:
   python src/experiments/fill_paper_tables.py
@@ -217,6 +218,40 @@ def build_multimodal_table() -> str:
     )
 
 
+def build_crossmodel_table() -> str:
+    rows = sorted(_read_csv("crossmodel_portability_results.csv"), key=lambda row: int(row["order"]))
+    header = "Model backend & PER (\\%) & AC & TSR " + r"\\" + "\n"
+    body = "\n".join(
+        f"{_tex_escape(row['backend_alias'])} & {_fmt_float(row['per_percent'])} & {float(row['ac']):.2f} & {float(row['tsr']):.2f} \\\\" for row in rows
+    )
+    return (
+        "\\begin{tabular}{lccc}\n"
+        + "\\toprule\n"
+        + header
+        + "\\midrule\n"
+        f"{body}\n"
+        + "\\bottomrule\n"
+        + "\\end{tabular}"
+    )
+
+
+def build_hardcase_table() -> str:
+    rows = sorted(_read_csv("hardcase_analysis.csv"), key=lambda row: int(row["order"]))
+    header = "Subset & Span F1 & PER (\\%) & AC " + r"\\" + "\n"
+    body = "\n".join(
+        f"{_tex_escape(row['subset'])} & {float(row['span_f1']):.2f} & {_fmt_float(row['per_percent'])} & {float(row['ac']):.2f} \\\\" for row in rows
+    )
+    return (
+        "\\begin{tabular}{lccc}\n"
+        + "\\toprule\n"
+        + header
+        + "\\midrule\n"
+        f"{body}\n"
+        + "\\bottomrule\n"
+        + "\\end{tabular}"
+    )
+
+
 def build_restore_table() -> str:
     rows = _read_csv("restoration_boundary_analysis.csv")
     body_lines = []
@@ -258,12 +293,18 @@ def _fmt_pm(mean_key: str, std_key: str, row: dict[str, str], digits: int = 2) -
 
 def build_multiseed_table() -> str:
     rows = _read_csv("multiseed_method_summary.csv")
+    display_names = {
+        "Enterprise staged redaction": "Enterprise redaction",
+        "Generic de-identification": "Generic de-id",
+        "Proposed (semantic abstraction)": "Proposed (semantic)",
+        "Proposed (utility-constrained)": "Proposed (balanced)",
+    }
     body_lines = []
     for row in rows:
         body_lines.append(
             " & ".join(
                 [
-                    row["setting"],
+                    display_names.get(row["setting"], row["setting"]),
                     _fmt_pm("per_mean", "per_std", row, digits=1),
                     _fmt_pm("ac_mean", "ac_std", row),
                     _fmt_pm("tsr_mean", "tsr_std", row),
@@ -314,12 +355,17 @@ def build_lto_table() -> str:
 
 def build_baseline_table() -> str:
     rows = _read_csv("external_baseline_comparison.csv")
+    display_names = {
+        "Presidio (regex-only baseline)": "Presidio (regex)",
+        "Presidio (with NER fallback)": "Presidio (+NER)",
+        "BodhiPromptShield (proposed)": "BodhiPromptShield",
+    }
     body_lines = []
     for row in rows:
         body_lines.append(
             " & ".join(
                 [
-                    _tex_escape(row["method"]),
+                    _tex_escape(display_names.get(row["method"], row["method"])),
                     f"{float(row['span_f1']):.2f}",
                     _fmt_float(row["per_percent"]),
                     f"{float(row['ac']):.2f}",
@@ -339,6 +385,38 @@ def build_baseline_table() -> str:
     )
 
 
+def build_tab_transfer_table() -> str:
+    rows = _read_csv("tab_transfer_results.csv")
+    display_names = {
+        "BodhiPromptShield (released heuristic mediator)": "BodhiPromptShield",
+    }
+    header = "Method & Precision & Recall & Span F1 & PER (\\%) & Text retention " + r"\\" + "\n"
+    body_lines = []
+    for row in rows:
+        body_lines.append(
+            " & ".join(
+                [
+                    _tex_escape(display_names.get(row["method"], row["method"])),
+                    f"{float(row['span_precision']):.2f}",
+                    f"{float(row['span_recall']):.2f}",
+                    f"{float(row['span_f1']):.2f}",
+                    _fmt_float(row["per_percent"]),
+                    f"{float(row['text_retention']):.2f}",
+                ]
+            )
+            + " \\\\"
+        )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccccc}\n"
+        + "\\toprule\n"
+        + header
+        + "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
 TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:cppb_card": build_cppb_accounting_table,
     "tab:per": build_per_table,
@@ -348,11 +426,14 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:latency": build_latency_table,
     "tab:catwise": build_catwise_table,
     "tab:multimodal": build_multimodal_table,
+    "tab:crossmodel": build_crossmodel_table,
+    "tab:hardcase": build_hardcase_table,
     "tab:restore": build_restore_table,
     "tab:ablation": build_ablation_table,
     "tab:multiseed": build_multiseed_table,
     "tab:lto": build_lto_table,
     "tab:baseline": build_baseline_table,
+    "tab:tabtransfer": build_tab_transfer_table,
 }
 
 

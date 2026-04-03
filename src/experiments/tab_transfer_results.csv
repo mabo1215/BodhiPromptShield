@@ -1,0 +1,5 @@
+method,document_count,mention_count,span_precision,span_recall,span_f1,per_percent,text_retention,notes
+Raw prompt,1268,109009,0.00,0.00,0.00,100.0,1.00,No protection baseline on the wrapped TAB documents.
+Regex-only,1268,109009,0.98,0.25,0.40,76.1,1.00,"Pattern-only masking for dates, codes, phones, and other structured identifiers."
+NER-only masking,1268,109009,0.66,0.35,0.45,61.2,0.96,Capitalization and title-driven entity masking without policy routing.
+BodhiPromptShield (released heuristic mediator),1268,109009,0.76,0.62,0.68,37.2,0.96,"Released lightweight policy-aware mediator using regex, applicant-name, title, organization, and location heuristics."
