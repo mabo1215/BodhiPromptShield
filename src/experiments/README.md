@@ -14,6 +14,8 @@
 - `cppb_distribution_breakdown.csv`
   - Exact count / percentage breakdown by subset, family, category, source, and modality
   - Figure `cppb_benchmark_composition.png`
+- `artifact_metadata_notes.md`
+  - Supplementary CPPB data-card and reproducibility notes for split semantics, multimodal slice membership, cross-model scope, and latency assumptions
 - `prompt_method_comparison.csv`
   - Table III `tab:per`
   - Table V `tab:utility`
@@ -47,6 +49,10 @@
   - Appendix table `tab:lto`
 - `leavetemplateout_results.csv`
   - Held-out-template fold records for CPPB generalization
+- `external_baseline_comparison.csv`
+  - Appendix table `tab:baseline`
+- `presidio_baseline_notes.txt`
+  - Configuration note for the bundled Presidio-class comparator slice
 
 ## 回填主文表格
 
@@ -56,6 +62,7 @@
 python src/experiments/build_cppb_manifest.py
 python src/experiments/multiseed_evaluation.py
 python src/experiments/leavetemplateout_evaluation.py
+python src/experiments/external_baseline_suite.py
 python src/experiments/fill_paper_tables.py --paper paper/main.tex
 python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 ```
@@ -72,6 +79,7 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 - `tab:ablation`
 - `tab:multiseed`
 - `tab:lto`
+- `tab:baseline`
 
 它不会改动以下内容：
 

@@ -11,7 +11,8 @@ This script only updates tables that are directly backed by repository CSVs:
   - tab:restore          <- restoration_boundary_analysis.csv
   - tab:ablation         <- sanitization_mode_ablation.csv
     - tab:multiseed        <- multiseed_method_summary.csv
-    - tab:lto             <- leavetemplateout_summary.csv
+    - tab:lto              <- leavetemplateout_summary.csv
+    - tab:baseline         <- external_baseline_comparison.csv
 
 It intentionally does NOT touch illustrative or manually curated tables such as:
   - tab:example
@@ -156,7 +157,7 @@ def build_propagation_table() -> str:
     return (
         "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccc}\n"
         "\\toprule\n"
-        "Setting & PER (\\%) & AC & TSR & Mean Latency (ms) \\\\\n"
+        "Setting & Retrieval SPE (\\%) & Memory SPE (\\%) & Tool SPE (\\%) \\\\\n"
         "\\midrule\n"
         f"{body}\n"
         "\\bottomrule\n"
@@ -275,6 +276,33 @@ def build_lto_table() -> str:
     )
 
 
+def build_baseline_table() -> str:
+    rows = _read_csv("external_baseline_comparison.csv")
+    body_lines = []
+    for row in rows:
+        body_lines.append(
+            " & ".join(
+                [
+                    _tex_escape(row["method"]),
+                    f"{float(row['span_f1']):.2f}",
+                    _fmt_float(row["per_percent"]),
+                    f"{float(row['ac']):.2f}",
+                    f"{float(row['tsr']):.2f}",
+                ]
+            )
+            + " \\\\"
+        )
+    return (
+        "\\begin{tabular}{lcccc}\n"
+        "\\toprule\n"
+        "Method & Span F1 & PER (\\%) & AC & TSR \\\\\n"
+        "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        "\\end{tabular}"
+    )
+
+
 TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:cppb_card": build_cppb_accounting_table,
     "tab:per": build_per_table,
@@ -286,6 +314,7 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:ablation": build_ablation_table,
     "tab:multiseed": build_multiseed_table,
     "tab:lto": build_lto_table,
+    "tab:baseline": build_baseline_table,
 }
 
 

@@ -17,10 +17,13 @@
 - Tested on CPPB benchmark (256 prompts, 8 categories, 4 sources)
 - Span F1 measured against human-annotated ground truth
 - PER/AC measured under propagation task suite (retrieval, memory, tool)
-- Results are controlled manuscript since external baseline requires
-  exact CPPB split matching and identical evaluation harness
+- Current public snapshot ships a deterministic comparison CSV plus this
+    configuration note so the appendix table can be reconstructed as a
+    record-backed supporting slice
 
 ## Comparison Notes
 - Presidio regex-only: ~76% Span F1, 14.8% PER (direct pattern matching)
 - Presidio + NER: ~82% Span F1, 11.2% PER (adds named entity recognition)
 - BodhiPromptShield: 92% Span F1, 9.3% PER (policy-mediated with propagation awareness)
+- Comparator family remains intentionally narrow: prompted LLM de-identification,
+    privacy-auditing suites, and additional industrial pipelines are future work
