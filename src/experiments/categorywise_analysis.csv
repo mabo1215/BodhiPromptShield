@@ -1,0 +1,7 @@
+order,category_label,source_categories,template_count,prompt_count,family_coverage,span_f1,per_percent,interpretation
+1,Person identifiers,Person names | Contact details,8,64,4,0.96,6.5,Stable names and contact fields remain the easiest utility-constrained slice.
+2,Financial identifiers,National/account identifiers | Financial references,8,64,4,0.95,5.8,Structured identifiers benefit from typed placeholder routing and pattern support.
+3,Medical entities,Medical content,4,32,4,0.91,10.2,"Clinical context remains recoverable, but task-critical semantics increase residual exposure pressure."
+4,Address/location,Postal addresses,4,32,4,0.90,11.4,Location spans are partly structured yet still sensitive to context and formatting variation.
+5,Organization/project terms,Organization/project terms,4,32,4,0.88,13.1,Organization-specific spans remain harder because lexical clues overlap with benign task vocabulary.
+6,Context-dependent sensitive spans,Context-dependent confidential spans,4,32,4,0.84,16.8,Context-heavy confidential spans remain the dominant residual-risk channel in CPPB.

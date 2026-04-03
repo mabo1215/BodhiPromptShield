@@ -8,6 +8,8 @@ This script only updates tables that are directly backed by repository CSVs:
   - tab:pi_sensitivity   <- policy_sensitivity.csv
   - tab:propagation      <- agent_pipeline_metrics.csv
   - tab:latency          <- latency_overhead.csv
+    - tab:catwise          <- categorywise_analysis.csv
+    - tab:multimodal       <- multimodal_analysis.csv
   - tab:restore          <- restoration_boundary_analysis.csv
   - tab:ablation         <- sanitization_mode_ablation.csv
     - tab:multiseed        <- multiseed_method_summary.csv
@@ -17,8 +19,6 @@ This script only updates tables that are directly backed by repository CSVs:
 It intentionally does NOT touch illustrative or manually curated tables such as:
   - tab:example
   - tab:tradeoff
-  - tab:catwise
-  - tab:multimodal
   - tab:crossmodel
   - tab:hardcase
 
@@ -181,6 +181,42 @@ def build_latency_table() -> str:
     )
 
 
+def build_catwise_table() -> str:
+    rows = sorted(_read_csv("categorywise_analysis.csv"), key=lambda row: int(row["order"]))
+    body = "\n".join(
+        f"{_tex_escape(row['category_label'])} & {float(row['span_f1']):.2f} & {_fmt_float(row['per_percent'])} \\\\" for row in rows
+    )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcc}\n"
+        "\\toprule\n"
+        "Category & Span F1 & PER (\\%) \\\\\n"
+        "\\midrule\n"
+        f"{body}\n"
+        "\\bottomrule\n"
+        "\\end{tabularx}"
+    )
+
+
+def build_multimodal_table() -> str:
+    rows = sorted(_read_csv("multimodal_analysis.csv"), key=lambda row: int(row["order"]))
+    body_lines = []
+    for row in rows:
+        ocr_span_f1 = row["ocr_span_f1"]
+        ocr_value = "--" if ocr_span_f1 == "--" else f"{float(ocr_span_f1):.2f}"
+        body_lines.append(
+            f"{_tex_escape(row['method'])} & {ocr_value} & {_fmt_float(row['multimodal_per'])} & {float(row['ac']):.2f} \\\\" 
+        )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccc}\n"
+        "\\toprule\n"
+        "Method & OCR Span F1 & Multimodal PER (\\%) & AC \\\\\n"
+        "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        "\\end{tabularx}"
+    )
+
+
 def build_restore_table() -> str:
     rows = _read_csv("restoration_boundary_analysis.csv")
     body_lines = []
@@ -310,6 +346,8 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:pi_sensitivity": build_pi_table,
     "tab:propagation": build_propagation_table,
     "tab:latency": build_latency_table,
+    "tab:catwise": build_catwise_table,
+    "tab:multimodal": build_multimodal_table,
     "tab:restore": build_restore_table,
     "tab:ablation": build_ablation_table,
     "tab:multiseed": build_multiseed_table,

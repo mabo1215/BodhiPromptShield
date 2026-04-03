@@ -1,0 +1,5 @@
+order,method,ocr_span_f1,multimodal_per,ac,prompt_count,essential_prompts,incidental_prompts,modality_scope,evidence_basis
+1,No protection,--,100.0,1.00,64,32,32,CPPB OCR-mediated text-plus-image slice (V4/V8 across all 32 templates),Controlled multimodal slice reference under the raw OCR-mediated CPPB prompts.
+2,OCR + regex masking,0.81,33.5,0.86,64,32,32,CPPB OCR-mediated text-plus-image slice (V4/V8 across all 32 templates),Record-backed OCR slice summary for the regex-only multimodal comparator.
+3,OCR + generic de-identification,0.84,16.1,0.72,64,32,32,CPPB OCR-mediated text-plus-image slice (V4/V8 across all 32 templates),Record-backed OCR slice summary for the generic de-identification comparator.
+4,Proposed multimodal mediation,0.90,11.3,0.88,64,32,32,CPPB OCR-mediated text-plus-image slice (V4/V8 across all 32 templates),Record-backed OCR slice summary for the proposed multimodal mediation setting.

@@ -15,6 +15,8 @@
   - `policy_sensitivity.csv`：主文 policy sensitivity 结果，用于 Table VIII 和 operating-points 图。
   - `agent_pipeline_metrics.csv`：主文 multi-step propagation 结果，用于 Table XI、主文 propagation 曲线和附录 deployment 图。
   - `latency_overhead.csv`：主文 latency 结果，用于 Table XII 和附录 deployment 图。
+  - `categorywise_analysis.csv`：附录 `tab:catwise` 的 category-wise supporting artifact。
+  - `multimodal_analysis.csv`：附录 `tab:multimodal` 的 OCR-mediated supporting artifact。
   - `restoration_boundary_analysis.csv`：附录 restoration boundary supporting table 与 supporting figure 的记录文件。
   - `sanitization_mode_ablation.csv`：附录 sanitization-mode ablation supporting table 与 supporting figure 的记录文件。
   - `multiseed_evaluation.py`：生成 method / policy operating-point 的多随机种子稳定性记录、汇总 CSV 和 prompt-level logs。
@@ -24,6 +26,10 @@
   - `leavetemplateout_summary.csv`：附录 held-out-template generalization 表。
   - `external_baseline_comparison.csv`：附录 Presidio-class external baseline comparison 表。
   - `presidio_baseline_notes.txt`：附录外部基线配置说明。
+  - `tab_matched_baseline_protocol.json`：TAB text anonymization external transfer 的 matched baseline protocol scaffold。
+  - `tab_prompt_wrapped_manifest.csv`：基于公开 TAB ECHR JSON 生成的首个 prompt-wrapper manifest。
+  - `i2b2_matched_baseline_protocol.json`：i2b2 clinical de-identification external transfer 的 matched baseline protocol scaffold。
+  - `prepare_i2b2_normalized_export.py`：把用户自有的 i2b2 XML/TXT 或 JSON/JSONL 导出规范化为 clinical transfer 所需 schema 的工具。
   - `fill_paper_tables.py`：把上述 CSV 回填到 `paper/main.tex` 与 `paper/appendix.tex` 中对应的代码支撑表格。
 - `figures/`
   - `prompt_privacy_operating_points.py`：生成主文 `prompt_privacy_operating_points.png`。
@@ -49,6 +55,8 @@
 - 附录 `cppb_benchmark_composition.png`
 - 附录 `tab:restore`
 - 附录 `tab:ablation`
+- 附录 `tab:catwise`
+- 附录 `tab:multimodal`
 - 附录 `tab:multiseed`
 - 附录 `tab:lto`
 - 附录 `tab:baseline`
@@ -65,12 +73,20 @@
   - `python src/figures/run_all_figures.py --out-dir paper/figs`
 - 生成 CPPB benchmark accounting 工件：
   - `python src/experiments/build_cppb_manifest.py`
+- 生成 category-wise supporting artifact：
+  - `python src/experiments/categorywise_analysis.py`
+- 生成 multimodal supporting artifact：
+  - `python src/experiments/multimodal_analysis.py`
 - 生成 multi-seed 稳定性工件：
   - `python src/experiments/multiseed_evaluation.py`
 - 生成 leave-template-out 泛化工件：
   - `python src/experiments/leavetemplateout_evaluation.py`
 - 生成 external baseline comparison 工件：
   - `python src/experiments/external_baseline_suite.py`
+- 生成 TAB / i2b2 external transfer protocol scaffold：
+  - `python src/experiments/tab_external_transfer.py src/experiments/external_data/tab`
+  - `python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl`
+  - `python src/experiments/i2b2_external_transfer.py`
 - 用 CSV 回填主文中已代码支撑的表格：
   - `python src/experiments/fill_paper_tables.py --paper paper/main.tex`
 - 用 CSV 回填附录中已代码支撑的表格：

@@ -1,0 +1,77 @@
+{
+  "benchmark": "2014 i2b2/UTHealth",
+  "benchmark_family": "clinical de-identification external transfer",
+  "core_metrics": [
+    "entity_span_precision",
+    "entity_span_recall",
+    "entity_span_f1",
+    "per",
+    "category_wise_per",
+    "ac",
+    "tsr"
+  ],
+  "evaluation_slice": "clinical text matched transfer",
+  "expected_input": {
+    "format": "Normalized JSONL or JSON array with one note per item",
+    "required_fields": [
+      "note_id",
+      "split",
+      "text",
+      "phi_spans"
+    ],
+    "phi_span_fields": [
+      "start",
+      "end",
+      "text",
+      "phi_type",
+      "phi_subtype"
+    ]
+  },
+  "wrapper_prompt_template": {
+    "system_instruction": "You are evaluating privacy mediation on longitudinal clinical narratives.",
+    "user_prompt": "Protect all PHI spans while preserving clinically relevant meaning. Return a sanitized note and a short task-faithful clinical summary."
+  },
+  "matched_baselines": [
+    {
+      "name": "Raw prompt",
+      "family": "No protection",
+      "notes": "Forward the wrapped clinical note without sanitization."
+    },
+    {
+      "name": "Regex-only",
+      "family": "Pattern baseline",
+      "notes": "Mask dates, IDs, phones, and e-mail-like spans with rule-based recognizers."
+    },
+    {
+      "name": "NER-only masking",
+      "family": "Entity baseline",
+      "notes": "Mask person and organization entities without clinical PHI specialization."
+    },
+    {
+      "name": "Presidio (with NER fallback)",
+      "family": "Industrial de-identification",
+      "notes": "Run the same industrial baseline under the wrapped clinical note protocol."
+    },
+    {
+      "name": "Clinical hybrid de-identification pipeline",
+      "family": "Clinical domain baseline",
+      "notes": "Allow one domain-specific hybrid comparator under the same prompt wrapper and evaluation slices."
+    },
+    {
+      "name": "Prompted LLM zero-shot de-identification",
+      "family": "Semantic baseline",
+      "notes": "Use one fixed clinical de-identification prompt template and decoding configuration."
+    },
+    {
+      "name": "BodhiPromptShield (proposed)",
+      "family": "Policy-aware mediation",
+      "notes": "Run the same utility-constrained mediation profile with clinically aligned task prompts."
+    }
+  ],
+  "category_mapping_notes": [
+    "HIPAA and i2b2 PHI labels are preserved as the primary external de-identification target.",
+    "Downstream utility should be evaluated on note summarization or clinical QA slices that do not require raw PHI restoration.",
+    "The repository does not redistribute i2b2 raw notes; wrappers operate on user-provided normalized exports only.",
+    "Use prepare_i2b2_normalized_export.py to convert raw XML/TXT releases into the required normalized export schema."
+  ]
+}

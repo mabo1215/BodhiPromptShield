@@ -1,0 +1,76 @@
+{
+  "benchmark": "TAB",
+  "benchmark_family": "text anonymization external transfer",
+  "core_metrics": [
+    "span_precision",
+    "span_recall",
+    "span_f1",
+    "per",
+    "ac",
+    "tsr"
+  ],
+  "evaluation_slice": "text-only matched transfer",
+  "expected_input": {
+    "format": "TAB JSON files such as echr_train.json / echr_dev.json / echr_test.json from the public repository root",
+    "required_document_fields": [
+      "doc_id",
+      "dataset_type",
+      "text",
+      "annotations",
+      "task"
+    ]
+  },
+  "wrapper_prompt_template": {
+    "system_instruction": "You are evaluating prompt privacy mediation on a public anonymization benchmark.",
+    "user_prompt": "Protect all identifiers that should remain masked while preserving the document's task-relevant meaning. Return a sanitized version and a short summary that stays faithful to the original case."
+  },
+  "matched_baselines": [
+    {
+      "name": "Raw prompt",
+      "family": "No protection",
+      "restoration_aware": false,
+      "notes": "Forward the wrapped prompt without sanitization."
+    },
+    {
+      "name": "Regex-only",
+      "family": "Pattern baseline",
+      "restoration_aware": false,
+      "notes": "Mask deterministic identifiers with regex recognizers only."
+    },
+    {
+      "name": "NER-only masking",
+      "family": "Entity baseline",
+      "restoration_aware": false,
+      "notes": "Mask PERSON/ORG/LOCATION style mentions without policy routing."
+    },
+    {
+      "name": "Presidio (regex-only baseline)",
+      "family": "Industrial de-identification",
+      "restoration_aware": false,
+      "notes": "Run Presidio recognizers restricted to pattern-heavy entities."
+    },
+    {
+      "name": "Presidio (with NER fallback)",
+      "family": "Industrial de-identification",
+      "restoration_aware": false,
+      "notes": "Run Presidio with NER fallback under the same wrapped prompt."
+    },
+    {
+      "name": "Prompted LLM zero-shot de-identification",
+      "family": "Semantic baseline",
+      "restoration_aware": false,
+      "notes": "Use one fixed de-identification prompt template and decoding configuration."
+    },
+    {
+      "name": "BodhiPromptShield (proposed)",
+      "family": "Policy-aware mediation",
+      "restoration_aware": true,
+      "notes": "Run the same mediation policy profile used in CPPB utility-constrained evaluation."
+    }
+  ],
+  "category_mapping_notes": [
+    "DIRECT and QUASI identifier types map to the main exposure slice.",
+    "Confidential attributes remain part of the contextual sensitivity analysis rather than a standalone release-time label.",
+    "Document-level summaries should be evaluated under the same AC/TSR interpretation used in CPPB text-only slices."
+  ]
+}

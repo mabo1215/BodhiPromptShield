@@ -20,7 +20,8 @@
 
 - The OCR-mediated slice contains 64 prompts: variant V4 and V8 across all 32 templates.
 - The public snapshot exposes multimodal slice membership through the prompt manifest and accounting summary.
-- The current repository does not yet ship raw OCR engine/version manifests or document-rendering assets for the controlled multimodal appendix table.
+- `multimodal_analysis.csv` reconstructs the current supporting table from bundled slice accounting plus recorded OCR-mediated summary values.
+- The current repository still does not ship raw OCR engine/version manifests or document-rendering assets for a full end-to-end multimodal rerun.
 
 ## Cross-Model Portability Note
 

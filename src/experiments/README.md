@@ -30,6 +30,10 @@
 - `latency_overhead.csv`
   - Table XII `tab:latency`
   - Figure `agent_pipeline_summary.png`
+- `categorywise_analysis.csv`
+  - Appendix table `tab:catwise`
+- `multimodal_analysis.csv`
+  - Appendix table `tab:multimodal`
 - `restoration_boundary_analysis.csv`
   - Appendix table `tab:restore`
   - Figure `restoration_ablation_tradeoffs.png`
@@ -53,6 +57,14 @@
   - Appendix table `tab:baseline`
 - `presidio_baseline_notes.txt`
   - Configuration note for the bundled Presidio-class comparator slice
+- `tab_matched_baseline_protocol.json`
+  - Protocol scaffold for TAB prompt-wrapper external transfer
+- `tab_prompt_wrapped_manifest.csv`
+  - Real TAB prompt-wrapper manifest generated from the public ECHR JSON files
+- `i2b2_matched_baseline_protocol.json`
+  - Protocol scaffold for i2b2 prompt-wrapper external transfer
+- `i2b2_normalized_export_template.jsonl`
+  - Template normalized export schema for user-supplied i2b2 notes
 
 ## 回填主文表格
 
@@ -60,9 +72,14 @@
 
 ```bash
 python src/experiments/build_cppb_manifest.py
+python src/experiments/categorywise_analysis.py
+python src/experiments/multimodal_analysis.py
 python src/experiments/multiseed_evaluation.py
 python src/experiments/leavetemplateout_evaluation.py
 python src/experiments/external_baseline_suite.py
+python src/experiments/tab_external_transfer.py src/experiments/external_data/tab
+python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl
+python src/experiments/i2b2_external_transfer.py
 python src/experiments/fill_paper_tables.py --paper paper/main.tex
 python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 ```
@@ -75,6 +92,8 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 - `tab:pi_sensitivity`
 - `tab:propagation`
 - `tab:latency`
+- `tab:catwise`
+- `tab:multimodal`
 - `tab:restore`
 - `tab:ablation`
 - `tab:multiseed`
@@ -84,7 +103,7 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 它不会改动以下内容：
 
 - 概念性或示意性表格，如 `tab:example`、`tab:tradeoff`
-- 当前仓库尚未补齐自动生成脚本的表格，如 `tab:catwise`、`tab:multimodal`、`tab:crossmodel`、`tab:hardcase`
+- 当前仓库尚未补齐自动生成脚本的表格，如 `tab:crossmodel`、`tab:hardcase`
 
 ## 诚实性说明
 
