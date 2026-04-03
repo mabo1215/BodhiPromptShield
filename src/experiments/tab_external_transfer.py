@@ -51,6 +51,12 @@ MATCHED_BASELINES = [
         "notes": "Run the released structured-plus-NER approximation for a Presidio-class comparator under the same wrapped prompt.",
     },
     {
+        "name": "Hybrid rule+context de-identification",
+        "family": "Hybrid heuristic de-identification",
+        "restoration_aware": False,
+        "notes": "Run the released hybrid structured-plus-context comparator under the same wrapped prompt.",
+    },
+    {
         "name": "Prompted LLM zero-shot de-identification",
         "family": "Semantic baseline",
         "restoration_aware": False,
@@ -84,6 +90,7 @@ def _write_protocol() -> None:
             "DIRECT and QUASI identifier types map to the main exposure slice.",
             "Confidential attributes remain part of the contextual sensitivity analysis rather than a standalone release-time label.",
             "Document-level summaries should be evaluated under the same AC/TSR interpretation used in CPPB text-only slices.",
+            "Released run logs and execution manifests distinguish executed heuristic comparators from protocol-defined but unexecuted external baselines.",
         ],
     }
     with open(PROTOCOL_PATH, "w", encoding="utf-8") as handle:

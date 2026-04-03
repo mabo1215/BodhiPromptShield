@@ -22,6 +22,7 @@
 - The OCR-mediated slice contains 64 prompts: variant V4 and V8 across all 32 templates.
 - The public snapshot exposes multimodal slice membership through the prompt manifest and accounting summary.
 - `multimodal_analysis.csv` reconstructs the current supporting table from bundled slice accounting plus recorded OCR-mediated summary values.
+- `multimodal_provenance_card.md` now consolidates slice construction, rendering boundary, OCR-facing provenance, and the still-missing source-image/runtime metadata in one note.
 - The current repository still does not ship raw OCR engine/version manifests or document-rendering assets for a full end-to-end multimodal rerun.
 
 ## Cross-Model Portability Note
@@ -36,13 +37,16 @@
 
 - `tab_transfer_results.csv` and `tab_transfer_document_metrics.csv` provide the first executable public-benchmark transfer slice in the current repository snapshot.
 - `tab_transfer_execution_manifest.csv` records which comparator families are executed from the current public snapshot and which remain protocol-only.
+- `tab_transfer_run_log.csv` now records the bundled public input scope, split counts, generated outputs, and rerun command template for each TAB comparator.
 - This TAB slice is intentionally text-only and reports span precision/recall/F1, PER, and non-sensitive text retention rather than CPPB-style AC/TSR.
-- The current runner now includes raw, regex, NER, and two released Presidio-class heuristic approximations plus the released BodhiPromptShield heuristic mediator; prompted zero-shot LLM de-identification remains protocol-only.
+- The current runner now includes raw, regex, NER, two Presidio-class heuristic approximations, one released hybrid de-identification comparator, and the released BodhiPromptShield heuristic mediator; prompted zero-shot LLM de-identification remains protocol-only.
 
 ## i2b2 Clinical Transfer Note
 
 - `i2b2_transfer_execution_manifest.csv` records the current clinical comparator roster and distinguishes methods that are executable once a licensed normalized export is supplied from methods that still require external runtime support.
+- `i2b2_transfer_run_log.csv` records the exact result schema, rerun command template, and current waiting-for-licensed-data state for the clinical wrapper roster.
 - `i2b2_matched_baseline_suite.py` now provides the exact result schema and heuristic runner used for clinical transfer once user-supplied normalized i2b2 notes are available.
+- `external_wrapper_release_card.md` now consolidates the wrapper invariants, comparator roster, output files, and licensing boundary shared by TAB and i2b2 transfer.
 - The repository still does not redistribute licensed i2b2 notes, so no clinical result CSV is bundled in the public snapshot.
 
 ## Latency Measurement Note

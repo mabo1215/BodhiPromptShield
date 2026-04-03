@@ -19,6 +19,7 @@ EXPERIMENTS_DIR = Path(__file__).resolve().parent
 SUMMARY_OUTPUT_PATH = EXPERIMENTS_DIR / "i2b2_transfer_results.csv"
 DETAIL_OUTPUT_PATH = EXPERIMENTS_DIR / "i2b2_transfer_document_metrics.csv"
 EXECUTION_MANIFEST_PATH = EXPERIMENTS_DIR / "i2b2_transfer_execution_manifest.csv"
+RUN_LOG_PATH = EXPERIMENTS_DIR / "i2b2_transfer_run_log.csv"
 
 METHOD_SPECS = [
     {
@@ -50,6 +51,12 @@ METHOD_SPECS = [
         "family": "Industrial de-identification",
         "status": "executable_with_licensed_data",
         "notes": "Released approximation of a Presidio-class structured-plus-NER stack under the clinical wrapper.",
+    },
+    {
+        "name": "Clinical hybrid heuristic de-identification",
+        "family": "Hybrid heuristic de-identification",
+        "status": "executable_with_licensed_data",
+        "notes": "Released hybrid heuristic using structured, named-entity, clinical-context, and location cues under the clinical wrapper.",
     },
     {
         "name": "Clinical hybrid de-identification pipeline",
@@ -206,6 +213,15 @@ def _presidio_ner_spans(text: str) -> list[tuple[int, int]]:
     return spans
 
 
+def _clinical_hybrid_spans(text: str) -> list[tuple[int, int]]:
+    spans = []
+    spans.extend(_presidio_regex_spans(text))
+    spans.extend((match.start(), match.end()) for match in ORG_PATTERN.finditer(text))
+    spans.extend((match.start(), match.end()) for match in LOCATION_CONTEXT_PATTERN.finditer(text))
+    spans.extend((match.start(), match.end()) for match in CLINICAL_CONTEXT_PATTERN.finditer(text))
+    return spans
+
+
 def _policy_aware_spans(text: str) -> list[tuple[int, int]]:
     spans = []
     spans.extend(_regex_spans(text))
@@ -247,9 +263,68 @@ def _predict_spans(method: str, text: str) -> list[tuple[int, int]]:
         return _merge_spans(_presidio_regex_spans(text))
     if method == "Presidio-class (NER fallback heuristic)":
         return _merge_spans(_presidio_ner_spans(text))
+    if method == "Clinical hybrid heuristic de-identification":
+        return _merge_spans(_clinical_hybrid_spans(text))
     if method == "BodhiPromptShield (released heuristic mediator)":
         return _merge_spans(_policy_aware_spans(text))
     raise ValueError(f"Unsupported method: {method}")
+
+
+def _write_run_log(records: list[dict[str, Any]], input_supplied: bool, input_path: Path | None) -> None:
+    split_counts: dict[str, int] = {}
+    mention_count = 0
+    for record in records:
+        split = str(record.get("split", "unknown"))
+        split_counts[split] = split_counts.get(split, 0) + 1
+        raw_spans = record.get("phi_spans", [])
+        if isinstance(raw_spans, list):
+            mention_count += sum(1 for span in raw_spans if isinstance(span, dict))
+
+    with open(RUN_LOG_PATH, "w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                "benchmark",
+                "method",
+                "family",
+                "execution_status",
+                "input_scope",
+                "document_count",
+                "mention_count",
+                "split_breakdown",
+                "protocol_file",
+                "wrapper_manifest",
+                "summary_output",
+                "detail_output",
+                "execution_manifest",
+                "command_template",
+                "notes",
+            ],
+        )
+        writer.writeheader()
+        for spec in METHOD_SPECS:
+            status = spec["status"]
+            if status == "executable_with_licensed_data":
+                status = "executed" if input_supplied else "waiting_for_licensed_data"
+            writer.writerow(
+                {
+                    "benchmark": "2014 i2b2/UTHealth",
+                    "method": spec["name"],
+                    "family": spec["family"],
+                    "execution_status": status,
+                    "input_scope": str(input_path) if input_path else "licensed normalized export required",
+                    "document_count": str(len(records)),
+                    "mention_count": str(mention_count),
+                    "split_breakdown": " | ".join(f"{key}:{value}" for key, value in sorted(split_counts.items())),
+                    "protocol_file": "i2b2_matched_baseline_protocol.json",
+                    "wrapper_manifest": "i2b2_prompt_wrapped_manifest.csv" if input_supplied else "",
+                    "summary_output": "i2b2_transfer_results.csv" if input_supplied and status == "executed" else "",
+                    "detail_output": "i2b2_transfer_document_metrics.csv" if input_supplied and status == "executed" else "",
+                    "execution_manifest": "i2b2_transfer_execution_manifest.csv",
+                    "command_template": "python src/experiments/i2b2_matched_baseline_suite.py <normalized_i2b2_export.jsonl>",
+                    "notes": spec["notes"],
+                }
+            )
 
 
 def _overlap(span_a: tuple[int, int], span_b: tuple[int, int]) -> int:
@@ -296,6 +371,10 @@ def evaluate_i2b2_transfer(input_path: Path) -> tuple[Path, Path]:
         (
             "Presidio-class (NER fallback heuristic)",
             "Released approximation of a Presidio-class structured-plus-NER stack under the clinical wrapper.",
+        ),
+        (
+            "Clinical hybrid heuristic de-identification",
+            "Released hybrid heuristic using structured, named-entity, clinical-context, and location cues under the clinical wrapper.",
         ),
         (
             "BodhiPromptShield (released heuristic mediator)",
@@ -419,6 +498,7 @@ def evaluate_i2b2_transfer(input_path: Path) -> tuple[Path, Path]:
         writer.writerows(detail_rows)
 
     _write_execution_manifest(input_supplied=True)
+    _write_run_log(records, input_supplied=True, input_path=input_path)
     return SUMMARY_OUTPUT_PATH, DETAIL_OUTPUT_PATH
 
 
@@ -429,7 +509,9 @@ def main() -> int:
 
     if not args.input:
         manifest_path = _write_execution_manifest(input_supplied=False)
+        _write_run_log([], input_supplied=False, input_path=None)
         print(f"i2b2 execution manifest written to {manifest_path}")
+        print(f"i2b2 run log written to {RUN_LOG_PATH}")
         print("No normalized i2b2 export supplied; results remain pending licensed data.")
         return 0
 
@@ -437,6 +519,7 @@ def main() -> int:
     print(f"i2b2 transfer summary written to {summary_path}")
     print(f"i2b2 per-document metrics written to {detail_path}")
     print(f"i2b2 execution manifest written to {EXECUTION_MANIFEST_PATH}")
+    print(f"i2b2 run log written to {RUN_LOG_PATH}")
     return 0
 
 

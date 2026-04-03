@@ -13,8 +13,10 @@
   - `artifact_metadata_notes.md`：补充 CPPB data-card、split 语义、multimodal slice、cross-model portability 与 latency assumptions 的仓库说明。
   - `cppb_release_card.md`：集中说明 CPPB release scope、source provenance、annotation examples、external wrapper semantics 与已知缺口。
   - `ocr_slice_manifest.md`：说明 OCR-mediated slice 当前已知范围与仍缺失的 exact OCR / asset metadata。
+  - `multimodal_provenance_card.md`：集中说明 multimodal slice 的构造来源、rendering boundary 与 OCR-facing provenance 缺口。
   - `crossmodel_portability_manifest.md`：说明匿名 cross-model portability slice 的证据边界与仍缺失的 backend provenance。
   - `latency_environment_manifest.md`：说明 latency 表的 prototype interpretation boundary 与仍缺失的 hardware/concurrency metadata。
+  - `external_wrapper_release_card.md`：集中说明 TAB / i2b2 external wrapper 的 protocol invariants、comparator roster、落盘文件与 licensing boundary。
   - `prompt_method_comparison.csv`：主文方法级对比结果，用于 Table III（PER）、Table V（AC/TSR）以及主文 operating-points 图。
   - `policy_sensitivity.csv`：主文 policy sensitivity 结果，用于 Table VIII 和 operating-points 图。
   - `agent_pipeline_metrics.csv`：主文 multi-step propagation 结果，用于 Table XI、主文 propagation 曲线和附录 deployment 图。
@@ -42,10 +44,12 @@
   - `tab_transfer_results.csv`：附录 `tab:tabtransfer` 的扩展 comparator public-transfer 结果表。
   - `tab_transfer_document_metrics.csv`：TAB 文档级 matched-baseline 指标明细。
   - `tab_transfer_execution_manifest.csv`：TAB comparator roster 的 execution-status 记录。
+  - `tab_transfer_run_log.csv`：TAB wrapper 当前一次 released rerun 的原始运行记录。
   - `i2b2_matched_baseline_protocol.json`：i2b2 clinical de-identification external transfer 的 matched baseline protocol scaffold。
   - `prepare_i2b2_normalized_export.py`：把用户自有的 i2b2 XML/TXT 或 JSON/JSONL 导出规范化为 clinical transfer 所需 schema 的工具。
   - `i2b2_matched_baseline_suite.py`：在用户提供 licensed normalized export 时运行 i2b2 matched baselines；无数据时只写 execution manifest。
   - `i2b2_transfer_execution_manifest.csv`：i2b2 comparator roster 的 execution-status 记录。
+  - `i2b2_transfer_run_log.csv`：i2b2 wrapper 当前 waiting/executed 状态的原始运行记录。
   - `fill_paper_tables.py`：把上述 CSV 回填到 `paper/main.tex` 与 `paper/appendix.tex` 中对应的代码支撑表格。
 - `figures/`
   - `prompt_privacy_operating_points.py`：生成主文 `prompt_privacy_operating_points.png`。

@@ -39,6 +39,7 @@
 - TAB wrappers operate over public ECHR JSON documents.
 - i2b2 wrappers operate only over user-provided normalized exports and do not redistribute licensed clinical notes.
 - Public-benchmark wrapper execution status is tracked through explicit execution-manifest CSVs so that protocol-defined but unexecuted comparator families are not misread as completed reruns.
+- `external_wrapper_release_card.md` and `multimodal_provenance_card.md` provide the current release boundary for external transfer wrappers and OCR-facing slice provenance.
 
 ## Known Omissions
 

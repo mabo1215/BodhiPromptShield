@@ -21,6 +21,7 @@ DEFAULT_INPUT_DIR = EXPERIMENTS_DIR / "external_data" / "tab"
 SUMMARY_OUTPUT_PATH = EXPERIMENTS_DIR / "tab_transfer_results.csv"
 DETAIL_OUTPUT_PATH = EXPERIMENTS_DIR / "tab_transfer_document_metrics.csv"
 EXECUTION_MANIFEST_PATH = EXPERIMENTS_DIR / "tab_transfer_execution_manifest.csv"
+RUN_LOG_PATH = EXPERIMENTS_DIR / "tab_transfer_run_log.csv"
 
 METHOD_SPECS = [
     {
@@ -52,6 +53,12 @@ METHOD_SPECS = [
         "family": "Industrial de-identification",
         "status": "executed",
         "notes": "Released approximation of a Presidio-class structured-plus-NER stack under the public wrapper.",
+    },
+    {
+        "name": "Hybrid rule+context de-identification",
+        "family": "Hybrid heuristic de-identification",
+        "status": "executed",
+        "notes": "Released hybrid heuristic using structured, named-entity, and case-context signals under the public wrapper.",
     },
     {
         "name": "Prompted LLM zero-shot de-identification",
@@ -270,6 +277,14 @@ def _presidio_ner_spans(text: str, applicant_name: str) -> list[tuple[int, int]]
     return spans
 
 
+def _hybrid_context_spans(text: str, applicant_name: str) -> list[tuple[int, int]]:
+    spans = []
+    spans.extend(_presidio_regex_spans(text, applicant_name))
+    spans.extend((match.start(), match.end()) for match in ORG_PATTERN.finditer(text))
+    spans.extend((match.start(), match.end()) for match in LOCATION_CONTEXT_PATTERN.finditer(text))
+    return spans
+
+
 def _policy_aware_spans(text: str, applicant_name: str) -> list[tuple[int, int]]:
     spans = []
     spans.extend(_regex_spans(text))
@@ -298,9 +313,61 @@ def _predict_spans(method: str, text: str, applicant_name: str) -> list[tuple[in
         return _merge_spans(_presidio_regex_spans(text, applicant_name))
     if method == "Presidio-class (NER fallback heuristic)":
         return _merge_spans(_presidio_ner_spans(text, applicant_name))
+    if method == "Hybrid rule+context de-identification":
+        return _merge_spans(_hybrid_context_spans(text, applicant_name))
     if method == "BodhiPromptShield (released heuristic mediator)":
         return _merge_spans(_policy_aware_spans(text, applicant_name))
     raise ValueError(f"Unsupported method: {method}")
+
+
+def _write_run_log(documents: list[dict[str, object]], mention_count: int) -> None:
+    split_counts: dict[str, int] = {}
+    for document in documents:
+        split = str(document.get("dataset_type", "unknown"))
+        split_counts[split] = split_counts.get(split, 0) + 1
+
+    with open(RUN_LOG_PATH, "w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                "benchmark",
+                "method",
+                "family",
+                "execution_status",
+                "input_scope",
+                "document_count",
+                "mention_count",
+                "split_breakdown",
+                "protocol_file",
+                "wrapper_manifest",
+                "summary_output",
+                "detail_output",
+                "execution_manifest",
+                "command_template",
+                "notes",
+            ],
+        )
+        writer.writeheader()
+        for spec in METHOD_SPECS:
+            writer.writerow(
+                {
+                    "benchmark": "TAB",
+                    "method": spec["name"],
+                    "family": spec["family"],
+                    "execution_status": spec["status"],
+                    "input_scope": "public ECHR JSON release",
+                    "document_count": str(len(documents)),
+                    "mention_count": str(mention_count),
+                    "split_breakdown": " | ".join(f"{key}:{value}" for key, value in sorted(split_counts.items())),
+                    "protocol_file": "tab_matched_baseline_protocol.json",
+                    "wrapper_manifest": "tab_prompt_wrapped_manifest.csv",
+                    "summary_output": "tab_transfer_results.csv" if spec["status"] == "executed" else "",
+                    "detail_output": "tab_transfer_document_metrics.csv" if spec["status"] == "executed" else "",
+                    "execution_manifest": "tab_transfer_execution_manifest.csv",
+                    "command_template": "python src/experiments/tab_matched_baseline_suite.py --input-dir src/experiments/external_data/tab",
+                    "notes": spec["notes"],
+                }
+            )
 
 
 def _overlap(span_a: tuple[int, int], span_b: tuple[int, int]) -> int:
@@ -349,6 +416,10 @@ def evaluate_tab_transfer(input_dir: Path) -> tuple[Path, Path]:
             "Released approximation of a Presidio-class structured-plus-NER stack under the public TAB wrapper.",
         ),
         (
+            "Hybrid rule+context de-identification",
+            "Released hybrid heuristic using structured, named-entity, and case-context signals under the public TAB wrapper.",
+        ),
+        (
             "BodhiPromptShield (released heuristic mediator)",
             "Released lightweight policy-aware mediator using regex, applicant-name, title, organization, and location heuristics.",
         ),
@@ -360,6 +431,7 @@ def evaluate_tab_transfer(input_dir: Path) -> tuple[Path, Path]:
 
     summary_rows: list[dict[str, str]] = []
     detail_rows: list[dict[str, str]] = []
+    total_mentions_all_methods = 0
     for method_name, notes in methods:
         total_tp = 0
         total_fp = 0
@@ -391,6 +463,8 @@ def evaluate_tab_transfer(input_dir: Path) -> tuple[Path, Path]:
             total_non_sensitive_chars += len(non_sensitive_chars)
             total_preserved_non_sensitive_chars += preserved_non_sensitive_chars
             total_mentions += len(gold_spans)
+            if method_name == "Raw prompt":
+                total_mentions_all_methods += len(gold_spans)
 
             detail_rows.append(
                 {
@@ -481,6 +555,8 @@ def evaluate_tab_transfer(input_dir: Path) -> tuple[Path, Path]:
                 }
             )
 
+    _write_run_log(documents, total_mentions_all_methods)
+
     return SUMMARY_OUTPUT_PATH, DETAIL_OUTPUT_PATH
 
 
@@ -497,6 +573,7 @@ def main() -> int:
     print(f"TAB transfer summary written to {summary_path}")
     print(f"TAB per-document metrics written to {detail_path}")
     print(f"TAB execution manifest written to {EXECUTION_MANIFEST_PATH}")
+    print(f"TAB run log written to {RUN_LOG_PATH}")
     return 0
 
 

@@ -46,6 +46,11 @@ MATCHED_BASELINES = [
         "notes": "Run the released structured-plus-NER approximation for a Presidio-class comparator under the wrapped clinical note protocol.",
     },
     {
+        "name": "Clinical hybrid heuristic de-identification",
+        "family": "Hybrid heuristic de-identification",
+        "notes": "Run the released structured-plus-context comparator under the wrapped clinical note protocol.",
+    },
+    {
         "name": "Clinical hybrid de-identification pipeline",
         "family": "Clinical domain baseline",
         "notes": "Allow one domain-specific hybrid comparator under the same prompt wrapper and evaluation slices.",
@@ -92,6 +97,7 @@ def _write_protocol() -> None:
             "Downstream utility should be evaluated on note summarization or clinical QA slices that do not require raw PHI restoration.",
             "The repository does not redistribute i2b2 raw notes; wrappers operate on user-provided normalized exports only.",
             "Use prepare_i2b2_normalized_export.py to convert raw XML/TXT releases into the required normalized export schema.",
+            "Released run logs and execution manifests distinguish licensed-data-ready heuristic comparators from protocol-defined but unexecuted external baselines.",
         ],
     }
     with open(PROTOCOL_PATH, "w", encoding="utf-8") as handle:

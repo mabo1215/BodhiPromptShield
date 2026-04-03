@@ -20,8 +20,12 @@
   - Consolidated benchmark-card note for release scope, provenance, annotation examples, and wrapper semantics
 - `ocr_slice_manifest.md`
   - Explicit evidence boundary for the OCR-mediated slice and its remaining regeneration gaps
+- `multimodal_provenance_card.md`
+  - Consolidated multimodal slice provenance note covering construction, rendering boundary, and missing OCR/source-asset metadata
 - `crossmodel_portability_manifest.md`
   - Explicit evidence boundary for the anonymous cross-model portability slice
+- `external_wrapper_release_card.md`
+  - Consolidated wrapper/data-card note for TAB and i2b2 public-transfer protocols, rosters, outputs, and licensing boundaries
 - `latency_environment_manifest.md`
   - Explicit evidence boundary for prototype latency measurements
 - `prompt_method_comparison.csv`
@@ -83,12 +87,16 @@
   - Per-document TAB transfer metrics emitted by the lightweight matched-baseline runner
 - `tab_transfer_execution_manifest.csv`
   - Execution-status record for the current TAB comparator roster
+- `tab_transfer_run_log.csv`
+  - Raw rerun record for the current TAB wrapper roster, input scope, and generated outputs
 - `i2b2_matched_baseline_protocol.json`
   - Protocol scaffold for i2b2 prompt-wrapper external transfer
 - `i2b2_normalized_export_template.jsonl`
   - Template normalized export schema for user-supplied i2b2 notes
 - `i2b2_transfer_execution_manifest.csv`
   - Execution-status record for the current i2b2 comparator roster
+- `i2b2_transfer_run_log.csv`
+  - Raw rerun record for the current i2b2 wrapper roster and waiting/executed clinical state
 
 ## 回填主文表格
 

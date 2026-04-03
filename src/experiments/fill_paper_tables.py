@@ -390,6 +390,7 @@ def build_tab_transfer_table() -> str:
     display_names = {
         "Presidio-class (regex-focused heuristic)": "Presidio-class (regex)",
         "Presidio-class (NER fallback heuristic)": "Presidio-class (+NER)",
+        "Hybrid rule+context de-identification": "Hybrid de-id",
         "BodhiPromptShield (released heuristic mediator)": "BodhiPromptShield",
     }
     header = "Method & Precision & Recall & Span F1 & PER (\\%) & Text retention " + r"\\" + "\n"
