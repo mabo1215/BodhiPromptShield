@@ -17,3 +17,8 @@
 - Decoding settings and prompt formatting logs.
 - Runtime environment identifiers.
 - Hardware and service configuration metadata.
+
+## Promotion Contract
+
+- `crossmodel_named_rerun_manifest_template.csv` defines the minimum disclosure fields required before this slice can be promoted from alias-level portability to a named rerun.
+- Until those fields are filled from actual logs, the release should be interpreted as portability evidence only, not named backend benchmarking.

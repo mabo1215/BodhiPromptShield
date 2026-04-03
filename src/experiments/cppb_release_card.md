@@ -38,10 +38,12 @@
 - External transfer should preserve the same mediation protocol: matched baseline comparisons, the same utility definitions, and explicit separation between text-only, multimodal, and clinically specialized slices.
 - TAB wrappers operate over public ECHR JSON documents.
 - i2b2 wrappers operate only over user-provided normalized exports and do not redistribute licensed clinical notes.
+- Public-benchmark wrapper execution status is tracked through explicit execution-manifest CSVs so that protocol-defined but unexecuted comparator families are not misread as completed reruns.
 
 ## Known Omissions
 
 - No raw OCR assets or end-to-end OCR regeneration package.
 - No named cross-model runtime logs in the current public snapshot.
 - No hardware/concurrency manifest for portable latency benchmarking.
-- No executed public-benchmark transfer score tables yet.
+- No bundled licensed i2b2 clinical result tables or OCR-heavy public transfer score tables yet.
+- No bundled prompted-LLM or domain-specific external runtime for the public-benchmark wrapper protocols.

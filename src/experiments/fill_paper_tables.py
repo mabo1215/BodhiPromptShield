@@ -388,6 +388,8 @@ def build_baseline_table() -> str:
 def build_tab_transfer_table() -> str:
     rows = _read_csv("tab_transfer_results.csv")
     display_names = {
+        "Presidio-class (regex-focused heuristic)": "Presidio-class (regex)",
+        "Presidio-class (NER fallback heuristic)": "Presidio-class (+NER)",
         "BodhiPromptShield (released heuristic mediator)": "BodhiPromptShield",
     }
     header = "Method & Precision & Recall & Span F1 & PER (\\%) & Text retention " + r"\\" + "\n"

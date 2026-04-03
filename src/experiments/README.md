@@ -46,6 +46,8 @@
   - Appendix table `tab:crossmodel`
 - `crossmodel_runtime_log.csv`
   - Alias-level runtime log for the appendix cross-model portability slice
+- `crossmodel_named_rerun_manifest_template.csv`
+  - Template for promoting the appendix cross-model slice from alias-level reporting to a named rerun with full provenance
 - `hardcase_analysis.csv`
   - Appendix table `tab:hardcase`
 - `restoration_boundary_analysis.csv`
@@ -79,10 +81,14 @@
   - Appendix table `tab:tabtransfer`
 - `tab_transfer_document_metrics.csv`
   - Per-document TAB transfer metrics emitted by the lightweight matched-baseline runner
+- `tab_transfer_execution_manifest.csv`
+  - Execution-status record for the current TAB comparator roster
 - `i2b2_matched_baseline_protocol.json`
   - Protocol scaffold for i2b2 prompt-wrapper external transfer
 - `i2b2_normalized_export_template.jsonl`
   - Template normalized export schema for user-supplied i2b2 notes
+- `i2b2_transfer_execution_manifest.csv`
+  - Execution-status record for the current i2b2 comparator roster
 
 ## 回填主文表格
 
@@ -101,6 +107,7 @@ python src/experiments/tab_external_transfer.py src/experiments/external_data/ta
 python src/experiments/tab_matched_baseline_suite.py
 python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl
 python src/experiments/i2b2_external_transfer.py
+python src/experiments/i2b2_matched_baseline_suite.py
 python src/experiments/fill_paper_tables.py --paper paper/main.tex
 python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 ```

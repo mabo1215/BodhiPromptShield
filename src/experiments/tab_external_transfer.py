@@ -39,16 +39,16 @@ MATCHED_BASELINES = [
         "notes": "Mask PERSON/ORG/LOCATION style mentions without policy routing.",
     },
     {
-        "name": "Presidio (regex-only baseline)",
+        "name": "Presidio-class (regex-focused heuristic)",
         "family": "Industrial de-identification",
         "restoration_aware": False,
-        "notes": "Run Presidio recognizers restricted to pattern-heavy entities.",
+        "notes": "Run the released structured-recognizer approximation for a Presidio-class comparator under the same wrapped prompt.",
     },
     {
-        "name": "Presidio (with NER fallback)",
+        "name": "Presidio-class (NER fallback heuristic)",
         "family": "Industrial de-identification",
         "restoration_aware": False,
-        "notes": "Run Presidio with NER fallback under the same wrapped prompt.",
+        "notes": "Run the released structured-plus-NER approximation for a Presidio-class comparator under the same wrapped prompt.",
     },
     {
         "name": "Prompted LLM zero-shot de-identification",

@@ -1,0 +1,2 @@
+run_id,backend_vendor,model_name,model_version,provider_endpoint,sdk_or_api_version,decoding_temperature,top_p,max_output_tokens,seed,system_prompt_fingerprint,wrapper_profile,task_slice,runtime_timestamp_utc,host_class,hardware_summary,os_runtime,python_runtime,notes
+named-rerun-001,,,,,,,,,,,balanced,cppb-portability,,,Windows + Python virtual environment,,,

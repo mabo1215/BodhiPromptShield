@@ -24,6 +24,7 @@
   - `crossmodel_analysis.py`：生成附录 `tab:crossmodel` 的 alias-level portability supporting artifact 与 runtime log。
   - `crossmodel_portability_results.csv`：附录 `tab:crossmodel` 的 portability supporting artifact。
   - `crossmodel_runtime_log.csv`：cross-model portability slice 的 alias-level runtime log。
+  - `crossmodel_named_rerun_manifest_template.csv`：把 alias-level portability slice 升级为 named rerun 时所需的最小 provenance 字段模板。
   - `hardcase_analysis.py`：生成附录 `tab:hardcase` 的 deterministic hard-case supporting artifact。
   - `hardcase_analysis.csv`：附录 `tab:hardcase` 的 hard-case supporting artifact。
   - `restoration_boundary_analysis.csv`：附录 restoration boundary supporting table 与 supporting figure 的记录文件。
@@ -37,11 +38,14 @@
   - `presidio_baseline_notes.txt`：附录外部基线配置说明。
   - `tab_matched_baseline_protocol.json`：TAB text anonymization external transfer 的 matched baseline protocol scaffold。
   - `tab_prompt_wrapped_manifest.csv`：基于公开 TAB ECHR JSON 生成的首个 prompt-wrapper manifest。
-  - `tab_matched_baseline_suite.py`：运行轻量 TAB matched baselines 并生成实际 transfer result CSV。
-  - `tab_transfer_results.csv`：附录 `tab:tabtransfer` 的首个可执行 public-transfer 结果表。
+  - `tab_matched_baseline_suite.py`：运行扩展后的 TAB matched baselines，并生成结果 CSV 与 execution manifest。
+  - `tab_transfer_results.csv`：附录 `tab:tabtransfer` 的扩展 comparator public-transfer 结果表。
   - `tab_transfer_document_metrics.csv`：TAB 文档级 matched-baseline 指标明细。
+  - `tab_transfer_execution_manifest.csv`：TAB comparator roster 的 execution-status 记录。
   - `i2b2_matched_baseline_protocol.json`：i2b2 clinical de-identification external transfer 的 matched baseline protocol scaffold。
   - `prepare_i2b2_normalized_export.py`：把用户自有的 i2b2 XML/TXT 或 JSON/JSONL 导出规范化为 clinical transfer 所需 schema 的工具。
+  - `i2b2_matched_baseline_suite.py`：在用户提供 licensed normalized export 时运行 i2b2 matched baselines；无数据时只写 execution manifest。
+  - `i2b2_transfer_execution_manifest.csv`：i2b2 comparator roster 的 execution-status 记录。
   - `fill_paper_tables.py`：把上述 CSV 回填到 `paper/main.tex` 与 `paper/appendix.tex` 中对应的代码支撑表格。
 - `figures/`
   - `prompt_privacy_operating_points.py`：生成主文 `prompt_privacy_operating_points.png`。
@@ -109,6 +113,7 @@
   - `python src/experiments/tab_matched_baseline_suite.py`
   - `python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl`
   - `python src/experiments/i2b2_external_transfer.py`
+  - `python src/experiments/i2b2_matched_baseline_suite.py <normalized_i2b2_export.jsonl>`
 - 用 CSV 回填主文中已代码支撑的表格：
   - `python src/experiments/fill_paper_tables.py --paper paper/main.tex`
 - 用 CSV 回填附录中已代码支撑的表格：

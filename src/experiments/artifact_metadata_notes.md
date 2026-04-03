@@ -28,14 +28,22 @@
 
 - `crossmodel_portability_results.csv` reconstructs the current appendix portability slice from a bundled alias-level supporting record.
 - `crossmodel_runtime_log.csv` records the public alias-level runtime surface for that slice while keeping vendor identities anonymized.
+- `crossmodel_named_rerun_manifest_template.csv` now defines the minimum vendor/model/version and runtime fields required before promoting the slice to a named rerun.
 - Exact backend names, versions, and vendor-specific decoding fields are still not bundled in the current snapshot.
 - `crossmodel_portability_manifest.md` makes the current portability evidence boundary explicit while preserving anonymous reporting.
 
 ## Public TAB Transfer Note
 
 - `tab_transfer_results.csv` and `tab_transfer_document_metrics.csv` provide the first executable public-benchmark transfer slice in the current repository snapshot.
+- `tab_transfer_execution_manifest.csv` records which comparator families are executed from the current public snapshot and which remain protocol-only.
 - This TAB slice is intentionally text-only and reports span precision/recall/F1, PER, and non-sensitive text retention rather than CPPB-style AC/TSR.
-- The current runner evaluates only baselines that can be executed from the bundled public snapshot without closed-model access or heavyweight external dependencies.
+- The current runner now includes raw, regex, NER, and two released Presidio-class heuristic approximations plus the released BodhiPromptShield heuristic mediator; prompted zero-shot LLM de-identification remains protocol-only.
+
+## i2b2 Clinical Transfer Note
+
+- `i2b2_transfer_execution_manifest.csv` records the current clinical comparator roster and distinguishes methods that are executable once a licensed normalized export is supplied from methods that still require external runtime support.
+- `i2b2_matched_baseline_suite.py` now provides the exact result schema and heuristic runner used for clinical transfer once user-supplied normalized i2b2 notes are available.
+- The repository still does not redistribute licensed i2b2 notes, so no clinical result CSV is bundled in the public snapshot.
 
 ## Latency Measurement Note
 

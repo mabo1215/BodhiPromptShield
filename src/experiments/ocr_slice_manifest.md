@@ -17,3 +17,8 @@
 - Document-rendering assets or image-level source package.
 - Rendering/preprocessing configuration for noisy OCR cases.
 - Runtime metadata for OCR latency portability.
+
+## Transfer Boundary
+
+- Public text-only wrappers on TAB and clinical wrappers on i2b2 now have explicit protocol and execution-manifest artifacts.
+- The OCR slice still lacks an equivalent executable public wrapper with exact OCR/version provenance, so multimodal transfer remains below the current public text-only release boundary.

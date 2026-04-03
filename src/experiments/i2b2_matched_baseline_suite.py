@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""Run lightweight matched baselines on the public TAB ECHR JSON release.
+"""Run matched heuristic baselines on normalized i2b2 exports when available.
 
-This suite turns the existing TAB wrapper manifest into executable result files.
-It intentionally evaluates only baselines that can be run from the current
-public repository snapshot without external closed-model access or heavyweight
-dependencies. The output is therefore an honest first transfer slice rather
-than a full reproduction of the planned industrial/LLM baseline roster.
+The current public repository cannot ship licensed i2b2 notes, but it can ship
+the exact runner, result schema, and execution manifest used once a licensed
+normalized export is supplied by the user.
 """
 from __future__ import annotations
 
@@ -14,198 +12,150 @@ import csv
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
-DEFAULT_INPUT_DIR = EXPERIMENTS_DIR / "external_data" / "tab"
-SUMMARY_OUTPUT_PATH = EXPERIMENTS_DIR / "tab_transfer_results.csv"
-DETAIL_OUTPUT_PATH = EXPERIMENTS_DIR / "tab_transfer_document_metrics.csv"
-EXECUTION_MANIFEST_PATH = EXPERIMENTS_DIR / "tab_transfer_execution_manifest.csv"
+SUMMARY_OUTPUT_PATH = EXPERIMENTS_DIR / "i2b2_transfer_results.csv"
+DETAIL_OUTPUT_PATH = EXPERIMENTS_DIR / "i2b2_transfer_document_metrics.csv"
+EXECUTION_MANIFEST_PATH = EXPERIMENTS_DIR / "i2b2_transfer_execution_manifest.csv"
 
 METHOD_SPECS = [
     {
         "name": "Raw prompt",
         "family": "No protection",
-        "status": "executed",
+        "status": "executable_with_licensed_data",
         "notes": "No sanitization is applied before evaluation.",
     },
     {
         "name": "Regex-only",
         "family": "Pattern baseline",
-        "status": "executed",
-        "notes": "Structured identifier patterns only.",
+        "status": "executable_with_licensed_data",
+        "notes": "Structured PHI patterns only.",
     },
     {
         "name": "NER-only masking",
         "family": "Entity baseline",
-        "status": "executed",
-        "notes": "Capitalization and title heuristics without policy routing.",
+        "status": "executable_with_licensed_data",
+        "notes": "Capitalization and title heuristics without clinical routing.",
     },
     {
         "name": "Presidio-class (regex-focused heuristic)",
         "family": "Industrial de-identification",
-        "status": "executed",
-        "notes": "Released approximation of a Presidio-class structured recognizer stack under the public wrapper.",
+        "status": "executable_with_licensed_data",
+        "notes": "Released approximation of a Presidio-class structured recognizer stack under the clinical wrapper.",
     },
     {
         "name": "Presidio-class (NER fallback heuristic)",
         "family": "Industrial de-identification",
-        "status": "executed",
-        "notes": "Released approximation of a Presidio-class structured-plus-NER stack under the public wrapper.",
+        "status": "executable_with_licensed_data",
+        "notes": "Released approximation of a Presidio-class structured-plus-NER stack under the clinical wrapper.",
+    },
+    {
+        "name": "Clinical hybrid de-identification pipeline",
+        "family": "Clinical domain baseline",
+        "status": "pending_external_runtime",
+        "notes": "Intended for a domain-specific pipeline not bundled in the public repository snapshot.",
     },
     {
         "name": "Prompted LLM zero-shot de-identification",
         "family": "Semantic baseline",
         "status": "pending_external_runtime",
-        "notes": "A fixed prompt and decoding profile are defined at protocol level, but no closed-model runtime is bundled here.",
+        "notes": "Protocol defined, but no closed-model runtime is bundled in the current release.",
     },
     {
         "name": "BodhiPromptShield (released heuristic mediator)",
         "family": "Policy-aware mediation",
-        "status": "executed",
+        "status": "executable_with_licensed_data",
         "notes": "Released lightweight policy-aware mediator using bundled heuristics only.",
     },
 ]
 
 ROLE_WORDS = {
-    "agent",
-    "applicant",
-    "attorney",
-    "barrister",
-    "counsel",
-    "delegate",
-    "director",
+    "attending",
+    "clinic",
+    "department",
     "doctor",
     "dr",
-    "governor",
-    "judge",
-    "lawyer",
-    "magistrate",
-    "minister",
-    "mrs",
+    "hospital",
     "mr",
+    "mrs",
     "ms",
-    "officer",
-    "president",
-    "prosecutor",
-    "professor",
-    "secretary",
-    "solicitor",
-}
-
-STOPWORD_STARTS = {
-    "Article",
-    "Articles",
-    "Court",
-    "Convention",
-    "Government",
-    "I",
-    "II",
-    "III",
-    "IV",
-    "In",
-    "On",
-    "The",
-    "This",
+    "patient",
+    "physician",
+    "provider",
+    "room",
+    "ward",
 }
 
 REGEX_PATTERNS = [
     re.compile(r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b"),
     re.compile(r"\b\d{1,2}\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b"),
-    re.compile(r"\b(?:no\.?|nos\.?|application|case)\s*\d{1,6}/\d{2,4}\b", re.IGNORECASE),
-    re.compile(r"\b\d{2,6}/\d{2,6}\b"),
-    re.compile(r"\b[A-Z]{1,4}-\d{2,6}\b"),
-    re.compile(r"\b[A-Z]{2,}[0-9]{2,}[A-Z0-9-]*\b"),
     re.compile(r"\b\+?\d[\d()\- ]{6,}\d\b"),
     re.compile(r"\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b"),
+    re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),
+    re.compile(r"\b(?:MRN|ID|Acct|Account|Visit|Case)[:#\s-]*[A-Z0-9-]{4,}\b", re.IGNORECASE),
+    re.compile(r"\b\d{1,5}\s+[A-Z][A-Za-z'\-.]+(?:\s+[A-Z][A-Za-z'\-.]+){0,3}\s+(?:Street|St|Road|Rd|Avenue|Ave|Boulevard|Blvd|Lane|Ln|Drive|Dr)\b"),
 ]
 
 TITLE_PATTERN = re.compile(
-    r"\b(?:Mr|Mrs|Ms|Dr|Judge|President|Prosecutor|Professor|Minister|Officer|Governor|Delegate|Counsel|Barrister|Magistrate)\.?\s+"
+    r"\b(?:Mr|Mrs|Ms|Dr|Doctor|Patient|Provider|Physician)\.?\s+"
     r"[A-Z][A-Za-z'\-.]+(?:\s+[A-Z][A-Za-z'\-.]+){0,3}"
 )
 CAPITALIZED_SEQUENCE_PATTERN = re.compile(
     r"\b[A-Z][A-Za-z'\-.]+(?:\s+[A-Z][A-Za-z'\-.]+){1,3}"
 )
 ORG_PATTERN = re.compile(
-    r"\b(?:Ministry|Government|Court|Commission|Committee|Office|Bar|Embassy|Cabinet|Police)"
+    r"\b(?:Hospital|Clinic|Medical Center|Health System|Department|Practice|Laboratory|Pharmacy)"
     r"(?:\s+of)?(?:\s+[A-Z][A-Za-z'\-.]+){0,4}"
 )
 LOCATION_CONTEXT_PATTERN = re.compile(
-    r"\b(?:in|at|from|near|to)\s+[A-Z][A-Za-z'\-.]+(?:\s+[A-Z][A-Za-z'\-.]+){0,3}"
+    r"\b(?:in|at|from|near|to|lives in|resides in)\s+[A-Z][A-Za-z'\-.]+(?:\s+[A-Z][A-Za-z'\-.]+){0,3}",
+    re.IGNORECASE,
 )
-LEGAL_CONTEXT_PATTERN = re.compile(
-    r"\b(?:applicant|respondent|delegate|agent|counsel|secretary|judge|president|minister|prosecutor|court|commission|government)"
+CLINICAL_CONTEXT_PATTERN = re.compile(
+    r"\b(?:patient|provider|physician|doctor|attending|room|ward|clinic|hospital)"
     r"(?:\s+[A-Z][A-Za-z'\-.]+){0,4}",
     re.IGNORECASE,
 )
 
 
-def _load_documents(input_dir: Path) -> list[dict[str, object]]:
-    documents: list[dict[str, object]] = []
-    for path in sorted(input_dir.glob("*.json")):
-        with open(path, "r", encoding="utf-8") as handle:
-            payload = json.load(handle)
-        if isinstance(payload, list):
-            documents.extend(item for item in payload if isinstance(item, dict))
-    return documents
+def _write_execution_manifest(input_supplied: bool) -> Path:
+    with open(EXECUTION_MANIFEST_PATH, "w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=["method", "family", "execution_status", "result_scope", "notes"],
+        )
+        writer.writeheader()
+        for spec in METHOD_SPECS:
+            status = spec["status"]
+            if status == "executable_with_licensed_data":
+                status = "executed" if input_supplied else "waiting_for_licensed_data"
+            writer.writerow(
+                {
+                    "method": spec["name"],
+                    "family": spec["family"],
+                    "execution_status": status,
+                    "result_scope": "i2b2_transfer_results.csv" if input_supplied and status == "executed" else "protocol-only",
+                    "notes": spec["notes"],
+                }
+            )
+    return EXECUTION_MANIFEST_PATH
 
 
-def _ground_truth_spans(document: dict[str, object]) -> list[tuple[int, int]]:
-    annotations = document.get("annotations", {})
-    mentions: list[tuple[int, int]] = []
-    unique: set[tuple[int, int, str]] = set()
-    if isinstance(annotations, dict):
-        iterables = annotations.values()
-    elif isinstance(annotations, list):
-        iterables = annotations
-    else:
-        iterables = []
-    for item in iterables:
-        if isinstance(item, dict):
-            entity_mentions = item.get("entity_mentions", [])
-            if isinstance(entity_mentions, list):
-                for mention in entity_mentions:
-                    if not isinstance(mention, dict):
-                        continue
-                    start = mention.get("start_offset")
-                    end = mention.get("end_offset")
-                    entity_type = str(mention.get("entity_type", ""))
-                    if not isinstance(start, int) or not isinstance(end, int) or end <= start:
-                        continue
-                    key = (start, end, entity_type)
-                    if key in unique:
-                        continue
-                    unique.add(key)
-                    mentions.append((start, end))
-        elif isinstance(item, list):
-            for mention in item:
-                if not isinstance(mention, dict):
-                    continue
-                start = mention.get("start_offset")
-                end = mention.get("end_offset")
-                entity_type = str(mention.get("entity_type", ""))
-                if not isinstance(start, int) or not isinstance(end, int) or end <= start:
-                    continue
-                key = (start, end, entity_type)
-                if key in unique:
-                    continue
-                unique.add(key)
-                mentions.append((start, end))
-    return sorted(mentions)
-
-
-def _merge_spans(spans: list[tuple[int, int]]) -> list[tuple[int, int]]:
-    if not spans:
-        return []
-    merged: list[list[int]] = [[spans[0][0], spans[0][1]]]
-    for start, end in sorted(spans):
-        current = merged[-1]
-        if start <= current[1]:
-            current[1] = max(current[1], end)
-            continue
-        merged.append([start, end])
-    return [(start, end) for start, end in merged]
+def _load_records(path: Path) -> list[dict[str, Any]]:
+    with open(path, "r", encoding="utf-8") as handle:
+        if path.suffix.lower() == ".jsonl":
+            return [json.loads(line) for line in handle if line.strip()]
+        payload = json.load(handle)
+    if isinstance(payload, list):
+        return [item for item in payload if isinstance(item, dict)]
+    if isinstance(payload, dict):
+        for key in ("records", "notes", "data"):
+            value = payload.get(key)
+            if isinstance(value, list):
+                return [item for item in value if isinstance(item, dict)]
+    raise ValueError(f"Unsupported normalized i2b2 payload in {path}")
 
 
 def _find_literal_spans(text: str, phrase: str) -> list[tuple[int, int]]:
@@ -229,53 +179,39 @@ def _regex_spans(text: str) -> list[tuple[int, int]]:
     return spans
 
 
-def _ner_like_spans(text: str, applicant_name: str) -> list[tuple[int, int]]:
+def _ner_like_spans(text: str) -> list[tuple[int, int]]:
     spans: list[tuple[int, int]] = []
     spans.extend((match.start(), match.end()) for match in TITLE_PATTERN.finditer(text))
     spans.extend((match.start(), match.end()) for match in ORG_PATTERN.finditer(text))
     for match in CAPITALIZED_SEQUENCE_PATTERN.finditer(text):
         phrase = match.group(0)
-        if phrase.split()[0] in STOPWORD_STARTS:
+        if phrase.split()[0].lower() in {"the", "a", "an", "and"}:
             continue
         spans.append((match.start(), match.end()))
-    if applicant_name:
-        spans.extend(_find_literal_spans(text, applicant_name))
-        surname = applicant_name.split()[-1]
-        if len(surname) >= 4:
-            spans.extend(_find_literal_spans(text, surname))
     return spans
 
 
-def _presidio_regex_spans(text: str, applicant_name: str) -> list[tuple[int, int]]:
+def _presidio_regex_spans(text: str) -> list[tuple[int, int]]:
     spans = []
     spans.extend(_regex_spans(text))
-    if applicant_name:
-        spans.extend(_find_literal_spans(text, applicant_name))
-        surname = applicant_name.split()[-1]
-        if len(surname) >= 4:
-            spans.extend(_find_literal_spans(text, surname))
     spans.extend((match.start(), match.end()) for match in TITLE_PATTERN.finditer(text))
     return spans
 
 
-def _presidio_ner_spans(text: str, applicant_name: str) -> list[tuple[int, int]]:
+def _presidio_ner_spans(text: str) -> list[tuple[int, int]]:
     spans = []
-    spans.extend(_presidio_regex_spans(text, applicant_name))
+    spans.extend(_presidio_regex_spans(text))
     spans.extend((match.start(), match.end()) for match in ORG_PATTERN.finditer(text))
-    for match in CAPITALIZED_SEQUENCE_PATTERN.finditer(text):
-        phrase = match.group(0)
-        if phrase.split()[0] in STOPWORD_STARTS:
-            continue
-        spans.append((match.start(), match.end()))
+    spans.extend(_ner_like_spans(text))
     return spans
 
 
-def _policy_aware_spans(text: str, applicant_name: str) -> list[tuple[int, int]]:
+def _policy_aware_spans(text: str) -> list[tuple[int, int]]:
     spans = []
     spans.extend(_regex_spans(text))
-    spans.extend(_ner_like_spans(text, applicant_name))
+    spans.extend(_ner_like_spans(text))
     spans.extend((match.start(), match.end()) for match in LOCATION_CONTEXT_PATTERN.finditer(text))
-    spans.extend((match.start(), match.end()) for match in LEGAL_CONTEXT_PATTERN.finditer(text))
+    spans.extend((match.start(), match.end()) for match in CLINICAL_CONTEXT_PATTERN.finditer(text))
     for token in ROLE_WORDS:
         pattern = re.compile(rf"\b{re.escape(token.title())}\b")
         for match in pattern.finditer(text):
@@ -287,19 +223,32 @@ def _policy_aware_spans(text: str, applicant_name: str) -> list[tuple[int, int]]
     return spans
 
 
-def _predict_spans(method: str, text: str, applicant_name: str) -> list[tuple[int, int]]:
+def _merge_spans(spans: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    if not spans:
+        return []
+    merged: list[list[int]] = [[spans[0][0], spans[0][1]]]
+    for start, end in sorted(spans):
+        current = merged[-1]
+        if start <= current[1]:
+            current[1] = max(current[1], end)
+            continue
+        merged.append([start, end])
+    return [(start, end) for start, end in merged]
+
+
+def _predict_spans(method: str, text: str) -> list[tuple[int, int]]:
     if method == "Raw prompt":
         return []
     if method == "Regex-only":
         return _merge_spans(_regex_spans(text))
     if method == "NER-only masking":
-        return _merge_spans(_ner_like_spans(text, applicant_name))
+        return _merge_spans(_ner_like_spans(text))
     if method == "Presidio-class (regex-focused heuristic)":
-        return _merge_spans(_presidio_regex_spans(text, applicant_name))
+        return _merge_spans(_presidio_regex_spans(text))
     if method == "Presidio-class (NER fallback heuristic)":
-        return _merge_spans(_presidio_ner_spans(text, applicant_name))
+        return _merge_spans(_presidio_ner_spans(text))
     if method == "BodhiPromptShield (released heuristic mediator)":
-        return _merge_spans(_policy_aware_spans(text, applicant_name))
+        return _merge_spans(_policy_aware_spans(text))
     raise ValueError(f"Unsupported method: {method}")
 
 
@@ -335,28 +284,28 @@ def _char_coverage(spans: list[tuple[int, int]]) -> set[int]:
     return covered
 
 
-def evaluate_tab_transfer(input_dir: Path) -> tuple[Path, Path]:
+def evaluate_i2b2_transfer(input_path: Path) -> tuple[Path, Path]:
     methods = [
-        ("Raw prompt", "No protection baseline on the wrapped TAB documents."),
-        ("Regex-only", "Pattern-only masking for dates, codes, phones, and other structured identifiers."),
-        ("NER-only masking", "Capitalization and title-driven entity masking without policy routing."),
+        ("Raw prompt", "No protection baseline on the wrapped clinical notes."),
+        ("Regex-only", "Pattern-only masking for dates, IDs, phones, emails, and address-like spans."),
+        ("NER-only masking", "Capitalization and title-driven masking without clinical routing."),
         (
             "Presidio-class (regex-focused heuristic)",
-            "Released approximation of a Presidio-class structured recognizer stack under the public TAB wrapper.",
+            "Released approximation of a Presidio-class structured recognizer stack under the clinical wrapper.",
         ),
         (
             "Presidio-class (NER fallback heuristic)",
-            "Released approximation of a Presidio-class structured-plus-NER stack under the public TAB wrapper.",
+            "Released approximation of a Presidio-class structured-plus-NER stack under the clinical wrapper.",
         ),
         (
             "BodhiPromptShield (released heuristic mediator)",
-            "Released lightweight policy-aware mediator using regex, applicant-name, title, organization, and location heuristics.",
+            "Released lightweight policy-aware mediator using regex, clinical context, title, organization, and location heuristics.",
         ),
     ]
 
-    documents = _load_documents(input_dir)
-    if not documents:
-        raise ValueError(f"No TAB JSON files found under {input_dir}")
+    records = _load_records(input_path)
+    if not records:
+        raise ValueError(f"No normalized i2b2 notes found in {input_path}")
 
     summary_rows: list[dict[str, str]] = []
     detail_rows: list[dict[str, str]] = []
@@ -369,12 +318,17 @@ def evaluate_tab_transfer(input_dir: Path) -> tuple[Path, Path]:
         total_non_sensitive_chars = 0
         total_preserved_non_sensitive_chars = 0
         total_mentions = 0
-        for document in documents:
-            text = str(document.get("text", ""))
-            meta = document.get("meta", {})
-            applicant_name = str(meta.get("applicant", "")) if isinstance(meta, dict) else ""
-            gold_spans = _ground_truth_spans(document)
-            predicted_spans = _predict_spans(method_name, text, applicant_name)
+        for record in records:
+            text = str(record.get("text", ""))
+            raw_spans = record.get("phi_spans", [])
+            if not isinstance(raw_spans, list):
+                raw_spans = []
+            gold_spans = [
+                (int(span["start"]), int(span["end"]))
+                for span in raw_spans
+                if isinstance(span, dict) and isinstance(span.get("start"), int) and isinstance(span.get("end"), int)
+            ]
+            predicted_spans = _predict_spans(method_name, text)
             true_positive, false_positive, false_negative = _span_counts(predicted_spans, gold_spans)
             gold_chars = _char_coverage(gold_spans)
             pred_chars = _char_coverage(predicted_spans)
@@ -395,8 +349,8 @@ def evaluate_tab_transfer(input_dir: Path) -> tuple[Path, Path]:
             detail_rows.append(
                 {
                     "method": method_name,
-                    "document_id": str(document.get("doc_id", "unknown")),
-                    "split": str(document.get("dataset_type", "unknown")),
+                    "note_id": str(record.get("note_id", "unknown")),
+                    "split": str(record.get("split", "unknown")),
                     "gold_mentions": str(len(gold_spans)),
                     "predicted_spans": str(len(predicted_spans)),
                     "span_tp": str(true_positive),
@@ -416,7 +370,7 @@ def evaluate_tab_transfer(input_dir: Path) -> tuple[Path, Path]:
         summary_rows.append(
             {
                 "method": method_name,
-                "document_count": str(len(documents)),
+                "document_count": str(len(records)),
                 "mention_count": str(total_mentions),
                 "span_precision": f"{precision:.2f}",
                 "span_recall": f"{recall:.2f}",
@@ -450,7 +404,7 @@ def evaluate_tab_transfer(input_dir: Path) -> tuple[Path, Path]:
             handle,
             fieldnames=[
                 "method",
-                "document_id",
+                "note_id",
                 "split",
                 "gold_mentions",
                 "predicted_spans",
@@ -464,39 +418,25 @@ def evaluate_tab_transfer(input_dir: Path) -> tuple[Path, Path]:
         writer.writeheader()
         writer.writerows(detail_rows)
 
-    with open(EXECUTION_MANIFEST_PATH, "w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(
-            handle,
-            fieldnames=["method", "family", "execution_status", "result_scope", "notes"],
-        )
-        writer.writeheader()
-        for spec in METHOD_SPECS:
-            writer.writerow(
-                {
-                    "method": spec["name"],
-                    "family": spec["family"],
-                    "execution_status": spec["status"],
-                    "result_scope": "tab_transfer_results.csv" if spec["status"] == "executed" else "protocol-only",
-                    "notes": spec["notes"],
-                }
-            )
-
+    _write_execution_manifest(input_supplied=True)
     return SUMMARY_OUTPUT_PATH, DETAIL_OUTPUT_PATH
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run lightweight TAB matched baselines.")
-    parser.add_argument(
-        "--input-dir",
-        default=str(DEFAULT_INPUT_DIR),
-        help="Directory containing the public TAB ECHR JSON files.",
-    )
+    parser = argparse.ArgumentParser(description="Run heuristic i2b2 matched baselines when a licensed normalized export is available.")
+    parser.add_argument("input", nargs="?", help="Normalized i2b2 JSONL or JSON export")
     args = parser.parse_args()
 
-    summary_path, detail_path = evaluate_tab_transfer(Path(args.input_dir))
-    print(f"TAB transfer summary written to {summary_path}")
-    print(f"TAB per-document metrics written to {detail_path}")
-    print(f"TAB execution manifest written to {EXECUTION_MANIFEST_PATH}")
+    if not args.input:
+        manifest_path = _write_execution_manifest(input_supplied=False)
+        print(f"i2b2 execution manifest written to {manifest_path}")
+        print("No normalized i2b2 export supplied; results remain pending licensed data.")
+        return 0
+
+    summary_path, detail_path = evaluate_i2b2_transfer(Path(args.input))
+    print(f"i2b2 transfer summary written to {summary_path}")
+    print(f"i2b2 per-document metrics written to {detail_path}")
+    print(f"i2b2 execution manifest written to {EXECUTION_MANIFEST_PATH}")
     return 0
 
 

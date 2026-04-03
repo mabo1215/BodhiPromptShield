@@ -36,9 +36,14 @@ MATCHED_BASELINES = [
         "notes": "Mask person and organization entities without clinical PHI specialization.",
     },
     {
-        "name": "Presidio (with NER fallback)",
+        "name": "Presidio-class (regex-focused heuristic)",
         "family": "Industrial de-identification",
-        "notes": "Run the same industrial baseline under the wrapped clinical note protocol.",
+        "notes": "Run the released structured-recognizer approximation for a Presidio-class comparator under the wrapped clinical note protocol.",
+    },
+    {
+        "name": "Presidio-class (NER fallback heuristic)",
+        "family": "Industrial de-identification",
+        "notes": "Run the released structured-plus-NER approximation for a Presidio-class comparator under the wrapped clinical note protocol.",
     },
     {
         "name": "Clinical hybrid de-identification pipeline",

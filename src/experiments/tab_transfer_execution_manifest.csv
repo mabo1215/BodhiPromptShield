@@ -1,0 +1,8 @@
+method,family,execution_status,result_scope,notes
+Raw prompt,No protection,executed,tab_transfer_results.csv,No sanitization is applied before evaluation.
+Regex-only,Pattern baseline,executed,tab_transfer_results.csv,Structured identifier patterns only.
+NER-only masking,Entity baseline,executed,tab_transfer_results.csv,Capitalization and title heuristics without policy routing.
+Presidio-class (regex-focused heuristic),Industrial de-identification,executed,tab_transfer_results.csv,Released approximation of a Presidio-class structured recognizer stack under the public wrapper.
+Presidio-class (NER fallback heuristic),Industrial de-identification,executed,tab_transfer_results.csv,Released approximation of a Presidio-class structured-plus-NER stack under the public wrapper.
+Prompted LLM zero-shot de-identification,Semantic baseline,pending_external_runtime,protocol-only,"A fixed prompt and decoding profile are defined at protocol level, but no closed-model runtime is bundled here."
+BodhiPromptShield (released heuristic mediator),Policy-aware mediation,executed,tab_transfer_results.csv,Released lightweight policy-aware mediator using bundled heuristics only.

@@ -1,0 +1,9 @@
+method,family,execution_status,result_scope,notes
+Raw prompt,No protection,waiting_for_licensed_data,protocol-only,No sanitization is applied before evaluation.
+Regex-only,Pattern baseline,waiting_for_licensed_data,protocol-only,Structured PHI patterns only.
+NER-only masking,Entity baseline,waiting_for_licensed_data,protocol-only,Capitalization and title heuristics without clinical routing.
+Presidio-class (regex-focused heuristic),Industrial de-identification,waiting_for_licensed_data,protocol-only,Released approximation of a Presidio-class structured recognizer stack under the clinical wrapper.
+Presidio-class (NER fallback heuristic),Industrial de-identification,waiting_for_licensed_data,protocol-only,Released approximation of a Presidio-class structured-plus-NER stack under the clinical wrapper.
+Clinical hybrid de-identification pipeline,Clinical domain baseline,pending_external_runtime,protocol-only,Intended for a domain-specific pipeline not bundled in the public repository snapshot.
+Prompted LLM zero-shot de-identification,Semantic baseline,pending_external_runtime,protocol-only,"Protocol defined, but no closed-model runtime is bundled in the current release."
+BodhiPromptShield (released heuristic mediator),Policy-aware mediation,waiting_for_licensed_data,protocol-only,Released lightweight policy-aware mediator using bundled heuristics only.
