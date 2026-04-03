@@ -12,6 +12,8 @@
   - `cppb_distribution_breakdown.csv`：CPPB 在 subset / family / category / source / modality 维度上的精确计数与占比，并支撑附录 `cppb_benchmark_composition.png`。
   - `artifact_metadata_notes.md`：补充 CPPB data-card、split 语义、multimodal slice、cross-model portability 与 latency assumptions 的仓库说明。
   - `external_resource_acquisition_card.md`：集中说明外部数据集、baseline repo、OCR 引擎和 closed-model 文档的官方获取路径与 access mode。
+  - `ocr_transfer_protocol.json`：OCR-heavy public transfer 的 protocol scaffold，明确 wrapper invariants、execution requirements 与 benchmark next steps。
+  - `ocr_transfer_resource_manifest.csv`：CORD / FUNSD / SROIE / DocILE 的 acquisition-aware cache/status manifest。
   - `cppb_release_card.md`：集中说明 CPPB release scope、source provenance、annotation examples、external wrapper semantics 与已知缺口。
   - `ocr_slice_manifest.md`：说明 OCR-mediated slice 当前已知范围与仍缺失的 exact OCR / asset metadata。
   - `multimodal_provenance_card.md`：集中说明 multimodal slice 的构造来源、rendering boundary 与 OCR-facing provenance 缺口。
@@ -19,6 +21,7 @@
   - `latency_environment_manifest.md`：说明 latency 表的 prototype interpretation boundary 与仍缺失的 hardware/concurrency metadata。
   - `external_wrapper_release_card.md`：集中说明 TAB / i2b2 external wrapper 的 protocol invariants、comparator roster、落盘文件与 licensing boundary。
   - `acquire_external_resources.py`：生成 external dataset / baseline / provenance resource 的 machine-readable acquisition manifest，并可选缓存公开 GitHub 资源。
+  - `ocr_external_transfer.py`：基于 acquisition manifest 生成 OCR-heavy public transfer 的 protocol scaffold 与 benchmark availability manifest。
   - `prompt_method_comparison.csv`：主文方法级对比结果，用于 Table III（PER）、Table V（AC/TSR）以及主文 operating-points 图。
   - `policy_sensitivity.csv`：主文 policy sensitivity 结果，用于 Table VIII 和 operating-points 图。
   - `agent_pipeline_metrics.csv`：主文 multi-step propagation 结果，用于 Table XI、主文 propagation 曲线和附录 deployment 图。
@@ -122,6 +125,8 @@
   - `python src/experiments/i2b2_matched_baseline_suite.py <normalized_i2b2_export.jsonl>`
 - 生成 external dataset / baseline acquisition manifest：
   - `python src/experiments/acquire_external_resources.py`
+- 生成 OCR-heavy transfer scaffold：
+  - `python src/experiments/ocr_external_transfer.py`
 - 用 CSV 回填主文中已代码支撑的表格：
   - `python src/experiments/fill_paper_tables.py --paper paper/main.tex`
 - 用 CSV 回填附录中已代码支撑的表格：

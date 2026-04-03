@@ -23,6 +23,7 @@ __init__.py
 # Codex local rules
 agents/*
 USAGE.md
+src/experiments/*
 
 run_src.bat
 run_src.ps1

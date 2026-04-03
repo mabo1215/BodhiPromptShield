@@ -12,7 +12,8 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Access note written.",
+    "download_status": "recorded"
   },
   {
     "id": "harvard_dbmi_portal",
@@ -27,7 +28,8 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Access note written.",
+    "download_status": "recorded"
   },
   {
     "id": "cord_dataset",
@@ -45,7 +47,8 @@
     ],
     "helper_archive_candidates": [],
     "cache_subdir": "cord_dataset",
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Downloaded and extracted from https://github.com/clovaai/cord/archive/refs/heads/master.zip",
+    "download_status": "downloaded"
   },
   {
     "id": "funsd_dataset",
@@ -60,7 +63,8 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Access note written.",
+    "download_status": "recorded"
   },
   {
     "id": "sroie_dataset",
@@ -75,7 +79,8 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Access note written.",
+    "download_status": "recorded"
   },
   {
     "id": "docile_benchmark",
@@ -93,7 +98,8 @@
       "https://github.com/rossumai/docile/archive/refs/heads/master.zip"
     ],
     "cache_subdir": "docile_helper_repo",
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Downloaded helper repository from https://github.com/rossumai/docile/archive/refs/heads/main.zip",
+    "download_status": "downloaded_helper_repo"
   },
   {
     "id": "presidio_docs",
@@ -108,7 +114,8 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Access note written.",
+    "download_status": "recorded"
   },
   {
     "id": "philter_lite_repo",
@@ -126,7 +133,8 @@
     ],
     "helper_archive_candidates": [],
     "cache_subdir": "philter_lite_repo",
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Downloaded and extracted from https://github.com/SironaMedical/philter-lite/archive/refs/heads/master.zip",
+    "download_status": "downloaded"
   },
   {
     "id": "clinideid_repo",
@@ -144,7 +152,8 @@
     ],
     "helper_archive_candidates": [],
     "cache_subdir": "clinideid_repo",
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Downloaded and extracted from https://github.com/Clinacuity/CliniDeID/archive/refs/heads/main.zip",
+    "download_status": "downloaded"
   },
   {
     "id": "medspacy_repo",
@@ -162,7 +171,8 @@
     ],
     "helper_archive_candidates": [],
     "cache_subdir": "medspacy_repo",
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Downloaded and extracted from https://github.com/medspacy/medspacy/archive/refs/heads/master.zip",
+    "download_status": "downloaded"
   },
   {
     "id": "tesseract_docs",
@@ -177,7 +187,8 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Access note written.",
+    "download_status": "recorded"
   },
   {
     "id": "paddleocr_docs",
@@ -192,7 +203,8 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Access note written.",
+    "download_status": "recorded"
   },
   {
     "id": "openai_model_docs",
@@ -207,7 +219,8 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Access note written.",
+    "download_status": "recorded"
   },
   {
     "id": "anthropic_model_docs",
@@ -222,6 +235,7 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
-    "current_release_status": "resource entry recorded; local download not attempted"
+    "current_release_status": "Access note written.",
+    "download_status": "recorded"
   }
 ]

@@ -61,3 +61,9 @@
 - `external_resource_acquisition_card.md` now consolidates official access paths for public OCR/document benchmarks, request-gated datasets, open baseline repositories, OCR engines, and closed-model documentation sources.
 - `external_resource_acquisition_manifest.json` records the machine-readable acquisition surface for those resources, including which ones are directly downloadable and which remain landing-page-only or licensed access.
 - Acquisition metadata should be read as reproducibility support rather than as executed benchmark evidence.
+
+## OCR-Heavy External Transfer Note
+
+- `ocr_external_transfer.py` now writes an OCR-heavy transfer protocol scaffold and an acquisition-aware benchmark manifest for CORD, FUNSD, SROIE, and DocILE.
+- `ocr_transfer_protocol.json` records the wrapper invariants, execution requirements, and benchmark-specific next steps that must be satisfied before any OCR-heavy public slice is promoted to executed evidence.
+- `ocr_transfer_resource_manifest.csv` records the current cache state, access mode, helper-repo availability, and outstanding OCR/runtime requirements for each tracked OCR-heavy benchmark.

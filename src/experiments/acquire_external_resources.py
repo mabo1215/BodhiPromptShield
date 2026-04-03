@@ -4,10 +4,11 @@
 The helper does two things:
 1. Always writes a machine-readable manifest describing official access paths.
 2. Optionally downloads public GitHub-hosted resources by trying both main and
-   master archive URLs.
+    master archive URLs.
 
-Licensed clinical corpora and request-gated benchmarks are recorded in the
-manifest but are never fetched automatically.
+Licensed clinical corpora stay acquisition-only. Request-gated benchmarks can
+still expose a public helper repository, which this helper will cache locally
+when archive candidates are declared.
 """
 from __future__ import annotations
 
@@ -212,6 +213,14 @@ def _extract_zip(archive_path: Path, destination_dir: Path) -> None:
         archive.extractall(destination_dir)
 
 
+def _download_and_extract(candidate_urls: list[str], archive_path: Path, extract_dir: Path) -> str | None:
+    candidate_url = _download_first_available(candidate_urls, archive_path)
+    if not candidate_url:
+        return None
+    _extract_zip(archive_path, extract_dir)
+    return candidate_url
+
+
 def _selected_resources(resource_ids: list[str]) -> list[dict[str, Any]]:
     if not resource_ids or resource_ids == ["all"]:
         return RESOURCES
@@ -254,32 +263,39 @@ def _attempt_public_downloads(selected: list[dict[str, Any]], download_root: Pat
         _write_access_note(resource, resource_dir / "ACCESS_NOTE.txt")
         status_map[resource["id"]] = {"status": "recorded", "detail": "Access note written."}
 
-        if resource["access_mode"] != "public_github_archive":
-            continue
-
-        archive_path = archive_root / f"{resource['id']}.zip"
-        candidate_url = _download_first_available(resource.get("archive_candidates", []), archive_path)
-        if candidate_url:
-            extract_dir = resource_dir / "archive"
-            _extract_zip(archive_path, extract_dir)
-            status_map[resource["id"]] = {
-                "status": "downloaded",
-                "detail": f"Downloaded and extracted from {candidate_url}",
-            }
-            continue
-
+        archive_candidates = resource.get("archive_candidates", [])
         helper_candidates = resource.get("helper_archive_candidates", [])
+
+        if archive_candidates:
+            archive_path = archive_root / f"{resource['id']}.zip"
+            candidate_url = _download_and_extract(archive_candidates, archive_path, resource_dir / "archive")
+            if candidate_url:
+                status_map[resource["id"]] = {
+                    "status": "downloaded",
+                    "detail": f"Downloaded and extracted from {candidate_url}",
+                }
+                continue
+
         if helper_candidates:
             helper_archive_path = archive_root / f"{resource['id']}_helper.zip"
-            helper_url = _download_first_available(helper_candidates, helper_archive_path)
+            helper_url = _download_and_extract(
+                helper_candidates,
+                helper_archive_path,
+                resource_dir / "helper_archive",
+            )
             if helper_url:
-                extract_dir = resource_dir / "helper_archive"
-                _extract_zip(helper_archive_path, extract_dir)
+                resource_dir.joinpath("HELPER_REPO_URL.txt").write_text(
+                    resource.get("helper_repo_url", helper_url) + "\n",
+                    encoding="utf-8",
+                )
                 status_map[resource["id"]] = {
                     "status": "downloaded_helper_repo",
                     "detail": f"Downloaded helper repository from {helper_url}",
                 }
                 continue
+
+        if resource["access_mode"] not in {"public_github_archive", "request_gated_benchmark"}:
+            continue
 
         status_map[resource["id"]] = {
             "status": "download_failed",
