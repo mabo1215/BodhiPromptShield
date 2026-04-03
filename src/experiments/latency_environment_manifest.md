@@ -17,3 +17,7 @@
 - Concurrency configuration and request scheduling traces.
 - Prompt-length distribution tied to each latency row.
 - Network or service orchestration metadata for deployment-scale inference.
+
+## Promotion Contract
+
+- `latency_host_manifest_template.csv` defines the minimum host, runtime, scheduling, and prompt-scope fields required before this slice can be promoted from comparative prototype overhead to a portable infrastructure claim.

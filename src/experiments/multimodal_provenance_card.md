@@ -16,6 +16,7 @@
 
 - The released snapshot supports multimodal slice accounting and the reported summary metrics.
 - It does not yet ship the original rendered image package, document-level OCR traces, or the exact OCR engine/version manifest needed for an end-to-end public rerun.
+- `ocr_engine_runtime_manifest_template.csv` now defines the exact OCR/runtime disclosure fields that must be filled before the OCR-heavy public slices can be promoted beyond scaffold status.
 
 ## Relation To External Transfer
 

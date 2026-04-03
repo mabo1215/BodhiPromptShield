@@ -20,10 +20,18 @@
   - Consolidated note for official public/resource-gated access paths, acquisition modes, and the boundary between acquisition metadata and executed evidence
 - `external_resource_acquisition_manifest.json`
   - Machine-readable registry of official external dataset, baseline, OCR-engine, and model-documentation access paths
+- `external_baseline_runtime_manifest_template.csv`
+  - Runtime/disclosure template for prompted LLM and named external baseline reruns on TAB and i2b2
+- `ocr_engine_runtime_manifest_template.csv`
+  - OCR engine/runtime disclosure template for CORD, FUNSD, SROIE, and DocILE transfer reruns
+- `latency_host_manifest_template.csv`
+  - Host/runtime disclosure template for promoting the latency slice beyond prototype overhead
 - `ocr_transfer_protocol.json`
   - Protocol scaffold for OCR-heavy public transfer under the same wrapper discipline used for TAB and i2b2
 - `ocr_transfer_resource_manifest.csv`
   - Acquisition-aware cache/status manifest for CORD, FUNSD, SROIE, and DocILE OCR-heavy transfer targets
+- `cppb_source_licensing_manifest.csv`
+  - Source-level provenance and licensing summary for the four benchmark-authored CPPB source families
 - `cppb_release_card.md`
   - Consolidated benchmark-card note for release scope, provenance, annotation examples, and wrapper semantics
 - `ocr_slice_manifest.md`
@@ -97,8 +105,12 @@
   - Execution-status record for the current TAB comparator roster
 - `tab_transfer_run_log.csv`
   - Raw rerun record for the current TAB wrapper roster, input scope, and generated outputs
+- `tab_zero_shot_prompt_template.txt`
+  - Fixed zero-shot de-identification prompt surface for the protocol-only TAB semantic baseline
 - `i2b2_matched_baseline_protocol.json`
   - Protocol scaffold for i2b2 prompt-wrapper external transfer
+- `i2b2_zero_shot_prompt_template.txt`
+  - Fixed zero-shot de-identification prompt surface for the protocol-only i2b2 semantic baseline
 - `i2b2_normalized_export_template.jsonl`
   - Template normalized export schema for user-supplied i2b2 notes
 - `i2b2_transfer_execution_manifest.csv`
@@ -112,6 +124,7 @@
 
 ```bash
 python src/experiments/build_cppb_manifest.py
+python src/experiments/build_cppb_source_manifest.py
 python src/experiments/categorywise_analysis.py
 python src/experiments/multimodal_analysis.py
 python src/experiments/crossmodel_analysis.py
@@ -163,4 +176,4 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 
 同时，release-card / manifest 类文件主要用于界定证据边界与可复现性范围；它们不是新的 benchmark 结果，不应被误读为额外实验得分。
 
-对于 public OCR/document benchmarks、baseline repositories、request-gated clinical corpora，以及 closed-model documentation 的官方访问入口，优先通过 `acquire_external_resources.py` 生成当前 acquisition manifest，再通过 `ocr_external_transfer.py` 把 OCR-heavy 目标整理成 protocol/availability scaffold；只有在 wrapper 对齐、runtime logging 和结果文件落盘后，这些资源才应被提升为论文中的 executed evidence。
+对于 public OCR/document benchmarks、baseline repositories、request-gated clinical corpora，以及 closed-model documentation 的官方访问入口，优先通过 `acquire_external_resources.py` 生成当前 acquisition manifest，再通过 `ocr_external_transfer.py` 把 OCR-heavy 目标整理成 protocol/availability scaffold；对于 protocol-only 的 semantic 或 named external baselines，则使用固定 prompt 模板与 runtime manifest template 先冻结 disclosure surface。只有在 wrapper 对齐、runtime logging 和结果文件落盘后，这些资源才应被提升为论文中的 executed evidence。

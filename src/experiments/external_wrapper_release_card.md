@@ -33,6 +33,7 @@
 - Document metrics CSV: per-document or per-note detailed metrics when execution is possible.
 - Execution manifest CSV: method roster with executed vs. protocol-only status.
 - Run log CSV: input scope, split counts, command template, and output files for the released rerun surface.
+- Prompt templates and runtime templates: fixed zero-shot prompt text plus runtime/disclosure fields for the protocol-only semantic and named external baselines.
 
 ## Licensing Boundary
 

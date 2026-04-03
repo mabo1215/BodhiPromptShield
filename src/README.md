@@ -11,7 +11,11 @@
   - `cppb_prompt_manifest.csv`：CPPB prompt 级 manifest。
   - `cppb_distribution_breakdown.csv`：CPPB 在 subset / family / category / source / modality 维度上的精确计数与占比，并支撑附录 `cppb_benchmark_composition.png`。
   - `artifact_metadata_notes.md`：补充 CPPB data-card、split 语义、multimodal slice、cross-model portability 与 latency assumptions 的仓库说明。
+  - `cppb_source_licensing_manifest.csv`：CPPB 四类 prompt source 的 source-level provenance / licensing / OCR-count 结构化清单。
   - `external_resource_acquisition_card.md`：集中说明外部数据集、baseline repo、OCR 引擎和 closed-model 文档的官方获取路径与 access mode。
+  - `external_baseline_runtime_manifest_template.csv`：TAB / i2b2 protocol-only semantic 和 named external baseline 的 runtime/disclosure 模板。
+  - `ocr_engine_runtime_manifest_template.csv`：OCR-heavy transfer rerun 所需 OCR/version/host/preprocessing 模板。
+  - `latency_host_manifest_template.csv`：latency slice 升级为 portable claim 前所需 host/runtime/scheduling 模板。
   - `ocr_transfer_protocol.json`：OCR-heavy public transfer 的 protocol scaffold，明确 wrapper invariants、execution requirements 与 benchmark next steps。
   - `ocr_transfer_resource_manifest.csv`：CORD / FUNSD / SROIE / DocILE 的 acquisition-aware cache/status manifest。
   - `cppb_release_card.md`：集中说明 CPPB release scope、source provenance、annotation examples、external wrapper semantics 与已知缺口。
@@ -21,7 +25,9 @@
   - `latency_environment_manifest.md`：说明 latency 表的 prototype interpretation boundary 与仍缺失的 hardware/concurrency metadata。
   - `external_wrapper_release_card.md`：集中说明 TAB / i2b2 external wrapper 的 protocol invariants、comparator roster、落盘文件与 licensing boundary。
   - `acquire_external_resources.py`：生成 external dataset / baseline / provenance resource 的 machine-readable acquisition manifest，并可选缓存公开 GitHub 资源。
+  - `build_cppb_source_manifest.py`：从已发布的 template inventory 与 prompt manifest 生成 source-level CPPB provenance manifest。
   - `ocr_external_transfer.py`：基于 acquisition manifest 生成 OCR-heavy public transfer 的 protocol scaffold 与 benchmark availability manifest。
+  - `tab_zero_shot_prompt_template.txt` / `i2b2_zero_shot_prompt_template.txt`：冻结 protocol-only semantic baselines 的固定 zero-shot prompt surface。
   - `prompt_method_comparison.csv`：主文方法级对比结果，用于 Table III（PER）、Table V（AC/TSR）以及主文 operating-points 图。
   - `policy_sensitivity.csv`：主文 policy sensitivity 结果，用于 Table VIII 和 operating-points 图。
   - `agent_pipeline_metrics.csv`：主文 multi-step propagation 结果，用于 Table XI、主文 propagation 曲线和附录 deployment 图。
@@ -103,6 +109,8 @@
   - `python src/figures/run_all_figures.py --out-dir paper/figs`
 - 生成 CPPB benchmark accounting 工件：
   - `python src/experiments/build_cppb_manifest.py`
+- 生成 CPPB source-level provenance 工件：
+  - `python src/experiments/build_cppb_source_manifest.py`
 - 生成 category-wise supporting artifact：
   - `python src/experiments/categorywise_analysis.py`
 - 生成 multimodal supporting artifact：

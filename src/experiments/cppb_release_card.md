@@ -13,6 +13,7 @@
 - Prompt-family coverage: Direct requests, Document-oriented, Retrieval-style, Tool-oriented agent.
 - Privacy-category coverage: Person names, Contact details, Postal addresses, National/account identifiers, Financial references, Medical content, Organization/project terms, Context-dependent confidential spans.
 - Modality coverage: text-only plus OCR-mediated text-plus-image prompts.
+- `cppb_source_licensing_manifest.csv` now records source-level counts, downstream task types, provenance summaries, OCR slice counts, and licensing boundaries for each released prompt-source family.
 
 ## Split Semantics
 
@@ -32,6 +33,7 @@
 - Stable lexical identifiers: names, e-mail addresses, account numbers, and postal addresses.
 - Context-dependent spans: confidential project references, organization-specific internal terms, or task-conditioned sensitive content.
 - OCR-mediated cases: scanned invoices, report snippets, and image-assisted variants in which privacy-bearing content enters through OCR.
+- The benchmark-authored examples remain description-level examples rather than raw third-party assets; source-level release boundaries are recorded in `cppb_source_licensing_manifest.csv`.
 
 ## Wrapper Specification
 
