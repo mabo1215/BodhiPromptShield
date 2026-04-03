@@ -38,18 +38,23 @@
 - `tab_transfer_results.csv` and `tab_transfer_document_metrics.csv` provide the first executable public-benchmark transfer slice in the current repository snapshot.
 - `tab_transfer_execution_manifest.csv` records which comparator families are executed from the current public snapshot and which remain protocol-only.
 - `tab_transfer_run_log.csv` now records the bundled public input scope, split counts, generated outputs, and rerun command template for each TAB comparator.
-- `tab_zero_shot_prompt_template.txt` and `external_baseline_runtime_manifest_template.csv` now define the fixed zero-shot prompt surface and an Ollama-based public local runtime logging template needed before a named TAB semantic baseline can be promoted from protocol-only to executed evidence.
+- `tab_zero_shot_prompt_template.txt` and `external_baseline_runtime_manifest_template.csv` now define the fixed zero-shot prompt surface and an Ollama-based public local runtime logging template used by the released TAB and synthetic i2b2 pilots.
+- `tab_ollama_zero_shot_baseline.py` now executes that fixed zero-shot surface on a 32-document public TAB pilot slice and writes summary, per-document, runtime-manifest, and run-log artifacts without overwriting the released full TAB heuristic roster.
+- `ollama_zero_shot_stability.py` now snapshots repeat reruns of that TAB surface and writes a three-observation mean/std/CI summary for the local semantic baseline path.
 - This TAB slice is intentionally text-only and reports span precision/recall/F1, PER, and non-sensitive text retention rather than CPPB-style AC/TSR.
-- The current runner now includes raw, regex, NER, two Presidio-class heuristic approximations, one released hybrid de-identification comparator, and the released BodhiPromptShield heuristic mediator; prompted zero-shot LLM de-identification remains protocol-only.
+- The current runner now includes raw, regex, NER, two Presidio-class heuristic approximations, one released hybrid de-identification comparator, and the released BodhiPromptShield heuristic mediator; prompted zero-shot LLM de-identification is now also backed by a separate executed local pilot artifact chain.
 
 ## i2b2 Clinical Transfer Note
 
 - `i2b2_transfer_execution_manifest.csv` records the current clinical comparator roster and distinguishes methods that are executable once a licensed normalized export is supplied from methods that still require external runtime support.
 - `i2b2_transfer_run_log.csv` records the exact result schema, rerun command template, and current waiting-for-licensed-data state for the clinical wrapper roster.
 - `i2b2_matched_baseline_suite.py` now provides the exact result schema and heuristic runner used for clinical transfer once user-supplied normalized i2b2 notes are available.
-- `i2b2_zero_shot_prompt_template.txt` and `external_baseline_runtime_manifest_template.csv` now define the fixed zero-shot surface and an Ollama-based public local runtime logging template, together with the named clinical-pipeline runtime fields required before those protocol-only baselines can be promoted to executed evidence.
+- `build_i2b2_synthea_synthetic_export.py` converts the public i2b2-Synthea sample tables into a schema-compatible synthetic note export with span offsets for a fully public rehearsal path.
+- `i2b2_synthea_prompt_wrapped_manifest.csv` and `i2b2_ollama_zero_shot_baseline.py` now provide a prompt-wrapped synthetic clinical slice and an executed local Ollama zero-shot pilot on 32 synthetic notes.
+- `ollama_zero_shot_stability.py` now also writes a three-observation mean/std/CI summary for that fixed synthetic clinical zero-shot surface.
+- `i2b2_zero_shot_prompt_template.txt` and `external_baseline_runtime_manifest_template.csv` now define the fixed zero-shot surface and an Ollama-based public local runtime logging template shared by the synthetic pilot and the waiting-state licensed route.
 - `external_wrapper_release_card.md` now consolidates the wrapper invariants, comparator roster, output files, and licensing boundary shared by TAB and i2b2 transfer.
-- The repository still does not redistribute licensed i2b2 notes, so no clinical result CSV is bundled in the public snapshot.
+- The repository still does not redistribute licensed i2b2 notes, so the executed clinical-style pilot should be read as a synthetic schema rehearsal rather than as a licensed benchmark rerun.
 
 ## Latency Measurement Note
 
@@ -71,6 +76,13 @@
 - `ocr_transfer_protocol.json` records the wrapper invariants, execution requirements, and benchmark-specific next steps that must be satisfied before any OCR-heavy public slice is promoted to executed evidence, with CORD marked as the primary public rerun target.
 - `ocr_transfer_resource_manifest.csv` records the current cache state, access mode, helper-repo availability, and outstanding OCR/runtime requirements for each tracked OCR-heavy benchmark.
 - `ocr_engine_runtime_manifest_template.csv` now defines the missing OCR engine, preprocessing, host, and asset-bundle fields needed before those OCR-heavy slices can be promoted from scaffold-only to executed evidence.
+- `acquire_cord_snapshot.py` now pins the public CORD Hugging Face mirror at revision `4f51527df44a7f7f915bee494f1129915118d0e1`, records the archive SHA-256, and writes `cord_snapshot_manifest.json`.
+- `acquire_funsd_snapshot.py` now pins the public FUNSD Hugging Face parquet mirror at revision `ccd2a77745b0dc9f154a91db1219ec05c86ce7ec`, records split counts plus per-file hashes, and writes `funsd_snapshot_manifest.json`.
+- `build_cord_transfer_surface.py` and `cord_prompt_wrapped_manifest.csv` now build a benchmark-specific wrapper surface directly from that pinned snapshot rather than from the earlier sample-only repository archive.
+- `cord_ocr_transfer_suite.py` now executes a real OCR-heavy CORD rerun on the pinned `valid:100` slice and writes `cord_transfer_results.csv`, `cord_transfer_document_metrics.csv`, `cord_transfer_execution_manifest.csv`, `cord_transfer_run_log.csv`, `cord_transfer_protocol.json`, and `cord_ocr_runtime_manifest.csv`.
+- `funsd_ocr_transfer_suite.py` now executes a second public OCR-heavy rerun on the pinned `test:50` FUNSD slice and writes `funsd_transfer_results.csv`, `funsd_transfer_document_metrics.csv`, `funsd_transfer_execution_manifest.csv`, `funsd_transfer_run_log.csv`, `funsd_transfer_protocol.json`, and `funsd_ocr_runtime_manifest.csv`.
+- The executed CORD slice uses `rapidocr-onnxruntime==1.2.3` as the declared OCR engine and now reports raw OCR text, OCR+regex masking, OCR+generic de-identification, an added Presidio-backed named OCR de-identification comparator, and the released policy-aware mediation heuristic.
+- The executed FUNSD slice reuses the same declared `rapidocr-onnxruntime==1.2.3` stack and treats `B-ANSWER` / `I-ANSWER` form tokens as the protected public transfer slice.
 
 ## CPPB Source-Level Provenance Note
 

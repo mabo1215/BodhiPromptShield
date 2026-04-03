@@ -14,7 +14,11 @@
   - `cppb_source_licensing_manifest.csv`：CPPB 四类 prompt source 的 source-level provenance / licensing / OCR-count 结构化清单。
   - `external_resource_acquisition_card.md`：集中说明外部数据集、baseline repo、synthetic clinical route、OCR 引擎、open-weight runtime 和 closed-model 文档的官方获取路径与 access mode。
   - `external_baseline_runtime_manifest_template.csv`：TAB / i2b2 protocol-only semantic 和 named external baseline 的 runtime/disclosure 模板，现包含 Ollama + Llama3-8B-Instruct 的 public local zero-shot logging surface。
-  - `ocr_engine_runtime_manifest_template.csv`：OCR-heavy transfer rerun 所需 OCR/version/host/preprocessing 模板。
+  - `tab_ollama_zero_shot_baseline.py`：执行本地 Ollama-backed TAB zero-shot pilot，并输出独立的 summary/detail/runtime/run-log 工件而不覆盖已发布的 full TAB heuristic slice。
+  - `tab_ollama_zero_shot_results.csv` / `tab_ollama_zero_shot_document_metrics.csv` / `tab_ollama_zero_shot_runtime_manifest.csv` / `tab_ollama_zero_shot_run_log.csv`：本地 open-weight zero-shot baseline 的已执行 pilot 工件，当前对应 TAB `dev:32` 子集上的可检查 rerun。
+  - `ollama_zero_shot_stability.py`：对 TAB / synthetic i2b2 的本地 Ollama zero-shot pilots 做多次重复运行、保存每次 snapshot，并生成 mean/std/CI stability 汇总。
+  - `tab_ollama_zero_shot_stability_runs.csv` / `tab_ollama_zero_shot_stability_summary.csv`：TAB `dev:32` zero-shot pilot 的三次观测稳定性工件。
+  - `ocr_engine_runtime_manifest_template.csv`：OCR-heavy transfer rerun所需的通用 OCR/version/host/preprocessing 模板。
   - `latency_host_manifest_template.csv`：latency slice 升级为 portable claim 前所需 host/runtime/scheduling 模板。
   - `ocr_transfer_protocol.json`：OCR-heavy public transfer 的 protocol scaffold，明确 wrapper invariants、execution requirements 与 benchmark next steps。
   - `ocr_transfer_resource_manifest.csv`：CORD / FUNSD / SROIE / DocILE 的 acquisition-aware cache/status manifest。
@@ -27,7 +31,28 @@
   - `acquire_external_resources.py`：生成 external dataset / baseline / provenance resource 的 machine-readable acquisition manifest，并可选缓存公开 GitHub 资源；当前也记录 i2b2-Synthea、CORD mirror/license 和 Ollama runtime surface。
   - `build_cppb_source_manifest.py`：从已发布的 template inventory 与 prompt manifest 生成 source-level CPPB provenance manifest。
   - `ocr_external_transfer.py`：基于 acquisition manifest 生成 OCR-heavy public transfer 的 protocol scaffold 与 benchmark availability manifest。
-  - `tab_zero_shot_prompt_template.txt` / `i2b2_zero_shot_prompt_template.txt`：冻结 protocol-only semantic baselines 的固定 zero-shot prompt surface。
+  - `tab_zero_shot_prompt_template.txt` / `i2b2_zero_shot_prompt_template.txt`：冻结 zero-shot semantic baselines 的固定 prompt surface，并被当前 TAB / synthetic i2b2 本地 Ollama pilots 直接复用。
+  - `build_i2b2_synthea_synthetic_export.py`：把公开 i2b2-Synthea sample tables 转成 schema-compatible synthetic note export，用于无 licensed notes 时的 public rehearsal。
+  - `i2b2_synthea_synthetic_export.jsonl`：基于公开 Synthea sample 构建的 synthetic i2b2-compatible note export。
+  - `i2b2_synthea_prompt_wrapped_manifest.csv`：synthetic i2b2 export 在统一 wrapper 下的 prompt manifest。
+  - `i2b2_ollama_zero_shot_baseline.py`：执行本地 Ollama-backed synthetic i2b2 zero-shot pilot，并输出独立的 summary/detail/runtime/run-log 工件。
+  - `i2b2_ollama_zero_shot_results.csv` / `i2b2_ollama_zero_shot_document_metrics.csv` / `i2b2_ollama_zero_shot_runtime_manifest.csv` / `i2b2_ollama_zero_shot_run_log.csv`：synthetic i2b2-Synthea open-weight zero-shot baseline 的已执行 pilot 工件，当前对应 `synthea-dev:32` 子集。
+  - `i2b2_ollama_zero_shot_stability_runs.csv` / `i2b2_ollama_zero_shot_stability_summary.csv`：synthetic i2b2 `synthea-dev:32` zero-shot pilot 的三次观测稳定性工件。
+  - `acquire_cord_snapshot.py`：从 Hugging Face mirror 按固定 revision 下载并解包 CORD public snapshot，同时落盘 `cord_snapshot_manifest.json`。
+  - `acquire_funsd_snapshot.py`：从 Hugging Face 按固定 revision 下载并固定 FUNSD public parquet snapshot，同时落盘 `funsd_snapshot_manifest.json`。
+  - `build_cord_transfer_surface.py`：为 CORD 生成 benchmark-specific OCR rerun surface；若未提供完整数据快照，则诚实落盘 preparation-only 状态；当前也为 pinned snapshot 生成 wrapper manifest。
+  - `cord_ocr_transfer_suite.py`：在 pinned public CORD snapshot 上执行 OCR-heavy matched rerun，并输出 result/detail/runtime/run-log 工件；当前 comparator roster 已扩到 Presidio-backed named OCR de-id baseline。
+  - `funsd_ocr_transfer_suite.py`：在 pinned public FUNSD snapshot 上执行 OCR-heavy matched rerun，并输出 result/detail/runtime/run-log 工件。
+  - `cord_snapshot_manifest.json`：记录 CORD public snapshot 的 fixed revision、下载 URL、archive SHA-256、解包路径与 split counts。
+  - `funsd_snapshot_manifest.json`：记录 FUNSD public snapshot 的 fixed revision、本地 parquet snapshot root、split counts 与逐文件哈希。
+  - `cord_ocr_runtime_manifest.csv`：已填写的 CORD OCR engine/version/runtime manifest，当前对应 `rapidocr-onnxruntime==1.2.3` 的本地执行面。
+  - `funsd_ocr_runtime_manifest.csv`：已填写的 FUNSD OCR engine/version/runtime manifest，当前也对应 `rapidocr-onnxruntime==1.2.3` 的同一 declared OCR stack。
+  - `cord_transfer_results.csv` / `cord_transfer_document_metrics.csv` / `cord_transfer_execution_manifest.csv` / `cord_transfer_run_log.csv` / `cord_transfer_protocol.json`：CORD `valid:100` OCR-heavy executed public slice 的结果、明细、执行状态、运行记录与协议工件；当前 summary 已包含 Presidio-backed named comparator。
+  - `cord_transfer_preparation_manifest.csv`：记录 pinned CORD snapshot 的当前执行面，当前状态为 `executed_public_snapshot`。
+  - `cord_prompt_wrapped_manifest.csv`：基于 pinned CORD snapshot 生成的 wrapper-ready manifest，当前对应 `valid:100` executed slice。
+  - `funsd_transfer_results.csv` / `funsd_transfer_document_metrics.csv` / `funsd_transfer_execution_manifest.csv` / `funsd_transfer_run_log.csv` / `funsd_transfer_protocol.json`：FUNSD `test:50` OCR-heavy executed public slice 的结果、明细、执行状态、运行记录与协议工件。
+  - `funsd_transfer_preparation_manifest.csv`：记录 pinned FUNSD snapshot 的当前执行面，当前状态为 `executed_public_snapshot`。
+  - `funsd_prompt_wrapped_manifest.csv`：基于 pinned FUNSD snapshot 生成的 wrapper-ready manifest，当前对应 `test:50` executed slice。
   - `prompt_method_comparison.csv`：主文方法级对比结果，用于 Table III（PER）、Table V（AC/TSR）以及主文 operating-points 图。
   - `policy_sensitivity.csv`：主文 policy sensitivity 结果，用于 Table VIII 和 operating-points 图。
   - `agent_pipeline_metrics.csv`：主文 multi-step propagation 结果，用于 Table XI、主文 propagation 曲线和附录 deployment 图。
@@ -135,6 +160,9 @@
   - `python src/experiments/acquire_external_resources.py`
 - 生成 OCR-heavy transfer scaffold：
   - `python src/experiments/ocr_external_transfer.py`
+- 固定并执行 CORD OCR-heavy public slice：
+  - `python src/experiments/acquire_cord_snapshot.py`
+  - `python src/experiments/cord_ocr_transfer_suite.py --dataset-root src/experiments/external_data/resource_cache/cord_dataset/hf_snapshot/4f51527df44a7f7f915bee494f1129915118d0e1/extracted/CORD --split valid`
 - 用 CSV 回填主文中已代码支撑的表格：
   - `python src/experiments/fill_paper_tables.py --paper paper/main.tex`
 - 用 CSV 回填附录中已代码支撑的表格：
@@ -144,4 +172,4 @@
 
 ## 依赖
 
-见 `src/requirements.txt`。当前图形脚本依赖 `numpy`、`matplotlib`，其余脚本仅使用 Python 标准库或轻量数值库。
+见 `src/requirements.txt`。当前图形脚本依赖 `numpy`、`matplotlib`；OCR-heavy CORD rerun 另外使用 `rapidocr-onnxruntime`。

@@ -107,10 +107,56 @@
   - Raw rerun record for the current TAB wrapper roster, input scope, and generated outputs
 - `tab_zero_shot_prompt_template.txt`
   - Fixed zero-shot de-identification prompt surface for the protocol-only TAB semantic baseline
+- `tab_ollama_zero_shot_results.csv`
+  - Executed TAB dev:32 local zero-shot pilot summary
+- `tab_ollama_zero_shot_stability_summary.csv`
+  - Three-observation TAB dev:32 local zero-shot stability summary
+- `tab_ollama_zero_shot_stability_runs.csv`
+  - Per-run TAB local zero-shot stability records and snapshot references
 - `i2b2_matched_baseline_protocol.json`
   - Protocol scaffold for i2b2 prompt-wrapper external transfer
 - `i2b2_zero_shot_prompt_template.txt`
   - Fixed zero-shot de-identification prompt surface for the protocol-only i2b2 semantic baseline
+- `i2b2_synthea_synthetic_export.jsonl`
+  - Public synthetic i2b2-compatible note export used for local rehearsal
+- `i2b2_ollama_zero_shot_results.csv`
+  - Executed synthetic i2b2 dev:32 local zero-shot pilot summary
+- `i2b2_ollama_zero_shot_stability_summary.csv`
+  - Three-observation synthetic i2b2 dev:32 local zero-shot stability summary
+- `i2b2_ollama_zero_shot_stability_runs.csv`
+  - Per-run synthetic i2b2 local zero-shot stability records and snapshot references
+- `cord_transfer_preparation_manifest.csv`
+  - Benchmark-specific CORD snapshot/execution status for the OCR-heavy rerun route
+- `cord_transfer_execution_manifest.csv`
+  - Executed CORD comparator execution-status surface on the pinned public snapshot
+- `cord_transfer_run_log.csv`
+  - Executed CORD rerun log with pinned snapshot, runtime manifest, and command template
+- `cord_transfer_results.csv`
+  - Executed CORD `valid:100` OCR-heavy summary table, now including the Presidio-backed named OCR comparator
+- `cord_transfer_document_metrics.csv`
+  - Per-document CORD OCR-heavy transfer metrics on the pinned `valid` slice
+- `cord_transfer_protocol.json`
+  - Benchmark-specific CORD OCR-heavy transfer protocol for the executed public slice
+- `cord_snapshot_manifest.json`
+  - Fixed-revision CORD snapshot manifest with source URL, archive hash, and split counts
+- `cord_ocr_runtime_manifest.csv`
+  - Filled OCR engine/version/runtime manifest for the executed CORD slice
+- `funsd_transfer_preparation_manifest.csv`
+  - Benchmark-specific FUNSD snapshot/execution status for the second OCR-heavy public rerun route
+- `funsd_transfer_execution_manifest.csv`
+  - Executed FUNSD comparator execution-status surface on the pinned public snapshot
+- `funsd_transfer_run_log.csv`
+  - Executed FUNSD rerun log with pinned snapshot, runtime manifest, and command template
+- `funsd_transfer_results.csv`
+  - Executed FUNSD `test:50` OCR-heavy summary table
+- `funsd_transfer_document_metrics.csv`
+  - Per-document FUNSD OCR-heavy transfer metrics on the pinned `test` slice
+- `funsd_transfer_protocol.json`
+  - Benchmark-specific FUNSD OCR-heavy transfer protocol for the executed public slice
+- `funsd_snapshot_manifest.json`
+  - Fixed-revision FUNSD snapshot manifest with snapshot root, split counts, feature names, and file hashes
+- `funsd_ocr_runtime_manifest.csv`
+  - Filled OCR engine/version/runtime manifest for the executed FUNSD slice
 - `i2b2_normalized_export_template.jsonl`
   - Template normalized export schema for user-supplied i2b2 notes
 - `i2b2_transfer_execution_manifest.csv`
@@ -139,6 +185,7 @@ python src/experiments/i2b2_external_transfer.py
 python src/experiments/i2b2_matched_baseline_suite.py
 python src/experiments/acquire_external_resources.py
 python src/experiments/ocr_external_transfer.py
+python src/experiments/build_cord_transfer_surface.py
 python src/experiments/fill_paper_tables.py --paper paper/main.tex
 python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 ```
@@ -176,4 +223,4 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 
 同时，release-card / manifest 类文件主要用于界定证据边界与可复现性范围；它们不是新的 benchmark 结果，不应被误读为额外实验得分。
 
-对于 public OCR/document benchmarks、baseline repositories、request-gated clinical corpora，以及 closed-model documentation 的官方访问入口，优先通过 `acquire_external_resources.py` 生成当前 acquisition manifest，再通过 `ocr_external_transfer.py` 把 OCR-heavy 目标整理成 protocol/availability scaffold；对于 protocol-only 的 semantic 或 named external baselines，则使用固定 prompt 模板与 runtime manifest template 先冻结 disclosure surface。只有在 wrapper 对齐、runtime logging 和结果文件落盘后，这些资源才应被提升为论文中的 executed evidence。
+对于 public OCR/document benchmarks、baseline repositories、request-gated clinical corpora，以及 closed-model documentation 的官方访问入口，优先通过 `acquire_external_resources.py` 生成当前 acquisition manifest，再通过 `ocr_external_transfer.py` 把 OCR-heavy 目标整理成 protocol/availability scaffold；对于已执行的 CORD rerun，则继续用 `acquire_cord_snapshot.py` 固定 revision、用 `cord_ocr_transfer_suite.py` 落盘 wrapper/result/runtime/run-log 工件。只有在 wrapper 对齐、runtime logging 和结果文件落盘后，这些资源才应被提升为论文中的 executed evidence。

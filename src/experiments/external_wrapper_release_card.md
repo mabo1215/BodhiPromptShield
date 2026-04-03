@@ -19,10 +19,10 @@
 - Presidio-class structured-plus-NER heuristic.
 - Released hybrid heuristic de-identification.
 - Released BodhiPromptShield heuristic mediator.
+- Prompted LLM zero-shot de-identification via separate local Ollama pilot artifacts on TAB and synthetic i2b2-compatible slices.
 
 ## Protocol-Only Comparator Families
 
-- Prompted LLM zero-shot de-identification.
 - Domain-specific or named industrial clinical de-identification pipelines.
 
 ## Generated Artifacts
@@ -33,7 +33,7 @@
 - Document metrics CSV: per-document or per-note detailed metrics when execution is possible.
 - Execution manifest CSV: method roster with executed vs. protocol-only status.
 - Run log CSV: input scope, split counts, command template, and output files for the released rerun surface.
-- Prompt templates and runtime templates: fixed zero-shot prompt text plus runtime/disclosure fields for the protocol-only semantic and named external baselines.
+- Prompt templates and runtime templates: fixed zero-shot prompt text plus runtime/disclosure fields for the broader semantic and named external baselines beyond the currently executed local pilots.
 
 ## Licensing Boundary
 
