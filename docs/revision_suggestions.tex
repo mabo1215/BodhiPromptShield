@@ -1,433 +1,182 @@
-\section*{Third-Round Top-Tier Review Summary}
+\section*{Revision Direction: External Benchmarks, External Validation, and Supporting-Artifact Upgrade Plan}
 
-相较于上一轮，这一版论文又有了\textbf{明显且有效的提升}。整体上，稿件已经从“结构较成熟的系统原型稿”进一步推进到了“主线清楚、方法形式化更强、评审脆弱点已被主动管理”的状态。特别是以下几点改动是有效的：
-
+\subsection*{Overall Revision Principle}
+The next revision stage should prioritize \emph{protocol-compatible external validation} rather than adding a large number of disconnected benchmarks. The core principle is to preserve the current CPPB evaluation logic, matched-setting comparison protocol, and evidence-bounded claim scope, while gradually extending the manuscript from controlled evidence to externally checkable evidence. In practical terms, the next round of revision should focus on three coordinated goals:
 \begin{enumerate}
-    \item \textbf{摘要更稳。} 你已经不再只是说“utility modestly better”，而是更主动地表述为：相较 enterprise staged redaction，本文方法形成了更强的 privacy--utility frontier。这比上一版更适合顶会/顶刊摘要表述。:contentReference[oaicite:0]{index=0}
-    \item \textbf{Threat model 与实验缺口的衔接更清楚。} 你不仅保留了 threat-to-evaluation mapping，还在主文中明确写出“the first missing empirical extension is ... adversarial surface-form robustness suite”，这说明你已经开始把“缺口”转化为“下一步具体实验计划”。:contentReference[oaicite:1]{index=1}
-    \item \textbf{Policy selector $\Pi$ 更可操作化。} 你新增了 rule-instantiated approximations：
-    \[
-    \hat L_{\text{privacy}}(m\mid z_i),\qquad \hat L_{\text{utility}}(m\mid z_i)
-    \]
-    并用显式项说明 direct exposure、context leakage、restoration surface、exact-value penalty、semantic drift、latency penalty 的组成，这比上一版更接近“可实现的系统机制”。:contentReference[oaicite:2]{index=2}
-    \item \textbf{主文对 enterprise staged redaction 的 tension 处理更好了。} 你已经显式加入了“Why the paper does not optimize PER alone”这一段，这一步很关键，因为它直接回应了最容易被审稿人抓住的攻击点。:contentReference[oaicite:3]{index=3}
-    \item \textbf{appendix 更完整。} 你新加了 two forward-looking matrices：public-benchmark transfer matrix 和 external baseline matrix，这使 appendix 不再只是披露不足，而是在展示补强路线图。:contentReference[oaicite:4]{index=4}
+    \item adding one or two protocol-compatible external benchmarks that can be mapped into the current PER/AC/TSR-style evaluation pipeline;
+    \item strengthening the external practical baseline family under the same downstream setting;
+    \item upgrading the remaining high-value supporting tables from manuscript-level controlled slices into CSV-backed, script-filled, and reproducible appendix artifacts.
 \end{enumerate}
 
-但如果继续严格按\textbf{顶刊 / 顶会标准}评审，我的判断仍然是：
+\subsection*{Priority 1: Add a Protocol-Compatible Text Anonymization Benchmark}
+The highest-priority external benchmark candidate is a \emph{text anonymization benchmark} that is naturally compatible with the current span-level privacy mediation setup. The best immediate target is a benchmark of the TAB family. This direction is attractive because it is already aligned with anonymization-oriented evaluation rather than generic NER alone. Therefore, it can be adapted into the present paper with relatively limited protocol drift.
 
-\[
-\boxed{\text{这篇论文已经接近高水平投稿状态，但仍未完全跨过 Major Revision 的门槛。}}
-\]
-
-原因不是写作不成熟，而是\textbf{证据强度仍然落后于叙事成熟度}。也就是说，现在的问题已经非常集中：\textbf{论文写得已经像高水平稿件，但实验和可复现 supporting evidence 还没有完全跟上。} 
-
-\section*{Updated Overall Verdict}
-
-\textbf{当前结论：仍建议 Major Revision，但已经更接近“可投高水平 venue”的状态。}
-
-如果把之前几轮修改轨迹放在一起看，目前稿件的状态大致是：
-
-\begin{itemize}
-    \item \textbf{问题定义：} 已经比较强；
-    \item \textbf{方法形式化：} 已经达到较好水准；
-    \item \textbf{系统主线：} 已经清楚；
-    \item \textbf{论文叙事纪律：} 已经较成熟；
-    \item \textbf{实验 backbone：} 已经能支撑主要 claim；
-    \item \textbf{外部有效性 / 强对比 / 稳健性 / supporting artifact reproducibility：} 仍是主要短板。
-\end{itemize}
-
-换句话说，这篇论文现在已经不像“写作有问题的稿”，而像“实验证据还不够满的高水平稿”。
-
-\section*{What Is Significantly Better in This Version}
-
-\subsection*{1. The paper now has a clearer scientific stance}
-
-这一版最重要的进步之一，是你的论文现在已经清楚地区分了三件事：
-
+The recommended revision strategy is:
 \begin{enumerate}
-    \item 本文的核心不是提出 cryptographic guarantee；
-    \item 本文的核心也不是单纯做 span masking；
-    \item 本文真正的 scientific contribution 是：
-    \textbf{把 prompt privacy 在 agent 中重写为 propagation-control problem，并给出 agent-boundary mediation + propagation-aware evaluation 的系统证据。}
+    \item convert benchmark instances into prompt-style inputs;
+    \item preserve the current matched comparison setting across raw, regex-only, NER-only, generic de-identification, enterprise staged redaction, and the proposed method;
+    \item report direct-exposure and utility-preservation results under the same output protocol as CPPB;
+    \item use this benchmark primarily as the first external transfer slice for text-only validation.
 \end{enumerate}
 
-这条主线在摘要、引言、方法、结果、结论中都已经相对一致。:contentReference[oaicite:6]{index=6}
-
-\textbf{评价：这已经是非常明显的进步。}
-
-\subsection*{2. The formalization of $\Pi$ is now much more convincing}
-
-上一版的形式化虽然已经提升，但还有“好看但不够 operational”的风险。这一版通过显式写出：
-
-\[
-\hat L_{\text{privacy}}(m \mid z_i)=\alpha_1 \cdot \text{DirectExposureRisk}+\alpha_2 \cdot \text{ContextLeakageRisk}+\alpha_3 \cdot \text{RestorationSurface}
-\]
-
-以及
-
-\[
-\hat L_{\text{utility}}(m \mid z_i)=\beta_1 \cdot \text{ExactValuePenalty}+\beta_2 \cdot \text{SemanticDrift}+\beta_3 \cdot \text{LatencyPenalty}
-\]
-
-你已经把这个 selector 从“概念上的 policy function”推进成了“可由 rule-instantiated approximations 实现的系统控制器”。:contentReference[oaicite:7]{index=7}
-
-\textbf{评价：这是方法部分最有价值的补强。}
-
-\subsection*{3. You proactively repaired the PER-vs-utility weakness}
-
-之前最大的问题之一是：enterprise staged redaction 的 PER 更低，但你方法的 utility 更高。这个 tension 非常容易导致审稿人说“the method is not actually stronger on privacy reduction”。
-
-现在你专门增加了一段：
-\begin{quote}
-Why the paper does not optimize PER alone.
-\end{quote}
-并明确说明：
-\begin{itemize}
-    \item enterprise staged redaction 本质上是 typed-placeholder-only regime；
-    \item 它对 stable direct identifiers 很强；
-    \item 但对 context-sensitive spans 和 exact-value-dependent tasks 缺乏 selective semantic preservation；
-    \item 因此本文优化目标是 privacy--utility frontier under propagation risk，而不是 PER minimum in isolation。:contentReference[oaicite:8]{index=8}
-\end{itemize}
-
-\textbf{评价：这是正确且必要的修复。}
-
-\subsection*{4. Appendix is now genuinely useful}
-
-这一版 appendix 的提升是真实的，不只是“多加了表”。
-
-最有价值的是新增：
-\begin{itemize}
-    \item \textbf{Planned public-benchmark transfer matrix}；
-    \item \textbf{Planned external baseline matrix}。:contentReference[oaicite:9]{index=9}
-\end{itemize}
-
-这两张表的作用在于：
+This benchmark should be used first to support three manuscript goals:
 \begin{enumerate}
-    \item 向审稿人展示你清楚知道当前 evidence gap 在哪里；
-    \item 告诉审稿人这些 gap 可以如何以 matched setting 被补齐；
-    \item 把“future work”变成“有操作路径的 next revision plan”。
+    \item stronger external transfer beyond CPPB;
+    \item stronger external practical baseline comparison;
+    \item a more credible category-wise supporting analysis.
 \end{enumerate}
 
-\textbf{评价：这是一个成熟的 supplementary design。}
+\subsection*{Priority 2: Add a Clinical PHI Benchmark for External Generalization}
+The next strongest external validation direction is a \emph{clinical de-identification benchmark}, especially one in the i2b2-style PHI benchmark family. This is not as directly agent-oriented as CPPB, but it provides a strong external domain where privacy-sensitive spans are real, context-dependent, and widely recognized by the community.
 
-\section*{Main Remaining Problems}
-
-\subsection*{1. The core weakness is still experimental completeness}
-
-虽然你已经把论文改得更成熟，但论文最根本的问题依然没有改变：
-
-\begin{quote}
-\textbf{主文 backbone 已经站住，但 supporting evidence 仍然大面积停留在 controlled manuscript level。}
-\end{quote}
-
-根据 appendix 的 reproducibility map，以下重要结果仍属于 controlled manuscript：  
-\begin{itemize}
-    \item category-wise analysis；
-    \item authorized restoration；
-    \item sanitization-mode ablation；
-    \item multimodal evaluation；
-    \item cross-model validation；
-    \item hard-case robustness。:contentReference[oaicite:10]{index=10}
-\end{itemize}
-
-这意味着，虽然主文现在更干净了，但顶级审稿人仍然会觉得：
-
-\begin{quote}
-The paper’s central story is convincing, but too many of the deeper supporting analyses are not yet regenerated artifacts.
-\end{quote}
-
-这依然是当前稿件离顶级 venue 最远的一步。
-
-\subsection*{2. The main text is strong, but still somewhat over-defensive}
-
-这一版比上一版好很多，但 still 有一个问题：  
-你在多个位置都强调：
-\begin{itemize}
-    \item controlled evidence；
-    \item not external-benchmark claim；
-    \item not variance-certified；
-    \item not yet Presidio-class；
-    \item not yet public transfer。
-\end{itemize}
-
-这些表述当然是诚实的，但从顶会写作角度看，现在已经稍微有一点“过度防守”。
-
-顶级稿件当然需要诚实，但不能让审稿人通篇读下来都被提醒“这里还没做、那里也没做”。
-
-\textbf{建议：}
-保留关键边界说明，但减少重复频率。  
-更理想的写法是：
-
+The manuscript should not claim that such a benchmark is inherently agent-compatible. Instead, the revision should explicitly state that:
 \begin{enumerate}
-    \item 在 Introduction 或 Experimental Scope 处统一界定边界；
-    \item 在每个结果 subsection 内尽量减少重复免责声明；
-    \item 把“未完成的外部验证”更多转移到 Limitations 和 Appendix matrices 中。
+    \item the benchmark is used as an external de-identification transfer setting;
+    \item benchmark samples are wrapped into prompt-style tasks so that the same mediation pipeline can be evaluated under matched conditions;
+    \item the goal is external validation of span protection and utility preservation, not a claim of native agent-workflow equivalence.
 \end{enumerate}
 
-\subsection*{3. There are still writing-level artifacts that look unpolished}
+This benchmark is especially valuable for strengthening the medical-content story already present in the paper and for reducing the risk that the current evaluation is perceived as CPPB-only.
 
-这一版已经很成熟，但仍有个别局部写法会给严格审稿人留下“还没完全 polishing 到位”的印象。
+\subsection*{Priority 3: Add OCR/Document Benchmarks for the Multimodal Slice}
+To improve the current multimodal appendix slice, the revision should move from manuscript-level controlled multimodal evidence toward at least one \emph{public OCR/document benchmark}. The most useful candidates are datasets in the form-understanding, receipt-understanding, or document-VQA family.
 
-最明显的是 page 10 中这一段标题式句子：
+A practical strategy is to separate the multimodal gap into two sub-problems:
+\begin{enumerate}
+    \item \textbf{OCR/document extraction robustness:} use a noisy scanned-document or receipt-style benchmark to test OCR-mediated sensitive span extraction and sanitization under layout noise, OCR noise, and semi-structured documents;
+    \item \textbf{Downstream utility preservation:} use a document question-answering benchmark to test whether the protected prompt/document representation still supports useful downstream answers.
+\end{enumerate}
 
+Under this design, the multimodal revision does not need to be a perfect one-shot benchmark package. It is sufficient to:
+\begin{enumerate}
+    \item choose one public document/OCR benchmark for extraction-focused validation;
+    \item optionally choose one public document-QA benchmark for utility-focused validation;
+    \item convert both into the existing protected-vs-raw matched evaluation format;
+    \item report them honestly as external multimodal supporting validation rather than as a replacement for CPPB.
+\end{enumerate}
+
+\subsection*{Priority 4: Use an Agent Security Environment for Boundary-Misuse Validation}
+The current paper’s distinctive contribution is not only span masking, but also \emph{propagation control across retrieval, memory, and tool boundaries}. Therefore, a separate external validation track should be considered for \emph{boundary misuse, restoration misuse, and tool-stage leakage}. For this purpose, a benchmark or environment in the agent security / tool-using agent family is useful.
+
+This direction should not be presented as a replacement for anonymization benchmarks. Instead, it should be framed as:
+\begin{enumerate}
+    \item an external robustness environment for the threat model;
+    \item a way to test restoration-trigger attacks, unsafe early restoration, and boundary-policy bypass attempts;
+    \item a complementary validation track for BLR/RSR-style claims.
+\end{enumerate}
+
+In short, anonymization-style external benchmarks should validate \emph{text privacy mediation}, while agent-security-style environments should validate \emph{boundary control and restoration policy robustness}.
+
+\subsection*{Revision Direction for the External Practical Baseline Family}
+The current manuscript still needs a stronger external practical baseline family. The recommended strategy is incremental rather than open-ended. The next revision should not add many unrelated baselines at once. Instead, it should proceed in the following order:
+\begin{enumerate}
+    \item keep the current enterprise staged redaction comparator as the internal practical baseline;
+    \item add one engineering-recognizable external de-identification pipeline under matched CPPB-style evaluation;
+    \item add one prompted LLM zero-shot de-identification baseline with a fixed prompt template and frozen downstream setting;
+    \item only after these are stable, consider additional enterprise-grade or more generic external pipelines.
+\end{enumerate}
+
+The key requirement is that all new baselines must be evaluated under:
+\begin{enumerate}
+    \item the same prompt slice;
+    \item the same downstream backend condition;
+    \item the same metric family;
+    \item the same evidence boundary.
+\end{enumerate}
+
+This prevents benchmark drift and avoids introducing comparisons that look stronger superficially but are not truly matched.
+
+\subsection*{Revision Direction for the Remaining Controlled Supporting Tables}
+The manuscript still contains several supporting tables that are not yet fully regenerated. These should not all be upgraded at once. A staged priority order is recommended.
+
+\subsubsection*{Stage A: High-Value Supporting Slices}
+The first upgrade targets should be the appendix slices that most directly affect reviewer confidence in the central claim:
+\begin{enumerate}
+    \item multimodal evaluation;
+    \item hard-case robustness analysis;
+    \item category-wise analysis.
+\end{enumerate}
+
+These slices are more valuable than lower-priority appendix material because they explain \emph{where the method succeeds, where it degrades, and what remains risky}. Each should be upgraded into:
+\begin{enumerate}
+    \item a CSV-backed record file;
+    \item a deterministic fill-table script;
+    \item a clear status note in the appendix reproducibility map.
+\end{enumerate}
+
+\subsubsection*{Stage B: Cross-Model Supporting Slice}
+The cross-model table is important, but its main gap is not the absence of a new benchmark. Its main gap is the lack of exact provenance metadata. Therefore, the next revision should prioritize:
+\begin{enumerate}
+    \item exact backbone identifiers;
+    \item decoding settings;
+    \item configuration logs;
+    \item rerun manifests.
+\end{enumerate}
+
+This means the cross-model slice should be upgraded primarily through \emph{metadata completion and rerun traceability}, not through benchmark expansion alone.
+
+\subsection*{Revision Direction for External Transfer and External Validation}
+The manuscript should explicitly present external transfer as a \emph{staged validation roadmap}. A recommended three-step structure is:
+\begin{enumerate}
+    \item \textbf{Text-only transfer:} add one anonymization-oriented external benchmark;
+    \item \textbf{Domain transfer:} add one clinical PHI benchmark;
+    \item \textbf{Multimodal transfer:} add one OCR/document benchmark and optionally one document-QA benchmark.
+\end{enumerate}
+
+If the revision cycle can only support two external additions, the recommended pair is:
+\begin{enumerate}
+    \item one anonymization-oriented text benchmark;
+    \item one OCR/document or document-QA benchmark.
+\end{enumerate}
+
+This gives the paper the strongest improvement per unit effort while remaining aligned with the current story.
+
+\subsection*{Revision Direction for Reproducibility Metadata}
+Several remaining weaknesses are primarily \emph{metadata completeness problems}, not scientific-claim problems. These should be addressed through explicit manifest generation rather than prose-only acknowledgement. The revision should create separate reproducibility manifests for:
+\begin{enumerate}
+    \item cross-model backbone identifiers and decoding settings;
+    \item multimodal OCR engine, version, and preprocessing pipeline;
+    \item latency host hardware, concurrency condition, and prompt-length distribution.
+\end{enumerate}
+
+The manuscript should then reference these manifests explicitly in the appendix reproducibility map. This is preferable to leaving such information only in descriptive text, because it turns a prose limitation into a checkable artifact boundary.
+
+\subsection*{Revision Direction for the CPPB Data Card}
+The CPPB data card can be strengthened further without changing the core benchmark. The next revision should expand the data-card section in the following order:
+\begin{enumerate}
+    \item source-level release metadata;
+    \item clearer annotation examples;
+    \item fuller split and label semantics;
+    \item multimodal provenance and licensing notes;
+    \item release-scope statement aligned with the appendix reproducibility section.
+\end{enumerate}
+
+The goal is not to oversell CPPB as a mature community benchmark. The goal is to make the benchmark documentation sufficiently explicit that the paper’s evidence boundary is transparent and reviewer-facing concerns about hidden assumptions are reduced.
+
+\subsection*{Recommended Execution Order}
+A practical execution order for the next revision cycle is:
+\begin{enumerate}
+    \item add one external text anonymization benchmark;
+    \item add one stronger external practical baseline under the same protocol;
+    \item upgrade the multimodal, hard-case, and category-wise tables to repo-backed supporting artifacts;
+    \item complete cross-model and multimodal metadata manifests;
+    \item add one external OCR/document validation slice;
+    \item optionally add one agent-security robustness environment for boundary-misuse validation.
+\end{enumerate}
+
+\subsection*{Suggested Paper-Level Positioning After Revision}
+After the above modifications, the manuscript can be positioned more strongly as follows:
 \begin{quote}
-a) Why the paper does not optimize PER alone.
+The paper provides controlled systems evidence on CPPB, extends the validation with protocol-compatible external anonymization and document benchmarks, strengthens the external practical baseline family under matched conditions, and upgrades the main supporting appendix slices into reproducible artifacts while preserving an evidence-bounded claim scope.
 \end{quote}
 
-这看起来更像内部注释或 revision insertion，而不是最终稿的正式 prose。:contentReference[oaicite:12]{index=12}
-
-\textbf{这是当前版本中最明显的局部格式问题之一。}
-
-建议改成正式学术表达，例如：
-
-\begin{verbatim}
-This comparison should not be read as an argument that the goal of
-the paper is to minimize PER in isolation. Enterprise staged
-redaction is effectively a typed-placeholder-only regime ...
-\end{verbatim}
-
-或者作为一个正式小段标题：
-
-\begin{verbatim}
-Why PER alone is not the optimization target.
-\end{verbatim}
-
-但不要保留 “a)” 这种 revision痕迹。
-
-\subsection*{4. Threat model is now sharper than the attack evaluation}
-
-你现在在 threat model 中已经明确指出：
-\begin{itemize}
-    \item adaptive surface-form evasion 只是 partial；
-    \item context-only inference 是 future；
-    \item external transfer 是 future；
-    \item 第一优先缺失实验是 adversarial surface-form robustness suite。:contentReference[oaicite:13]{index=13}
-\end{itemize}
-
-这很好，但也意味着现在的 threat model 对审稿人来说会显得“更完整”，从而更容易激发一个问题：
-
-\begin{quote}
-Why is the paper so explicit about attack channels, but still not evaluating them?
-\end{quote}
-
-因此，在下一轮中，\textbf{最值得补的实验已经不是 generic more experiments，而是 threat-model-aligned adversarial suite。}
-
-\subsection*{5. The benchmark still looks too small for a top-tier claim}
-
-CPPB 目前仍然是：
-\[
-256 \text{ prompts} = 32 \text{ templates} \times 8 \text{ variants}
-\]
-并且 multimodal 只有 64 个 prompts。:contentReference[oaicite:14]{index=14}
-
-虽然你已经把 CPPB 的 accounting、manifest、auditable composition 说清楚了，这是进步；但对顶会来说，规模和外部多样性依然偏弱。
-
-这就导致一个客观问题：
-
-\begin{quote}
-主文的 record-backed results 已经可信，但它们更像“carefully constructed controlled evidence”，还不像“broadly stress-tested evidence”。
-\end{quote}
-
-\section*{Section-by-Section Review}
-
-\subsection*{Abstract}
-
-\textbf{评价：}
-这一版摘要比上一版更好，尤其 “delivering a stronger privacy--utility frontier than a matched enterprise staged redaction comparator, which attains lower PER but weaker downstream utility” 这一句，已经比上一版更稳。:contentReference[oaicite:15]{index=15}
-
-\textbf{仍可改进之处：}
-句子略长，信息密度很高。建议进一步压缩，使摘要更有 punch。
-
-\textbf{建议改法方向：}
-把摘要中的核心信息压缩成四步：
+\subsection*{Concise Summary for the Next Revision Round}
+In summary, the next revision should not aim for uncontrolled benchmark expansion. Instead, it should follow a disciplined external-validation pathway:
 \begin{enumerate}
-    \item problem gap；
-    \item proposed mechanism；
-    \item strongest record-backed result；
-    \item evidence scope。
+    \item first strengthen text-side external transfer;
+    \item then strengthen multimodal/OCR validation;
+    \item then strengthen boundary-robustness validation;
+    \item and in parallel convert the highest-value remaining controlled slices into reproducible supporting artifacts with explicit manifests.
 \end{enumerate}
 
-\subsection*{Introduction}
-
-\textbf{评价：}
-目前 introduction 已经相当强。  
-新增句子：
-
-\begin{quote}
-Put negatively, existing de-identification metrics can indicate whether a span was transformed at a document boundary, but they cannot tell whether privacy actually survives agent-state transitions.
-\end{quote}
-
-这句很好，属于真正提升力度的改动。:contentReference[oaicite:16]{index=16}
-
-\textbf{建议：}
-这一节已经不需要大改。只需注意进一步减少后文重复的“scope caution”即可。
-
-\subsection*{Threat Model}
-
-\textbf{评价：}
-这一节已经达到较好水平。尤其最后一句把“first missing empirical extension”说出来，是成熟做法。:contentReference[oaicite:17]{index=17}
-
-\textbf{问题：}
-现在 threat model 与实验缺口的对应关系过于明显，但 attack experiment 还没跟上。
-
-\textbf{建议：}
-下一轮新增一个最小可行 red-team section：
-\begin{itemize}
-    \item homoglyph substitution；
-    \item paraphrase-sensitive spans；
-    \item mixed-language mentions；
-    \item restoration-trigger prompt injection。
-\end{itemize}
-
-即便规模不大，也比完全没有强很多。
-
-\subsection*{Method}
-
-\textbf{评价：}
-这一版 Method 已经明显更强。尤其是：
-\begin{itemize}
-    \item routing state；
-    \item rule-instantiated losses；
-    \item propagation-risk graph abstraction；
-    \item restoration timing as security variable。:contentReference[oaicite:18]{index=18}
-\end{itemize}
-
-\textbf{剩余问题：}
-目前公式写得更好了，但仍旧缺少一个更清楚的“how these coefficients are set in practice”说明。
-
-\textbf{建议：}
-增加一段简短文字说明：
-\begin{itemize}
-    \item $\alpha_i,\beta_i$ 是否由 policy profile 固定设定；
-    \item balanced / strict / lenient 分别对应怎样的 coefficient trend；
-    \item 是否需要手工 calibration，还是由 rule table 决定。
-\end{itemize}
-
-否则审稿人还是可能问：  
-\emph{How exactly were these approximations instantiated in the experiments?}
-
-\subsection*{Experimental Setup}
-
-\textbf{评价：}
-这一节已经非常清楚地界定了：
-\begin{itemize}
-    \item what is measured；
-    \item what is record-backed；
-    \item what remains controlled；
-    \item what future public transfer should do。
-\end{itemize}
-
-\textbf{但这也是全文当前最大的短板。}
-
-\textbf{仍然必须补的内容：}
-\begin{enumerate}
-    \item 至少一个 external strong baseline；
-    \item 至少一个 public transfer；
-    \item 至少一个 multi-seed robustness report；
-    \item 最好一个 leave-template-out split。
-\end{enumerate}
-
-\subsection*{Results}
-
-\textbf{评价：}
-主文结果组织现在是好的。Table IV propagation、Table V PER、Table VI utility、Table VII policy、Table VIII latency 构成了明确 backbone。:contentReference[oaicite:20]{index=20}
-
-\textbf{问题：}
-现在结果的科学叙事比实验 breadth 更强，所以会产生一种“不够厚”的感觉。
-
-\textbf{建议：}
-最值得优先 code-back 的 supporting tables 是：
-\begin{enumerate}
-    \item restoration boundary analysis；
-    \item sanitization-mode ablation。
-\end{enumerate}
-
-因为这两张表最直接对应你方法的独特性，而不是泛泛 supporting analysis。
-
-\subsection*{Appendix}
-
-\textbf{评价：}
-这一版 appendix 已经从“辅助材料”变成了“策略性补强材料”。  
-尤其 Tables V--VI（planned transfer matrix / planned external baseline matrix）非常有帮助。:contentReference[oaicite:21]{index=21}
-
-\textbf{问题：}
-appendix 还是在“告诉读者未来会做什么”，还没有把 enough of those future items 变成 present evidence。
-
-\textbf{建议：}
-如果下一轮还能改，优先把 planned matrix 中的一项落地成真实实验，而不是再继续扩展计划表。
-
-\section*{Highest-Priority Remaining Revisions}
-
-\subsection*{Priority 1: 最值得马上补的}
-
-\begin{enumerate}
-    \item \textbf{修掉主文中的 revision痕迹与局部不正式写法}
-    
-    例如：
-    \begin{itemize}
-        \item “a) Why the paper does not optimize PER alone.”
-    \end{itemize}
-    这类写法必须改成正式论文 prose。:contentReference[oaicite:22]{index=22}
-    
-    \item \textbf{增加一个最小 adversarial robustness suite}
-    
-    因为 threat model 已经把这个缺口说得太清楚了，现在不补会越来越显眼。
-    
-    \item \textbf{至少把一张 supporting controlled table 转成 reproducible artifact}
-    
-    最优先建议：
-    \begin{itemize}
-        \item restoration boundary table；
-        \item sanitization-mode ablation table。
-    \end{itemize}
-\end{enumerate}
-
-\subsection*{Priority 2: 强烈建议补}
-
-\begin{enumerate}
-    \item \textbf{至少一个 Presidio-class 或 prompted LLM zero-shot baseline}
-    \item \textbf{至少一个 multi-seed report with error bars}
-    \item \textbf{至少一个 leave-template-out generalization split}
-\end{enumerate}
-
-\subsection*{Priority 3: 若继续冲更高 venue}
-
-\begin{enumerate}
-    \item \textbf{public benchmark transfer}
-    \item \textbf{named cross-model evaluation}
-    \item \textbf{multimodal OCR benchmark with manifests/provenance}
-\end{enumerate}
-
-\section*{Bottom-Line Assessment}
-
-\[
-\boxed{
-\begin{minipage}{0.9\linewidth}
-这一版已经是目前几轮中最好的一版。\\
-如果只看问题定义、方法形式化、论文主线和叙事成熟度，这篇论文已经接近高水平投稿稿。\\
-如果按顶刊/顶会真正决定成败的标准看，剩余短板已高度集中到：外部强基线、公开迁移验证、multi-seed 稳健性、以及 controlled supporting tables 的可复现化。\\
-也就是说，论文“怎么讲”基本已经成熟；下一步决定上限的，将主要是“还能补出多少硬证据”。
-\end{minipage}
-}
-\]
-
-\section*{Final Recommendation}
-
-\textbf{我对这版的结论是：}
-
-\begin{itemize}
-    \item 相比上一版，\textbf{继续明显进步}；
-    \item 目前已经达到“可以认真考虑投稿较强 venue”的状态；
-    \item 但若目标是\textbf{顶刊 / 顶会}，我仍建议再补一轮实验后再投。
-\end{itemize}
-
-最关键的不是继续改措辞，而是尽快把以下三项中的至少两项补上：
-
-\begin{enumerate}
-    \item \textbf{adversarial surface-form robustness suite;}
-    \item \textbf{one external strong baseline;}
-    \item \textbf{one supporting controlled table converted to reproducible artifact.}
-\end{enumerate}
-
-如果这三项里能补两项，这篇论文的整体说服力会再上一个台阶。
+This strategy is the most efficient way to improve reviewer confidence without distorting the current architecture, evaluation protocol, or evidence scope of the manuscript.
