@@ -12,6 +12,10 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Access note written.",
     "download_status": "recorded"
   },
@@ -28,8 +32,35 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Access note written.",
     "download_status": "recorded"
+  },
+  {
+    "id": "i2b2_synthea_toolkit",
+    "category": "Synthetic Clinical Corpus",
+    "resource": "i2b2-Synthea Conversion Toolkit",
+    "purpose": "Public synthetic EHR route for i2b2-compatible normalized exports without licensed note redistribution.",
+    "official_url": "https://github.com/i2b2/i2b2-synthea",
+    "access_mode": "public_github_archive",
+    "notes": "Use for a fully public synthetic clinical wrapper path that stays schema-compatible with the released i2b2 runner.",
+    "request_url": null,
+    "helper_repo_url": null,
+    "archive_candidates": [
+      "https://github.com/i2b2/i2b2-synthea/archive/refs/heads/main.zip",
+      "https://github.com/i2b2/i2b2-synthea/archive/refs/heads/master.zip"
+    ],
+    "helper_archive_candidates": [],
+    "cache_subdir": "i2b2_synthea_toolkit",
+    "alternate_urls": [],
+    "example_asset": "syntheamass_63K_sample.zip",
+    "license": null,
+    "recommended_model": null,
+    "current_release_status": "Downloaded and extracted from https://github.com/i2b2/i2b2-synthea/archive/refs/heads/main.zip",
+    "download_status": "downloaded"
   },
   {
     "id": "cord_dataset",
@@ -47,6 +78,12 @@
     ],
     "helper_archive_candidates": [],
     "cache_subdir": "cord_dataset",
+    "alternate_urls": [
+      "https://huggingface.co/datasets/katanaml/cord"
+    ],
+    "example_asset": null,
+    "license": "CC-BY-4.0",
+    "recommended_model": null,
     "current_release_status": "Downloaded and extracted from https://github.com/clovaai/cord/archive/refs/heads/master.zip",
     "download_status": "downloaded"
   },
@@ -63,6 +100,10 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Access note written.",
     "download_status": "recorded"
   },
@@ -79,6 +120,10 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Access note written.",
     "download_status": "recorded"
   },
@@ -98,6 +143,10 @@
       "https://github.com/rossumai/docile/archive/refs/heads/master.zip"
     ],
     "cache_subdir": "docile_helper_repo",
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Downloaded helper repository from https://github.com/rossumai/docile/archive/refs/heads/main.zip",
     "download_status": "downloaded_helper_repo"
   },
@@ -114,6 +163,10 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Access note written.",
     "download_status": "recorded"
   },
@@ -133,6 +186,10 @@
     ],
     "helper_archive_candidates": [],
     "cache_subdir": "philter_lite_repo",
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Downloaded and extracted from https://github.com/SironaMedical/philter-lite/archive/refs/heads/master.zip",
     "download_status": "downloaded"
   },
@@ -152,6 +209,10 @@
     ],
     "helper_archive_candidates": [],
     "cache_subdir": "clinideid_repo",
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Downloaded and extracted from https://github.com/Clinacuity/CliniDeID/archive/refs/heads/main.zip",
     "download_status": "downloaded"
   },
@@ -171,8 +232,32 @@
     ],
     "helper_archive_candidates": [],
     "cache_subdir": "medspacy_repo",
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Downloaded and extracted from https://github.com/medspacy/medspacy/archive/refs/heads/master.zip",
     "download_status": "downloaded"
+  },
+  {
+    "id": "ollama_runtime",
+    "category": "Open-weight Runtime",
+    "resource": "Ollama Runtime",
+    "purpose": "Local open-weight inference runtime for fully logged zero-shot baseline reruns.",
+    "official_url": "https://ollama.ai/",
+    "access_mode": "documentation_only",
+    "notes": "Use to pin a public local inference surface before promoting zero-shot LLM baselines to executed evidence.",
+    "request_url": null,
+    "helper_repo_url": null,
+    "archive_candidates": [],
+    "helper_archive_candidates": [],
+    "cache_subdir": null,
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": "Llama3-8B-Instruct",
+    "current_release_status": "Access note written.",
+    "download_status": "recorded"
   },
   {
     "id": "tesseract_docs",
@@ -187,6 +272,10 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Access note written.",
     "download_status": "recorded"
   },
@@ -203,6 +292,10 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Access note written.",
     "download_status": "recorded"
   },
@@ -219,6 +312,10 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Access note written.",
     "download_status": "recorded"
   },
@@ -235,6 +332,10 @@
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
+    "alternate_urls": [],
+    "example_asset": null,
+    "license": null,
+    "recommended_model": null,
     "current_release_status": "Access note written.",
     "download_status": "recorded"
   }

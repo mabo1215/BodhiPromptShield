@@ -1,192 +1,164 @@
-\section{External Datasets, Baselines, and Provenance Resources}
-\label{app:external_resources}
+\paragraph{Synthea Synthetic EHR Export (i2b2-Compatible)}
 
-To ensure reproducibility and external validity, this study references
-licensed clinical corpora, publicly available OCR-heavy datasets,
-and executable baseline pipelines. Table~\ref{tab:external_resources}
-summarizes the major resources and their official access URLs. The
-repository now also records these access paths through a machine-readable
-acquisition manifest and an OCR-heavy transfer scaffold, but those
-artifacts should still be read as provenance support rather than as
-executed benchmark evidence.
+To enable fully reproducible experiments without
+institutional licensing constraints,
+we adopt the Synthea synthetic patient generator
+and its official i2b2 conversion pipeline.
 
-\begin{table*}[htbp]
-\centering
-\small
-\begin{tabular}{p{3.2cm} p{3.2cm} p{6.5cm} p{4.5cm}}
-\hline
+\begin{itemize}
 
-\textbf{Category}
-&
-\textbf{Resource}
-&
-\textbf{Purpose in This Study}
-&
-\textbf{Official URL}
-\\
+\item
+\textbf{Synthea → i2b2 Conversion Toolkit}
 
-\hline
+\begin{itemize}
 
-Clinical Corpus
-&
-i2b2 / n2c2 Clinical NLP Datasets
-&
-Primary licensed PHI-style corpus used to construct
-normalized clinical document exports.
-Access requires approved Data Use Agreement (DUA).
-&
-\texttt{https://www.i2b2.org/NLP/DataSets/}
-\\
+\item URL:
 
-Clinical Corpus
-&
-Harvard DBMI Data Portal
-&
-Official distribution portal for licensed i2b2/n2c2 datasets.
-Used to obtain approved source corpora for local normalization.
-&
-\texttt{https://portal.dbmi.hms.harvard.edu/}
-\\
+\begin{verbatim}
+https://github.com/i2b2/i2b2-synthea
+\end{verbatim}
 
-\hline
+\item Example Dataset:
 
-OCR-heavy Dataset
-&
+\begin{verbatim}
+syntheamass_63K_sample.zip
+\end{verbatim}
+
+\item Format:
+
+\begin{itemize}
+
+\item i2b2-ACT ontology compatible
+\item Fully normalized concept tables
+\item Patient-level synthetic records
+\item Structured encounters and observations
+
+\end{itemize}
+
+\item License:
+
+Open-source synthetic dataset
+
+\item Typical Scale:
+
+\begin{itemize}
+
+\item 63,000 synthetic patients
+\item Millions of structured observations
+
+\end{itemize}
+
+\end{itemize}
+
+\end{itemize}
+
+
+
+\subsection{Zero-Shot LLM Baseline with Public Runtime Logging}
+
+To establish a fully reproducible zero-shot baseline,
+we deploy an open-weight LLM using local inference.
+
+\paragraph{Model}
+
+\begin{itemize}
+
+\item Model:
+\textbf{Llama3-8B-Instruct}
+
+\item Deployment:
+
+\begin{verbatim}
+Ollama runtime
+https://ollama.ai
+\end{verbatim}
+
+\item Example Execution:
+
+\begin{verbatim}
+ollama run llama3:8b
+\end{verbatim}
+
+\end{itemize}
+
+\paragraph{Runtime Metadata Logging}
+
+Each inference call records:
+
+\begin{itemize}
+
+\item Model version
+\item Token count
+\item Prompt hash
+\item Hardware type
+\item Runtime latency
+\item Memory usage
+\end{itemize}
+
+\paragraph{Hardware Template}
+
+\begin{verbatim}
+GPU: NVIDIA A100 40GB
+CPU: Intel Xeon Gold
+RAM: 128GB
+Runtime: Ollama v0.1.x
+\end{verbatim}
+
+This configuration enables deterministic
+zero-shot semantic normalization experiments.
+
+
+
+\subsection{OCR Benchmark Dataset}
+
+\paragraph{CORD: Consolidated Receipt Dataset}
+
+We adopt the CORD dataset as the primary
+OCR-to-structured parsing benchmark.
+
+\begin{itemize}
+
+\item Dataset:
+
 CORD (Consolidated Receipt Dataset)
-&
-Public receipt dataset used to evaluate OCR-heavy
-document parsing and entity extraction robustness.
-&
-\texttt{https://github.com/clovaai/cord}
-\\
 
-OCR-heavy Dataset
-&
-FUNSD (Form Understanding Dataset)
-&
-Noisy scanned form benchmark used to validate
-post-OCR structured extraction pipelines.
-&
-\texttt{https://huggingface.co/datasets/funsd}
-\\
+\item GitHub Repository:
 
-OCR-heavy Dataset
-&
-SROIE (Scanned Receipt OCR and IE)
-&
-Receipt-style OCR benchmark supporting
-information extraction and layout parsing evaluation.
-&
-\texttt{https://huggingface.co/datasets/sroie}
-\\
+\begin{verbatim}
+https://github.com/clovaai/cord
+\end{verbatim}
 
-OCR-heavy Dataset
-&
-DocILE Benchmark
-&
-Large-scale business document dataset used for
-invoice and reimbursement-style workflow validation.
-&
-\texttt{https://docile.rossum.ai/}
-\\
+\item HuggingFace Mirror:
 
-\hline
+\begin{verbatim}
+https://huggingface.co/datasets/katanaml/cord
+\end{verbatim}
 
-External Baseline
-&
-Presidio (Microsoft)
-&
-Enterprise-style PII detection and redaction pipeline
-supporting text, structured data, and image workflows.
-&
-\texttt{https://microsoft.github.io/presidio/}
-\\
+\item License:
 
-External Baseline
-&
-Philter-lite
-&
-Open-source clinical de-identification pipeline
-used as a local clinical baseline comparator.
-&
-\texttt{https://github.com/SironaMedical/philter-lite}
-\\
+Creative Commons CC-BY-4.0
 
-External Baseline
-&
-CliniDeID
-&
-Clinical text de-identification toolkit supporting
-named-entity-based PHI removal.
-&
-\texttt{https://github.com/Clinacuity/CliniDeID}
-\\
+\item Dataset Size:
 
-External Pipeline
-&
-medSpaCy
-&
-Clinical NLP pipeline toolkit used to construct
-rule-based clinical extraction workflows.
-&
-\texttt{https://github.com/medspacy/medspacy}
-\\
+\begin{itemize}
 
-\hline
+\item ~11,000 receipt images
+\item Multi-level semantic annotations
+\item Bounding boxes and text labels
+\end{itemize}
 
-OCR Engine
-&
-Tesseract OCR
-&
-Primary open-source OCR engine used for
-image-to-text transformation stages.
-Version-specific runs recorded in provenance logs.
-&
-\texttt{https://tesseract-ocr.github.io/tessdoc/}
-\\
+\item Annotation Format:
 
-OCR Engine
-&
-PaddleOCR
-&
-Alternative OCR engine used for benchmarking
-pipeline throughput and layout extraction.
-&
-\texttt{https://www.paddleocr.ai/}
-\\
+JSON-based hierarchical layout
 
-\hline
+\item Tasks Supported:
 
-Closed Model Documentation
-&
-OpenAI Model Documentation
-&
-Reference documentation used to record
-exact deployed model IDs and API behavior.
-&
-\texttt{https://developers.openai.com/api/docs/models}
-\\
+\begin{itemize}
 
-Closed Model Documentation
-&
-Anthropic Model Documentation
-&
-Reference documentation for specifying
-snapshot-based Claude model identifiers.
-&
-\texttt{https://docs.anthropic.com/en/docs/models-overview}
-\\
+\item OCR post-processing
+\item Key information extraction
+\item Structured parsing
+\item Layout understanding
+\end{itemize}
 
-\hline
-
-\end{tabular}
-
-\caption{
-External datasets, executable baselines, and provenance
-documentation sources referenced in this study.
-All resources are either publicly accessible or
-available through institutional licensing.
-}
-\label{tab:external_resources}
-
-\end{table*}
+\end{itemize}

@@ -54,6 +54,18 @@ RESOURCES: list[dict[str, Any]] = [
         "notes": "Portal access is institution- and approval-dependent.",
     },
     {
+        "id": "i2b2_synthea_toolkit",
+        "category": "Synthetic Clinical Corpus",
+        "resource": "i2b2-Synthea Conversion Toolkit",
+        "purpose": "Public synthetic EHR route for i2b2-compatible normalized exports without licensed note redistribution.",
+        "official_url": "https://github.com/i2b2/i2b2-synthea",
+        "access_mode": "public_github_archive",
+        "archive_candidates": _github_archive_candidates("i2b2/i2b2-synthea"),
+        "cache_subdir": "i2b2_synthea_toolkit",
+        "example_asset": "syntheamass_63K_sample.zip",
+        "notes": "Use for a fully public synthetic clinical wrapper path that stays schema-compatible with the released i2b2 runner.",
+    },
+    {
         "id": "cord_dataset",
         "category": "OCR-heavy Dataset",
         "resource": "CORD (Consolidated Receipt Dataset)",
@@ -62,6 +74,8 @@ RESOURCES: list[dict[str, Any]] = [
         "access_mode": "public_github_archive",
         "archive_candidates": _github_archive_candidates("clovaai/cord"),
         "cache_subdir": "cord_dataset",
+        "alternate_urls": ["https://huggingface.co/datasets/katanaml/cord"],
+        "license": "CC-BY-4.0",
         "notes": "The official repository documents the public sample release and Hugging Face mirrors.",
     },
     {
@@ -138,6 +152,16 @@ RESOURCES: list[dict[str, Any]] = [
         "notes": "Repository-side acquisition only; pipeline integration remains future work.",
     },
     {
+        "id": "ollama_runtime",
+        "category": "Open-weight Runtime",
+        "resource": "Ollama Runtime",
+        "purpose": "Local open-weight inference runtime for fully logged zero-shot baseline reruns.",
+        "official_url": "https://ollama.ai/",
+        "access_mode": "documentation_only",
+        "recommended_model": "Llama3-8B-Instruct",
+        "notes": "Use to pin a public local inference surface before promoting zero-shot LLM baselines to executed evidence.",
+    },
+    {
         "id": "tesseract_docs",
         "category": "OCR Engine",
         "resource": "Tesseract OCR",
@@ -191,6 +215,17 @@ def _write_access_note(resource: dict[str, Any], destination: Path) -> None:
     helper_repo_url = resource.get("helper_repo_url")
     if helper_repo_url:
         lines.append(f"Helper repo: {helper_repo_url}")
+    for alternate_url in resource.get("alternate_urls", []):
+        lines.append(f"Alternate URL: {alternate_url}")
+    example_asset = resource.get("example_asset")
+    if example_asset:
+        lines.append(f"Example asset: {example_asset}")
+    license_name = resource.get("license")
+    if license_name:
+        lines.append(f"License: {license_name}")
+    recommended_model = resource.get("recommended_model")
+    if recommended_model:
+        lines.append(f"Recommended model: {recommended_model}")
     destination.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -245,6 +280,10 @@ def build_manifest(selected: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "archive_candidates": resource.get("archive_candidates", []),
                 "helper_archive_candidates": resource.get("helper_archive_candidates", []),
                 "cache_subdir": resource.get("cache_subdir"),
+                "alternate_urls": resource.get("alternate_urls", []),
+                "example_asset": resource.get("example_asset"),
+                "license": resource.get("license"),
+                "recommended_model": resource.get("recommended_model"),
                 "current_release_status": "resource entry recorded; local download not attempted",
             }
         )

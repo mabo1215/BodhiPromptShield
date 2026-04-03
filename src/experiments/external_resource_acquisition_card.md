@@ -7,7 +7,9 @@
 
 ## Public GitHub-Hosted Resources
 
+- The official i2b2-Synthea conversion toolkit is now tracked as a public synthetic clinical route for schema-compatible i2b2-style exports.
 - CORD is tracked as a public GitHub-hosted OCR-heavy dataset resource.
+- The CORD entry now also records the Hugging Face mirror and the CC-BY-4.0 license noted in the revision plan.
 - DocILE is request-gated as a dataset, but its public helper repository can still be cached locally.
 - Philter-lite, CliniDeID, and medSpaCy are tracked as public GitHub-hosted baseline or pipeline repositories.
 
@@ -16,6 +18,11 @@
 - i2b2 / n2c2 remains licensed access only; the repository records the official portal but never attempts automatic download.
 - FUNSD and SROIE are currently tracked through the official landing pages cited in the manuscript; a stable snapshot URL should be pinned before any automated fetch is treated as reproducible.
 - DocILE dataset access requires a request form even though the benchmark site and helper repository are public.
+
+## Public Runtime References
+
+- Ollama is now tracked as the public local runtime surface for open-weight zero-shot baselines.
+- The runtime template uses Llama3-8B-Instruct via the local `llama3:8b` tag as the concrete example surface, but executed evidence still requires a filled run log.
 
 ## Machine-Readable Manifest
 

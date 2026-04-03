@@ -12,8 +12,8 @@
   - `cppb_distribution_breakdown.csv`：CPPB 在 subset / family / category / source / modality 维度上的精确计数与占比，并支撑附录 `cppb_benchmark_composition.png`。
   - `artifact_metadata_notes.md`：补充 CPPB data-card、split 语义、multimodal slice、cross-model portability 与 latency assumptions 的仓库说明。
   - `cppb_source_licensing_manifest.csv`：CPPB 四类 prompt source 的 source-level provenance / licensing / OCR-count 结构化清单。
-  - `external_resource_acquisition_card.md`：集中说明外部数据集、baseline repo、OCR 引擎和 closed-model 文档的官方获取路径与 access mode。
-  - `external_baseline_runtime_manifest_template.csv`：TAB / i2b2 protocol-only semantic 和 named external baseline 的 runtime/disclosure 模板。
+  - `external_resource_acquisition_card.md`：集中说明外部数据集、baseline repo、synthetic clinical route、OCR 引擎、open-weight runtime 和 closed-model 文档的官方获取路径与 access mode。
+  - `external_baseline_runtime_manifest_template.csv`：TAB / i2b2 protocol-only semantic 和 named external baseline 的 runtime/disclosure 模板，现包含 Ollama + Llama3-8B-Instruct 的 public local zero-shot logging surface。
   - `ocr_engine_runtime_manifest_template.csv`：OCR-heavy transfer rerun 所需 OCR/version/host/preprocessing 模板。
   - `latency_host_manifest_template.csv`：latency slice 升级为 portable claim 前所需 host/runtime/scheduling 模板。
   - `ocr_transfer_protocol.json`：OCR-heavy public transfer 的 protocol scaffold，明确 wrapper invariants、execution requirements 与 benchmark next steps。
@@ -24,7 +24,7 @@
   - `crossmodel_portability_manifest.md`：说明匿名 cross-model portability slice 的证据边界与仍缺失的 backend provenance。
   - `latency_environment_manifest.md`：说明 latency 表的 prototype interpretation boundary 与仍缺失的 hardware/concurrency metadata。
   - `external_wrapper_release_card.md`：集中说明 TAB / i2b2 external wrapper 的 protocol invariants、comparator roster、落盘文件与 licensing boundary。
-  - `acquire_external_resources.py`：生成 external dataset / baseline / provenance resource 的 machine-readable acquisition manifest，并可选缓存公开 GitHub 资源。
+  - `acquire_external_resources.py`：生成 external dataset / baseline / provenance resource 的 machine-readable acquisition manifest，并可选缓存公开 GitHub 资源；当前也记录 i2b2-Synthea、CORD mirror/license 和 Ollama runtime surface。
   - `build_cppb_source_manifest.py`：从已发布的 template inventory 与 prompt manifest 生成 source-level CPPB provenance manifest。
   - `ocr_external_transfer.py`：基于 acquisition manifest 生成 OCR-heavy public transfer 的 protocol scaffold 与 benchmark availability manifest。
   - `tab_zero_shot_prompt_template.txt` / `i2b2_zero_shot_prompt_template.txt`：冻结 protocol-only semantic baselines 的固定 zero-shot prompt surface。

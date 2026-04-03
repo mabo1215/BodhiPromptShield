@@ -38,7 +38,7 @@
 - `tab_transfer_results.csv` and `tab_transfer_document_metrics.csv` provide the first executable public-benchmark transfer slice in the current repository snapshot.
 - `tab_transfer_execution_manifest.csv` records which comparator families are executed from the current public snapshot and which remain protocol-only.
 - `tab_transfer_run_log.csv` now records the bundled public input scope, split counts, generated outputs, and rerun command template for each TAB comparator.
-- `tab_zero_shot_prompt_template.txt` and `external_baseline_runtime_manifest_template.csv` now define the fixed zero-shot prompt surface and runtime fields needed before a named TAB semantic baseline can be promoted from protocol-only to executed evidence.
+- `tab_zero_shot_prompt_template.txt` and `external_baseline_runtime_manifest_template.csv` now define the fixed zero-shot prompt surface and an Ollama-based public local runtime logging template needed before a named TAB semantic baseline can be promoted from protocol-only to executed evidence.
 - This TAB slice is intentionally text-only and reports span precision/recall/F1, PER, and non-sensitive text retention rather than CPPB-style AC/TSR.
 - The current runner now includes raw, regex, NER, two Presidio-class heuristic approximations, one released hybrid de-identification comparator, and the released BodhiPromptShield heuristic mediator; prompted zero-shot LLM de-identification remains protocol-only.
 
@@ -47,7 +47,7 @@
 - `i2b2_transfer_execution_manifest.csv` records the current clinical comparator roster and distinguishes methods that are executable once a licensed normalized export is supplied from methods that still require external runtime support.
 - `i2b2_transfer_run_log.csv` records the exact result schema, rerun command template, and current waiting-for-licensed-data state for the clinical wrapper roster.
 - `i2b2_matched_baseline_suite.py` now provides the exact result schema and heuristic runner used for clinical transfer once user-supplied normalized i2b2 notes are available.
-- `i2b2_zero_shot_prompt_template.txt` and `external_baseline_runtime_manifest_template.csv` now define the fixed zero-shot and named clinical-pipeline runtime fields required before those protocol-only baselines can be promoted to executed evidence.
+- `i2b2_zero_shot_prompt_template.txt` and `external_baseline_runtime_manifest_template.csv` now define the fixed zero-shot surface and an Ollama-based public local runtime logging template, together with the named clinical-pipeline runtime fields required before those protocol-only baselines can be promoted to executed evidence.
 - `external_wrapper_release_card.md` now consolidates the wrapper invariants, comparator roster, output files, and licensing boundary shared by TAB and i2b2 transfer.
 - The repository still does not redistribute licensed i2b2 notes, so no clinical result CSV is bundled in the public snapshot.
 
@@ -68,7 +68,7 @@
 ## OCR-Heavy External Transfer Note
 
 - `ocr_external_transfer.py` now writes an OCR-heavy transfer protocol scaffold and an acquisition-aware benchmark manifest for CORD, FUNSD, SROIE, and DocILE.
-- `ocr_transfer_protocol.json` records the wrapper invariants, execution requirements, and benchmark-specific next steps that must be satisfied before any OCR-heavy public slice is promoted to executed evidence.
+- `ocr_transfer_protocol.json` records the wrapper invariants, execution requirements, and benchmark-specific next steps that must be satisfied before any OCR-heavy public slice is promoted to executed evidence, with CORD marked as the primary public rerun target.
 - `ocr_transfer_resource_manifest.csv` records the current cache state, access mode, helper-repo availability, and outstanding OCR/runtime requirements for each tracked OCR-heavy benchmark.
 - `ocr_engine_runtime_manifest_template.csv` now defines the missing OCR engine, preprocessing, host, and asset-bundle fields needed before those OCR-heavy slices can be promoted from scaffold-only to executed evidence.
 
