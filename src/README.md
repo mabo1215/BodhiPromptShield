@@ -20,8 +20,8 @@
   - `tab_ollama_zero_shot_stability_runs.csv` / `tab_ollama_zero_shot_stability_summary.csv`：TAB `dev:32` zero-shot pilot 的三次观测稳定性工件。
   - `ocr_engine_runtime_manifest_template.csv`：OCR-heavy transfer rerun所需的通用 OCR/version/host/preprocessing 模板。
   - `latency_host_manifest_template.csv`：latency slice 升级为 portable claim 前所需 host/runtime/scheduling 模板。
-  - `ocr_transfer_protocol.json`：OCR-heavy public transfer 的 protocol scaffold，明确 wrapper invariants、execution requirements 与 benchmark next steps。
-  - `ocr_transfer_resource_manifest.csv`：CORD / FUNSD / SROIE / DocILE 的 acquisition-aware cache/status manifest。
+  - `ocr_transfer_protocol.json`：OCR-heavy public transfer 的 tracking protocol，明确哪些 benchmark 已是 executed public slice、哪些仍处于 acquisition-tracked 状态。
+  - `ocr_transfer_resource_manifest.csv`：CORD / FUNSD / SROIE / DocILE 的 acquisition-aware cache/status manifest，当前已区分 executed 与 scaffold-only benchmark。
   - `cppb_release_card.md`：集中说明 CPPB release scope、source provenance、annotation examples、external wrapper semantics 与已知缺口。
   - `ocr_slice_manifest.md`：说明 OCR-mediated slice 当前已知范围与仍缺失的 exact OCR / asset metadata。
   - `multimodal_provenance_card.md`：集中说明 multimodal slice 的构造来源、rendering boundary 与 OCR-facing provenance 缺口。
@@ -40,19 +40,26 @@
   - `i2b2_ollama_zero_shot_stability_runs.csv` / `i2b2_ollama_zero_shot_stability_summary.csv`：synthetic i2b2 `synthea-dev:32` zero-shot pilot 的三次观测稳定性工件。
   - `acquire_cord_snapshot.py`：从 Hugging Face mirror 按固定 revision 下载并解包 CORD public snapshot，同时落盘 `cord_snapshot_manifest.json`。
   - `acquire_funsd_snapshot.py`：从 Hugging Face 按固定 revision 下载并固定 FUNSD public parquet snapshot，同时落盘 `funsd_snapshot_manifest.json`。
+  - `acquire_sroie_snapshot.py`：从 Hugging Face 按固定 revision 下载并固定 SROIE public processed parquet snapshot，同时落盘 `sroie_snapshot_manifest.json`。
   - `build_cord_transfer_surface.py`：为 CORD 生成 benchmark-specific OCR rerun surface；若未提供完整数据快照，则诚实落盘 preparation-only 状态；当前也为 pinned snapshot 生成 wrapper manifest。
-  - `cord_ocr_transfer_suite.py`：在 pinned public CORD snapshot 上执行 OCR-heavy matched rerun，并输出 result/detail/runtime/run-log 工件；当前 comparator roster 已扩到 Presidio-backed named OCR de-id baseline。
-  - `funsd_ocr_transfer_suite.py`：在 pinned public FUNSD snapshot 上执行 OCR-heavy matched rerun，并输出 result/detail/runtime/run-log 工件。
+  - `cord_ocr_transfer_suite.py`：在 pinned public CORD snapshot 上执行 OCR-heavy matched rerun，并输出 result/detail/runtime/run-log 工件；当前 comparator roster 已扩到 Presidio 与 spaCy 两个 named OCR de-id family。
+  - `funsd_ocr_transfer_suite.py`：在 pinned public FUNSD snapshot 上执行 OCR-heavy matched rerun，并输出 result/detail/runtime/run-log 工件；当前 comparator roster 也已补齐 Presidio 与 spaCy 两个 named OCR de-id family。
+  - `sroie_ocr_transfer_suite.py`：在 pinned public SROIE processed snapshot 上执行第三个 OCR-heavy matched rerun，并输出 result/detail/runtime/run-log 工件。
   - `cord_snapshot_manifest.json`：记录 CORD public snapshot 的 fixed revision、下载 URL、archive SHA-256、解包路径与 split counts。
   - `funsd_snapshot_manifest.json`：记录 FUNSD public snapshot 的 fixed revision、本地 parquet snapshot root、split counts 与逐文件哈希。
+  - `sroie_snapshot_manifest.json`：记录 SROIE public processed snapshot 的 fixed revision、本地 parquet snapshot root、split counts 与逐文件哈希。
   - `cord_ocr_runtime_manifest.csv`：已填写的 CORD OCR engine/version/runtime manifest，当前对应 `rapidocr-onnxruntime==1.2.3` 的本地执行面。
   - `funsd_ocr_runtime_manifest.csv`：已填写的 FUNSD OCR engine/version/runtime manifest，当前也对应 `rapidocr-onnxruntime==1.2.3` 的同一 declared OCR stack。
-  - `cord_transfer_results.csv` / `cord_transfer_document_metrics.csv` / `cord_transfer_execution_manifest.csv` / `cord_transfer_run_log.csv` / `cord_transfer_protocol.json`：CORD `valid:100` OCR-heavy executed public slice 的结果、明细、执行状态、运行记录与协议工件；当前 summary 已包含 Presidio-backed named comparator。
+  - `sroie_ocr_runtime_manifest.csv`：已填写的 SROIE OCR engine/version/runtime manifest，当前同样对应 `rapidocr-onnxruntime==1.2.3` 的 declared OCR stack。
+  - `cord_transfer_results.csv` / `cord_transfer_document_metrics.csv` / `cord_transfer_execution_manifest.csv` / `cord_transfer_run_log.csv` / `cord_transfer_protocol.json`：CORD `valid:100` OCR-heavy executed public slice 的结果、明细、执行状态、运行记录与协议工件；当前 summary 已同时包含 Presidio 与 spaCy 两个 named comparator。
   - `cord_transfer_preparation_manifest.csv`：记录 pinned CORD snapshot 的当前执行面，当前状态为 `executed_public_snapshot`。
   - `cord_prompt_wrapped_manifest.csv`：基于 pinned CORD snapshot 生成的 wrapper-ready manifest，当前对应 `valid:100` executed slice。
-  - `funsd_transfer_results.csv` / `funsd_transfer_document_metrics.csv` / `funsd_transfer_execution_manifest.csv` / `funsd_transfer_run_log.csv` / `funsd_transfer_protocol.json`：FUNSD `test:50` OCR-heavy executed public slice 的结果、明细、执行状态、运行记录与协议工件。
+  - `funsd_transfer_results.csv` / `funsd_transfer_document_metrics.csv` / `funsd_transfer_execution_manifest.csv` / `funsd_transfer_run_log.csv` / `funsd_transfer_protocol.json`：FUNSD `test:50` OCR-heavy executed public slice 的结果、明细、执行状态、运行记录与协议工件；当前 summary 已同时包含 Presidio 与 spaCy 两个 named comparator。
   - `funsd_transfer_preparation_manifest.csv`：记录 pinned FUNSD snapshot 的当前执行面，当前状态为 `executed_public_snapshot`。
   - `funsd_prompt_wrapped_manifest.csv`：基于 pinned FUNSD snapshot 生成的 wrapper-ready manifest，当前对应 `test:50` executed slice。
+  - `sroie_transfer_results.csv` / `sroie_transfer_document_metrics.csv` / `sroie_transfer_execution_manifest.csv` / `sroie_transfer_run_log.csv` / `sroie_transfer_protocol.json`：SROIE `test:63` OCR-heavy executed public slice 的结果、明细、执行状态、运行记录与协议工件。
+  - `sroie_transfer_preparation_manifest.csv`：记录 pinned SROIE processed snapshot 的当前执行面，当前状态为 `executed_public_snapshot`。
+  - `sroie_prompt_wrapped_manifest.csv`：基于 pinned SROIE processed snapshot 生成的 wrapper-ready manifest，当前对应 `test:63` executed slice。
   - `prompt_method_comparison.csv`：主文方法级对比结果，用于 Table III（PER）、Table V（AC/TSR）以及主文 operating-points 图。
   - `policy_sensitivity.csv`：主文 policy sensitivity 结果，用于 Table VIII 和 operating-points 图。
   - `agent_pipeline_metrics.csv`：主文 multi-step propagation 结果，用于 Table XI、主文 propagation 曲线和附录 deployment 图。

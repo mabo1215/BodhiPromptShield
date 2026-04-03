@@ -72,17 +72,20 @@
 
 ## OCR-Heavy External Transfer Note
 
-- `ocr_external_transfer.py` now writes an OCR-heavy transfer protocol scaffold and an acquisition-aware benchmark manifest for CORD, FUNSD, SROIE, and DocILE.
-- `ocr_transfer_protocol.json` records the wrapper invariants, execution requirements, and benchmark-specific next steps that must be satisfied before any OCR-heavy public slice is promoted to executed evidence, with CORD marked as the primary public rerun target.
-- `ocr_transfer_resource_manifest.csv` records the current cache state, access mode, helper-repo availability, and outstanding OCR/runtime requirements for each tracked OCR-heavy benchmark.
-- `ocr_engine_runtime_manifest_template.csv` now defines the missing OCR engine, preprocessing, host, and asset-bundle fields needed before those OCR-heavy slices can be promoted from scaffold-only to executed evidence.
+- `ocr_external_transfer.py` now writes an OCR-heavy transfer tracking surface that separates executed public slices from still-tracked benchmarks across CORD, FUNSD, SROIE, and DocILE.
+- `ocr_transfer_protocol.json` now records the shared wrapper invariants plus which OCR-heavy benchmarks are already executed under pinned public snapshots versus which remain acquisition-tracked.
+- `ocr_transfer_resource_manifest.csv` records the current cache state, access mode, helper-repo availability, and outstanding OCR/runtime requirements for each OCR-heavy benchmark, including the executed CORD/FUNSD/SROIE slices.
+- `ocr_engine_runtime_manifest_template.csv` remains the rerun template for OCR surfaces that still need fresh host/runtime disclosure, while the repository now also ships filled CORD, FUNSD, and SROIE OCR runtime manifests for the executed public slices.
 - `acquire_cord_snapshot.py` now pins the public CORD Hugging Face mirror at revision `4f51527df44a7f7f915bee494f1129915118d0e1`, records the archive SHA-256, and writes `cord_snapshot_manifest.json`.
 - `acquire_funsd_snapshot.py` now pins the public FUNSD Hugging Face parquet mirror at revision `ccd2a77745b0dc9f154a91db1219ec05c86ce7ec`, records split counts plus per-file hashes, and writes `funsd_snapshot_manifest.json`.
+- `acquire_sroie_snapshot.py` now pins the public `rajistics/sroie_processed` mirror at revision `b9bc49bf5eb8b06528c810d02a4f7c766474fbad`, records split counts plus per-file hashes, and writes `sroie_snapshot_manifest.json`.
 - `build_cord_transfer_surface.py` and `cord_prompt_wrapped_manifest.csv` now build a benchmark-specific wrapper surface directly from that pinned snapshot rather than from the earlier sample-only repository archive.
 - `cord_ocr_transfer_suite.py` now executes a real OCR-heavy CORD rerun on the pinned `valid:100` slice and writes `cord_transfer_results.csv`, `cord_transfer_document_metrics.csv`, `cord_transfer_execution_manifest.csv`, `cord_transfer_run_log.csv`, `cord_transfer_protocol.json`, and `cord_ocr_runtime_manifest.csv`.
 - `funsd_ocr_transfer_suite.py` now executes a second public OCR-heavy rerun on the pinned `test:50` FUNSD slice and writes `funsd_transfer_results.csv`, `funsd_transfer_document_metrics.csv`, `funsd_transfer_execution_manifest.csv`, `funsd_transfer_run_log.csv`, `funsd_transfer_protocol.json`, and `funsd_ocr_runtime_manifest.csv`.
-- The executed CORD slice uses `rapidocr-onnxruntime==1.2.3` as the declared OCR engine and now reports raw OCR text, OCR+regex masking, OCR+generic de-identification, an added Presidio-backed named OCR de-identification comparator, and the released policy-aware mediation heuristic.
-- The executed FUNSD slice reuses the same declared `rapidocr-onnxruntime==1.2.3` stack and treats `B-ANSWER` / `I-ANSWER` form tokens as the protected public transfer slice.
+- `sroie_ocr_transfer_suite.py` now executes a third public OCR-heavy rerun on the pinned `test:63` SROIE processed slice and writes `sroie_transfer_results.csv`, `sroie_transfer_document_metrics.csv`, `sroie_transfer_execution_manifest.csv`, `sroie_transfer_run_log.csv`, `sroie_transfer_protocol.json`, and `sroie_ocr_runtime_manifest.csv`.
+- The executed CORD slice uses `rapidocr-onnxruntime==1.2.3` as the declared OCR engine and now reports raw OCR text, OCR+regex masking, OCR+generic de-identification, Presidio-backed named OCR de-identification, spaCy-backed named OCR de-identification, and the released policy-aware mediation heuristic.
+- The executed FUNSD slice reuses the same declared `rapidocr-onnxruntime==1.2.3` stack, treats `B-ANSWER` / `I-ANSWER` form tokens as the protected public transfer slice, and now also reports a spaCy-backed named OCR de-identification comparator beside the Presidio form comparator.
+- The executed SROIE slice reuses the same declared OCR stack, protects the structured `company` / `address` / `date` fields while retaining `total`, and records that the current gold-span surface is an OCR-token approximation derived from the processed snapshot's structured target sequence.
 
 ## CPPB Source-Level Provenance Note
 

@@ -16,7 +16,7 @@
 ## Landing-Page Or Request-Gated Resources
 
 - i2b2 / n2c2 remains licensed access only; the repository records the official portal but never attempts automatic download.
-- FUNSD and SROIE are currently tracked through the official landing pages cited in the manuscript; a stable snapshot URL should be pinned before any automated fetch is treated as reproducible.
+- FUNSD and SROIE now each have pinned public Hugging Face snapshot routes in the repository for reproducible OCR reruns, while the original landing pages remain the manuscript-facing benchmark references.
 - DocILE dataset access requires a request form even though the benchmark site and helper repository are public.
 
 ## Public Runtime References

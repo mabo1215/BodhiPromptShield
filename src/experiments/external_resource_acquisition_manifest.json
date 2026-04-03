@@ -16,8 +16,7 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Access note written.",
-    "download_status": "recorded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "harvard_dbmi_portal",
@@ -36,8 +35,7 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Access note written.",
-    "download_status": "recorded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "i2b2_synthea_toolkit",
@@ -59,8 +57,7 @@
     "example_asset": "syntheamass_63K_sample.zip",
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Downloaded and extracted from https://github.com/i2b2/i2b2-synthea/archive/refs/heads/main.zip",
-    "download_status": "downloaded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "cord_dataset",
@@ -84,8 +81,7 @@
     "example_asset": null,
     "license": "CC-BY-4.0",
     "recommended_model": null,
-    "current_release_status": "Downloaded and extracted from https://github.com/clovaai/cord/archive/refs/heads/master.zip",
-    "download_status": "downloaded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "funsd_dataset",
@@ -93,8 +89,8 @@
     "resource": "FUNSD (Form Understanding Dataset)",
     "purpose": "Noisy scanned form benchmark for post-OCR structured extraction.",
     "official_url": "https://huggingface.co/datasets/funsd",
-    "access_mode": "landing_page_only",
-    "notes": "The manuscript cites the Hugging Face landing page; pin a stable snapshot URL before automated download.",
+    "access_mode": "public_hf_snapshot",
+    "notes": "The repository now pins a reproducible public parquet snapshot for the executed FUNSD OCR rerun.",
     "request_url": null,
     "helper_repo_url": null,
     "archive_candidates": [],
@@ -104,28 +100,28 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Access note written.",
-    "download_status": "recorded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "sroie_dataset",
     "category": "OCR-heavy Dataset",
     "resource": "SROIE (Scanned Receipt OCR and IE)",
     "purpose": "Receipt-style OCR benchmark for layout parsing and information extraction.",
-    "official_url": "https://huggingface.co/datasets/sroie",
-    "access_mode": "landing_page_only",
-    "notes": "The manuscript cites the Hugging Face landing page; pin a stable snapshot URL before automated download.",
+    "official_url": "https://huggingface.co/datasets/rajistics/sroie_processed",
+    "access_mode": "public_hf_snapshot",
+    "notes": "The repository now pins the public rajistics/sroie_processed snapshot for the executed SROIE OCR rerun.",
     "request_url": null,
     "helper_repo_url": null,
     "archive_candidates": [],
     "helper_archive_candidates": [],
     "cache_subdir": null,
-    "alternate_urls": [],
+    "alternate_urls": [
+      "https://huggingface.co/datasets/sroie"
+    ],
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Access note written.",
-    "download_status": "recorded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "docile_benchmark",
@@ -147,8 +143,7 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Downloaded helper repository from https://github.com/rossumai/docile/archive/refs/heads/main.zip",
-    "download_status": "downloaded_helper_repo"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "presidio_docs",
@@ -167,8 +162,7 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Access note written.",
-    "download_status": "recorded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "philter_lite_repo",
@@ -190,8 +184,7 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Downloaded and extracted from https://github.com/SironaMedical/philter-lite/archive/refs/heads/master.zip",
-    "download_status": "downloaded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "clinideid_repo",
@@ -213,8 +206,7 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Downloaded and extracted from https://github.com/Clinacuity/CliniDeID/archive/refs/heads/main.zip",
-    "download_status": "downloaded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "medspacy_repo",
@@ -236,8 +228,7 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Downloaded and extracted from https://github.com/medspacy/medspacy/archive/refs/heads/master.zip",
-    "download_status": "downloaded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "ollama_runtime",
@@ -256,8 +247,7 @@
     "example_asset": null,
     "license": null,
     "recommended_model": "Llama3-8B-Instruct",
-    "current_release_status": "Access note written.",
-    "download_status": "recorded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "tesseract_docs",
@@ -276,8 +266,7 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Access note written.",
-    "download_status": "recorded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "paddleocr_docs",
@@ -296,8 +285,7 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Access note written.",
-    "download_status": "recorded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "openai_model_docs",
@@ -316,8 +304,7 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Access note written.",
-    "download_status": "recorded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   },
   {
     "id": "anthropic_model_docs",
@@ -336,7 +323,6 @@
     "example_asset": null,
     "license": null,
     "recommended_model": null,
-    "current_release_status": "Access note written.",
-    "download_status": "recorded"
+    "current_release_status": "resource entry recorded; local download not attempted"
   }
 ]
