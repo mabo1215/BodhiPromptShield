@@ -141,6 +141,32 @@
   - Three-observation TAB dev:32 local zero-shot stability summary
 - `tab_ollama_zero_shot_stability_runs.csv`
   - Per-run TAB local zero-shot stability records and snapshot references
+- `build_ai4privacy_pii300k_export.py`
+  - Build a deterministic English normalized export from the public AI4Privacy PII-Masking-300K dataset
+- `ai4privacy_pii300k_english_export.jsonl`
+  - Deterministic English normalized export for AI4Privacy public transfer and baseline pilots
+- `ai4privacy_matched_baseline_suite.py`
+  - Run the public matched-baseline roster on the AI4Privacy English transfer surface
+- `ai4privacy_transfer_results.csv`
+  - Held-out AI4Privacy test-split comparator-family summary on the deterministic English export
+- `ai4privacy_transfer_document_metrics.csv`
+  - Per-document AI4Privacy transfer metrics emitted by the matched-baseline runner
+- `ai4privacy_transfer_execution_manifest.csv`
+  - Execution-status record for the current AI4Privacy comparator roster
+- `ai4privacy_transfer_run_log.csv`
+  - Raw rerun record for the AI4Privacy wrapper roster, split counts, and generated outputs
+- `ai4privacy_zero_shot_prompt_template.txt`
+  - Fixed generic zero-shot de-identification prompt surface for the AI4Privacy semantic-baseline pilot
+- `ai4privacy_ollama_zero_shot_baseline.py`
+  - Executed local Ollama-backed generic zero-shot pilot runner for held-out AI4Privacy slices
+- `ai4privacy_ollama_zero_shot_results_test100.csv`
+  - Executed AI4Privacy `test:100` local zero-shot pilot summary on a held-out public slice
+- `ai4privacy_ollama_zero_shot_document_metrics_test100.csv`
+  - Per-document metrics for the held-out AI4Privacy `test:100` local zero-shot pilot
+- `ai4privacy_ollama_zero_shot_runtime_manifest_test100.csv`
+  - Runtime manifest for the held-out AI4Privacy `test:100` local zero-shot pilot, including digest and runtime timestamps
+- `ai4privacy_ollama_zero_shot_run_log_test100.csv`
+  - Run log for the held-out AI4Privacy `test:100` local zero-shot pilot
 - `i2b2_matched_baseline_protocol.json`
   - Protocol scaffold for i2b2 prompt-wrapper external transfer
 - `i2b2_zero_shot_prompt_template.txt`
@@ -209,6 +235,10 @@ python src/experiments/leavetemplateout_evaluation.py
 python src/experiments/external_baseline_suite.py
 python src/experiments/tab_external_transfer.py src/experiments/external_data/tab
 python src/experiments/tab_matched_baseline_suite.py
+python src/experiments/build_ai4privacy_pii300k_export.py
+python src/experiments/ai4privacy_matched_baseline_suite.py
+python src/experiments/build_ai4privacy_pii300k_export.py --split ai4privacy-test --max-records 100 --output src/experiments/ai4privacy_pii300k_english_export_test100.jsonl
+python src/experiments/ai4privacy_ollama_zero_shot_baseline.py --input src/experiments/ai4privacy_pii300k_english_export_test100.jsonl --model llama3:latest --output-tag test100
 python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl
 python src/experiments/i2b2_external_transfer.py
 python src/experiments/i2b2_matched_baseline_suite.py

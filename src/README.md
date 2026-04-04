@@ -32,7 +32,14 @@
   - `acquire_external_resources.py`：生成 external dataset / baseline / provenance resource 的 machine-readable acquisition manifest，并可选缓存公开 GitHub 资源；当前也记录 i2b2-Synthea、CORD mirror/license 和 Ollama runtime surface。
   - `build_cppb_source_manifest.py`：从已发布的 template inventory 与 prompt manifest 生成 source-level CPPB provenance manifest。
   - `ocr_external_transfer.py`：基于 acquisition manifest 生成 OCR-heavy public transfer 的 protocol scaffold 与 benchmark availability manifest。
-  - `tab_zero_shot_prompt_template.txt` / `i2b2_zero_shot_prompt_template.txt`：冻结 zero-shot semantic baselines 的固定 prompt surface，并被当前 TAB / synthetic i2b2 本地 Ollama pilots 直接复用。
+  - `tab_zero_shot_prompt_template.txt` / `ai4privacy_zero_shot_prompt_template.txt` / `i2b2_zero_shot_prompt_template.txt`：冻结 zero-shot semantic baselines 的固定 prompt surface，并被当前 TAB / AI4Privacy / synthetic i2b2 本地 Ollama pilots 直接复用。
+  - `build_ai4privacy_pii300k_export.py`：把公开 `ai4privacy/pii-masking-300k` English 子集转成统一的 normalized export，并按 deterministic hash surface 划分 `train/dev/test`。
+  - `ai4privacy_pii300k_english_export.jsonl`：公开 AI4Privacy English 子集的 normalized export，当前总计 29908 records。
+  - `ai4privacy_pii300k_english_export_test100.jsonl`：从同一 deterministic split surface 派生的 held-out `ai4privacy-test:100` zero-shot pilot 输入。
+  - `ai4privacy_matched_baseline_suite.py`：在 AI4Privacy English export 上执行七方法 matched baselines，并输出 summary/detail/execution/run-log 工件。
+  - `ai4privacy_transfer_results.csv` / `ai4privacy_transfer_document_metrics.csv` / `ai4privacy_transfer_execution_manifest.csv` / `ai4privacy_transfer_run_log.csv`：AI4Privacy held-out `test` split 的 executed multi-domain comparator-family 工件，当前对应 2997 documents / 19392 mentions。
+  - `ai4privacy_ollama_zero_shot_baseline.py`：执行本地 Ollama-backed AI4Privacy generic zero-shot pilot，并支持用 `--output-tag` 生成独立的 summary/detail/runtime/run-log 工件。
+  - `ai4privacy_ollama_zero_shot_results_test100.csv` / `ai4privacy_ollama_zero_shot_document_metrics_test100.csv` / `ai4privacy_ollama_zero_shot_runtime_manifest_test100.csv` / `ai4privacy_ollama_zero_shot_run_log_test100.csv`：AI4Privacy held-out `test:100` generic local zero-shot pilot 工件，当前记录 Span F1 0.52、PER 26.2\%、text retention 0.92。
   - `build_i2b2_synthea_synthetic_export.py`：把公开 i2b2-Synthea sample tables 转成 schema-compatible synthetic note export，用于无 licensed notes 时的 public rehearsal。
   - `i2b2_synthea_synthetic_export.jsonl`：基于公开 Synthea sample 构建的 synthetic i2b2-compatible note export。
   - `i2b2_synthea_synthetic_export_test128.jsonl`：基于同一公开 Synthea sample 生成的更大 held-out synthetic clinical slice，当前对应 `synthea-test:128`。
@@ -168,6 +175,12 @@
   - `python src/experiments/i2b2_matched_baseline_suite.py <normalized_i2b2_export.jsonl>`
 - 生成 external dataset / baseline acquisition manifest：
   - `python src/experiments/acquire_external_resources.py`
+- 生成 AI4Privacy English export 并运行 matched baselines：
+  - `python src/experiments/build_ai4privacy_pii300k_export.py`
+  - `python src/experiments/ai4privacy_matched_baseline_suite.py`
+- 运行 AI4Privacy held-out local zero-shot pilot：
+  - `python src/experiments/build_ai4privacy_pii300k_export.py --split ai4privacy-test --max-records 100 --output src/experiments/ai4privacy_pii300k_english_export_test100.jsonl`
+  - `python src/experiments/ai4privacy_ollama_zero_shot_baseline.py --input src/experiments/ai4privacy_pii300k_english_export_test100.jsonl --model llama3:latest --output-tag test100`
 - 生成 OCR-heavy transfer scaffold：
   - `python src/experiments/ocr_external_transfer.py`
 - 固定并执行 CORD OCR-heavy public slice：

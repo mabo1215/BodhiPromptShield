@@ -26,42 +26,42 @@ for Suppressing Privacy Propagation in LLM/VLM Agents''\\[0.3em]
 
 \noindent\textbf{Overall Recommendation:} \textcolor{red}{\textbf{Major Revision}}
 
-\noindent\textbf{Summary:} The manuscript is substantially stronger than a typical middleware paper and now presents a coherent propagation-aware narrative with clearer formal scope, improved artifact disclosure, stronger public OCR-transfer evidence, a more honest comparator story, and explicit robustness caveats. The dominant remaining barriers are no longer basic manuscript incompleteness. Instead, they are concentrated in external validity, benchmark independence, and the still-limited disclosure scope of some portability and deployment slices. The paper now reads as a serious controlled-systems study, but it is not yet a fully closed TIFS submission because the strongest remaining weaknesses are evidence-bound rather than prose-bound.
+\noindent\textbf{Summary:} The manuscript is now substantially more coherent and evidence-bounded than in earlier cycles. The controlled CPPB narrative is stable, the public TAB and OCR-heavy transfer routes are executed, the synthetic and public-relabeled clinical supporting slices are explicitly separated from licensed clinical claims, and the disclosure boundary is described honestly. The paper is no longer mainly blocked by manuscript hygiene. The strongest remaining issues are evidence-bound: broader independent benchmark coverage beyond the current public slices, broader executed semantic or domain-specific baselines under releasable runtime conditions, and the still-partial exact-disclosure ceiling for certain portability and multimodal provenance records.
 
 \vspace{0.5em}\hrule\vspace{0.5em}
 
 \section{Primary Remaining Concerns}
 
-\subsection{External Validity Is Still Bounded by CPPB-Centric Core Claims}
+\subsection{Independent Validation Is Improved but Not Yet Broad Enough}
 
-The manuscript now handles this issue much more honestly than before: CPPB is clearly described as a controlled benchmark specification, the public TAB route is executed, the synthetic i2b2 route is explicitly separated from licensed clinical evaluation, the OCR-heavy route now includes executed CORD, FUNSD, and SROIE slices, and the released CPPB train/dev/test surface now also has split-specific held-out summaries reconstructed from bundled prompt-level logs. Nevertheless, the core headline tables and the main narrative are still anchored primarily on an author-constructed benchmark. For a TIFS submission, this remains the dominant scientific limitation.
+The manuscript now goes materially beyond a CPPB-only story. It includes an executed TAB transfer slice, executed OCR-heavy slices on CORD, FUNSD, and SROIE, a synthetic i2b2-compatible clinical rehearsal, and a public PhysioNet-relabeled clinical supporting slice with both a matched comparator family and repeated-run zero-shot evidence. This is a meaningful improvement in scientific honesty and external support.
 
-The current paper therefore supports the claim that the proposed mediation strategy works under a carefully controlled, propagation-aware benchmark design. It does \emph{not} yet fully support the stronger claim that the same operating point generalizes across independent third-party benchmarks at the level usually expected for final acceptance.
+Nevertheless, the central headline remains anchored on an author-constructed benchmark. For a TIFS submission, the main remaining scientific weakness is not the absence of any external evidence, but the absence of a broader independent benchmark family that clearly demonstrates transfer across multiple public domains under the same evaluation logic.
 
-\textbf{Actionability in the current repository:} Partially improved. The repository now includes a released CPPB train/dev/test separation together with split-specific held-out summaries reconstructed from bundled prompt-level logs, so the remaining closure steps are now less about internal split ambiguity and more about licensed i2b2 reruns and broader independent public-benchmark transfer.
+\textbf{Actionability in the current repository:} Actionable. The most realistic next step is to add at least one more openly accessible text benchmark or multi-domain PII benchmark under the existing wrapper and result schema, then integrate it into the manuscript as additional public transfer evidence.
 
-\subsection{Some Reproducibility Slices Remain Honest but Not Fully Disclosed}
+\subsection{The Strongest External Baselines Still Need Broader Executed Coverage}
 
-The current revision now documents implementation conditions much better: the local latency host record is filled, the public zero-shot baseline has an explicit Ollama runtime surface, the AC rubric is described, and the anonymous cross-model slice is framed as portability evidence rather than as a named-backend ranking. This is a meaningful improvement.
+The comparator story is much stronger than before: the paper now includes a record-backed Presidio-class comparison slice, executed public zero-shot pilots, repeated-run summaries on fixed public semantic surfaces, and named OCR comparator families. However, the strongest semantic and domain-specific comparator story is still limited. The current zero-shot route is best read as executed pilot evidence rather than as a fully benchmark-closing semantic baseline family.
 
-However, several important slices remain only partially reproducible in the strongest TIFS sense. The cross-model table is still alias-level rather than vendor/model/version-level. The bundled latency evidence is still a local single-request middleware snapshot rather than a portable deployment benchmark. The multimodal CPPB slice still lacks the original OCR/runtime disclosure record needed for exact regeneration of the originally constructed internal OCR path. These are now explicit scope boundaries rather than hidden omissions, and the repository now at least defines the promotion templates for exact disclosure, but they still limit the paper's reproducibility ceiling.
+For TIFS, the remaining concern is no longer ``there is no stronger baseline.'' It is that the strongest broader semantic or domain-specific baselines are not yet executed at enough public-benchmark breadth under fully released runtime traces.
 
-\textbf{Actionability in the current repository:} Partially improved. The manuscript-side clarity work is close to exhausted, but the repository now distinguishes between anonymous review evidence, confidential internal exact logs, and camera-ready public disclosure; the latest repository audit also confirms that the missing fully named cross-model and CPPB multimodal exact-regeneration records are not already bundled in hidden form, so what remains blocked is filling those records under post-anonymity or otherwise releasable runtime conditions.
+\textbf{Actionability in the current repository:} Actionable. The next step should be to promote one additional public semantic or domain-specific baseline route beyond the current TAB and clinical pilot surfaces, ideally on a public benchmark with span-level labels and no access restrictions.
 
-\subsection{The Strongest Missing Baselines Are Still Only Partially Closed}
+\subsection{Exact Disclosure Is Honest but Still Ceiling-Limited}
 
-The comparator situation is notably improved: the paper now includes a stronger enterprise staged-redaction baseline in the main narrative, a record-backed Presidio-class comparison slice, prompt-level paired significance against Presidio (+NER), executed public zero-shot pilots on TAB and synthetic i2b2-compatible data, and named OCR comparator families on the public OCR route.
+The current revision handles disclosure boundaries correctly. The latency host record is filled, the Ollama runtime surface is documented, the anonymous portability slice is explicitly framed as alias-level evidence, and the repository now distinguishes between missing schema and missing filled records. This is the right direction.
 
-Even so, the most convincing final-baseline story for a TIFS audience would still require at least one broader semantic or domain-specific external baseline family evaluated at larger public-benchmark scope under fully released runtime conditions. The current zero-shot semantic evidence is best read as an executed pilot surface rather than as a benchmark-closing semantic baseline.
+However, the strongest reproducibility ceiling remains only partially closed: named cross-model portability is still not public, the original internal multimodal OCR/render/runtime chain is still not exactly reproducible from public release artifacts alone, and some deployment-facing records remain limited to local prototype disclosure. These are no longer hidden omissions, but they still constrain final-acceptance readiness.
 
-\textbf{Actionability in the current repository:} Partially blocked. The paper should keep framing these baselines as bounded pilot or supporting evidence unless fuller runtime logs and larger-scope reruns are added.
+\textbf{Actionability in the current repository:} Mostly blocked. The manuscript-side explanation is close to exhausted. Additional progress is possible only if more releasable runtime records can be filled without violating anonymity or unavailable provenance constraints.
 
 \section{Minor Observations}
 
 \begin{enumerate}[label=(\alph*)]
-    \item The manuscript still contains a few non-fatal box warnings and some dense appendix layouts. These are presentation issues rather than scientific blockers.
-    \item The anonymous portability slice is now much better delimited, but a final camera-ready version should disclose exact backend identifiers if the review setting permits it.
-    \item The current robustness treatment is appropriately cautious, but a future version would benefit from a deeper normalization-ablation breakdown for the homoglyph failure mode rather than only aggregate attack-family rows.
+    \item The manuscript and appendix still contain some non-fatal box warnings and dense layouts. These are presentation issues rather than scientific blockers.
+    \item The public-relabeled clinical slice is framed correctly as supporting evidence rather than a substitute for licensed i2b2 evaluation; that distinction should remain explicit in all future edits.
+    \item The OCR-heavy route is now scientifically useful, but SROIE should still be discussed as a difficult boundary case rather than as evidence of stable receipt-field performance.
 \end{enumerate}
 
 \section{Revision Priority}
@@ -69,13 +69,13 @@ Even so, the most convincing final-baseline story for a TIFS audience would stil
 If the authors continue revising this paper for TIFS, the next priorities should be:
 
 \begin{enumerate}[label=(\arabic*)]
-    \item Add stronger independent benchmark closure beyond CPPB, especially licensed i2b2-style PHI evaluation, broader public transfer evidence, or held-out reruns over the newly released CPPB train/dev/test split.
-    \item Promote the strongest currently pilot-scoped semantic or domain-specific baseline family to a broader executed public-benchmark comparison with fully released runtime traces.
-    \item Fill the remaining exact-disclosure gaps for cross-model portability and multimodal/OCR provenance when anonymity and artifact boundaries allow it.
+    \item Add at least one more independent public benchmark family under the current wrapper and reporting protocol, preferably a multi-domain text or PII benchmark with span-level labels.
+    \item Promote the strongest currently pilot-scoped semantic or domain-specific baseline family to a broader executed public-benchmark comparison with released runtime traces.
+    \item Fill any additional exact-disclosure records that can be released without breaking anonymity; otherwise keep the disclosure ceiling explicitly documented rather than overstated.
 \end{enumerate}
 
 \section{Bottom Line}
 
-The current manuscript is no longer mainly blocked by weak exposition or missing basic artifacts. The remaining barriers are evidence-bound: independent benchmark closure, broader executed baseline coverage, and fuller exact-disclosure surfaces. As a result, the repository-facing revision cycle appears close to exhausted, while the strongest remaining improvements depend on additional external data access, broader reruns, or post-anonymity disclosure.
+The current manuscript is close to exhausting what can be gained from prose-only revision. The strongest remaining improvements are empirical and disclosure-bound: broader independent validation, broader executed baseline coverage, and selectively stronger exact-disclosure support where releasable. The next revision cycle should therefore focus on adding one more public benchmark route and one more stronger executed baseline surface rather than further manuscript-only rewording.
 
 \end{document}

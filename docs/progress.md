@@ -2,6 +2,52 @@
 
 最后更新：2026-04-05
 
+## 建议使用相关数据扩充实验
+
+一、公开Benchmark数据集（解决 M1 问题）
+🔵 通用PII / 文本匿名化
+数据集.规模.下载地址.适用场景
+
+TAB (Text Anonymization Benchmark). 1,268 条ECHR法庭案例，含PII类别、身份标识符类型、置信属性及共指关系等多层标注. arXivgithub.com/NorskRegnesentral/text-anonymisation-benchmark . 主评估集，直接对标CPPB.
+
+AI4Privacy PII-Masking-300K. 约22万+文本样本，54种PII类别，覆盖商业/教育/法律领域，含5种交互风格，每条有对应脱敏版本 Hugging Facehuggingface.co/datasets/ai4privacy/pii-masking-300k.  训练contextual judge的大规模数据.
+
+Kaggle PII Detection (Learning Agency Lab). 约2.2万学生作文，含7类PII标注. kaggle.com/competitions/pii-detection-removal-from-educational-data.  扩大prompt domain多样性
+
+🔴 Agent隐私 / 安全（直接支持传播实验）
+数据集/框架 规模 地址 用途
+
+AgentDojo.  97个真实任务、629个安全测试用例，覆盖邮件、日历、银行、出行等环境.   arXivgithub.com/ethz-spylab/agentdojo.  端到端传播实验 + 对抗注入测试，直接替代CPPB的agent任务子集.
+
+PrivacyLens. 493个隐私敏感seed（来自美国法规+众包），含vignette和trajectory三层数据，提供leakage rate和helpfulness rating评估. GitHubgithub.com/SALT-NLP/PrivacyLens推理攻击实验（解决M3），contextual privacy评估
+
+🟡 临床/医疗（有许可证要求但有公开替代）
+数据集  获取方式  地址
+
+PhysioNet MIMIC-III (去标识)  免费注册+培训即可  physionet.org/content/mimiciii 
+
+i2b2-Synthea (合成临床) 完全开放  github.com/i2b2/i2b2-synthea
+
+二、强NLP Baseline工具（解决基线弱的问题）
+检测层 Baselines
+工具 特点 安装
+Microsoft Presidio, 支持NLP、正则、规则逻辑、校验和等多种识别方式，支持文本/图像/结构化数据，可连接外部PII检测模型 GitHub, pip install presidio-analyzer presidio-anonymizer
+
+GLiNER PII,零样本识别任意实体类型，60+预定义PII类别，支持本地部署无需API，F1可达80.99%, pip install gliner → knowledgator/gliner-pii-base-v1.0
+
+spaCy en_core_web_trf, Transformer版NER，比sm更强, python -m spacy download en_core_web_trf
+
+Inference Attack Baseline（解决M3）
+python# 直接用于属性推断实验的prompt模板示例（可作为AIA评估器）
+from transformers import pipeline
+
+aia_model = pipeline("text-generation", model="meta-llama/Llama-3-8B-Instruct")
+prompt = """Given the following sanitized text, infer the person's 
+[medical condition / financial tier / location]:
+Text: {sanitized_text}
+Your inference:"""
+
+
 ## 已完成的仓库内工作
 
 - 已重新按当前 revision cycle 收口进度文件；修改说明：本文件现统一整理为“已完成的仓库内工作”与“仓库外部边界/非阻塞限制”两大块，删除了旧版按轮次堆叠、前后重复和状态互相冲突的写法。
@@ -75,10 +121,7 @@
 - 已把 synthetic i2b2 zero-shot 路线扩到 non-destructive held-out slice；修改说明：`i2b2_ollama_zero_shot_baseline.py` 现已支持 `--output-tag` 与 richer runtime manifest，仓库新增 `i2b2_synthea_synthetic_export_test128.jsonl`、`i2b2_ollama_zero_shot_results_test128.csv`、`i2b2_ollama_zero_shot_document_metrics_test128.csv`、`i2b2_ollama_zero_shot_runtime_manifest_test128.csv` 与 `i2b2_ollama_zero_shot_run_log_test128.csv`，把 public synthetic clinical evidence 从 canonical `synthea-dev:32` pilot 进一步扩到 held-out `synthea-test:128` slice；新切片当前达到 Span F1 0.35、PER 0.0\%、text retention 0.85，并已同步回写 `paper/main.tex`、`paper/appendix.tex`、`src/README.md` 与 artifact notes，同时继续明确其仅是 synthetic rehearsal 而非 licensed i2b2 rerun。
 - 已把 public relabeled clinical route 推进到 executed supporting slice；修改说明：仓库已新增 `build_physionet_deid_relabeled_export.py`、`physionet_deid_relabeled_export.jsonl`、`physionet_deid_prompt_wrapped_manifest.csv`、`i2b2_transfer_results_physionet_public.csv`、`i2b2_transfer_document_metrics_physionet_public.csv`、`i2b2_transfer_execution_manifest_physionet_public.csv` 与 `i2b2_transfer_run_log_physionet_public.csv`，把 Hugging Face 上可直接加载的 PhysioNet-relabeled public note export 接入到同一条 clinical wrapper；该 full-1100 public slice 现已具备 raw/regex/NER/Presidio-class/hybrid/proposed 七方法 comparator family，可作为独立于 synthetic rehearsal 的 public clinical supporting evidence，但仍不等同于 licensed 2014 i2b2 rerun。
 - 已补 public relabeled clinical zero-shot held-out stability；修改说明：仓库已新增 `physionet_deid_relabeled_export_test100.jsonl`、`i2b2_ollama_zero_shot_results_physionet_test100.csv`、`i2b2_ollama_zero_shot_document_metrics_physionet_test100.csv`、`i2b2_ollama_zero_shot_runtime_manifest_physionet_test100.csv`、`i2b2_ollama_zero_shot_run_log_physionet_test100.csv`、`i2b2_ollama_zero_shot_stability_runs_physionet_test100.csv` 与 `i2b2_ollama_zero_shot_stability_summary_physionet_test100.csv`，把 public clinical zero-shot path 从单次 held-out pilot 推进到三次观测的 bounded repeat-run evidence；当前 `physionet-test:100` 的均值为 Span F1 0.5467、PER 29.2\%、text retention 0.8067，标准差分别约为 0.015、0.7 与 0.015，说明该 public relabeled clinical slice 在固定本地 Ollama runtime 下已有可复核的稳定 supporting signal。
+- 已补 AI4Privacy public multi-domain benchmark route；修改说明：仓库已新增 `build_ai4privacy_pii300k_export.py`、`ai4privacy_pii300k_english_export.jsonl`、`ai4privacy_matched_baseline_suite.py`、`ai4privacy_transfer_results.csv`、`ai4privacy_transfer_document_metrics.csv`、`ai4privacy_transfer_execution_manifest.csv` 与 `ai4privacy_transfer_run_log.csv`，把公开 `ai4privacy/pii-masking-300k` English 子集接入到统一 wrapper；当前 deterministic split 为 `23902/3009/2997`，其中 held-out `ai4privacy-test` slice 覆盖 2997 documents / 19392 mentions，已形成 raw/regex/NER/Presidio-class/hybrid/proposed 七方法 comparator family，作为超出 TAB 与临床 supporting slice 之外的独立 public multi-domain PII evidence。
+- 已补 AI4Privacy generic local zero-shot pilot；修改说明：仓库已新增 `ai4privacy_zero_shot_prompt_template.txt`、`ai4privacy_ollama_zero_shot_baseline.py`、`ai4privacy_pii300k_english_export_test100.jsonl`、`ai4privacy_ollama_zero_shot_results_test100.csv`、`ai4privacy_ollama_zero_shot_document_metrics_test100.csv`、`ai4privacy_ollama_zero_shot_runtime_manifest_test100.csv` 与 `ai4privacy_ollama_zero_shot_run_log_test100.csv`，在 held-out `ai4privacy-test:100` 上补出 non-clinical generic semantic baseline pilot；当前该 public multi-domain pilot 达到 Span F1 0.52、PER 26.2\%、text retention 0.92，用于补强 broader executed baseline coverage，但仍按 pilot-executed 而非 fully benchmark-closed 口径写入论文。
 
 ## 未修改或部分修改
-
-- 【已阻挡】Fresh review -- External validity / benchmark independence：新版独立评审指出 CPPB-centric core claim 仍缺更强 independent benchmark closure。released split 上的 held-out summary 现已补齐，TAB/OCR 三条 public route 也都已执行；本轮又新增 full-1100 PhysioNet-relabeled public clinical comparator family 与 `physionet-test:100` 三次观测稳定性摘要，因此这一项的剩余缺口已进一步收缩为 licensed i2b2 rerun、更多 truly independent clinical/public benchmark families，或跨基础设施复现实验，而不再是“没有 public clinical supporting evidence”。
-- 【已阻挡】Fresh review -- Exact disclosure / reproducibility ceiling：当前 latency host、AC rubric、Ollama runtime surface、CPPB split surface、synthetic clinical tagged manifests 与 public PhysioNet-relabeled runtime/stability artifacts 都已写明；本轮进一步补上的 `physionet-test:100` repeated-run evidence 也已把 public clinical zero-shot path 从单次 pilot 提升到 bounded repeat-run chain。剩余问题仍主要受匿名评审边界、未释放原始 runtime records、以及当前本地仅有单一已安装 Ollama model 限制。
-- 【已阻挡】Fresh review -- Broader executed baseline coverage：当前 strongest practical baseline family 已继续补强，zero-shot semantic path 现已同时覆盖 TAB `dev:32`、TAB `test:40`、synthea `dev:32`、held-out `synthea-test:128` 与 held-out `physionet-test:100` repeated-run public clinical slice；同一条 public clinical wrapper 下也已具备 full-1100 PhysioNet-relabeled comparator family。但它仍更接近 evidence-backed public support chain，而不是 benchmark-closing licensed clinical rerun。若要继续冲 TIFS，剩余所需仍是更大 scope 的 semantic 或 domain-specific external baseline family、licensed i2b2 rerun，或可发布的更完整 runtime logs。
-
