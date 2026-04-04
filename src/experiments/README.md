@@ -11,6 +11,12 @@
   - CPPB template inventory for benchmark accounting
 - `cppb_prompt_manifest.csv`
   - Prompt-level CPPB manifest for benchmark accounting
+- `cppb_split_manifest.csv`
+  - Deterministic template-stratified train/dev/test release split for CPPB
+- `cppb_split_summary.csv`
+  - Released split counts for templates, prompts, families, categories, subsets, and modality
+- `cppb_split_release_card.md`
+  - Split semantics and leakage boundary for the released CPPB train/dev/test surface
 - `cppb_distribution_breakdown.csv`
   - Exact count / percentage breakdown by subset, family, category, source, and modality
   - Figure `cppb_benchmark_composition.png`
@@ -40,8 +46,12 @@
   - Explicit evidence boundary for the OCR-mediated slice and its remaining regeneration gaps
 - `multimodal_provenance_card.md`
   - Consolidated multimodal slice provenance note covering construction, rendering boundary, and missing OCR/source-asset metadata
+- `cppb_multimodal_exact_regeneration_manifest_template.csv`
+  - Exact-regeneration template for the original CPPB multimodal OCR/render/runtime path
 - `crossmodel_portability_manifest.md`
   - Explicit evidence boundary for the anonymous cross-model portability slice
+- `exact_disclosure_promotion_plan.md`
+  - Three-tier promotion plan for moving from anonymous review evidence to exact camera-ready disclosure
 - `external_wrapper_release_card.md`
   - Consolidated wrapper/data-card note for TAB and i2b2 public-transfer protocols, rosters, outputs, and licensing boundaries
 - `latency_environment_manifest.md`

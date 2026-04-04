@@ -7,6 +7,7 @@
 - Template families: Direct requests, Document-oriented, Retrieval-style, Tool-oriented agent.
 - Privacy categories: Person names, Contact details, Postal addresses, National/account identifiers, Financial references, Medical content, Organization/project terms, Context-dependent confidential spans.
 - Split semantics: V1-V4 are Essential-privacy variants and V5-V8 are Incidental-privacy variants; V4 and V8 are the OCR-mediated text-plus-image slice.
+- The released split surface is now also explicit: `build_cppb_split_release.py` writes `cppb_split_manifest.csv`, `cppb_split_summary.csv`, and `cppb_split_release_card.md` using a template-stratified train/dev/test rule so prompt variants do not leak across release splits.
 - Prompt/source provenance in the public snapshot is benchmark-authored and template-derived. The released files describe prompt stubs and accounting metadata rather than raw third-party user data.
 - `cppb_release_card.md` consolidates release scope, provenance, annotation examples, wrapper specification, and known omissions into one benchmark-card-style companion note.
 
@@ -23,6 +24,7 @@
 - The public snapshot exposes multimodal slice membership through the prompt manifest and accounting summary.
 - `multimodal_analysis.csv` reconstructs the current supporting table from bundled slice accounting plus recorded OCR-mediated summary values.
 - `multimodal_provenance_card.md` now consolidates slice construction, rendering boundary, OCR-facing provenance, and the still-missing source-image/runtime metadata in one note.
+- `cppb_multimodal_exact_regeneration_manifest_template.csv` now defines the exact render/OCR/runtime fields required before promoting the internal CPPB multimodal slice to exact-regeneration evidence.
 - The current repository still does not ship raw OCR engine/version manifests or document-rendering assets for a full end-to-end multimodal rerun.
 
 ## Cross-Model Portability Note
@@ -30,6 +32,7 @@
 - `crossmodel_portability_results.csv` reconstructs the current appendix portability slice from a bundled alias-level supporting record.
 - `crossmodel_runtime_log.csv` records the public alias-level runtime surface for that slice while keeping vendor identities anonymized.
 - `crossmodel_named_rerun_manifest_template.csv` now defines the minimum vendor/model/version and runtime fields required before promoting the slice to a named rerun.
+- `exact_disclosure_promotion_plan.md` now defines the release path from the anonymous review slice to a confidential internal exact bundle and then to camera-ready public exact disclosure.
 - Exact backend names, versions, and vendor-specific decoding fields are still not bundled in the current snapshot.
 - `crossmodel_portability_manifest.md` makes the current portability evidence boundary explicit while preserving anonymous reporting.
 

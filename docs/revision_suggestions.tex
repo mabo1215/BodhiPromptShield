@@ -38,15 +38,15 @@ The manuscript now handles this issue much more honestly than before: CPPB is cl
 
 The current paper therefore supports the claim that the proposed mediation strategy works under a carefully controlled, propagation-aware benchmark design. It does \emph{not} yet fully support the stronger claim that the same operating point generalizes across independent third-party benchmarks at the level usually expected for final acceptance.
 
-\textbf{Actionability in the current repository:} Largely blocked. The remaining closure steps require licensed i2b2 reruns, broader independent public-benchmark transfer, or a released CPPB train/dev/test separation with clearly decoupled model-selection and final-evaluation surfaces.
+\textbf{Actionability in the current repository:} Partially improved. The repository now includes a released CPPB train/dev/test separation with template-disjoint model-selection and held-out evaluation surfaces, but the strongest remaining closure steps still require licensed i2b2 reruns, broader independent public-benchmark transfer, or new held-out reruns on top of that released split.
 
 \subsection{Some Reproducibility Slices Remain Honest but Not Fully Disclosed}
 
 The current revision now documents implementation conditions much better: the local latency host record is filled, the public zero-shot baseline has an explicit Ollama runtime surface, the AC rubric is described, and the anonymous cross-model slice is framed as portability evidence rather than as a named-backend ranking. This is a meaningful improvement.
 
-However, several important slices remain only partially reproducible in the strongest TIFS sense. The cross-model table is still alias-level rather than vendor/model/version-level. The bundled latency evidence is still a local single-request middleware snapshot rather than a portable deployment benchmark. The multimodal CPPB slice still lacks the original OCR/runtime disclosure record needed for exact regeneration of the originally constructed internal OCR path. These are now explicit scope boundaries rather than hidden omissions, but they still limit the paper's reproducibility ceiling.
+However, several important slices remain only partially reproducible in the strongest TIFS sense. The cross-model table is still alias-level rather than vendor/model/version-level. The bundled latency evidence is still a local single-request middleware snapshot rather than a portable deployment benchmark. The multimodal CPPB slice still lacks the original OCR/runtime disclosure record needed for exact regeneration of the originally constructed internal OCR path. These are now explicit scope boundaries rather than hidden omissions, and the repository now at least defines the promotion templates for exact disclosure, but they still limit the paper's reproducibility ceiling.
 
-\textbf{Actionability in the current repository:} Mostly blocked by anonymity constraints or unreleased runtime records. The manuscript-side clarity work for this issue is close to exhausted.
+\textbf{Actionability in the current repository:} Partially improved. The manuscript-side clarity work is close to exhausted, but the repository now distinguishes between anonymous review evidence, confidential internal exact logs, and camera-ready public disclosure; what remains blocked is filling those records under post-anonymity or releasable runtime conditions.
 
 \subsection{The Strongest Missing Baselines Are Still Only Partially Closed}
 
@@ -69,7 +69,7 @@ Even so, the most convincing final-baseline story for a TIFS audience would stil
 If the authors continue revising this paper for TIFS, the next priorities should be:
 
 \begin{enumerate}[label=(\arabic*)]
-    \item Add stronger independent benchmark closure beyond CPPB, especially licensed i2b2-style PHI evaluation or equally credible third-party transfer evidence.
+    \item Add stronger independent benchmark closure beyond CPPB, especially licensed i2b2-style PHI evaluation, broader public transfer evidence, or held-out reruns over the newly released CPPB train/dev/test split.
     \item Promote the strongest currently pilot-scoped semantic or domain-specific baseline family to a broader executed public-benchmark comparison with fully released runtime traces.
     \item Fill the remaining exact-disclosure gaps for cross-model portability and multimodal/OCR provenance when anonymity and artifact boundaries allow it.
 \end{enumerate}
