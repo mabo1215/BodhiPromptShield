@@ -65,9 +65,13 @@
 - 已把 adversarial robustness 提升到主文独立小节；修改说明：`paper/main.tex` 现已新增 main-text adversarial robustness subsection 与 `tab:adv_main`，不再只在附录裸放 homoglyph 42\% recovery，而是明确解释其部署含义与未解决性质。
 - 已完成 policy figure 的 6 点 threshold sweep 与 vector export；修改说明：仓库已新增 `src/experiments/policy_threshold_sweep.py` 与 `policy_threshold_sweep.csv`，`src/figures/prompt_privacy_operating_points.py` 现已把右侧 panel 扩展到 $\tau\in\{0.30,0.40,0.50,0.60,0.70,0.80\}$ 六个点，并同时导出 `paper/figs/prompt_privacy_operating_points.pdf`。
 - 已补 Proposition 1 的 independence assumption；修改说明：`paper/main.tex` 现已在 span-LDP proposition 中显式写明 conditional independence assumption，并把 sequential composition 的成立前提写到正文里，不再只用一句“follows from standard sequential composition”带过。
+- 已补实现细节与 formalization 缺口；修改说明：`paper/main.tex` 现已改为更符合 IEEE 稿件习惯的非分栏标签式摘要，补入 implementation details 段，明确了 AC rubric、local Ollama zero-shot runtime surface、latency host 条件、five-seed deterministic stability setting，并补充了 PER 在 semantic abstraction 下的直接暴露判定口径以及 SPE 作为 graph-theoretic propagation risk proxy 的解释。
+- 已补附录算法中的 multimodal sanitization 分支；修改说明：`paper/appendix.tex` 的 `Algorithm 2` 现已显式加入 visual channel attach/sanitization 步骤，不再只有 `Algorithm 1` 提到 `ContainsVisualInput`。
+- 已完成 fresh independent review reset；修改说明：在旧版 `docs/revision_suggestions.tex` 基本只剩阻塞项后，仓库已按规则重写为新的独立评审文件；新版 review 不再重复旧轮次的 manuscript-facing 缺口，而是把剩余 barrier 收口为 external validity、exact disclosure 与 broader executed baseline coverage 三类 evidence-bound 问题。
 
 ## 未修改或部分修改
 
-- W1 -- Benchmark Scale and Independence：仍未达到 review 中要求的“独立 benchmark 完整闭环”。当前主文已纳入 TAB text-only transfer，仓库也已有 synthetic i2b2、CORD/FUNSD/SROIE 等公开路线，但仍缺 licensed i2b2 完整 rerun、更广的独立 benchmark 组合，以及 review 文档额外要求的 CPPB dev/test split 来显式分离 hyperparameter selection 与 final evaluation。
-- Minor issues：当前至少还有一项未完全收口，即 `tab:propagation` 的行集仍未与 `tab:per` / `tab:utility` 完全对齐；其余 OWASP bibliographic entry、framework naming inconsistency 与 Proposition 1 independence assumption 已完成修复。
+- Fresh review -- External validity / benchmark independence：新版独立评审认为当前最主要 scientific barrier 已集中为 CPPB-centric core claim 仍缺更强的独立 benchmark closure。仓库虽已执行 TAB、synthetic i2b2、CORD/FUNSD/SROIE 等公开路线，但要进一步收口仍需要 licensed i2b2 rerun、更广的 public-benchmark transfer，或显式 released 的 CPPB train/dev/test separation。
+- Fresh review -- Exact disclosure / reproducibility ceiling：当前 latency host、AC rubric、Ollama runtime surface 与 alias-level cross-model portability 边界都已写明，但仍缺 fully named cross-model exact disclosure、CPPB multimodal original OCR/runtime provenance 等 exact-regeneration 所需记录；这部分主要受匿名评审与未释放 runtime records 限制。
+- Fresh review -- Broader executed baseline coverage：当前 strongest practical baseline family 已显著补强，但 zero-shot semantic baseline 仍更接近 executed pilot 而不是 benchmark-closing rerun；若要继续冲 TIFS，仍需更大 scope 的 semantic 或 domain-specific external baseline family 与更完整 runtime logs。
 

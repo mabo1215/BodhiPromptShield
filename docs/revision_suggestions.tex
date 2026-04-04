@@ -1,464 +1,81 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[margin=2.5cm]{geometry}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb}
+\usepackage{enumitem}
 \usepackage{hyperref}
 \usepackage{xcolor}
-\usepackage{booktabs}
-\usepackage{enumitem}
-\usepackage{array}
 \usepackage{titlesec}
+\usepackage{booktabs}
 \usepackage{parskip}
 
-\definecolor{metared}{RGB}{180,30,30}
-\definecolor{metablue}{RGB}{20,60,160}
-\definecolor{metagreen}{RGB}{20,120,60}
-\definecolor{metaorange}{RGB}{200,100,0}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
 
-\titleformat{\section}{\large\bfseries\color{metablue}}{}{0em}{}[\titlerule]
-\titleformat{\subsection}{\normalsize\bfseries\color{metared}}{}{0em}{}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
 
-\hypersetup{colorlinks=true,linkcolor=metablue,urlcolor=metablue}
+\title{\textbf{Independent Review Report}\\[0.5em]
+\normalsize Manuscript: ``BodhiPromptShield: Pre-Inference Prompt Mediation\\
+for Suppressing Privacy Propagation in LLM/VLM Agents''\\[0.3em]
+\normalsize Target Venue: \textit{IEEE Transactions on Information Forensics and Security}}
+\date{}
 
 \begin{document}
+\maketitle
+\hrule
+\vspace{1em}
 
-\begin{center}
-{\LARGE\bfseries Peer Review Report (Top-Venue Standard)}\\[0.6em]
-{\large Paper: \textit{BodhiPromptShield: Pre-Inference Prompt Mediation for\\
-Suppressing Privacy Propagation in LLM/VLM Agents}}\\[0.4em]
-{\normalsize Standard: IEEE S\&P / CCS / USENIX Security / ACL / NeurIPS}
-\end{center}
-\vspace{0.5em}\hrule\vspace{1em}
+\noindent\textbf{Overall Recommendation:} \textcolor{red}{\textbf{Major Revision}}
 
-%% ============================================================
-\section{Overall Assessment}
-%% ============================================================
+\noindent\textbf{Summary:} The manuscript is substantially stronger than a typical middleware paper and now presents a coherent propagation-aware narrative with clearer formal scope, improved artifact disclosure, stronger public OCR-transfer evidence, a more honest comparator story, and explicit robustness caveats. The dominant remaining barriers are no longer basic manuscript incompleteness. Instead, they are concentrated in external validity, benchmark independence, and the still-limited disclosure scope of some portability and deployment slices. The paper now reads as a serious controlled-systems study, but it is not yet a fully closed TIFS submission because the strongest remaining weaknesses are evidence-bound rather than prose-bound.
 
-\textbf{Recommendation: \textcolor{metaorange}{Major Revision}}
+\vspace{0.5em}\hrule\vspace{0.5em}
 
-This paper reframes prompt privacy in LLM/VLM agents as a cross-stage
-\emph{propagation-control} problem, which carries conceptual novelty.
-The systems design is logically structured. However, measured against
-top-venue standards (IEEE TIFS, IEEE TDSC, CCS, USENIX Security, IEEE
-S\&P, ACL, NeurIPS), the paper has the following critical deficiencies
-that must be resolved before acceptance:
+\section{Primary Remaining Concerns}
 
-\begin{enumerate}[leftmargin=1.5em]
-  \item \textbf{Credibility of the self-constructed benchmark (CPPB):}
-    All core experiments rely on the authors' own 256-prompt benchmark.
-    No complete evaluation on any established public benchmark appears
-    in the main text, severely limiting external validity.
-  \item \textbf{Insufficient technical depth:}
-    The framework is essentially rule-routing + NER composition; the
-    margin over Presidio is $\approx 2\%$ PER without statistical
-    significance testing.
-  \item \textbf{Fundamental experimental design gaps:}
-    The key hyperparameters ($\alpha_i, \beta_i$, $\tau$) are not
-    tabulated; SPE differences (7--11\%) are not tested for
-    statistical significance.
-  \item \textbf{Narrative structure problem:}
-    A large portion of the main text is dedicated to describing
-    what has \emph{not} been completed, which undermines the
-    persuasiveness of the existing contributions.
+\subsection{External Validity Is Still Bounded by CPPB-Centric Core Claims}
+
+The manuscript now handles this issue much more honestly than before: CPPB is clearly described as a controlled benchmark specification, the public TAB route is executed, the synthetic i2b2 route is explicitly separated from licensed clinical evaluation, and the OCR-heavy route now includes executed CORD, FUNSD, and SROIE slices. Nevertheless, the core headline tables and the main narrative are still anchored primarily on an author-constructed benchmark. For a TIFS submission, this remains the dominant scientific limitation.
+
+The current paper therefore supports the claim that the proposed mediation strategy works under a carefully controlled, propagation-aware benchmark design. It does \emph{not} yet fully support the stronger claim that the same operating point generalizes across independent third-party benchmarks at the level usually expected for final acceptance.
+
+\textbf{Actionability in the current repository:} Largely blocked. The remaining closure steps require licensed i2b2 reruns, broader independent public-benchmark transfer, or a released CPPB train/dev/test separation with clearly decoupled model-selection and final-evaluation surfaces.
+
+\subsection{Some Reproducibility Slices Remain Honest but Not Fully Disclosed}
+
+The current revision now documents implementation conditions much better: the local latency host record is filled, the public zero-shot baseline has an explicit Ollama runtime surface, the AC rubric is described, and the anonymous cross-model slice is framed as portability evidence rather than as a named-backend ranking. This is a meaningful improvement.
+
+However, several important slices remain only partially reproducible in the strongest TIFS sense. The cross-model table is still alias-level rather than vendor/model/version-level. The bundled latency evidence is still a local single-request middleware snapshot rather than a portable deployment benchmark. The multimodal CPPB slice still lacks the original OCR/runtime disclosure record needed for exact regeneration of the originally constructed internal OCR path. These are now explicit scope boundaries rather than hidden omissions, but they still limit the paper's reproducibility ceiling.
+
+\textbf{Actionability in the current repository:} Mostly blocked by anonymity constraints or unreleased runtime records. The manuscript-side clarity work for this issue is close to exhausted.
+
+\subsection{The Strongest Missing Baselines Are Still Only Partially Closed}
+
+The comparator situation is notably improved: the paper now includes a stronger enterprise staged-redaction baseline in the main narrative, a record-backed Presidio-class comparison slice, prompt-level paired significance against Presidio (+NER), executed public zero-shot pilots on TAB and synthetic i2b2-compatible data, and named OCR comparator families on the public OCR route.
+
+Even so, the most convincing final-baseline story for a TIFS audience would still require at least one broader semantic or domain-specific external baseline family evaluated at larger public-benchmark scope under fully released runtime conditions. The current zero-shot semantic evidence is best read as an executed pilot surface rather than as a benchmark-closing semantic baseline.
+
+\textbf{Actionability in the current repository:} Partially blocked. The paper should keep framing these baselines as bounded pilot or supporting evidence unless fuller runtime logs and larger-scope reruns are added.
+
+\section{Minor Observations}
+
+\begin{enumerate}[label=(\alph*)]
+    \item The manuscript still contains a few non-fatal box warnings and some dense appendix layouts. These are presentation issues rather than scientific blockers.
+    \item The anonymous portability slice is now much better delimited, but a final camera-ready version should disclose exact backend identifiers if the review setting permits it.
+    \item The current robustness treatment is appropriately cautious, but a future version would benefit from a deeper normalization-ablation breakdown for the homoglyph failure mode rather than only aggregate attack-family rows.
 \end{enumerate}
 
-%% ============================================================
-\section{Detailed Weaknesses and Revision Suggestions}
-%% ============================================================
+\section{Revision Priority}
 
-\subsection{W1 -- Benchmark Scale and Independence}
+If the authors continue revising this paper for TIFS, the next priorities should be:
 
-\noindent\textbf{Issue:}
-CPPB contains only 256 prompts generated from 32 templates
-(8 variants each). Intra-template correlation is high, which
-explains the implausibly low variance in reported metrics
-(e.g., TSR $0.92 \pm 0.00$). The authors simultaneously designed
-the framework, constructed the benchmark, and chose the metrics,
-creating a clear evaluator bias risk.
-
-\noindent\textbf{Suggested revision (Section~V-B):}
-\begin{verbatim}
-% Replace the current CPPB-only introduction with:
-We evaluate BodhiPromptShield on two complementary
-benchmarks. The Controlled Prompt-Privacy Benchmark (CPPB)
-targets agent-workflow propagation scenarios. To validate
-external generalizability, we additionally report results on
-the TAB ECHR anonymization corpus \cite{pilan2022tab} and on
-a synthetic i2b2-compatible clinical export
-\cite{stubbs2015i2b2}. Table~\ref{tab:cppb_card} describes
-the CPPB composition; Table~\ref{tab:external} reports
-the main-text external-transfer results.
-\end{verbatim}
-
-\noindent\textbf{Additional requirements:}
-\begin{itemize}
-  \item Report McNemar's test or bootstrap confidence intervals
-    for all pairwise comparisons, especially the narrow
-    PER gap (9.3\% vs 11.2\% vs 8.1\%).
-  \item Introduce a held-out dev/test split within CPPB
-    to separate hyperparameter selection from evaluation.
-\end{itemize}
-
-%% -----------------------------------------------------------
-\subsection{W2 -- Unclear Novelty Boundary vs.\ Industrial Tools}
-
-\noindent\textbf{Issue:}
-The core components (rule recognizers + NER + placeholder
-replacement + semantic abstraction + secure mapping table)
-substantially overlap with Presidio and similar pipelines.
-The paper's best result beats Presidio (+NER) by only
-$11.2\% \to 9.3\%$ PER---a gap that may not survive
-significance testing.
-
-\noindent\textbf{Suggested addition to Related Work:}
-\begin{verbatim}
-\paragraph{Differentiation from industrial de-id tools.}
-Tools such as Microsoft Presidio and spaCy-based pipelines
-provide strong single-boundary PII detection, but they do
-not model multi-stage propagation risk across agent
-boundaries, nor treat restoration timing as a security
-variable. The key distinction of BodhiPromptShield is the
-propagation-aware routing objective $\Pi_\pi$ and the
-boundary-controlled restoration policy $\rho$, both absent
-from document-boundary de-identification systems. We make
-this distinction empirically concrete via a paired
-McNemar's test ($p < 0.05$) in
-Table~\ref{tab:presidio_compare}.
-\end{verbatim}
-
-%% -----------------------------------------------------------
-\subsection{W3 -- Ambiguous SPE Definition and Monotonicity}
-
-\noindent\textbf{Issue:}
-Stage-wise Propagation Exposure (SPE) is the paper's most
-central metric, yet it has no precise operational definition.
-Readers cannot determine whether span detection uses string
-matching, edit distance, or semantic similarity. Furthermore,
-the monotonic SPE decrease across stages
-(retrieval $10.7\%$ $\to$ memory $8.9\%$ $\to$ tool $7.1\%$)
-is counter-intuitive without explanation.
-
-\noindent\textbf{Suggested formal definition to add before
-Table~IV:}
-\begin{verbatim}
-\begin{definition}[Stage-wise Propagation Exposure]
-Let $\mathcal{B}_k$ denote the input context assembled at
-agent boundary $k \in \{\text{retrieval}, \text{memory},
-\text{tool}\}$ under sanitized prompt $\tilde{x}$.
-The SPE at stage $k$ is
-\[
-  \mathrm{SPE}_k(x, \tilde{x}) =
-  \frac{
-    \bigl|\{s_i \in E(x) : \mathrm{EM}_\delta(s_i,
-    \mathcal{B}_k(\tilde{x})) = 1\}\bigr|
-  }{|E(x)|},
-\]
-where $\mathrm{EM}_\delta$ is a token-overlap indicator
-with edit-distance tolerance $\delta \leq 2$.
-The macro-averaged SPE over the evaluation set $\mathcal{X}$
-is $\frac{1}{|\mathcal{X}|}\sum_x \mathrm{SPE}_k(x,\tilde{x})$.
-\end{definition}
-The monotonic decrease across stages reflects the serial
-pipeline architecture: a span blocked at retrieval cannot
-enter memory or tool contexts in the current experiment
-design, which assumes non-bypassing pipeline composition.
-We discuss the implications of pipeline bypassing in
-Section~VII.
-\end{verbatim}
-
-%% -----------------------------------------------------------
-\subsection{W4 -- Misaligned Formalism and Missing Hyperparameters}
-
-\noindent\textbf{Issue:}
-Section~II-D introduces $\varepsilon_c$-span LDP analysis
-but the authors acknowledge it is ``intentionally narrow''
-and does not cover contextual leakage or injection attacks.
-This analysis occupies significant main-text space while
-contributing minimally to the core claim.
-The routing cost weights $\alpha_i, \beta_i$ and the
-threshold $\tau$ are never tabulated, impairing
-reproducibility.
-
-\noindent\textbf{Suggested changes:}
-\begin{itemize}
-  \item Move the LDP analysis to the appendix; keep only
-    one sentence in the main text.
-  \item Add the following hyperparameter table in
-    Section~V-F:
-\end{itemize}
-\begin{verbatim}
-\begin{table}[t]
-\centering
-\caption{Hyperparameter settings for all CPPB experiments.
-All values are fixed prior to evaluation.}
-\label{tab:hyperparams}
-\footnotesize
-\begin{tabular}{lcccc}
-\toprule
-Parameter & Lenient & Balanced & Strict & Description \\
-\midrule
-$\tau$       & 0.70 & 0.55 & 0.40 & Detection threshold \\
-$\alpha_1$   & --   & --   & --   & Direct exposure wt. \\
-$\alpha_2$   & --   & --   & --   & Context leakage wt. \\
-$\alpha_3$   & --   & --   & --   & Restoration surface wt. \\
-$\beta_1$    & --   & --   & --   & Exact value penalty \\
-$\beta_2$    & --   & --   & --   & Semantic drift wt. \\
-$\beta_3$    & --   & --   & --   & Latency penalty wt. \\
-\bottomrule
-\end{tabular}
-\end{table}
-% Fill in the actual coefficient values used in experiments.
-\end{verbatim}
-
-%% -----------------------------------------------------------
-\subsection{W5 -- Adversarial Robustness Underreported}
-
-\noindent\textbf{Issue:}
-Appendix Table~XXI shows a homoglyph recovery rate of only
-42\%, meaning the extractor fails to normalise 58\% of
-adversarial homoglyph substitutions. This substantially
-contradicts the threat model claim of ``partial'' coverage
-for adaptive surface-form evasion. These numbers are buried
-in the appendix without analysis.
-
-\noindent\textbf{Suggested revision:}
-\begin{itemize}
-  \item Elevate adversarial robustness results to a
-    subsection in Section~VI.
-  \item Explicitly characterise what a 42\% recovery rate
-    implies in a real deployment (i.e., over half of
-    homoglyph attacks succeed).
-  \item Label this as an open problem, not a solved one.
-\end{itemize}
-
-%% -----------------------------------------------------------
-\subsection{W6 -- Narrative Bloat and Abstract Format}
-
-\noindent\textbf{Issue:}
-Approximately 20\% of the main text describes experiments
-that are \emph{not yet complete}, which makes the paper
-appear immature. The four-block Abstract format
-(Problem/Approach/Key Result/Scope) is non-standard.
-
-\noindent\textbf{Suggested Abstract rewrite:}
-\begin{verbatim}
-\begin{abstract}
-LLM and VLM agents expose user prompts to multiple
-internal agent boundaries---retrieval, memory writes, and
-tool invocations---creating a cross-stage privacy
-propagation risk that single-boundary de-identification
-cannot address. We present BodhiPromptShield, a
-policy-aware pre-inference mediation framework that detects
-privacy-sensitive spans, routes them via typed placeholders,
-semantic abstraction, or secure symbolic mapping, and delays
-entity restoration to authorized execution boundaries,
-treating restoration timing as an explicit security
-variable. On the Controlled Prompt-Privacy Benchmark
-(CPPB, 256 prompts), BodhiPromptShield reduces stage-wise
-propagation exposure to 7.1\% at the tool boundary and
-achieves Privacy Exposure Rate 9.3\% with Answer
-Consistency 0.94 and Task Success Rate 0.92, outperforming
-generic de-identification and remaining competitive with
-enterprise staged redaction while offering superior
-downstream utility. An initial transfer evaluation on the
-TAB anonymization corpus confirms cross-corpus
-generalisability of the propagation-control design.
-\end{abstract}
-\end{verbatim}
-
-%% -----------------------------------------------------------
-\subsection{W7 -- Figure Readability and Information Density}
-
-\noindent\textbf{Issue:}
-In Fig.~2, the ``Proposed'' and ``Generic de-id'' curves
-are visually indistinguishable (10.7\% vs.\ 14.9\%).
-Fig.~3 right panel presents only 3 operating points for a
-``Pareto frontier'', which is statistically insufficient.
-
-\noindent\textbf{Suggestions:}
-\begin{itemize}
-  \item Use a log-scale y-axis or grouped bar chart in
-    Fig.~2 to accentuate near-zero differences.
-  \item Expand Fig.~3 right panel to at least 6
-    threshold values
-    ($\tau \in \{0.30, 0.40, 0.50, 0.60, 0.70, 0.80\}$)
-    to justify the ``Pareto frontier'' claim.
-  \item Submit figures as vector PDF/EPS to avoid
-    pixellation in print.
-\end{itemize}
-
-%% -----------------------------------------------------------
-\subsection{W8 -- Answer Consistency Metric Under-Specified}
-
-\noindent\textbf{Issue:}
-AC is defined as $g(y_j, \tilde{y}_j) \in [0,1]$
-where $g$ is described only as ``semantic agreement''.
-If $g$ is an LLM judge, it introduces another black box.
-High AC also does not preclude both outputs being wrong.
-
-\noindent\textbf{Suggestions:}
-\begin{itemize}
-  \item Specify $g$ precisely (BERTScore, ROUGE-L, human
-    annotation, or LLM judge with named model/prompt).
-  \item Report absolute downstream task accuracy alongside
-    AC to prevent the ``consistently wrong'' pitfall.
-\end{itemize}
-
-%% ============================================================
-\section{Minor Issues}
-%% ============================================================
-
-\begin{enumerate}[leftmargin=1.5em]
-  \item \textbf{Symbol inconsistency:} $S(x)$ is introduced
-    in Section~II for the span set and $E(x)$ is reintroduced
-    in Section~IV with the same meaning. Unify to one symbol
-    throughout.
-
-  \item \textbf{Table IV vs.\ Table V mismatch:}
-    Table~IV (SPE) omits the NER-only and enterprise-staged
-    redaction baselines that appear in Table~V (PER).
-    Align the row sets for direct cross-table comparison.
-
-  \item \textbf{Latency measurement environment undisclosed:}
-    Table~VIII lacks CPU/GPU model, concurrency setting, and
-    prompt-length distribution. These are required for
-    reproducibility.
-
-  \item \textbf{Framework name inconsistency:}
-    ``BodhiPromptShield'' and ``PromptShield'' are used
-    interchangeably in the appendix. Standardise to one name.
-
-  \item \textbf{Proposition~1 proof gap:}
-    The claim ``follows from standard sequential composition''
-    requires an explicit independence assumption between span
-    sanitization mechanisms. Add a one-line formal
-    justification or state the independence assumption
-    explicitly.
-
-  \item \textbf{Reference [28] (OWASP 2025):}
-    URL-only reference. Add a proper bibliographic entry
-    with access date.
+\begin{enumerate}[label=(\arabic*)]
+    \item Add stronger independent benchmark closure beyond CPPB, especially licensed i2b2-style PHI evaluation or equally credible third-party transfer evidence.
+    \item Promote the strongest currently pilot-scoped semantic or domain-specific baseline family to a broader executed public-benchmark comparison with fully released runtime traces.
+    \item Fill the remaining exact-disclosure gaps for cross-model portability and multimodal/OCR provenance when anonymity and artifact boundaries allow it.
 \end{enumerate}
 
-%% ============================================================
-\section{Venue Recommendations}
-%% ============================================================
+\section{Bottom Line}
 
-\begin{table}[h]
-\centering
-\caption{Recommended submission venues (ranked by fit)}
-\label{tab:venues}
-\renewcommand{\arraystretch}{1.3}
-\footnotesize
-\begin{tabular}{p{3.5cm}p{1.8cm}p{7.2cm}}
-\toprule
-\textbf{Venue} & \textbf{Fit} & \textbf{Rationale} \\
-\midrule
-\textbf{IEEE TIFS}
-(Trans.\ on Information Forensics \& Security) &
-\textcolor{metagreen}{\textbf{*****}} &
-\textbf{Top recommendation.} Journal format allows full
-development of results and revisions. Privacy+security
-systems design is a core topic. Evaluation-scale
-requirements are more achievable than top-conf venues. \\
-\midrule
-\textbf{IEEE TDSC}
-(Trans.\ on Dependable and Secure Computing) &
-\textcolor{metagreen}{\textbf{****}} &
-Strong AI systems security focus; accepts deployment-oriented
-system papers; existing threat model structure is a good fit. \\
-\midrule
-\textbf{ACM CCS} &
-\textcolor{metaorange}{\textbf{***}} &
-Requires full public-benchmark evaluation and rigorous
-adversarial analysis. Not viable until W1 and W5 are resolved. \\
-\midrule
-\textbf{USENIX Security} &
-\textcolor{metaorange}{\textbf{***}} &
-Strong engineering-systems fit, but mandatory artifact
-evaluation requires full public release of CPPB data + code. \\
-\midrule
-\textbf{ACL / EMNLP
-(Privacy track)} &
-\textcolor{metaorange}{\textbf{***}} &
-Good prompt-privacy positioning; NLP reviewers may penalise
-the middleware/systems framing over model-level contributions. \\
-\midrule
-\textbf{NeurIPS Datasets
-\& Benchmarks} &
-\textcolor{metaorange}{\textbf{**}} &
-Viable only if CPPB is fully public with annotations,
-leaderboard, and licensing. Current state is insufficient. \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\noindent\textbf{Summary recommendation:}
-Submit to \textbf{IEEE TIFS} for the first round to allow
-thorough revisions. Target \textbf{CCS~2026} or
-\textbf{USENIX~Security~2026} only after completing W1
-(full public-benchmark evaluation) and W5 (adversarial
-robustness main-text analysis).
-
-%% ============================================================
-\section{Priority Checklist for Revision}
-%% ============================================================
-
-\begin{enumerate}[leftmargin=1.5em, label=\textbf{[P\arabic*]}]
-  \item \textbf{[Must]} W1: Report main results on at least
-    one full public benchmark (complete TAB or i2b2 run) in
-    the main text.
-  \item \textbf{[Must]} W3: Provide a precise operational
-    definition of SPE with matching method and tolerance,
-    plus a causal explanation of the cross-stage monotonicity.
-  \item \textbf{[Must]} W4: Add a complete hyperparameter
-    table and specify the selection procedure.
-  \item \textbf{[Must]} W2: Add statistical significance
-    tests (McNemar or bootstrap CI) for all PER comparisons
-    against Presidio baselines.
-  \item \textbf{[Strongly recommended]} W5: Elevate
-    adversarial robustness core numbers to the main text
-    with honest analysis of the 42\% recovery rate.
-  \item \textbf{[Strongly recommended]} W6: Trim all
-    ``work not yet done'' prose to a single Limitations
-    paragraph; rewrite the Abstract.
-  \item \textbf{[Recommended]} W7: Improve figure
-    readability; expand Fig.~3 right panel.
-  \item \textbf{[Recommended]} W8: Specify $g(\cdot,\cdot)$
-    implementation; add absolute accuracy reporting.
-\end{enumerate}
-
-%% ============================================================
-\section{Concluding Remarks to Authors}
-%% ============================================================
-
-The research question addressed in this paper---cross-stage
-privacy propagation in LLM/VLM agents---is timely and
-practically relevant. The conceptual contribution of treating
-\emph{restoration timing as a security variable} is the
-paper's most valuable insight and genuinely advances the
-framing beyond single-boundary de-identification.
-
-To meet top-venue standards, the authors must:
-(1) \textbf{validate on independent data}---public benchmarks
-should appear in the main text, not only as appendix footnotes;
-(2) \textbf{quantify claims rigorously}---all key comparisons
-need statistical significance testing;
-(3) \textbf{write with focus}---all descriptions of
-``planned but not done'' work should be consolidated into
-a single Limitations section.
-
-In its current form the manuscript reads more like a
-technical report than a complete conference or journal paper.
-The authors are encouraged to address the above points and
-submit to \textbf{IEEE TIFS} as the primary target.
-
-\vspace{1em}\hrule\vspace{0.5em}
-\begin{center}
-\footnotesize This review is provided for the authors'
-reference only and does not represent any official editorial
-decision.
-\end{center}
+The current manuscript is no longer mainly blocked by weak exposition or missing basic artifacts. The remaining barriers are evidence-bound: independent benchmark closure, broader executed baseline coverage, and fuller exact-disclosure surfaces. As a result, the repository-facing revision cycle appears close to exhausted, while the strongest remaining improvements depend on additional external data access, broader reruns, or post-anonymity disclosure.
 
 \end{document}
