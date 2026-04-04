@@ -35,9 +35,11 @@
   - `tab_zero_shot_prompt_template.txt` / `i2b2_zero_shot_prompt_template.txt`：冻结 zero-shot semantic baselines 的固定 prompt surface，并被当前 TAB / synthetic i2b2 本地 Ollama pilots 直接复用。
   - `build_i2b2_synthea_synthetic_export.py`：把公开 i2b2-Synthea sample tables 转成 schema-compatible synthetic note export，用于无 licensed notes 时的 public rehearsal。
   - `i2b2_synthea_synthetic_export.jsonl`：基于公开 Synthea sample 构建的 synthetic i2b2-compatible note export。
+  - `i2b2_synthea_synthetic_export_test128.jsonl`：基于同一公开 Synthea sample 生成的更大 held-out synthetic clinical slice，当前对应 `synthea-test:128`。
   - `i2b2_synthea_prompt_wrapped_manifest.csv`：synthetic i2b2 export 在统一 wrapper 下的 prompt manifest。
-  - `i2b2_ollama_zero_shot_baseline.py`：执行本地 Ollama-backed synthetic i2b2 zero-shot pilot，并输出独立的 summary/detail/runtime/run-log 工件。
-  - `i2b2_ollama_zero_shot_results.csv` / `i2b2_ollama_zero_shot_document_metrics.csv` / `i2b2_ollama_zero_shot_runtime_manifest.csv` / `i2b2_ollama_zero_shot_run_log.csv`：synthetic i2b2-Synthea open-weight zero-shot baseline 的已执行 pilot 工件，当前对应 `synthea-dev:32` 子集。
+  - `i2b2_ollama_zero_shot_baseline.py`：执行本地 Ollama-backed synthetic i2b2 zero-shot pilot，并支持用 `--output-tag` 生成不覆盖 canonical pilot 的 tagged summary/detail/runtime/run-log 工件。
+  - `i2b2_ollama_zero_shot_results.csv` / `i2b2_ollama_zero_shot_document_metrics.csv` / `i2b2_ollama_zero_shot_runtime_manifest.csv` / `i2b2_ollama_zero_shot_run_log.csv`：synthetic i2b2-Synthea open-weight zero-shot baseline 的 canonical 已执行 pilot 工件，当前对应 `synthea-dev:32` 子集。
+  - `i2b2_ollama_zero_shot_results_test128.csv` / `i2b2_ollama_zero_shot_document_metrics_test128.csv` / `i2b2_ollama_zero_shot_runtime_manifest_test128.csv` / `i2b2_ollama_zero_shot_run_log_test128.csv`：同一 zero-shot 路径在 `synthea-test:128` held-out slice 上的 tagged larger-scope pilot 工件，并显式记录 model digest/family/parameter size/quantization、OS/Python runtime 与起止时间戳。
   - `i2b2_ollama_zero_shot_stability_runs.csv` / `i2b2_ollama_zero_shot_stability_summary.csv`：synthetic i2b2 `synthea-dev:32` zero-shot pilot 的三次观测稳定性工件。
   - `acquire_cord_snapshot.py`：从 Hugging Face mirror 按固定 revision 下载并解包 CORD public snapshot，同时落盘 `cord_snapshot_manifest.json`。
   - `acquire_funsd_snapshot.py`：从 Hugging Face 按固定 revision 下载并固定 FUNSD public parquet snapshot，同时落盘 `funsd_snapshot_manifest.json`。

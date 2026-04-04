@@ -1,6 +1,6 @@
 # 论文进度
 
-最后更新：2026-04-04
+最后更新：2026-04-05
 
 ## 已完成的仓库内工作
 
@@ -72,10 +72,11 @@
 - 已把 exact disclosure 从“缺说明”推进到“缺填充记录”；修改说明：仓库已新增 `src/experiments/exact_disclosure_promotion_plan.md` 与 `cppb_multimodal_exact_regeneration_manifest_template.csv`，并将 `paper/main.tex` / `paper/appendix.tex` 改写为 disclosure-tier 口径，明确 anonymous review evidence、confidential internal exact bundle 与 camera-ready public disclosure 三层边界；当前剩余问题已收缩为未公开的 filled records，而不再是 schema 未定义。
 - 已补基于 released split 的 held-out summary artifacts；修改说明：仓库已新增 `src/experiments/cppb_split_heldout_evaluation.py`，并生成 `cppb_split_method_seed_metrics.csv`、`cppb_split_method_summary.csv`、`cppb_split_policy_seed_metrics.csv` 与 `cppb_split_policy_summary.csv`，将 `paper/main.tex` / `paper/appendix.tex` 进一步更新为显式报告 released train/dev/test 上的 method/profile held-out 结果，而不再只说 “future held-out reporting is now possible”。
 - 已把 TAB semantic baseline 扩到更大 held-out public slice 并补 richer runtime manifest；修改说明：`tab_ollama_zero_shot_baseline.py` 现支持独立输出标签与更完整 runtime metadata，仓库已新增 `tab_ollama_zero_shot_results_test040.csv`、`tab_ollama_zero_shot_document_metrics_test040.csv`、`tab_ollama_zero_shot_runtime_manifest_test040.csv` 与 `tab_ollama_zero_shot_run_log_test040.csv`，把本地 open-weight zero-shot evidence 从 `dev:32` pilot 进一步扩到 `test:40` held-out public slice，并显式记录 model digest/family/parameter size/quantization、OS/Python runtime 与起止时间戳。
+- 已把 synthetic i2b2 zero-shot 路线扩到 non-destructive held-out slice；修改说明：`i2b2_ollama_zero_shot_baseline.py` 现已支持 `--output-tag` 与 richer runtime manifest，仓库新增 `i2b2_synthea_synthetic_export_test128.jsonl`、`i2b2_ollama_zero_shot_results_test128.csv`、`i2b2_ollama_zero_shot_document_metrics_test128.csv`、`i2b2_ollama_zero_shot_runtime_manifest_test128.csv` 与 `i2b2_ollama_zero_shot_run_log_test128.csv`，把 public synthetic clinical evidence 从 canonical `synthea-dev:32` pilot 进一步扩到 held-out `synthea-test:128` slice；新切片当前达到 Span F1 0.35、PER 0.0\%、text retention 0.85，并已同步回写 `paper/main.tex`、`paper/appendix.tex`、`src/README.md` 与 artifact notes，同时继续明确其仅是 synthetic rehearsal 而非 licensed i2b2 rerun。
 
 ## 未修改或部分修改
 
-- Fresh review -- External validity / benchmark independence：新版独立评审指出 CPPB-centric core claim 仍缺更强 independent benchmark closure。released split 上的 held-out summary 现已补齐，且 dev/test 指标基本重合；因此这一项的剩余缺口已收缩为 licensed i2b2 rerun、更广 public-benchmark transfer，或更强第三方 benchmark family，而不再是 CPPB 内部 split 未显式验证。
-- Fresh review -- Exact disclosure / reproducibility ceiling：当前 latency host、AC rubric、Ollama runtime surface、CPPB split surface 与 alias-level cross-model portability 边界都已写明，且仓库已补 disclosure promotion plan 与 multimodal exact-regeneration template；本轮进一步审计确认当前仓库并不存在隐藏的 fully named cross-model logs，也不存在可直接回填的 CPPB multimodal original OCR/runtime filled record，本地 Ollama inventory 也只有一个已安装模型，因此这部分仍主要受匿名评审边界、未释放原始 runtime records 与当前本地 named multi-model rerun 条件不足限制。
-- Fresh review -- Broader executed baseline coverage：当前 strongest practical baseline family 已显著补强，但 zero-shot semantic baseline 仍更接近 executed pilot 而不是 benchmark-closing rerun；若要继续冲 TIFS，仍需更大 scope 的 semantic 或 domain-specific external baseline family 与更完整 runtime logs。
+- 【已阻挡】Fresh review -- External validity / benchmark independence：新版独立评审指出 CPPB-centric core claim 仍缺更强 independent benchmark closure。released split 上的 held-out summary 现已补齐，且 dev/test 指标基本重合；本轮又新增 held-out `synthea-test:128` synthetic clinical rehearsal，因此这一项的剩余缺口已进一步收缩为 licensed i2b2 rerun、更广 public-benchmark transfer，或更强第三方 benchmark family，而不再是仓库内还能单靠现有公开快照继续补齐的问题。
+- 【已阻挡】Fresh review -- Exact disclosure / reproducibility ceiling：当前 latency host、AC rubric、Ollama runtime surface、CPPB split surface 与 alias-level cross-model portability 边界都已写明，synthetic i2b2 larger-scope pilot 也已补 richer runtime manifest；本轮进一步审计确认当前仓库并不存在隐藏的 fully named cross-model logs，也不存在可直接回填的 CPPB multimodal original OCR/runtime filled record，本地 Ollama inventory 也只有一个已安装模型，因此这部分仍主要受匿名评审边界、未释放原始 runtime records 与当前本地 named multi-model rerun 条件不足限制。
+- 【已阻挡】Fresh review -- Broader executed baseline coverage：当前 strongest practical baseline family 已继续补强，zero-shot semantic path 现已同时覆盖 TAB `dev:32`、TAB `test:40`、synthea `dev:32` 与 held-out `synthea-test:128`；但它仍更接近 executed public pilot chain 而不是 benchmark-closing rerun。若要继续冲 TIFS，剩余所需已超出当前仓库公开条件，包括更大 scope 的 semantic 或 domain-specific external baseline family、licensed i2b2 rerun，或可发布的更完整 runtime logs。
 

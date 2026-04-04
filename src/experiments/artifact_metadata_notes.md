@@ -57,9 +57,9 @@
 - `i2b2_transfer_run_log.csv` records the exact result schema, rerun command template, and current waiting-for-licensed-data state for the clinical wrapper roster.
 - `i2b2_matched_baseline_suite.py` now provides the exact result schema and heuristic runner used for clinical transfer once user-supplied normalized i2b2 notes are available.
 - `build_i2b2_synthea_synthetic_export.py` converts the public i2b2-Synthea sample tables into a schema-compatible synthetic note export with span offsets for a fully public rehearsal path.
-- `i2b2_synthea_prompt_wrapped_manifest.csv` and `i2b2_ollama_zero_shot_baseline.py` now provide a prompt-wrapped synthetic clinical slice and an executed local Ollama zero-shot pilot on 32 synthetic notes.
+- `i2b2_synthea_prompt_wrapped_manifest.csv` and `i2b2_ollama_zero_shot_baseline.py` now provide a prompt-wrapped synthetic clinical slice, a canonical executed local Ollama zero-shot pilot on 32 synthetic notes, and a tagged held-out `synthea-test:128` rerun surface.
 - `ollama_zero_shot_stability.py` now also writes a three-observation mean/std/CI summary for that fixed synthetic clinical zero-shot surface.
-- `i2b2_zero_shot_prompt_template.txt` and `external_baseline_runtime_manifest_template.csv` now define the fixed zero-shot surface and an Ollama-based public local runtime logging template shared by the synthetic pilot and the waiting-state licensed route.
+- `i2b2_zero_shot_prompt_template.txt` and `external_baseline_runtime_manifest_template.csv` now define the fixed zero-shot surface and an Ollama-based public local runtime logging template shared by the synthetic pilot and the waiting-state licensed route; the synthetic runner itself now also supports tagged non-destructive outputs plus richer local runtime metadata.
 - `external_wrapper_release_card.md` now consolidates the wrapper invariants, comparator roster, output files, and licensing boundary shared by TAB and i2b2 transfer.
 - The repository still does not redistribute licensed i2b2 notes, so the executed clinical-style pilot should be read as a synthetic schema rehearsal rather than as a licensed benchmark rerun.
 
