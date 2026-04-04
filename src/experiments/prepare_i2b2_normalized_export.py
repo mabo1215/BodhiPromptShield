@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import tarfile
 from typing import Any
 import xml.etree.ElementTree as ET
 
@@ -33,9 +34,36 @@ def _fallback_text(xml_path: Path) -> str:
     return ""
 
 
-def _normalize_xml_file(path: Path, split_override: str | None) -> dict[str, Any]:
-    root = ET.parse(path).getroot()
-    text = root.findtext(".//TEXT") or _fallback_text(path)
+def _decode_text(payload: bytes) -> str:
+    for encoding in ("utf-8", "utf-8-sig", "latin-1"):
+        try:
+            return payload.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    return payload.decode("utf-8", errors="replace")
+
+
+def _infer_split_from_name(name: str) -> str | None:
+    lowered = name.lower()
+    if "test" in lowered:
+        return "test"
+    if "train" in lowered:
+        return "train"
+    if any(token in lowered for token in ("dev", "valid", "validation")):
+        return "dev"
+    return None
+
+
+def _normalize_xml_payload(
+    *,
+    xml_text: str,
+    note_name: str,
+    split_override: str | None,
+    split_hint: str | None,
+    fallback_text: str = "",
+) -> dict[str, Any]:
+    root = ET.fromstring(xml_text)
+    text = root.findtext(".//TEXT") or fallback_text
     tags_parent = root.find(".//TAGS")
     phi_spans: list[dict[str, Any]] = []
     if tags_parent is not None:
@@ -57,13 +85,60 @@ def _normalize_xml_file(path: Path, split_override: str | None) -> dict[str, Any
                     "phi_subtype": child.tag,
                 }
             )
-    note_id = root.attrib.get("id") or path.stem
+    note_id = root.attrib.get("id") or Path(note_name).stem
     return {
         "note_id": note_id,
-        "split": _infer_split(path, split_override),
+        "split": split_override or split_hint or _infer_split_from_name(note_name) or "unknown",
         "text": text,
         "phi_spans": sorted(phi_spans, key=lambda item: (item["start"], item["end"], item["phi_type"])),
     }
+
+
+def _normalize_xml_file(path: Path, split_override: str | None) -> dict[str, Any]:
+    return _normalize_xml_payload(
+        xml_text=path.read_text(encoding="utf-8"),
+        note_name=path.name,
+        split_override=split_override,
+        split_hint=_infer_split(path, split_override),
+        fallback_text=_fallback_text(path),
+    )
+
+
+def _load_archive_records(path: Path, split_override: str | None) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    split_hint = _infer_split_from_name(path.name)
+    with tarfile.open(path, "r:*") as archive:
+        text_members: dict[str, str] = {}
+        xml_members: list[tarfile.TarInfo] = []
+        for member in archive.getmembers():
+            if not member.isfile():
+                continue
+            member_name = Path(member.name)
+            suffix = member_name.suffix.lower()
+            if suffix == ".xml":
+                xml_members.append(member)
+                continue
+            if suffix == ".txt":
+                extracted = archive.extractfile(member)
+                if extracted is None:
+                    continue
+                text_members[str(member_name.with_suffix(""))] = _decode_text(extracted.read())
+
+        for member in sorted(xml_members, key=lambda item: item.name):
+            extracted = archive.extractfile(member)
+            if extracted is None:
+                continue
+            member_name = Path(member.name)
+            records.append(
+                _normalize_xml_payload(
+                    xml_text=_decode_text(extracted.read()),
+                    note_name=member_name.name,
+                    split_override=split_override,
+                    split_hint=split_hint,
+                    fallback_text=text_members.get(str(member_name.with_suffix("")), ""),
+                )
+            )
+    return records
 
 
 def _normalize_json_record(record: dict[str, Any], source_path: Path, split_override: str | None, index: int) -> dict[str, Any]:
@@ -124,6 +199,9 @@ def _load_json_records(path: Path, split_override: str | None) -> list[dict[str,
 
 def _iter_source_paths(input_path: Path) -> list[Path]:
     if input_path.is_dir():
+        archive_files = sorted(input_path.rglob("*.tar.gz")) + sorted(input_path.rglob("*.tgz"))
+        if archive_files:
+            return archive_files
         xml_files = sorted(input_path.rglob("*.xml"))
         if xml_files:
             return xml_files
@@ -152,7 +230,10 @@ def build_template(output_path: Path) -> Path:
 def build_normalized_export(input_path: Path, output_path: Path, split_override: str | None) -> Path:
     records: list[dict[str, Any]] = []
     for source_path in _iter_source_paths(input_path):
-        if source_path.suffix.lower() == ".xml":
+        source_name = source_path.name.lower()
+        if source_name.endswith((".tar.gz", ".tgz")):
+            records.extend(_load_archive_records(source_path, split_override))
+        elif source_path.suffix.lower() == ".xml":
             records.append(_normalize_xml_file(source_path, split_override))
         elif source_path.suffix.lower() in {".json", ".jsonl"}:
             records.extend(_load_json_records(source_path, split_override))

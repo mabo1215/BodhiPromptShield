@@ -20,6 +20,13 @@ SUMMARY_OUTPUT_PATH = EXPERIMENTS_DIR / "i2b2_transfer_results.csv"
 DETAIL_OUTPUT_PATH = EXPERIMENTS_DIR / "i2b2_transfer_document_metrics.csv"
 EXECUTION_MANIFEST_PATH = EXPERIMENTS_DIR / "i2b2_transfer_execution_manifest.csv"
 RUN_LOG_PATH = EXPERIMENTS_DIR / "i2b2_transfer_run_log.csv"
+DEFAULT_BENCHMARK_NAME = "2014 i2b2/UTHealth"
+
+
+def _with_output_tag(path: Path, output_tag: str | None) -> Path:
+    if not output_tag:
+        return path
+    return path.with_name(f"{path.stem}_{output_tag}{path.suffix}")
 
 METHOD_SPECS = [
     {
@@ -127,8 +134,8 @@ CLINICAL_CONTEXT_PATTERN = re.compile(
 )
 
 
-def _write_execution_manifest(input_supplied: bool) -> Path:
-    with open(EXECUTION_MANIFEST_PATH, "w", encoding="utf-8", newline="") as handle:
+def _write_execution_manifest(input_supplied: bool, benchmark_name: str, execution_manifest_path: Path, summary_output_path: Path) -> Path:
+    with open(execution_manifest_path, "w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
             handle,
             fieldnames=["method", "family", "execution_status", "result_scope", "notes"],
@@ -143,11 +150,11 @@ def _write_execution_manifest(input_supplied: bool) -> Path:
                     "method": spec["name"],
                     "family": spec["family"],
                     "execution_status": status,
-                    "result_scope": "i2b2_transfer_results.csv" if input_supplied and status == "executed" else "protocol-only",
+                    "result_scope": summary_output_path.name if input_supplied and status == "executed" else "protocol-only",
                     "notes": spec["notes"],
                 }
             )
-    return EXECUTION_MANIFEST_PATH
+    return execution_manifest_path
 
 
 def _load_records(path: Path) -> list[dict[str, Any]]:
@@ -270,7 +277,18 @@ def _predict_spans(method: str, text: str) -> list[tuple[int, int]]:
     raise ValueError(f"Unsupported method: {method}")
 
 
-def _write_run_log(records: list[dict[str, Any]], input_supplied: bool, input_path: Path | None) -> None:
+def _write_run_log(
+    records: list[dict[str, Any]],
+    input_supplied: bool,
+    input_path: Path | None,
+    *,
+    benchmark_name: str,
+    run_log_path: Path,
+    execution_manifest_path: Path,
+    wrapper_manifest_name: str,
+    summary_output_path: Path,
+    detail_output_path: Path,
+) -> None:
     split_counts: dict[str, int] = {}
     mention_count = 0
     for record in records:
@@ -280,7 +298,7 @@ def _write_run_log(records: list[dict[str, Any]], input_supplied: bool, input_pa
         if isinstance(raw_spans, list):
             mention_count += sum(1 for span in raw_spans if isinstance(span, dict))
 
-    with open(RUN_LOG_PATH, "w", encoding="utf-8", newline="") as handle:
+    with open(run_log_path, "w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
             handle,
             fieldnames=[
@@ -308,7 +326,7 @@ def _write_run_log(records: list[dict[str, Any]], input_supplied: bool, input_pa
                 status = "executed" if input_supplied else "waiting_for_licensed_data"
             writer.writerow(
                 {
-                    "benchmark": "2014 i2b2/UTHealth",
+                    "benchmark": benchmark_name,
                     "method": spec["name"],
                     "family": spec["family"],
                     "execution_status": status,
@@ -317,10 +335,10 @@ def _write_run_log(records: list[dict[str, Any]], input_supplied: bool, input_pa
                     "mention_count": str(mention_count),
                     "split_breakdown": " | ".join(f"{key}:{value}" for key, value in sorted(split_counts.items())),
                     "protocol_file": "i2b2_matched_baseline_protocol.json",
-                    "wrapper_manifest": "i2b2_prompt_wrapped_manifest.csv" if input_supplied else "",
-                    "summary_output": "i2b2_transfer_results.csv" if input_supplied and status == "executed" else "",
-                    "detail_output": "i2b2_transfer_document_metrics.csv" if input_supplied and status == "executed" else "",
-                    "execution_manifest": "i2b2_transfer_execution_manifest.csv",
+                    "wrapper_manifest": wrapper_manifest_name if input_supplied else "",
+                    "summary_output": summary_output_path.name if input_supplied and status == "executed" else "",
+                    "detail_output": detail_output_path.name if input_supplied and status == "executed" else "",
+                    "execution_manifest": execution_manifest_path.name,
                     "command_template": "python src/experiments/i2b2_matched_baseline_suite.py <normalized_i2b2_export.jsonl>",
                     "notes": spec["notes"],
                 }
@@ -359,7 +377,17 @@ def _char_coverage(spans: list[tuple[int, int]]) -> set[int]:
     return covered
 
 
-def evaluate_i2b2_transfer(input_path: Path) -> tuple[Path, Path]:
+def evaluate_i2b2_transfer(
+    input_path: Path,
+    *,
+    benchmark_name: str,
+    output_tag: str | None,
+    wrapper_manifest_name: str,
+) -> tuple[Path, Path, Path, Path]:
+    summary_output_path = _with_output_tag(SUMMARY_OUTPUT_PATH, output_tag)
+    detail_output_path = _with_output_tag(DETAIL_OUTPUT_PATH, output_tag)
+    execution_manifest_path = _with_output_tag(EXECUTION_MANIFEST_PATH, output_tag)
+    run_log_path = _with_output_tag(RUN_LOG_PATH, output_tag)
     methods = [
         ("Raw prompt", "No protection baseline on the wrapped clinical notes."),
         ("Regex-only", "Pattern-only masking for dates, IDs, phones, emails, and address-like spans."),
@@ -460,7 +488,7 @@ def evaluate_i2b2_transfer(input_path: Path) -> tuple[Path, Path]:
             }
         )
 
-    with open(SUMMARY_OUTPUT_PATH, "w", encoding="utf-8", newline="") as handle:
+    with open(summary_output_path, "w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
             handle,
             fieldnames=[
@@ -478,7 +506,7 @@ def evaluate_i2b2_transfer(input_path: Path) -> tuple[Path, Path]:
         writer.writeheader()
         writer.writerows(summary_rows)
 
-    with open(DETAIL_OUTPUT_PATH, "w", encoding="utf-8", newline="") as handle:
+    with open(detail_output_path, "w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(
             handle,
             fieldnames=[
@@ -497,29 +525,72 @@ def evaluate_i2b2_transfer(input_path: Path) -> tuple[Path, Path]:
         writer.writeheader()
         writer.writerows(detail_rows)
 
-    _write_execution_manifest(input_supplied=True)
-    _write_run_log(records, input_supplied=True, input_path=input_path)
-    return SUMMARY_OUTPUT_PATH, DETAIL_OUTPUT_PATH
+    _write_execution_manifest(
+        input_supplied=True,
+        benchmark_name=benchmark_name,
+        execution_manifest_path=execution_manifest_path,
+        summary_output_path=summary_output_path,
+    )
+    _write_run_log(
+        records,
+        input_supplied=True,
+        input_path=input_path,
+        benchmark_name=benchmark_name,
+        run_log_path=run_log_path,
+        execution_manifest_path=execution_manifest_path,
+        wrapper_manifest_name=wrapper_manifest_name,
+        summary_output_path=summary_output_path,
+        detail_output_path=detail_output_path,
+    )
+    return summary_output_path, detail_output_path, execution_manifest_path, run_log_path
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run heuristic i2b2 matched baselines when a licensed normalized export is available.")
     parser.add_argument("input", nargs="?", help="Normalized i2b2 JSONL or JSON export")
+    parser.add_argument("--benchmark-name", default=DEFAULT_BENCHMARK_NAME, help="Benchmark label recorded in outputs")
+    parser.add_argument("--output-tag", help="Optional suffix added to output files")
+    parser.add_argument("--wrapper-manifest", default="i2b2_prompt_wrapped_manifest.csv", help="Wrapper manifest filename recorded in the run log")
     args = parser.parse_args()
 
+    summary_output_path = _with_output_tag(SUMMARY_OUTPUT_PATH, args.output_tag)
+    detail_output_path = _with_output_tag(DETAIL_OUTPUT_PATH, args.output_tag)
+    execution_manifest_path = _with_output_tag(EXECUTION_MANIFEST_PATH, args.output_tag)
+    run_log_path = _with_output_tag(RUN_LOG_PATH, args.output_tag)
+
     if not args.input:
-        manifest_path = _write_execution_manifest(input_supplied=False)
-        _write_run_log([], input_supplied=False, input_path=None)
+        manifest_path = _write_execution_manifest(
+            input_supplied=False,
+            benchmark_name=args.benchmark_name,
+            execution_manifest_path=execution_manifest_path,
+            summary_output_path=summary_output_path,
+        )
+        _write_run_log(
+            [],
+            input_supplied=False,
+            input_path=None,
+            benchmark_name=args.benchmark_name,
+            run_log_path=run_log_path,
+            execution_manifest_path=execution_manifest_path,
+            wrapper_manifest_name=args.wrapper_manifest,
+            summary_output_path=summary_output_path,
+            detail_output_path=detail_output_path,
+        )
         print(f"i2b2 execution manifest written to {manifest_path}")
-        print(f"i2b2 run log written to {RUN_LOG_PATH}")
+        print(f"i2b2 run log written to {run_log_path}")
         print("No normalized i2b2 export supplied; results remain pending licensed data.")
         return 0
 
-    summary_path, detail_path = evaluate_i2b2_transfer(Path(args.input))
+    summary_path, detail_path, manifest_path, run_log_path = evaluate_i2b2_transfer(
+        Path(args.input),
+        benchmark_name=args.benchmark_name,
+        output_tag=args.output_tag,
+        wrapper_manifest_name=args.wrapper_manifest,
+    )
     print(f"i2b2 transfer summary written to {summary_path}")
     print(f"i2b2 per-document metrics written to {detail_path}")
-    print(f"i2b2 execution manifest written to {EXECUTION_MANIFEST_PATH}")
-    print(f"i2b2 run log written to {RUN_LOG_PATH}")
+    print(f"i2b2 execution manifest written to {manifest_path}")
+    print(f"i2b2 run log written to {run_log_path}")
     return 0
 
 

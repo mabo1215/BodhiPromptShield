@@ -18,6 +18,7 @@ from typing import Any
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 PROTOCOL_PATH = EXPERIMENTS_DIR / "i2b2_matched_baseline_protocol.json"
 DEFAULT_MANIFEST_PATH = EXPERIMENTS_DIR / "i2b2_prompt_wrapped_manifest.csv"
+DEFAULT_BENCHMARK_NAME = "2014 i2b2/UTHealth"
 
 MATCHED_BASELINES = [
     {
@@ -68,9 +69,9 @@ MATCHED_BASELINES = [
 ]
 
 
-def _write_protocol() -> None:
+def _write_protocol(benchmark_name: str) -> None:
     protocol = {
-        "benchmark": "2014 i2b2/UTHealth",
+        "benchmark": benchmark_name,
         "benchmark_family": "clinical de-identification external transfer",
         "core_metrics": [
             "entity_span_precision",
@@ -132,7 +133,7 @@ def _iter_input_paths(input_value: str) -> list[Path]:
     return [path]
 
 
-def build_manifest(input_paths: list[Path], output_path: Path) -> Path:
+def build_manifest(input_paths: list[Path], output_path: Path, benchmark_name: str) -> Path:
     rows: list[dict[str, str]] = []
     for input_path in input_paths:
         for record in _load_records(input_path):
@@ -142,7 +143,7 @@ def build_manifest(input_paths: list[Path], output_path: Path) -> Path:
             phi_types = sorted({str(span.get("phi_type", "UNKNOWN")) for span in spans if isinstance(span, dict)})
             rows.append(
                 {
-                    "benchmark": "2014 i2b2/UTHealth",
+                    "benchmark": benchmark_name,
                     "split": str(record.get("split", "unknown")),
                     "note_id": str(record.get("note_id", "unknown")),
                     "note_chars": str(len(str(record.get("text", "")))),
@@ -176,16 +177,17 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Build i2b2 external-transfer wrapper artifacts.")
     parser.add_argument("input", nargs="?", help="Normalized JSONL or JSON export for i2b2 notes")
     parser.add_argument("--output", default=str(DEFAULT_MANIFEST_PATH), help="Output CSV for wrapped manifest")
+    parser.add_argument("--benchmark-name", default=DEFAULT_BENCHMARK_NAME, help="Benchmark label recorded in protocol and manifest outputs")
     args = parser.parse_args()
 
-    _write_protocol()
+    _write_protocol(args.benchmark_name)
     print(f"i2b2 matched-baseline protocol written to {PROTOCOL_PATH}")
 
     if not args.input:
         print("No normalized i2b2 export supplied; wrote protocol only.")
         return 0
 
-    output_path = build_manifest(_iter_input_paths(args.input), Path(args.output))
+    output_path = build_manifest(_iter_input_paths(args.input), Path(args.output), args.benchmark_name)
     print(f"i2b2 prompt-wrapped manifest written to {output_path}")
     return 0
 

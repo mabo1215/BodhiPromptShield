@@ -1,5 +1,5 @@
 {
-  "benchmark": "2014 i2b2/UTHealth",
+  "benchmark": "PhysioNet relabeled de-identification public transfer",
   "benchmark_family": "clinical de-identification external transfer",
   "core_metrics": [
     "entity_span_precision",
