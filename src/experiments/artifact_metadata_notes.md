@@ -58,6 +58,12 @@
 
 ## Latency Measurement Note
 
+## Paired Comparison Note
+
+- `paired_method_significance.py` now computes paired bootstrap comparisons over the released five-seed CPPB method prompt logs.
+- `paired_method_significance.csv` records mean direct-exposure differences in percentage points, 95% bootstrap confidence intervals, and tail probabilities for the key method pairs discussed in the manuscript.
+- The current summary confirms that enterprise staged redaction remains lower on direct PER than the full utility-constrained setting, while the proposed method's main advantage is the propagation-aware privacy--utility operating point rather than single-boundary PER alone.
+
 - `latency_overhead.csv` should be read as a prototype middleware-overhead summary for the controlled CPPB setting.
 - The timing rows are intended for single-request serial processing comparisons across the listed mediation pipelines.
 - `latency_environment_manifest.md` records the current interpretation boundary for those timing rows.
