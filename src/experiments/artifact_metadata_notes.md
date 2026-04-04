@@ -64,6 +64,17 @@
 - `paired_method_significance.csv` records mean direct-exposure differences in percentage points, 95% bootstrap confidence intervals, and tail probabilities for the key method pairs discussed in the manuscript.
 - The current summary confirms that enterprise staged redaction remains lower on direct PER than the full utility-constrained setting, while the proposed method's main advantage is the propagation-aware privacy--utility operating point rather than single-boundary PER alone.
 
+## External Baseline Comparator Note
+
+- `external_baseline_significance.py` now expands the released Presidio-class comparison rows into a deterministic prompt-level matched surface over the bundled CPPB manifest.
+- `external_baseline_prompt_logs.csv` records prompt-level direct exposure, span F1, AC, and TSR scores for the released Presidio-class and BodhiPromptShield comparator rows.
+- `external_baseline_significance.csv` records paired bootstrap direct-PER differences for BodhiPromptShield versus Presidio (+NER) and for Presidio (+NER) versus the regex-only Presidio baseline.
+
+## Policy Threshold Sweep Note
+
+- `policy_threshold_sweep.py` now writes `policy_threshold_sweep.csv`, a six-point threshold sweep at $\tau\in\{0.30,0.40,0.50,0.60,0.70,0.80\}$ anchored to the released strict / balanced / lenient policy rows.
+- `prompt_privacy_operating_points.py` now renders the right-hand panel from that six-point sweep and also exports a vector PDF alongside the PNG output when the local Matplotlib backend supports it.
+
 - `latency_overhead.csv` should be read as a prototype middleware-overhead summary for the controlled CPPB setting.
 - The timing rows are intended for single-request serial processing comparisons across the listed mediation pipelines.
 - `latency_environment_manifest.md` records the current interpretation boundary for those timing rows.

@@ -2,7 +2,7 @@
 
 最后更新：2026-04-04
 
-## 已全部完成
+## 已完成的仓库内工作
 
 - 已重新按当前 revision cycle 收口进度文件；修改说明：本文件现统一整理为“已完成的仓库内工作”与“仓库外部边界/非阻塞限制”两大块，删除了旧版按轮次堆叠、前后重复和状态互相冲突的写法。
 - 已统一主文与附录的问题定义与符号体系；修改说明：`paper/main.tex` 与 `paper/appendix.tex` 已把问题表述统一到 agent-boundary graph、policy profile、direct exposure / propagation risk / utility 这一条主线，不再出现引言、方法、附录 notation 各写各的情况。
@@ -61,13 +61,13 @@
 - 已把同一套 declared OCR stack 扩到第二个公开 OCR benchmark，并补上更强 named OCR comparator；修改说明：仓库已新增 `acquire_funsd_snapshot.py` 与 `funsd_ocr_transfer_suite.py`，并落盘 `funsd_snapshot_manifest.json`、`funsd_ocr_runtime_manifest.csv`、`funsd_transfer_results.csv`、`funsd_transfer_document_metrics.csv`、`funsd_transfer_preparation_manifest.csv` / `funsd_transfer_execution_manifest.csv` / `funsd_transfer_run_log.csv` / `funsd_transfer_protocol.json` 与 `funsd_prompt_wrapped_manifest.csv`，把公开 OCR rerun 从单一 CORD 扩到 pinned FUNSD `test:50` executed slice；同时 `cord_ocr_transfer_suite.py` 当前也已加入 `OCR + Presidio receipt de-identification`，使 CORD comparator roster 不再只停在 regex/generic/policy-aware 三组。
 - 已把同一套 declared OCR stack 扩到第三个公开 OCR benchmark，并把 OCR named comparator roster 扩成双家族；修改说明：仓库已新增 `acquire_sroie_snapshot.py` 与 `sroie_ocr_transfer_suite.py`，并落盘 `sroie_snapshot_manifest.json`、`sroie_ocr_runtime_manifest.csv`、`sroie_transfer_results.csv`、`sroie_transfer_document_metrics.csv`、`sroie_transfer_preparation_manifest.csv` / `sroie_transfer_execution_manifest.csv` / `sroie_transfer_run_log.csv` / `sroie_transfer_protocol.json` 与 `sroie_prompt_wrapped_manifest.csv`，把 OCR-heavy public rerun 再扩到 pinned SROIE processed `test:63` executed slice；同时 `cord_ocr_transfer_suite.py` 与 `funsd_ocr_transfer_suite.py` 已补入 `OCR + spaCy ... de-identification`，使已执行的 CORD/FUNSD OCR comparator roster 不再只由 Presidio 单家族支撑。
 - 已补齐当前 latency slice 的已填写 host manifest；修改说明：仓库已新增 `src/experiments/latency_host_manifest.csv`，把当前 `latency_overhead.csv` 对应的本地 workstation、CPU、内存、Windows runtime、Python runtime、serial scheduling 与 prompt-scope bucket 正式落盘；相关 `README`、artifact notes、主文与附录口径也已同步从“只有模板”更新为“模板 + 当前 release 的 filled instance”。
+- 已完成 Presidio-class comparator 的 prompt-level paired significance 工件；修改说明：仓库已新增 `src/experiments/external_baseline_significance.py`、`external_baseline_prompt_logs.csv` 与 `external_baseline_significance.csv`，主文现已补入 BodhiPromptShield 相对 Presidio (+NER) 的 paired-bootstrap direct-PER 差值与区间，不再只停留在 summary-table 对比。
+- 已把 adversarial robustness 提升到主文独立小节；修改说明：`paper/main.tex` 现已新增 main-text adversarial robustness subsection 与 `tab:adv_main`，不再只在附录裸放 homoglyph 42\% recovery，而是明确解释其部署含义与未解决性质。
+- 已完成 policy figure 的 6 点 threshold sweep 与 vector export；修改说明：仓库已新增 `src/experiments/policy_threshold_sweep.py` 与 `policy_threshold_sweep.csv`，`src/figures/prompt_privacy_operating_points.py` 现已把右侧 panel 扩展到 $\tau\in\{0.30,0.40,0.50,0.60,0.70,0.80\}$ 六个点，并同时导出 `paper/figs/prompt_privacy_operating_points.pdf`。
+- 已补 Proposition 1 的 independence assumption；修改说明：`paper/main.tex` 现已在 span-LDP proposition 中显式写明 conditional independence assumption，并把 sequential composition 的成立前提写到正文里，不再只用一句“follows from standard sequential composition”带过。
 
-## 仓库外部边界与非阻塞剩余项
+## 未修改或部分修改
 
-本轮仓库内可独立完成的代码、工件、文档与论文同步工作已经全部收口。下面保留的内容不再是仓库侧待办，而只是外部边界或非阻塞范围限制：
+- W1 -- Benchmark Scale and Independence：仍未达到 review 中要求的“独立 benchmark 完整闭环”。当前主文已纳入 TAB text-only transfer，仓库也已有 synthetic i2b2、CORD/FUNSD/SROIE 等公开路线，但仍缺 licensed i2b2 完整 rerun、更广的独立 benchmark 组合，以及 review 文档额外要求的 CPPB dev/test split 来显式分离 hyperparameter selection 与 final evaluation。
+- Minor issues：当前至少还有一项未完全收口，即 `tab:propagation` 的行集仍未与 `tab:per` / `tab:utility` 完全对齐；其余 OWASP bibliographic entry、framework naming inconsistency 与 Proposition 1 independence assumption 已完成修复。
 
-- 外部 baseline 闭环边界：更强的具名/实用 external baseline family 仍受闭源模型运行条件、重依赖工业 pipeline，以及更大范围可公开运行日志限制；当前仓库已把可公开执行的 Presidio-class、hybrid heuristic、Ollama zero-shot，以及 OCR Presidio/spaCy 两个 comparator family 全部落成可检查工件。
-- 外部 benchmark 访问边界：更广的 public transfer 与 validation 仍受 licensed i2b2 note access、DocILE request gate，以及 truly independent cross-infrastructure rerun 条件限制；这不是仓库侧脚本未实现，而是数据与执行环境边界尚未开放。
-- 匿名化与原始运行记录边界：cross-model portability 仍维持 alias-level 匿名口径，CPPB multimodal supporting slice 仍缺原始 rendering/OCR runtime disclosure；这些限制来自公开发布策略与历史原始记录缺失，而非当前 revision cycle 尚未实现。
-- Benchmark package 边界：CPPB data-card 已覆盖 source-level provenance、annotation semantics、wrapper invariants 与 release-card 级别信息，但更完整的逐源 licensing packet 与 exemplar-level raw-asset package 超出当前可公开范围。
-- 非阻塞排版边界：论文仍有少量 underfull / overfull warning，主要来自长 URL、参考文献与宽表；当前构建稳定，不影响这一轮 evidence-backed revision 的收口。

@@ -2,7 +2,7 @@
 Generate a compact visual summary of prompt privacy mediation operating points.
 
 Panel A: method-level operating points from Tables III and V.
-Panel B: policy-profile operating points from Table VIII.
+Panel B: a denser policy-threshold sweep anchored to Table VIII.
 
 If multi-seed summaries are available, plot 95% confidence intervals.
 """
@@ -32,6 +32,12 @@ def _load_optional_summary(path, key_name):
     return {row[key_name]: row for row in rows}
 
 
+def _load_policy_sweep(path):
+    if not os.path.exists(path):
+        return []
+    return _load_csv(path)
+
+
 def _exposure_reduction(per_value):
     return 100.0 - float(per_value)
 
@@ -39,6 +45,7 @@ def _exposure_reduction(per_value):
 def plot_operating_points(out_path: str):
     methods = _load_csv(os.path.join(EXPERIMENTS_DIR, "prompt_method_comparison.csv"))
     policies = _load_csv(os.path.join(EXPERIMENTS_DIR, "policy_sensitivity.csv"))
+    policy_sweep = _load_policy_sweep(os.path.join(EXPERIMENTS_DIR, "policy_threshold_sweep.csv"))
     method_summary = _load_optional_summary(
         os.path.join(EXPERIMENTS_DIR, "multiseed_method_summary.csv"),
         "setting",
@@ -86,6 +93,16 @@ def plot_operating_points(out_path: str):
     ax.grid(True, alpha=0.25, zorder=0)
 
     ax = axes[1]
+    if policy_sweep:
+        xs = [_exposure_reduction(row["per"]) for row in policy_sweep]
+        ys = [float(row["tsr"]) for row in policy_sweep]
+        ax.plot(xs, ys, color="0.45", linewidth=1.0, linestyle="--", zorder=1)
+        for row in policy_sweep:
+            x = _exposure_reduction(row["per"])
+            y = float(row["tsr"])
+            tau = row["tau"]
+            ax.scatter(x, y, s=42, c="tab:blue", edgecolors="black", linewidths=0.4, zorder=2)
+            ax.annotate(f"$\\tau={tau}$", (x, y), xytext=(4, 4), textcoords="offset points", fontsize=7)
     order = {"Lenient": "tab:green", "Balanced": "tab:red", "Strict": "tab:orange"}
     for row in policies:
         x = _exposure_reduction(row["per"])
@@ -104,12 +121,9 @@ def plot_operating_points(out_path: str):
                 capsize=2,
                 zorder=1,
             )
-        ax.scatter(x, y, s=52, c=order[label], edgecolors="black", linewidths=0.4, zorder=3)
+        ax.scatter(x, y, s=58, c=order[label], edgecolors="black", linewidths=0.5, zorder=3)
         ax.annotate(label, (x, y), xytext=(4, 4), textcoords="offset points", fontsize=7)
-    xs = [_exposure_reduction(row["per"]) for row in policies]
-    ys = [float(row["tsr"]) for row in policies]
-    ax.plot(xs, ys, color="0.45", linewidth=1.0, linestyle="--", zorder=2)
-    ax.set_title("Policy-Profile Trade-Off", fontsize=10)
+    ax.set_title("Policy Threshold Sweep", fontsize=10)
     ax.set_xlabel("Direct Exposure Reduction (%)", fontsize=9)
     ax.set_ylabel("Task Success Rate", fontsize=9)
     ax.set_xlim(86, 94)
@@ -119,6 +133,8 @@ def plot_operating_points(out_path: str):
     fig.suptitle("Prompt Privacy Mediation Operating Regimes in CPPB", fontsize=11, y=1.02)
     plt.tight_layout()
     plt.savefig(out_path, dpi=180, bbox_inches="tight")
+    pdf_path = os.path.splitext(out_path)[0] + ".pdf"
+    plt.savefig(pdf_path, bbox_inches="tight")
     plt.close(fig)
 
 
