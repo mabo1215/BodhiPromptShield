@@ -22,4 +22,4 @@
 
 - Public text-only wrappers on TAB and clinical wrappers on i2b2 now have explicit protocol and execution-manifest artifacts.
 - `multimodal_provenance_card.md` now consolidates what is known about OCR-facing slice construction and what still remains missing for a full public rerun.
-- The OCR slice still lacks an equivalent executable public wrapper with exact OCR/version provenance, so multimodal transfer remains below the current public text-only release boundary.
+- The CPPB multimodal slice itself still lacks an equivalent executable public wrapper with exact OCR/version provenance, even though the separate external OCR transfer route now has executed CORD, FUNSD, and SROIE public slices with filled OCR runtime manifests.

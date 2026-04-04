@@ -20,6 +20,7 @@
   - `tab_ollama_zero_shot_stability_runs.csv` / `tab_ollama_zero_shot_stability_summary.csv`：TAB `dev:32` zero-shot pilot 的三次观测稳定性工件。
   - `ocr_engine_runtime_manifest_template.csv`：OCR-heavy transfer rerun所需的通用 OCR/version/host/preprocessing 模板。
   - `latency_host_manifest_template.csv`：latency slice 升级为 portable claim 前所需 host/runtime/scheduling 模板。
+  - `latency_host_manifest.csv`：当前 `latency_overhead.csv` 对应的已填写 host/runtime/scheduling 记录，明确该 prototype latency slice 的实际本地执行环境。
   - `ocr_transfer_protocol.json`：OCR-heavy public transfer 的 tracking protocol，明确哪些 benchmark 已是 executed public slice、哪些仍处于 acquisition-tracked 状态。
   - `ocr_transfer_resource_manifest.csv`：CORD / FUNSD / SROIE / DocILE 的 acquisition-aware cache/status manifest，当前已区分 executed 与 scaffold-only benchmark。
   - `cppb_release_card.md`：集中说明 CPPB release scope、source provenance、annotation examples、external wrapper semantics 与已知缺口。

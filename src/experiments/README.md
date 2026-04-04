@@ -26,6 +26,8 @@
   - OCR engine/runtime disclosure template for CORD, FUNSD, SROIE, and DocILE transfer reruns
 - `latency_host_manifest_template.csv`
   - Host/runtime disclosure template for promoting the latency slice beyond prototype overhead
+- `latency_host_manifest.csv`
+  - Filled host/runtime disclosure record for the bundled CPPB latency snapshot
 - `ocr_transfer_protocol.json`
   - Protocol scaffold for OCR-heavy public transfer under the same wrapper discipline used for TAB and i2b2
 - `ocr_transfer_resource_manifest.csv`

@@ -62,7 +62,8 @@
 - The timing rows are intended for single-request serial processing comparisons across the listed mediation pipelines.
 - `latency_environment_manifest.md` records the current interpretation boundary for those timing rows.
 - `latency_host_manifest_template.csv` now defines the minimum host, scheduling, and prompt-scope fields required before promoting the latency slice to a portable infrastructure claim.
-- The current repository does not yet bundle host identifiers or service-scale concurrency traces, so the latency table is not a portable infrastructure benchmark.
+- `latency_host_manifest.csv` now records the actual local workstation, OS, Python runtime, and scheduling mode used for the bundled latency snapshot.
+- The current repository still does not bundle service-scale concurrency traces or memory telemetry, so the latency table remains a comparative prototype slice rather than a portable infrastructure benchmark.
 
 ## External Resource Acquisition Note
 
