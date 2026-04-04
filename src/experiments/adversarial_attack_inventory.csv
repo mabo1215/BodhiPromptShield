@@ -1,8 +1,5 @@
 attack_family,evasion_category,difficulty,cppb_coverage
-Zero-vs-Oh homoglyph,Surface-form evasion,Easy,50 variants
-Leet-speak variants,Surface-form evasion,Easy,48 variants
-Paraphrase substitution,Semantic evasion,Medium,64 probes
-Entity reordering,Structure evasion,Easy,32 probes
-Mixed language insertion,Multilingual evasion,Medium,16 probes
-Capitalization tricks,Case evasion,Easy,24 variants
-Restoration trigger injection,Bypass evasion,Hard,8 adversarial samples
+Unicode-confusable homoglyphs,Surface-form evasion,Easy,12 executed probes
+Context-light paraphrases,Semantic evasion,Medium,12 executed probes
+Mixed-language insertion,Multilingual evasion,Medium,12 executed probes
+Restoration trigger injection,Bypass evasion,Hard,12 executed probes

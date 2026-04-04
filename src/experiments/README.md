@@ -167,6 +167,22 @@
   - Runtime manifest for the held-out AI4Privacy `test:100` local zero-shot pilot, including digest and runtime timestamps
 - `ai4privacy_ollama_zero_shot_run_log_test100.csv`
   - Run log for the held-out AI4Privacy `test:100` local zero-shot pilot
+- `adversarial_robustness_suite.py`
+  - Execute the deterministic adversarial probe suite with confusable normalization and matched probe logs
+- `adversarial_robustness_results.csv`
+  - Executed adversarial summary rebuilt from the deterministic probe suite
+- `adversarial_attack_inventory.csv`
+  - Attack-family inventory aligned with the executed adversarial probe coverage
+- `adversarial_probe_logs.csv`
+  - Probe-level attacked text, normalized text, exposure, and span-recovery log for the executed adversarial suite
+- `context_inference_attack_suite.py`
+  - Execute the local prompt-history context-inference attacker on raw versus placeholder-sanitized probes
+- `context_inference_attack_results.csv`
+  - Executed summary of raw versus sanitized attribute-inference accuracy under the local attacker
+- `context_inference_attack_prompt_logs.csv`
+  - Probe-level raw/sanitized prompts, predicted labels, and attacker mode for the context-inference suite
+- `context_inference_attack_runtime_manifest.csv`
+  - Runtime manifest for the executed context-inference suite
 - `i2b2_matched_baseline_protocol.json`
   - Protocol scaffold for i2b2 prompt-wrapper external transfer
 - `i2b2_zero_shot_prompt_template.txt`
@@ -239,6 +255,8 @@ python src/experiments/build_ai4privacy_pii300k_export.py
 python src/experiments/ai4privacy_matched_baseline_suite.py
 python src/experiments/build_ai4privacy_pii300k_export.py --split ai4privacy-test --max-records 100 --output src/experiments/ai4privacy_pii300k_english_export_test100.jsonl
 python src/experiments/ai4privacy_ollama_zero_shot_baseline.py --input src/experiments/ai4privacy_pii300k_english_export_test100.jsonl --model llama3:latest --output-tag test100
+python src/experiments/adversarial_robustness_suite.py
+python src/experiments/context_inference_attack_suite.py
 python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl
 python src/experiments/i2b2_external_transfer.py
 python src/experiments/i2b2_matched_baseline_suite.py

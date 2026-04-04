@@ -1,81 +1,73 @@
-\documentclass[11pt,a4paper]{article}
-\usepackage[margin=2.5cm]{geometry}
-\usepackage{amsmath,amssymb}
-\usepackage{enumitem}
-\usepackage{hyperref}
-\usepackage{xcolor}
-\usepackage{titlesec}
-\usepackage{booktabs}
-\usepackage{parskip}
+\section*{Reviewer Report for IEEE Transactions on Information Forensics and Security (TIFS)}
 
-\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+\subsection*{Overall Assessment}
 
-\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
-\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
+This manuscript is now substantially stronger than in earlier cycles. The paper presents a coherent propagation-control framing for prompt privacy mediation, the CPPB evidence backbone is stable, and the repository now includes materially better external and threat-facing support: executed TAB and AI4Privacy public transfer slices, a public relabeled clinical supporting route, a stronger Presidio-class comparison surface, an executed adversarial probe suite with confusable hardening, and a small executed context-inference attack suite.
 
-\title{\textbf{Independent Review Report}\\[0.5em]
-\normalsize Manuscript: ``BodhiPromptShield: Pre-Inference Prompt Mediation\\
-for Suppressing Privacy Propagation in LLM/VLM Agents''\\[0.3em]
-\normalsize Target Venue: \textit{IEEE Transactions on Information Forensics and Security}}
-\date{}
+The paper is therefore no longer limited by missing scaffolds or purely manuscript-authored placeholders. The remaining concerns are more specific and harder: the security story is still only partially closed under adaptive attacks, the external-baseline family is still not strong enough for an information-security venue at the current main-text level, and the formal privacy scope remains intentionally narrow. These issues are now evidence-bounded rather than prose-bounded.
 
-\begin{document}
-\maketitle
-\hrule
-\vspace{1em}
+\textbf{Recommendation: Major Revision}
 
-\noindent\textbf{Overall Recommendation:} \textcolor{red}{\textbf{Major Revision}}
+\subsection*{Primary Strengths}
 
-\noindent\textbf{Summary:} The manuscript is now substantially more coherent and evidence-bounded than in earlier cycles. The controlled CPPB narrative is stable, the public TAB and OCR-heavy transfer routes are executed, the synthetic and public-relabeled clinical supporting slices are explicitly separated from licensed clinical claims, and the disclosure boundary is described honestly. The paper is no longer mainly blocked by manuscript hygiene. The strongest remaining issues are evidence-bound: broader independent benchmark coverage beyond the current public slices, broader executed semantic or domain-specific baselines under releasable runtime conditions, and the still-partial exact-disclosure ceiling for certain portability and multimodal provenance records.
+\begin{itemize}
+\item The manuscript now tells one consistent story: prompt privacy is treated as a propagation-control problem across retrieval, memory, and tool boundaries rather than as single-boundary redaction.
+\item The core CPPB backbone is well organized and reproducibility-aware, with deterministic accounting, split surfaces, multi-seed summaries, leave-template-out evaluation, and supporting artifact maps.
+\item External validation is materially better than before: TAB and AI4Privacy provide public text-transfer evidence, PhysioNet-relabeled notes provide a public clinical supporting path, and the OCR route is executed on CORD, FUNSD, and SROIE under one declared stack.
+\item The paper is now more honest about its limits. In particular, the adversarial suite and the context-inference suite expose real residual risk rather than over-claiming robustness or privacy closure.
+\end{itemize}
 
-\vspace{0.5em}\hrule\vspace{0.5em}
+\subsection*{Remaining Concerns}
 
-\section{Primary Remaining Concerns}
+\paragraph{1. Adaptive attack coverage remains only partial.}
+The new executed adversarial and context-inference suites are valuable, but they also make the remaining weakness more explicit. Unicode/confusable hardening reduces homoglyph exposure, yet residual exposure is still large, and paraphrase, mixed-language, and restoration-trigger probes remain only partially mitigated. Likewise, the new context-inference suite moves that threat from untested to executed, but sanitized prompt history still permits non-trivial attribute inference.
 
-\subsection{Independent Validation Is Improved but Not Yet Broad Enough}
+This is now the most important actionable gap for TIFS. The issue is no longer whether the paper acknowledges adaptive attacks; it does. The issue is whether the current defense surface is strong enough to support the paper's security framing.
 
-The manuscript now goes materially beyond a CPPB-only story. It includes an executed TAB transfer slice, executed OCR-heavy slices on CORD, FUNSD, and SROIE, a synthetic i2b2-compatible clinical rehearsal, and a public PhysioNet-relabeled clinical supporting slice with both a matched comparator family and repeated-run zero-shot evidence. This is a meaningful improvement in scientific honesty and external support.
+\textbf{Priority for the next cycle:}
+\begin{itemize}
+\item Expand the attack surface from single-prompt probes to at least one multi-turn or multi-stage adaptive scenario.
+\item Strengthen surface-form normalization beyond the current one-to-one confusable folding.
+\item Keep the paper's tone evidence-bounded unless the new attack results materially improve.
+\end{itemize}
 
-Nevertheless, the central headline remains anchored on an author-constructed benchmark. For a TIFS submission, the main remaining scientific weakness is not the absence of any external evidence, but the absence of a broader independent benchmark family that clearly demonstrates transfer across multiple public domains under the same evaluation logic.
+\paragraph{2. The strongest external baseline family is still incomplete in the main evidentiary story.}
+The repository now contains useful baseline support, including Presidio-class comparisons and multiple local zero-shot pilots. However, the main reviewer concern is no longer ``are there any stronger baselines at all?'' but rather ``is the strongest modern comparison family strong enough for this venue?''
 
-\textbf{Actionability in the current repository:} Actionable. The most realistic next step is to add at least one more openly accessible text benchmark or multi-domain PII benchmark under the existing wrapper and result schema, then integrate it into the manuscript as additional public transfer evidence.
+The paper still lacks a broader main-text comparison against modern semantic baselines or stronger named third-party systems on the central CPPB surface. The executed public semantic pilots help, but they remain fragmented across transfer slices rather than forming one convincing, high-strength baseline family aligned to the main claim.
 
-\subsection{The Strongest External Baselines Still Need Broader Executed Coverage}
+\textbf{Priority for the next cycle:}
+\begin{itemize}
+\item Promote one stronger semantic or named baseline into a more central comparison role if a fair released runtime can be bundled.
+\item If that is not feasible, tighten the paper's comparative claims further so that the current baseline family is presented as practical but not exhaustive.
+\end{itemize}
 
-The comparator story is much stronger than before: the paper now includes a record-backed Presidio-class comparison slice, executed public zero-shot pilots, repeated-run summaries on fixed public semantic surfaces, and named OCR comparator families. However, the strongest semantic and domain-specific comparator story is still limited. The current zero-shot route is best read as executed pilot evidence rather than as a fully benchmark-closing semantic baseline family.
+\paragraph{3. The formal privacy scope remains intentionally narrow and should stay explicitly scoped.}
+The current span-level LDP analysis is useful as a narrow analytical component, but it does not provide a global security guarantee for the deployed system. The manuscript is already fairly honest about this. The remaining risk is not that the paper lacks any formal discussion, but that reviewers may still read the paper as making a stronger privacy claim than the analysis supports.
 
-For TIFS, the remaining concern is no longer ``there is no stronger baseline.'' It is that the strongest broader semantic or domain-specific baselines are not yet executed at enough public-benchmark breadth under fully released runtime traces.
+\textbf{Priority for the next cycle:}
+\begin{itemize}
+\item Preserve the current narrow wording unless a stronger analytical result is actually added.
+\item Avoid any phrasing that could be read as system-level formal privacy assurance.
+\end{itemize}
 
-\textbf{Actionability in the current repository:} Actionable. The next step should be to promote one additional public semantic or domain-specific baseline route beyond the current TAB and clinical pilot surfaces, ideally on a public benchmark with span-level labels and no access restrictions.
+\paragraph{4. Exact disclosure and portability metadata are improved but still ceiling-limited.}
+The paper now distinguishes missing schema from missing filled records, which is the correct move. Even so, some cross-model and multimodal slices still lack the filled disclosure records needed for exact regeneration.
 
-\subsection{Exact Disclosure Is Honest but Still Ceiling-Limited}
+\textbf{Priority for the next cycle:}
+\begin{itemize}
+\item Continue to present these slices as bounded supporting evidence rather than exact-regeneration artifacts.
+\item Only promote them further if releasable filled records become available.
+\end{itemize}
 
-The current revision handles disclosure boundaries correctly. The latency host record is filled, the Ollama runtime surface is documented, the anonymous portability slice is explicitly framed as alias-level evidence, and the repository now distinguishes between missing schema and missing filled records. This is the right direction.
+\subsection*{Recommended Next-Cycle Priorities}
 
-However, the strongest reproducibility ceiling remains only partially closed: named cross-model portability is still not public, the original internal multimodal OCR/render/runtime chain is still not exactly reproducible from public release artifacts alone, and some deployment-facing records remain limited to local prototype disclosure. These are no longer hidden omissions, but they still constrain final-acceptance readiness.
-
-\textbf{Actionability in the current repository:} Mostly blocked. The manuscript-side explanation is close to exhausted. Additional progress is possible only if more releasable runtime records can be filled without violating anonymity or unavailable provenance constraints.
-
-\section{Minor Observations}
-
-\begin{enumerate}[label=(\alph*)]
-    \item The manuscript and appendix still contain some non-fatal box warnings and dense layouts. These are presentation issues rather than scientific blockers.
-    \item The public-relabeled clinical slice is framed correctly as supporting evidence rather than a substitute for licensed i2b2 evaluation; that distinction should remain explicit in all future edits.
-    \item The OCR-heavy route is now scientifically useful, but SROIE should still be discussed as a difficult boundary case rather than as evidence of stable receipt-field performance.
+\begin{enumerate}
+\item \textbf{Highest priority:} strengthen adaptive-attack evaluation, especially multi-turn or multi-stage attacks and stronger surface-form normalization.
+\item \textbf{Second priority:} improve the strength or centrality of the strongest modern baseline family, or further narrow the paper's comparison claims if stronger executed baselines cannot be released.
+\item \textbf{Third priority:} preserve strict honesty around formal privacy scope and exact disclosure; do not broaden claims beyond what the current evidence supports.
 \end{enumerate}
 
-\section{Revision Priority}
+\subsection*{Bottom Line}
 
-If the authors continue revising this paper for TIFS, the next priorities should be:
-
-\begin{enumerate}[label=(\arabic*)]
-    \item Add at least one more independent public benchmark family under the current wrapper and reporting protocol, preferably a multi-domain text or PII benchmark with span-level labels.
-    \item Promote the strongest currently pilot-scoped semantic or domain-specific baseline family to a broader executed public-benchmark comparison with released runtime traces.
-    \item Fill any additional exact-disclosure records that can be released without breaking anonymity; otherwise keep the disclosure ceiling explicitly documented rather than overstated.
-\end{enumerate}
-
-\section{Bottom Line}
-
-The current manuscript is close to exhausting what can be gained from prose-only revision. The strongest remaining improvements are empirical and disclosure-bound: broader independent validation, broader executed baseline coverage, and selectively stronger exact-disclosure support where releasable. The next revision cycle should therefore focus on adding one more public benchmark route and one more stronger executed baseline surface rather than further manuscript-only rewording.
-
-\end{document}
+The manuscript is now much closer to a stable submission than in earlier rounds, and several previously serious concerns have already been reduced by real repository-backed evidence. The remaining work is concentrated in three areas: adaptive attack robustness, strength of the modern baseline family, and disciplined scoping of formal privacy claims. These are difficult but clearly defined problems, making the next revision cycle more focused than the earlier ones.

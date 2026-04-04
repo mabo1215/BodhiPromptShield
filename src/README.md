@@ -40,6 +40,10 @@
   - `ai4privacy_transfer_results.csv` / `ai4privacy_transfer_document_metrics.csv` / `ai4privacy_transfer_execution_manifest.csv` / `ai4privacy_transfer_run_log.csv`：AI4Privacy held-out `test` split 的 executed multi-domain comparator-family 工件，当前对应 2997 documents / 19392 mentions。
   - `ai4privacy_ollama_zero_shot_baseline.py`：执行本地 Ollama-backed AI4Privacy generic zero-shot pilot，并支持用 `--output-tag` 生成独立的 summary/detail/runtime/run-log 工件。
   - `ai4privacy_ollama_zero_shot_results_test100.csv` / `ai4privacy_ollama_zero_shot_document_metrics_test100.csv` / `ai4privacy_ollama_zero_shot_runtime_manifest_test100.csv` / `ai4privacy_ollama_zero_shot_run_log_test100.csv`：AI4Privacy held-out `test:100` generic local zero-shot pilot 工件，当前记录 Span F1 0.52、PER 26.2\%、text retention 0.92。
+  - `adversarial_robustness_suite.py`：执行 deterministic adversarial probes，而不再只生成静态 appendix 表；当前会同时输出 summary、attack inventory 和 probe-level logs。
+  - `adversarial_robustness_results.csv` / `adversarial_attack_inventory.csv` / `adversarial_probe_logs.csv`：已执行 adversarial probe 工件；当前显示 confusable folding 可将 homoglyph average exposure 从 94.1\% 降到 43.9\%，但 paraphrase、mixed-language 与 restoration-trigger 仍是部分覆盖。
+  - `context_inference_attack_suite.py`：执行本地 Ollama attacker 对 raw / sanitized prompt-history 的四分类属性推断，并输出 summary、prompt logs 与 runtime manifest。
+  - `context_inference_attack_results.csv` / `context_inference_attack_prompt_logs.csv` / `context_inference_attack_runtime_manifest.csv`：已执行 context-inference attack 工件；当前整体 raw accuracy 100.0\%，sanitized 仍为 50.0\%，说明 contextual leakage 仍是明确剩余风险。
   - `build_i2b2_synthea_synthetic_export.py`：把公开 i2b2-Synthea sample tables 转成 schema-compatible synthetic note export，用于无 licensed notes 时的 public rehearsal。
   - `i2b2_synthea_synthetic_export.jsonl`：基于公开 Synthea sample 构建的 synthetic i2b2-compatible note export。
   - `i2b2_synthea_synthetic_export_test128.jsonl`：基于同一公开 Synthea sample 生成的更大 held-out synthetic clinical slice，当前对应 `synthea-test:128`。
@@ -163,6 +167,10 @@
   - `python src/experiments/hardcase_analysis.py`
 - 生成 multi-seed 稳定性工件：
   - `python src/experiments/multiseed_evaluation.py`
+- 生成 adversarial probe robustness 工件：
+  - `python src/experiments/adversarial_robustness_suite.py`
+- 生成 context-inference attack 工件：
+  - `python src/experiments/context_inference_attack_suite.py`
 - 生成 leave-template-out 泛化工件：
   - `python src/experiments/leavetemplateout_evaluation.py`
 - 生成 external baseline comparison 工件：
