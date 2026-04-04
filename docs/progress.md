@@ -66,8 +66,8 @@
 
 本轮仓库内可独立完成的代码、工件、文档与论文同步工作已经全部收口。下面保留的内容不再是仓库侧待办，而只是外部边界或非阻塞范围限制：
 
-- 外部 baseline 闭环边界：更强的 named/practical external baseline family 仍受 closed-model runtime、重依赖工业 pipeline、以及更大范围可公开运行日志约束；当前仓库已把能公开执行的 Presidio-class、hybrid heuristic、Ollama zero-shot、以及 OCR Presidio/spaCy family 全部落成可检查工件。
-- 外部 benchmark 访问边界：更广的 public transfer 与 validation 仍受 licensed i2b2 note access、DocILE request gate、以及 truly independent cross-infrastructure rerun 条件限制；这不是仓库内部脚本未实现，而是数据与执行环境边界未开放。
-- 匿名化与原始运行记录边界：cross-model portability 仍保持 alias-level 匿名口径，CPPB multimodal supporting slice 仍缺原始 rendering/OCR runtime disclosure；这些限制来自公开发布策略与历史原始记录缺失，而不是当前 revision cycle 尚未编码。
-- Benchmark package 边界：CPPB data-card 已达到 source-level provenance、annotation semantics、wrapper invariants 与 release-card 级别，但更完整逐源 licensing packet 与 exemplar-level raw-asset package 超出当前可公开范围。
-- 非阻塞排版边界：论文仍有少量 underfull / overfull warning，主要来自长 URL、参考文献与宽表；构建稳定，不阻塞当前 evidence-backed revision 收口。
+- 外部 baseline 闭环边界：更强的具名/实用 external baseline family 仍受闭源模型运行条件、重依赖工业 pipeline，以及更大范围可公开运行日志限制；当前仓库已把可公开执行的 Presidio-class、hybrid heuristic、Ollama zero-shot，以及 OCR Presidio/spaCy 两个 comparator family 全部落成可检查工件。
+- 外部 benchmark 访问边界：更广的 public transfer 与 validation 仍受 licensed i2b2 note access、DocILE request gate，以及 truly independent cross-infrastructure rerun 条件限制；这不是仓库侧脚本未实现，而是数据与执行环境边界尚未开放。
+- 匿名化与原始运行记录边界：cross-model portability 仍维持 alias-level 匿名口径，CPPB multimodal supporting slice 仍缺原始 rendering/OCR runtime disclosure；这些限制来自公开发布策略与历史原始记录缺失，而非当前 revision cycle 尚未实现。
+- Benchmark package 边界：CPPB data-card 已覆盖 source-level provenance、annotation semantics、wrapper invariants 与 release-card 级别信息，但更完整的逐源 licensing packet 与 exemplar-level raw-asset package 超出当前可公开范围。
+- 非阻塞排版边界：论文仍有少量 underfull / overfull warning，主要来自长 URL、参考文献与宽表；当前构建稳定，不影响这一轮 evidence-backed revision 的收口。
