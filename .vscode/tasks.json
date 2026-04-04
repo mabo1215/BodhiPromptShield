@@ -10,6 +10,26 @@
 				"paper\\build.bat"
 			],
 			"isBackground": false
+		},
+		{
+			"label": "ollama-list-once",
+			"type": "shell",
+			"command": "ollama",
+			"args": [
+				"list"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "ollama-tags-once",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Invoke-RestMethod -Uri http://127.0.0.1:11434/api/tags | ConvertTo-Json -Depth 5"
+			],
+			"isBackground": false
 		}
 	]
 }

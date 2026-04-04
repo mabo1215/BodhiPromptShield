@@ -17,6 +17,10 @@
   - Released split counts for templates, prompts, families, categories, subsets, and modality
 - `cppb_split_release_card.md`
   - Split semantics and leakage boundary for the released CPPB train/dev/test surface
+- `cppb_split_method_summary.csv`
+  - Split-specific held-out summary for method operating points reconstructed from bundled prompt-level multi-seed logs
+- `cppb_split_policy_summary.csv`
+  - Split-specific held-out summary for policy profiles reconstructed from bundled prompt-level multi-seed logs
 - `cppb_distribution_breakdown.csv`
   - Exact count / percentage breakdown by subset, family, category, source, and modality
   - Figure `cppb_benchmark_composition.png`
@@ -97,6 +101,10 @@
   - Prompt-level repeated-run records for method operating points
 - `multiseed_policy_prompt_logs.csv`
   - Prompt-level repeated-run records for policy operating points
+- `cppb_split_method_seed_metrics.csv`
+  - Per-seed CPPB train/dev/test aggregates for method operating points
+- `cppb_split_policy_seed_metrics.csv`
+  - Per-seed CPPB train/dev/test aggregates for policy operating points
 - `leavetemplateout_summary.csv`
   - Appendix table `tab:lto`
 - `leavetemplateout_results.csv`
@@ -121,6 +129,14 @@
   - Fixed zero-shot de-identification prompt surface for the protocol-only TAB semantic baseline
 - `tab_ollama_zero_shot_results.csv`
   - Executed TAB dev:32 local zero-shot pilot summary
+- `tab_ollama_zero_shot_results_test040.csv`
+  - Executed TAB test:40 local zero-shot pilot summary on a larger held-out public slice
+- `tab_ollama_zero_shot_document_metrics_test040.csv`
+  - Per-document metrics for the held-out TAB test:40 local zero-shot pilot
+- `tab_ollama_zero_shot_runtime_manifest_test040.csv`
+  - Richer runtime manifest for the held-out TAB test:40 local zero-shot pilot, including digest and runtime timestamps
+- `tab_ollama_zero_shot_run_log_test040.csv`
+  - Run log for the held-out TAB test:40 local zero-shot pilot
 - `tab_ollama_zero_shot_stability_summary.csv`
   - Three-observation TAB dev:32 local zero-shot stability summary
 - `tab_ollama_zero_shot_stability_runs.csv`
@@ -188,6 +204,7 @@ python src/experiments/multimodal_analysis.py
 python src/experiments/crossmodel_analysis.py
 python src/experiments/hardcase_analysis.py
 python src/experiments/multiseed_evaluation.py
+python src/experiments/cppb_split_heldout_evaluation.py
 python src/experiments/leavetemplateout_evaluation.py
 python src/experiments/external_baseline_suite.py
 python src/experiments/tab_external_transfer.py src/experiments/external_data/tab

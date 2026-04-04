@@ -34,11 +34,11 @@ for Suppressing Privacy Propagation in LLM/VLM Agents''\\[0.3em]
 
 \subsection{External Validity Is Still Bounded by CPPB-Centric Core Claims}
 
-The manuscript now handles this issue much more honestly than before: CPPB is clearly described as a controlled benchmark specification, the public TAB route is executed, the synthetic i2b2 route is explicitly separated from licensed clinical evaluation, and the OCR-heavy route now includes executed CORD, FUNSD, and SROIE slices. Nevertheless, the core headline tables and the main narrative are still anchored primarily on an author-constructed benchmark. For a TIFS submission, this remains the dominant scientific limitation.
+The manuscript now handles this issue much more honestly than before: CPPB is clearly described as a controlled benchmark specification, the public TAB route is executed, the synthetic i2b2 route is explicitly separated from licensed clinical evaluation, the OCR-heavy route now includes executed CORD, FUNSD, and SROIE slices, and the released CPPB train/dev/test surface now also has split-specific held-out summaries reconstructed from bundled prompt-level logs. Nevertheless, the core headline tables and the main narrative are still anchored primarily on an author-constructed benchmark. For a TIFS submission, this remains the dominant scientific limitation.
 
 The current paper therefore supports the claim that the proposed mediation strategy works under a carefully controlled, propagation-aware benchmark design. It does \emph{not} yet fully support the stronger claim that the same operating point generalizes across independent third-party benchmarks at the level usually expected for final acceptance.
 
-\textbf{Actionability in the current repository:} Partially improved. The repository now includes a released CPPB train/dev/test separation with template-disjoint model-selection and held-out evaluation surfaces, but the strongest remaining closure steps still require licensed i2b2 reruns, broader independent public-benchmark transfer, or new held-out reruns on top of that released split.
+\textbf{Actionability in the current repository:} Partially improved. The repository now includes a released CPPB train/dev/test separation together with split-specific held-out summaries reconstructed from bundled prompt-level logs, so the remaining closure steps are now less about internal split ambiguity and more about licensed i2b2 reruns and broader independent public-benchmark transfer.
 
 \subsection{Some Reproducibility Slices Remain Honest but Not Fully Disclosed}
 
@@ -46,7 +46,7 @@ The current revision now documents implementation conditions much better: the lo
 
 However, several important slices remain only partially reproducible in the strongest TIFS sense. The cross-model table is still alias-level rather than vendor/model/version-level. The bundled latency evidence is still a local single-request middleware snapshot rather than a portable deployment benchmark. The multimodal CPPB slice still lacks the original OCR/runtime disclosure record needed for exact regeneration of the originally constructed internal OCR path. These are now explicit scope boundaries rather than hidden omissions, and the repository now at least defines the promotion templates for exact disclosure, but they still limit the paper's reproducibility ceiling.
 
-\textbf{Actionability in the current repository:} Partially improved. The manuscript-side clarity work is close to exhausted, but the repository now distinguishes between anonymous review evidence, confidential internal exact logs, and camera-ready public disclosure; what remains blocked is filling those records under post-anonymity or releasable runtime conditions.
+\textbf{Actionability in the current repository:} Partially improved. The manuscript-side clarity work is close to exhausted, but the repository now distinguishes between anonymous review evidence, confidential internal exact logs, and camera-ready public disclosure; the latest repository audit also confirms that the missing fully named cross-model and CPPB multimodal exact-regeneration records are not already bundled in hidden form, so what remains blocked is filling those records under post-anonymity or otherwise releasable runtime conditions.
 
 \subsection{The Strongest Missing Baselines Are Still Only Partially Closed}
 

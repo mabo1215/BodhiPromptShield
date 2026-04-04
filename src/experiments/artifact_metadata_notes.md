@@ -8,6 +8,7 @@
 - Privacy categories: Person names, Contact details, Postal addresses, National/account identifiers, Financial references, Medical content, Organization/project terms, Context-dependent confidential spans.
 - Split semantics: V1-V4 are Essential-privacy variants and V5-V8 are Incidental-privacy variants; V4 and V8 are the OCR-mediated text-plus-image slice.
 - The released split surface is now also explicit: `build_cppb_split_release.py` writes `cppb_split_manifest.csv`, `cppb_split_summary.csv`, and `cppb_split_release_card.md` using a template-stratified train/dev/test rule so prompt variants do not leak across release splits.
+- `cppb_split_heldout_evaluation.py` now joins that split manifest with the bundled multi-seed prompt logs and writes split-specific method/profile summaries, making the released train/dev/test surface reportable rather than only prospective.
 - Prompt/source provenance in the public snapshot is benchmark-authored and template-derived. The released files describe prompt stubs and accounting metadata rather than raw third-party user data.
 - `cppb_release_card.md` consolidates release scope, provenance, annotation examples, wrapper specification, and known omissions into one benchmark-card-style companion note.
 
@@ -26,6 +27,7 @@
 - `multimodal_provenance_card.md` now consolidates slice construction, rendering boundary, OCR-facing provenance, and the still-missing source-image/runtime metadata in one note.
 - `cppb_multimodal_exact_regeneration_manifest_template.csv` now defines the exact render/OCR/runtime fields required before promoting the internal CPPB multimodal slice to exact-regeneration evidence.
 - The current repository still does not ship raw OCR engine/version manifests or document-rendering assets for a full end-to-end multimodal rerun.
+- A fresh repository audit also confirms that the current snapshot still lacks the original rendered asset package and the filled OCR/runtime disclosure record for the internal CPPB multimodal slice, so this gap is an underlying evidence-boundary issue rather than a missing paperwork-only field.
 
 ## Cross-Model Portability Note
 
@@ -34,6 +36,7 @@
 - `crossmodel_named_rerun_manifest_template.csv` now defines the minimum vendor/model/version and runtime fields required before promoting the slice to a named rerun.
 - `exact_disclosure_promotion_plan.md` now defines the release path from the anonymous review slice to a confidential internal exact bundle and then to camera-ready public exact disclosure.
 - Exact backend names, versions, and vendor-specific decoding fields are still not bundled in the current snapshot.
+- A fresh repository audit confirms that the current snapshot does not already contain hidden fully named cross-model logs, and the local Ollama runtime currently exposes only one installed named model, so an immediate local public multi-model rerun is not presently available from this workspace alone.
 - `crossmodel_portability_manifest.md` makes the current portability evidence boundary explicit while preserving anonymous reporting.
 
 ## Public TAB Transfer Note
@@ -43,6 +46,7 @@
 - `tab_transfer_run_log.csv` now records the bundled public input scope, split counts, generated outputs, and rerun command template for each TAB comparator.
 - `tab_zero_shot_prompt_template.txt` and `external_baseline_runtime_manifest_template.csv` now define the fixed zero-shot prompt surface and an Ollama-based public local runtime logging template used by the released TAB and synthetic i2b2 pilots.
 - `tab_ollama_zero_shot_baseline.py` now executes that fixed zero-shot surface on a 32-document public TAB pilot slice and writes summary, per-document, runtime-manifest, and run-log artifacts without overwriting the released full TAB heuristic roster.
+- The same runner now also supports tagged non-destructive outputs and richer runtime manifests, and the current snapshot includes a larger held-out TAB `test:40` local pilot with explicit model digest, family, parameter-size, quantization, OS/Python runtime, and run timestamp fields.
 - `ollama_zero_shot_stability.py` now snapshots repeat reruns of that TAB surface and writes a three-observation mean/std/CI summary for the local semantic baseline path.
 - This TAB slice is intentionally text-only and reports span precision/recall/F1, PER, and non-sensitive text retention rather than CPPB-style AC/TSR.
 - The current runner now includes raw, regex, NER, two Presidio-class heuristic approximations, one released hybrid de-identification comparator, and the released BodhiPromptShield heuristic mediator; prompted zero-shot LLM de-identification is now also backed by a separate executed local pilot artifact chain.
