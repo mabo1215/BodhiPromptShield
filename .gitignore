@@ -20,7 +20,8 @@ tmp/
 
 __init__.py
 
-# Codex local rules
+.vscode/
+.idea/
 agents/*
 USAGE.md
 src/experiments/*
