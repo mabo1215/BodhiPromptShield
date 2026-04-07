@@ -1,0 +1,7 @@
+Track Justification Statement
+
+Track: Machine Learning and Security
+
+This paper fits the Machine Learning and Security track because it studies a security problem specific to LLM/VLM agents: privacy propagation across retrieval, memory, tool calls, OCR, and logs. Rather than treating de-identification as a document-only NLP task, it formulates prompt privacy as a pre-inference security control problem for ML systems. The paper proposes a policy-aware mediation framework that detects sensitive spans, applies placeholders, abstraction, or symbolic mapping, and delays restoration until authorized boundaries. The evaluation focuses on security-relevant outcomes, including privacy exposure, stage-wise propagation, utility retention, and adversarial surface-form robustness.
+
+The work is practically relevant to real-world agentic systems such as enterprise assistants, document-processing pipelines, and privacy-sensitive support workflows. Its threat model covers honest-but-curious downstream observers, adaptive prompt adversaries using paraphrase or homoglyph evasion, and misuse of restoration surfaces. The main actionable insight is that privacy failures in ML agents often arise from propagation through intermediate states, so defenses should be enforced before retrieval, memory writes, and tool execution, not only through document-boundary de-identification or post hoc filtering.
