@@ -1,0 +1,8 @@
+method,document_count,mention_count,span_precision,span_recall,span_f1,per_percent,text_retention,notes
+Raw prompt,2997,19392,0.00,0.00,0.00,100.0,1.00,No sanitization is applied before evaluation.
+Regex-only,2997,19392,0.76,0.36,0.49,63.4,0.98,Structured identifier patterns only.
+NER-only masking,2997,19392,0.16,0.10,0.12,87.7,0.82,"Capitalization, title, and location-shape heuristics only."
+Presidio-class (regex-focused heuristic),2997,19392,0.21,0.38,0.27,60.8,0.78,Released approximation of a structured recognizer stack on a public multi-domain PII benchmark.
+Presidio-class (NER fallback heuristic),2997,19392,0.23,0.44,0.30,52.5,0.70,Released approximation of a structured-plus-NER stack on a public multi-domain PII benchmark.
+Hybrid rule+context de-identification,2997,19392,0.23,0.44,0.30,52.5,0.70,"Released hybrid heuristic using structured, entity, and context cues on a public multi-domain PII benchmark."
+BodhiPromptShield (released heuristic mediator),2997,19392,0.23,0.44,0.30,52.5,0.70,Released lightweight policy-aware mediator under the public multi-domain wrapper.

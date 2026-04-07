@@ -1,0 +1,4 @@
+reference_method,comparator_method,metric,paired_units,mean_difference_pct_points,ci95_low_pct_points,ci95_high_pct_points,bootstrap_prob_difference_nonnegative,interpretation
+Enterprise staged redaction,Proposed (utility-constrained),direct_exposure_score,1280,1.114,1.098,1.129,1.0000,Direct-PER trade-off between the strongest typed-placeholder baseline and the full utility-constrained setting.
+Generic de-identification,Enterprise staged redaction,direct_exposure_score,1280,-4.365,-4.383,-4.345,0.0000,Direct-PER gain from moving beyond one-token generic redaction to a typed enterprise baseline.
+Proposed (semantic abstraction),Proposed (utility-constrained),direct_exposure_score,1280,-5.406,-5.421,-5.391,0.0000,Direct-PER effect of adding utility-constrained policy routing on top of semantic abstraction.

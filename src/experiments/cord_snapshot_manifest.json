@@ -1,0 +1,23 @@
+{
+  "benchmark": "CORD",
+  "dataset_id": "katanaml/cord",
+  "snapshot_revision": "4f51527df44a7f7f915bee494f1129915118d0e1",
+  "snapshot_url": "https://huggingface.co/datasets/katanaml/cord/resolve/4f51527df44a7f7f915bee494f1129915118d0e1/dataset.zip",
+  "license": "CC-BY-4.0",
+  "archive_path": "src/experiments/external_data/resource_cache/cord_dataset/hf_snapshot/4f51527df44a7f7f915bee494f1129915118d0e1/dataset.zip",
+  "archive_size_bytes": 2054893595,
+  "archive_sha256": "17f02e67ba80667dcc47f49191a4e3d32f0d3bc0f72bef286d91a92f4681560d",
+  "extract_root": "src/experiments/external_data/resource_cache/cord_dataset/hf_snapshot/4f51527df44a7f7f915bee494f1129915118d0e1/extracted",
+  "dataset_root": "src/experiments/external_data/resource_cache/cord_dataset/hf_snapshot/4f51527df44a7f7f915bee494f1129915118d0e1/extracted/CORD",
+  "annotation_file_count": 1000,
+  "image_file_count": 1000,
+  "split_breakdown": {
+    "train": 800,
+    "test": 100,
+    "valid": 100
+  },
+  "download_status": "reused_cached_archive",
+  "download_etag": "cached_only",
+  "download_content_length": "2054893595",
+  "notes": "Pinned public CORD snapshot downloaded from the Hugging Face mirror and stored locally for reproducible OCR reruns."
+}

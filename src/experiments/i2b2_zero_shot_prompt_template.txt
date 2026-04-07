@@ -1,0 +1,14 @@
+System instruction:
+You are evaluating privacy mediation on longitudinal clinical narratives.
+
+User instruction:
+Given the following clinical note, remove or mask all PHI spans while preserving clinically relevant meaning for downstream summarization or QA.
+
+Requirements:
+1. Preserve diagnoses, medications, procedures, and timeline semantics whenever they are not themselves PHI.
+2. Replace PHI with consistent typed placeholders when the local note context depends on entity continuity.
+3. Do not introduce new clinical content.
+4. Return only the sanitized note text.
+
+Clinical note:
+{{NOTE_TEXT}}

@@ -1,0 +1,72 @@
+{
+  "benchmark": "FUNSD",
+  "dataset_id": "nielsr/funsd-layoutlmv3",
+  "snapshot_revision": "ccd2a77745b0dc9f154a91db1219ec05c86ce7ec",
+  "snapshot_url": "https://huggingface.co/datasets/nielsr/funsd-layoutlmv3/tree/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec",
+  "license": "See upstream pinned dataset card",
+  "snapshot_root": "src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec",
+  "download_status": "reused_local_snapshot",
+  "split_breakdown": {
+    "train": 149,
+    "test": 50
+  },
+  "feature_fields": [
+    "id",
+    "tokens",
+    "bboxes",
+    "ner_tags",
+    "image"
+  ],
+  "ner_tag_names": [
+    "O",
+    "B-HEADER",
+    "I-HEADER",
+    "B-QUESTION",
+    "I-QUESTION",
+    "B-ANSWER",
+    "I-ANSWER"
+  ],
+  "tracked_files": [
+    {
+      "path": "src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec/.cache/huggingface/.gitignore",
+      "size_bytes": 1,
+      "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec/.cache/huggingface/CACHEDIR.TAG",
+      "size_bytes": 195,
+      "sha256": "e8893e2dcb3f4545ef67a0a5b7b769113d38eef1aa61c7c7ba14659b02af955f"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec/.cache/huggingface/download/funsd/test-00000-of-00001.parquet.metadata",
+      "size_bytes": 128,
+      "sha256": "b68c60952c1c31283bdaf9cb517e8db177c01be97416aceee4b14680950dfa6a"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec/.cache/huggingface/download/funsd/train-00000-of-00001.parquet.metadata",
+      "size_bytes": 128,
+      "sha256": "3c7ffda9d77ec6f36263dc67710c3273455a7d3b73859d6578869983276660ea"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec/.cache/huggingface/download/README.md.metadata",
+      "size_bytes": 103,
+      "sha256": "5990738b468bf727ddd84fb298c2a88dae423b752a1198b0d36c57e63957c2c4"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec/funsd/test-00000-of-00001.parquet",
+      "size_bytes": 9537484,
+      "sha256": "190b6c2d4fcf58e700f7952eb2ddf1cbf7399b681de714287077000f8f2eabc7"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec/funsd/train-00000-of-00001.parquet",
+      "size_bytes": 26299965,
+      "sha256": "99dc36dc4e46bc76a3abd50e593f14f75903ca9c50722e2a835d43b65ec999c8"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec/README.md",
+      "size_bytes": 770,
+      "sha256": "649361f32bf9a62e1a0228aa4702a9a19e15a11c8580bf56ea2d900b40f84910"
+    }
+  ],
+  "notes": "Pinned public FUNSD parquet snapshot downloaded from Hugging Face and stored locally for reproducible OCR reruns."
+}

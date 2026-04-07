@@ -1,0 +1,2 @@
+benchmark,method,split,document_count,mention_count,span_precision,span_recall,span_f1,per_percent,text_retention,mean_prompt_eval_count,mean_eval_count,mean_latency_ms,notes
+TAB,Prompted LLM zero-shot de-identification,dev,32,2037,0.56,0.47,0.51,46.1,0.80,1072.3,771.5,23402.5,Executed local open-weight zero-shot pilot on a TAB subset with the fixed prompt surface.

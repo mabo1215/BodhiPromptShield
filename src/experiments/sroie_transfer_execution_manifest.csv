@@ -1,0 +1,7 @@
+benchmark,method,family,execution_status,input_scope,notes
+SROIE,Raw OCR text prompt,No protection,executed,Pinned SROIE test split on public snapshot b9bc49bf5eb8b06528c810d02a4f7c766474fbad,No sanitization is applied after OCR extraction.
+SROIE,OCR + regex masking,Pattern baseline,executed,Pinned SROIE test split on public snapshot b9bc49bf5eb8b06528c810d02a4f7c766474fbad,Mask numeric identifiers and receipt-style patterns with OCR-text regexes only.
+SROIE,OCR + generic de-identification,Generic de-identification,executed,Pinned SROIE test split on public snapshot b9bc49bf5eb8b06528c810d02a4f7c766474fbad,Mask regex hits plus upper receipt header lines without policy routing.
+SROIE,OCR + Presidio receipt de-identification,Named OCR de-identification,executed,Pinned SROIE test split on public snapshot b9bc49bf5eb8b06528c810d02a4f7c766474fbad,Use a real Presidio recognizer stack plus receipt-specific line expansion on OCR text.
+SROIE,OCR + spaCy receipt de-identification,Named OCR de-identification,executed,Pinned SROIE test split on public snapshot b9bc49bf5eb8b06528c810d02a4f7c766474fbad,Use a spaCy NER stack plus receipt-specific line expansion on OCR text.
+SROIE,Proposed multimodal mediation,Policy-aware mediation,executed,Pinned SROIE test split on public snapshot b9bc49bf5eb8b06528c810d02a4f7c766474fbad,Mask sensitive receipt header and contact fields while preserving total-value utility.

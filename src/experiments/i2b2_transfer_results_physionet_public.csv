@@ -1,0 +1,8 @@
+method,document_count,mention_count,span_precision,span_recall,span_f1,per_percent,text_retention,notes
+Raw prompt,1100,8800,0.00,0.00,0.00,100.0,1.00,No protection baseline on the wrapped clinical notes.
+Regex-only,1100,8800,0.99,0.25,0.40,71.0,1.00,"Pattern-only masking for dates, IDs, phones, emails, and address-like spans."
+NER-only masking,1100,8800,0.01,0.00,0.00,99.9,0.97,Capitalization and title-driven masking without clinical routing.
+Presidio-class (regex-focused heuristic),1100,8800,0.99,0.25,0.40,71.0,1.00,Released approximation of a Presidio-class structured recognizer stack under the clinical wrapper.
+Presidio-class (NER fallback heuristic),1100,8800,0.71,0.25,0.37,71.0,0.97,Released approximation of a Presidio-class structured-plus-NER stack under the clinical wrapper.
+Clinical hybrid heuristic de-identification,1100,8800,0.89,0.25,0.39,71.0,0.99,"Released hybrid heuristic using structured, named-entity, clinical-context, and location cues under the clinical wrapper."
+BodhiPromptShield (released heuristic mediator),1100,8800,0.66,0.25,0.36,71.0,0.96,"Released lightweight policy-aware mediator using regex, clinical context, title, organization, and location heuristics."

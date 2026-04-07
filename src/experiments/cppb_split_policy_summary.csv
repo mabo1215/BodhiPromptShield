@@ -1,0 +1,10 @@
+split,profile,seed_count,prompt_count,template_count,per_mean,per_std,per_ci95,upr_mean,upr_std,upr_ci95,tsr_mean,tsr_std,tsr_ci95,notes
+dev,Balanced,5,64,8,9.6093,0.1368,0.1199,0.9380,0.0015,0.0013,0.9171,0.0020,0.0017,Split-specific CPPB held-out reconstruction from bundled prompt-level multi-seed logs.
+dev,Lenient,5,64,8,12.9280,0.1677,0.1470,0.9663,0.0017,0.0015,0.9454,0.0017,0.0015,Split-specific CPPB held-out reconstruction from bundled prompt-level multi-seed logs.
+dev,Strict,5,64,8,7.6702,0.1500,0.1315,0.8874,0.0011,0.0010,0.8768,0.0014,0.0012,Split-specific CPPB held-out reconstruction from bundled prompt-level multi-seed logs.
+test,Balanced,5,64,8,9.6272,0.1394,0.1222,0.9379,0.0015,0.0014,0.9169,0.0019,0.0017,Split-specific CPPB held-out reconstruction from bundled prompt-level multi-seed logs.
+test,Lenient,5,64,8,12.9031,0.1690,0.1481,0.9666,0.0017,0.0015,0.9457,0.0016,0.0014,Split-specific CPPB held-out reconstruction from bundled prompt-level multi-seed logs.
+test,Strict,5,64,8,7.6508,0.1523,0.1335,0.8875,0.0012,0.0010,0.8770,0.0015,0.0013,Split-specific CPPB held-out reconstruction from bundled prompt-level multi-seed logs.
+train,Balanced,5,128,16,9.6112,0.1356,0.1188,0.9380,0.0015,0.0013,0.9171,0.0019,0.0017,Split-specific CPPB held-out reconstruction from bundled prompt-level multi-seed logs.
+train,Lenient,5,128,16,12.9276,0.1680,0.1472,0.9663,0.0017,0.0015,0.9454,0.0016,0.0014,Split-specific CPPB held-out reconstruction from bundled prompt-level multi-seed logs.
+train,Strict,5,128,16,7.6711,0.1488,0.1304,0.8874,0.0011,0.0010,0.8768,0.0014,0.0012,Split-specific CPPB held-out reconstruction from bundled prompt-level multi-seed logs.

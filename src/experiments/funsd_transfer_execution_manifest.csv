@@ -1,0 +1,7 @@
+benchmark,method,family,execution_status,input_scope,notes
+FUNSD,Raw OCR text prompt,No protection,executed,Pinned FUNSD test split on public snapshot ccd2a77745b0dc9f154a91db1219ec05c86ce7ec,No sanitization is applied after OCR extraction.
+FUNSD,OCR + regex masking,Pattern baseline,executed,Pinned FUNSD test split on public snapshot ccd2a77745b0dc9f154a91db1219ec05c86ce7ec,Mask numeric identifiers and field-style patterns with OCR-text regexes only.
+FUNSD,OCR + generic de-identification,Generic de-identification,executed,Pinned FUNSD test split on public snapshot ccd2a77745b0dc9f154a91db1219ec05c86ce7ec,Mask regex hits plus form-like answer text around common field labels without layout routing.
+FUNSD,OCR + Presidio form de-identification,Named OCR de-identification,executed,Pinned FUNSD test split on public snapshot ccd2a77745b0dc9f154a91db1219ec05c86ce7ec,Use a real Presidio recognizer stack plus form-specific recognizers and value-span expansion on OCR text.
+FUNSD,OCR + spaCy form de-identification,Named OCR de-identification,executed,Pinned FUNSD test split on public snapshot ccd2a77745b0dc9f154a91db1219ec05c86ce7ec,Use a spaCy NER stack plus form-value expansion on OCR text.
+FUNSD,Proposed multimodal mediation,Policy-aware mediation,executed,Pinned FUNSD test split on public snapshot ccd2a77745b0dc9f154a91db1219ec05c86ce7ec,Mask likely answer/value regions with OCR-line and layout-aware heuristics while preserving form labels.

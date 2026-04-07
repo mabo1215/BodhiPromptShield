@@ -1,0 +1,82 @@
+{
+  "protocol_name": "ocr_heavy_external_transfer_tracking",
+  "version": "1.0",
+  "scope": "Public OCR-heavy document and receipt benchmarks tracked as executed or acquisition-aware transfer surfaces.",
+  "status": "mixed_executed_and_tracked",
+  "wrapper_invariants": [
+    "Use the same mediation semantics and comparator-family distinctions as the released TAB and i2b2 wrappers.",
+    "Keep exact OCR engine, version, and preprocessing configuration logged for every executed slice.",
+    "Treat public acquisition manifests and helper repositories as provenance support rather than benchmark results for request-gated or still-tracked benchmarks."
+  ],
+  "required_outputs_for_execution": [
+    "Benchmark-specific wrapper manifest aligned to the matched mediation protocol",
+    "Execution manifest with executed versus waiting-state comparator status",
+    "Result CSV and per-document metrics when the benchmark is executable",
+    "Run log that records OCR engine, input scope, and generated outputs"
+  ],
+  "benchmarks": [
+    {
+      "benchmark_id": "cord_public_receipts",
+      "dataset_name": "CORD",
+      "benchmark_kind": "public_receipt_benchmark",
+      "task_focus": "OCR-heavy receipt parsing and entity extraction",
+      "priority": "primary",
+      "access_mode": "public_github_archive",
+      "local_cache_status": "archive_cached",
+      "local_artifact_path": "src/experiments/external_data/resource_cache/cord_dataset/archive",
+      "execution_surface": "executed_public_snapshot",
+      "missing_requirements": [
+        ""
+      ],
+      "next_step": "Keep the pinned CORD snapshot and executed comparator roster fixed, then use the same wrapper for broader OCR family comparisons."
+    },
+    {
+      "benchmark_id": "funsd_public_forms",
+      "dataset_name": "FUNSD",
+      "benchmark_kind": "public_form_benchmark",
+      "task_focus": "Noisy form understanding after OCR-mediated text recovery",
+      "priority": "tracked",
+      "access_mode": "public_hf_snapshot",
+      "local_cache_status": "snapshot_cached",
+      "local_artifact_path": "src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot",
+      "execution_surface": "executed_public_snapshot",
+      "missing_requirements": [
+        ""
+      ],
+      "next_step": "Keep the pinned FUNSD snapshot and executed comparator roster fixed, then use the same wrapper for broader named OCR/de-id comparisons."
+    },
+    {
+      "benchmark_id": "sroie_public_receipts",
+      "dataset_name": "SROIE",
+      "benchmark_kind": "public_receipt_benchmark",
+      "task_focus": "Receipt OCR and information extraction under noisy layout conditions",
+      "priority": "tracked",
+      "access_mode": "public_hf_snapshot",
+      "local_cache_status": "snapshot_cached",
+      "local_artifact_path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot",
+      "execution_surface": "executed_public_snapshot",
+      "missing_requirements": [
+        ""
+      ],
+      "next_step": "Keep the pinned SROIE processed snapshot fixed, and improve the approximate OCR-token field alignment before claiming broader receipt generalization."
+    },
+    {
+      "benchmark_id": "docile_request_gated_documents",
+      "dataset_name": "DocILE",
+      "benchmark_kind": "request_gated_business_documents",
+      "task_focus": "Invoice and reimbursement document workflows with request-gated data access",
+      "priority": "tracked",
+      "access_mode": "request_gated_benchmark",
+      "local_cache_status": "helper_repo_cached",
+      "local_artifact_path": "src/experiments/external_data/resource_cache/docile_benchmark/helper_archive",
+      "execution_surface": "scaffold_only",
+      "missing_requirements": [
+        "Approved dataset access for the primary benchmark files",
+        "Wrapper-ready export aligned to the matched mediation protocol",
+        "Exact OCR engine and version manifest",
+        "Result CSV and rerun log under the released comparator roster"
+      ],
+      "next_step": "Cache the public helper repository for schema/provenance support, then wait for approved benchmark access before execution."
+    }
+  ]
+}

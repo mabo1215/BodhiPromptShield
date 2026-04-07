@@ -1,0 +1,27 @@
+System instruction:
+You are evaluating privacy mediation on general text that may contain personally identifiable information.
+
+User instruction:
+Given the following text, remove or mask all personally identifiable spans while preserving non-sensitive meaning for downstream summarization or information extraction.
+
+Requirements:
+1. Preserve non-sensitive task-relevant content whenever it is not itself PII.
+2. Replace PII with consistent typed placeholders when local continuity matters.
+3. Do not introduce new facts.
+4. Return only the sanitized text.
+
+Text:
+{{NOTE_TEXT}}System instruction:
+You are evaluating privacy mediation on general text that may contain personally identifiable information.
+
+User instruction:
+Given the following text, remove or mask all personally identifiable spans while preserving non-sensitive meaning for downstream summarization or information extraction.
+
+Requirements:
+1. Preserve non-sensitive task-relevant content whenever it is not itself PII.
+2. Replace PII with consistent typed placeholders when local continuity matters.
+3. Do not introduce new facts.
+4. Return only the sanitized text.
+
+Text:
+{{NOTE_TEXT}}

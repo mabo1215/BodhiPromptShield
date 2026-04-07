@@ -1,0 +1,14 @@
+System instruction:
+You are evaluating prompt privacy mediation on a public anonymization benchmark.
+
+User instruction:
+Given the following legal-domain document, remove or mask every identifier that should remain anonymized while preserving task-relevant meaning and fluent readable text.
+
+Requirements:
+1. Replace protected identifiers with consistent typed placeholders when exact semantics are needed.
+2. Preserve non-sensitive legal content and discourse structure.
+3. Do not invent facts that are not present in the source text.
+4. Return only the sanitized document text.
+
+Document:
+{{DOCUMENT_TEXT}}

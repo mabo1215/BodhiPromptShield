@@ -1,0 +1,2 @@
+benchmark,method,split,note_count,mention_count,span_precision,span_recall,span_f1,per_percent,text_retention,mean_prompt_eval_count,mean_eval_count,mean_latency_ms,notes
+Synthetic i2b2-Synthea,Prompted LLM zero-shot de-identification,synthea-test,128,256,0.21,1.00,0.35,0.0,0.85,174.2,176.9,6762.8,Executed local open-weight zero-shot pilot on a synthetic i2b2-compatible export built from the public Synthea sample.

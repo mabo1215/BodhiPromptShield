@@ -1,0 +1,2 @@
+run_id,measurement_scope,host_class,hardware_summary,os_runtime,python_runtime,concurrency_mode,request_scheduling,prompt_length_bucket,network_path,notes
+latency-snapshot-001,CPPB single-request middleware overhead,,,,,serial_single_request,local_synchronous,,local_or_stubbed_model_path,Fill from the exact host and scheduling context before interpreting latency as portable infrastructure evidence.

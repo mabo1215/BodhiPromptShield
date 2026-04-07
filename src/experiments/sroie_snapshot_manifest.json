@@ -1,0 +1,156 @@
+{
+  "benchmark": "SROIE",
+  "dataset_id": "rajistics/sroie_processed",
+  "snapshot_revision": "b9bc49bf5eb8b06528c810d02a4f7c766474fbad",
+  "snapshot_url": "https://huggingface.co/datasets/rajistics/sroie_processed/tree/b9bc49bf5eb8b06528c810d02a4f7c766474fbad",
+  "license": "See upstream pinned dataset card",
+  "snapshot_root": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad",
+  "download_status": "downloaded",
+  "split_breakdown": {
+    "train": 563,
+    "test": 63
+  },
+  "feature_fields": [
+    "pixel_values",
+    "labels",
+    "target_sequence"
+  ],
+  "tracked_files": [
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/.gitignore",
+      "size_bytes": 1,
+      "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/test-00000-of-00002-0338a9d9660cb043.parquet.metadata",
+      "size_bytes": 128,
+      "sha256": "7e668dd3b0ac18738a3bb3d13966b1e0c4795922b316882a307ead316eec91eb"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/test-00001-of-00002-750903372d9a1172.parquet.metadata",
+      "size_bytes": 127,
+      "sha256": "9df3fcb0ad7201db4f1452cfaa28c8d38a347d7f379b070ef7be43ec6cb1372a"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/train-00000-of-00010-4a21711506d37706.parquet.metadata",
+      "size_bytes": 128,
+      "sha256": "2b9666e1cfa7d7ffe3c284cfa136c6bf7f5036ef394d99e155c2d3f3a60938b3"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/train-00001-of-00010-c1f5b71132366306.parquet.metadata",
+      "size_bytes": 128,
+      "sha256": "403b641200990ae6b67b0bdc619148b027d44b1d59a860921c3da5e6e088ec75"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/train-00002-of-00010-7a8955ee952cfa5b.parquet.metadata",
+      "size_bytes": 128,
+      "sha256": "305860802c86269c583c9b044f1f7b96ffc07022320dcc360e375aa359023264"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/train-00003-of-00010-dcf053168dd86dc2.parquet.metadata",
+      "size_bytes": 128,
+      "sha256": "06a7da5a162254b16a9a13a549ae938306c0b250a33c8025c0c413c649fb0baf"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/train-00004-of-00010-4b08b7876a40f3ee.parquet.metadata",
+      "size_bytes": 128,
+      "sha256": "7a65a06e36a898aa5e8c7a29c5ae73ed0c49ff28e1af01ee8872cc2425e7f507"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/train-00005-of-00010-59946f837c25c041.parquet.metadata",
+      "size_bytes": 127,
+      "sha256": "641f228aef85072a1937724516a9f66549db4b80cd132361f38acac3e977b973"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/train-00006-of-00010-08e944c0722f6a36.parquet.metadata",
+      "size_bytes": 128,
+      "sha256": "0178c3b4fd554f03a3a9e96f9fb3ee59612fbed81bc8bdba51567e4df86796d1"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/train-00007-of-00010-2fa32dd3f8b8cc08.parquet.metadata",
+      "size_bytes": 128,
+      "sha256": "14bd05c3f521458d43d11df46cfc4095102da8aa9d08d614ef4ed0bda26fba50"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/train-00008-of-00010-62ef655dc3f01617.parquet.metadata",
+      "size_bytes": 128,
+      "sha256": "434be79dd6d6b6ed2ca5d5509e67cd78e3b1b5fa67727cb76d9cb3d07ad47e25"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/data/train-00009-of-00010-d664a8919d0d6922.parquet.metadata",
+      "size_bytes": 127,
+      "sha256": "7bdc94dd2a420007a1c9d592a04cbaa126ff1aa2603e1b027b3f623d780afdaa"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/.cache/huggingface/download/dataset_infos.json.metadata",
+      "size_bytes": 103,
+      "sha256": "7e2375da299ad92ed5ebf73b565484e214577b33670de013aa94ff4197de9996"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/test-00000-of-00002-0338a9d9660cb043.parquet",
+      "size_bytes": 21143667,
+      "sha256": "7ebc898406beeb3eb3523c2de5c055b2db812f35d6fb9900cb50bf6fcb278f7b"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/test-00001-of-00002-750903372d9a1172.parquet",
+      "size_bytes": 18970897,
+      "sha256": "acee04077a1858a735f1779206e1e3ab9979ce2a4af78a346790737027913b9d"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/train-00000-of-00010-4a21711506d37706.parquet",
+      "size_bytes": 30575806,
+      "sha256": "a707e6853ee053f4f71cd2e5901b740fcc3d79ccfa7f564f421cf4809237a2a4"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/train-00001-of-00010-c1f5b71132366306.parquet",
+      "size_bytes": 31544150,
+      "sha256": "569f8ba0ecafc735f2c16d9589b1138854648c5956e8c9fc24d72a613ac680fb"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/train-00002-of-00010-7a8955ee952cfa5b.parquet",
+      "size_bytes": 38597081,
+      "sha256": "e33189d2232bf392ea81bae6a3579f4c5a25df3a677d3885c4e5b6779b87f71c"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/train-00003-of-00010-dcf053168dd86dc2.parquet",
+      "size_bytes": 34124969,
+      "sha256": "15587452f5a788ff0cb27ab976bd248d653f4074e22f36b2c45c84695acc82ee"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/train-00004-of-00010-4b08b7876a40f3ee.parquet",
+      "size_bytes": 33513400,
+      "sha256": "69789edcddf17d02eaceb93bb68ca51ac61d3071c1aee804e43ed303c091919d"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/train-00005-of-00010-59946f837c25c041.parquet",
+      "size_bytes": 36926037,
+      "sha256": "01cd41a63ef709be294ac5b5cfcbd38fc58c020f79f06e198e27807c04788f57"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/train-00006-of-00010-08e944c0722f6a36.parquet",
+      "size_bytes": 37768339,
+      "sha256": "6fb9e7b3803f8d31aa61562a220c91e345ec2baf1fcecd94c2976bccef7c261d"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/train-00007-of-00010-2fa32dd3f8b8cc08.parquet",
+      "size_bytes": 33777858,
+      "sha256": "c0ce1f48cfda0b2cee3949f6d31caf81c428352adca06a8fd6691e354da8c12b"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/train-00008-of-00010-62ef655dc3f01617.parquet",
+      "size_bytes": 34035868,
+      "sha256": "ed987d2dd1dca20f21955b5e2c086791d4a15d85959c8153190c976eee4cbc20"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/data/train-00009-of-00010-d664a8919d0d6922.parquet",
+      "size_bytes": 31190176,
+      "sha256": "2d2a171529d2fc12e6a5cfdce8bec5a2685864e2023d6532fc04d692bea5adf0"
+    },
+    {
+      "path": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad/dataset_infos.json",
+      "size_bytes": 1162,
+      "sha256": "4ac6edce12cf3c405cc210ea4ed5a3c2aa1e71cb9735f896c71ac76e19b4b089"
+    }
+  ],
+  "notes": "Pinned public SROIE processed parquet snapshot downloaded from Hugging Face and stored locally for reproducible OCR reruns."
+}

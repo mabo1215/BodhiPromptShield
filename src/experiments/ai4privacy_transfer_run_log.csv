@@ -1,0 +1,2 @@
+benchmark,input_scope,document_count,mention_count,split_breakdown,summary_output,detail_output,execution_manifest,notes
+AI4Privacy PII-Masking-300K (English),ai4privacy_pii300k_english_export.jsonl,2997,19392,"{""ai4privacy-test"": 2997}",ai4privacy_transfer_results.csv,ai4privacy_transfer_document_metrics.csv,ai4privacy_transfer_execution_manifest.csv,Executed generic matched baselines on the public AI4Privacy English transfer slice.

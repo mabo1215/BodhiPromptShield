@@ -1,0 +1,257 @@
+split,template_id,prompt_id,variant_id,prompt_family,prompt_source,downstream_task_type,primary_privacy_category,subset,modality,split_rule
+train,T01,T01-V1,V1,Direct requests,Dialogue templates,Prompt QA,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T01,T01-V2,V2,Direct requests,Dialogue templates,Prompt QA,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T01,T01-V3,V3,Direct requests,Dialogue templates,Prompt QA,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T01,T01-V4,V4,Direct requests,Dialogue templates,Prompt QA,Person names,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T01,T01-V5,V5,Direct requests,Dialogue templates,Prompt QA,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T01,T01-V6,V6,Direct requests,Dialogue templates,Prompt QA,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T01,T01-V7,V7,Direct requests,Dialogue templates,Prompt QA,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T01,T01-V8,V8,Direct requests,Dialogue templates,Prompt QA,Person names,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T02,T02-V1,V1,Direct requests,Dialogue templates,Prompt QA,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T02,T02-V2,V2,Direct requests,Dialogue templates,Prompt QA,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T02,T02-V3,V3,Direct requests,Dialogue templates,Prompt QA,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T02,T02-V4,V4,Direct requests,Dialogue templates,Prompt QA,Contact details,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T02,T02-V5,V5,Direct requests,Dialogue templates,Prompt QA,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T02,T02-V6,V6,Direct requests,Dialogue templates,Prompt QA,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T02,T02-V7,V7,Direct requests,Dialogue templates,Prompt QA,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T02,T02-V8,V8,Direct requests,Dialogue templates,Prompt QA,Contact details,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T03,T03-V1,V1,Direct requests,Dialogue templates,Prompt QA,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T03,T03-V2,V2,Direct requests,Dialogue templates,Prompt QA,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T03,T03-V3,V3,Direct requests,Dialogue templates,Prompt QA,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T03,T03-V4,V4,Direct requests,Dialogue templates,Prompt QA,Postal addresses,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T03,T03-V5,V5,Direct requests,Dialogue templates,Prompt QA,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T03,T03-V6,V6,Direct requests,Dialogue templates,Prompt QA,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T03,T03-V7,V7,Direct requests,Dialogue templates,Prompt QA,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T03,T03-V8,V8,Direct requests,Dialogue templates,Prompt QA,Postal addresses,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T04,T04-V1,V1,Direct requests,Dialogue templates,Prompt QA,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T04,T04-V2,V2,Direct requests,Dialogue templates,Prompt QA,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T04,T04-V3,V3,Direct requests,Dialogue templates,Prompt QA,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T04,T04-V4,V4,Direct requests,Dialogue templates,Prompt QA,National/account identifiers,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T04,T04-V5,V5,Direct requests,Dialogue templates,Prompt QA,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T04,T04-V6,V6,Direct requests,Dialogue templates,Prompt QA,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T04,T04-V7,V7,Direct requests,Dialogue templates,Prompt QA,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T04,T04-V8,V8,Direct requests,Dialogue templates,Prompt QA,National/account identifiers,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T05,T05-V1,V1,Direct requests,Dialogue templates,Prompt QA,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T05,T05-V2,V2,Direct requests,Dialogue templates,Prompt QA,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T05,T05-V3,V3,Direct requests,Dialogue templates,Prompt QA,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T05,T05-V4,V4,Direct requests,Dialogue templates,Prompt QA,Financial references,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T05,T05-V5,V5,Direct requests,Dialogue templates,Prompt QA,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T05,T05-V6,V6,Direct requests,Dialogue templates,Prompt QA,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T05,T05-V7,V7,Direct requests,Dialogue templates,Prompt QA,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T05,T05-V8,V8,Direct requests,Dialogue templates,Prompt QA,Financial references,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T06,T06-V1,V1,Direct requests,Dialogue templates,Prompt QA,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T06,T06-V2,V2,Direct requests,Dialogue templates,Prompt QA,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T06,T06-V3,V3,Direct requests,Dialogue templates,Prompt QA,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T06,T06-V4,V4,Direct requests,Dialogue templates,Prompt QA,Medical content,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T06,T06-V5,V5,Direct requests,Dialogue templates,Prompt QA,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T06,T06-V6,V6,Direct requests,Dialogue templates,Prompt QA,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T06,T06-V7,V7,Direct requests,Dialogue templates,Prompt QA,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T06,T06-V8,V8,Direct requests,Dialogue templates,Prompt QA,Medical content,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T07,T07-V1,V1,Direct requests,Dialogue templates,Prompt QA,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T07,T07-V2,V2,Direct requests,Dialogue templates,Prompt QA,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T07,T07-V3,V3,Direct requests,Dialogue templates,Prompt QA,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T07,T07-V4,V4,Direct requests,Dialogue templates,Prompt QA,Organization/project terms,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T07,T07-V5,V5,Direct requests,Dialogue templates,Prompt QA,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T07,T07-V6,V6,Direct requests,Dialogue templates,Prompt QA,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T07,T07-V7,V7,Direct requests,Dialogue templates,Prompt QA,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T07,T07-V8,V8,Direct requests,Dialogue templates,Prompt QA,Organization/project terms,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T08,T08-V1,V1,Direct requests,Dialogue templates,Prompt QA,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T08,T08-V2,V2,Direct requests,Dialogue templates,Prompt QA,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T08,T08-V3,V3,Direct requests,Dialogue templates,Prompt QA,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T08,T08-V4,V4,Direct requests,Dialogue templates,Prompt QA,Context-dependent confidential spans,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T08,T08-V5,V5,Direct requests,Dialogue templates,Prompt QA,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T08,T08-V6,V6,Direct requests,Dialogue templates,Prompt QA,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T08,T08-V7,V7,Direct requests,Dialogue templates,Prompt QA,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T08,T08-V8,V8,Direct requests,Dialogue templates,Prompt QA,Context-dependent confidential spans,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T09,T09-V1,V1,Document-oriented,Document scenarios,Document QA,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T09,T09-V2,V2,Document-oriented,Document scenarios,Document QA,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T09,T09-V3,V3,Document-oriented,Document scenarios,Document QA,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T09,T09-V4,V4,Document-oriented,Document scenarios,Document QA,Person names,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T09,T09-V5,V5,Document-oriented,Document scenarios,Document QA,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T09,T09-V6,V6,Document-oriented,Document scenarios,Document QA,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T09,T09-V7,V7,Document-oriented,Document scenarios,Document QA,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T09,T09-V8,V8,Document-oriented,Document scenarios,Document QA,Person names,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T10,T10-V1,V1,Document-oriented,Document scenarios,Document QA,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T10,T10-V2,V2,Document-oriented,Document scenarios,Document QA,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T10,T10-V3,V3,Document-oriented,Document scenarios,Document QA,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T10,T10-V4,V4,Document-oriented,Document scenarios,Document QA,Contact details,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T10,T10-V5,V5,Document-oriented,Document scenarios,Document QA,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T10,T10-V6,V6,Document-oriented,Document scenarios,Document QA,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T10,T10-V7,V7,Document-oriented,Document scenarios,Document QA,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T10,T10-V8,V8,Document-oriented,Document scenarios,Document QA,Contact details,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T11,T11-V1,V1,Document-oriented,Document scenarios,Document QA,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T11,T11-V2,V2,Document-oriented,Document scenarios,Document QA,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T11,T11-V3,V3,Document-oriented,Document scenarios,Document QA,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T11,T11-V4,V4,Document-oriented,Document scenarios,Document QA,Postal addresses,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T11,T11-V5,V5,Document-oriented,Document scenarios,Document QA,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T11,T11-V6,V6,Document-oriented,Document scenarios,Document QA,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T11,T11-V7,V7,Document-oriented,Document scenarios,Document QA,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T11,T11-V8,V8,Document-oriented,Document scenarios,Document QA,Postal addresses,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T12,T12-V1,V1,Document-oriented,Document scenarios,Document QA,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T12,T12-V2,V2,Document-oriented,Document scenarios,Document QA,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T12,T12-V3,V3,Document-oriented,Document scenarios,Document QA,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T12,T12-V4,V4,Document-oriented,Document scenarios,Document QA,National/account identifiers,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T12,T12-V5,V5,Document-oriented,Document scenarios,Document QA,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T12,T12-V6,V6,Document-oriented,Document scenarios,Document QA,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T12,T12-V7,V7,Document-oriented,Document scenarios,Document QA,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T12,T12-V8,V8,Document-oriented,Document scenarios,Document QA,National/account identifiers,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T13,T13-V1,V1,Document-oriented,Document scenarios,Document QA,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T13,T13-V2,V2,Document-oriented,Document scenarios,Document QA,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T13,T13-V3,V3,Document-oriented,Document scenarios,Document QA,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T13,T13-V4,V4,Document-oriented,Document scenarios,Document QA,Financial references,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T13,T13-V5,V5,Document-oriented,Document scenarios,Document QA,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T13,T13-V6,V6,Document-oriented,Document scenarios,Document QA,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T13,T13-V7,V7,Document-oriented,Document scenarios,Document QA,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T13,T13-V8,V8,Document-oriented,Document scenarios,Document QA,Financial references,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T14,T14-V1,V1,Document-oriented,Document scenarios,Document QA,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T14,T14-V2,V2,Document-oriented,Document scenarios,Document QA,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T14,T14-V3,V3,Document-oriented,Document scenarios,Document QA,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T14,T14-V4,V4,Document-oriented,Document scenarios,Document QA,Medical content,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T14,T14-V5,V5,Document-oriented,Document scenarios,Document QA,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T14,T14-V6,V6,Document-oriented,Document scenarios,Document QA,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T14,T14-V7,V7,Document-oriented,Document scenarios,Document QA,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T14,T14-V8,V8,Document-oriented,Document scenarios,Document QA,Medical content,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T15,T15-V1,V1,Document-oriented,Document scenarios,Document QA,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T15,T15-V2,V2,Document-oriented,Document scenarios,Document QA,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T15,T15-V3,V3,Document-oriented,Document scenarios,Document QA,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T15,T15-V4,V4,Document-oriented,Document scenarios,Document QA,Organization/project terms,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T15,T15-V5,V5,Document-oriented,Document scenarios,Document QA,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T15,T15-V6,V6,Document-oriented,Document scenarios,Document QA,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T15,T15-V7,V7,Document-oriented,Document scenarios,Document QA,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T15,T15-V8,V8,Document-oriented,Document scenarios,Document QA,Organization/project terms,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T16,T16-V1,V1,Document-oriented,Document scenarios,Document QA,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T16,T16-V2,V2,Document-oriented,Document scenarios,Document QA,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T16,T16-V3,V3,Document-oriented,Document scenarios,Document QA,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T16,T16-V4,V4,Document-oriented,Document scenarios,Document QA,Context-dependent confidential spans,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T16,T16-V5,V5,Document-oriented,Document scenarios,Document QA,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T16,T16-V6,V6,Document-oriented,Document scenarios,Document QA,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T16,T16-V7,V7,Document-oriented,Document scenarios,Document QA,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T16,T16-V8,V8,Document-oriented,Document scenarios,Document QA,Context-dependent confidential spans,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T17,T17-V1,V1,Retrieval-style,Public task sources,Retrieval QA,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T17,T17-V2,V2,Retrieval-style,Public task sources,Retrieval QA,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T17,T17-V3,V3,Retrieval-style,Public task sources,Retrieval QA,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T17,T17-V4,V4,Retrieval-style,Public task sources,Retrieval QA,Person names,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T17,T17-V5,V5,Retrieval-style,Public task sources,Retrieval QA,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T17,T17-V6,V6,Retrieval-style,Public task sources,Retrieval QA,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T17,T17-V7,V7,Retrieval-style,Public task sources,Retrieval QA,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T17,T17-V8,V8,Retrieval-style,Public task sources,Retrieval QA,Person names,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T18,T18-V1,V1,Retrieval-style,Public task sources,Retrieval QA,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T18,T18-V2,V2,Retrieval-style,Public task sources,Retrieval QA,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T18,T18-V3,V3,Retrieval-style,Public task sources,Retrieval QA,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T18,T18-V4,V4,Retrieval-style,Public task sources,Retrieval QA,Contact details,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T18,T18-V5,V5,Retrieval-style,Public task sources,Retrieval QA,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T18,T18-V6,V6,Retrieval-style,Public task sources,Retrieval QA,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T18,T18-V7,V7,Retrieval-style,Public task sources,Retrieval QA,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T18,T18-V8,V8,Retrieval-style,Public task sources,Retrieval QA,Contact details,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T19,T19-V1,V1,Retrieval-style,Public task sources,Retrieval QA,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T19,T19-V2,V2,Retrieval-style,Public task sources,Retrieval QA,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T19,T19-V3,V3,Retrieval-style,Public task sources,Retrieval QA,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T19,T19-V4,V4,Retrieval-style,Public task sources,Retrieval QA,Postal addresses,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T19,T19-V5,V5,Retrieval-style,Public task sources,Retrieval QA,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T19,T19-V6,V6,Retrieval-style,Public task sources,Retrieval QA,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T19,T19-V7,V7,Retrieval-style,Public task sources,Retrieval QA,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T19,T19-V8,V8,Retrieval-style,Public task sources,Retrieval QA,Postal addresses,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T20,T20-V1,V1,Retrieval-style,Public task sources,Retrieval QA,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T20,T20-V2,V2,Retrieval-style,Public task sources,Retrieval QA,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T20,T20-V3,V3,Retrieval-style,Public task sources,Retrieval QA,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T20,T20-V4,V4,Retrieval-style,Public task sources,Retrieval QA,National/account identifiers,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T20,T20-V5,V5,Retrieval-style,Public task sources,Retrieval QA,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T20,T20-V6,V6,Retrieval-style,Public task sources,Retrieval QA,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T20,T20-V7,V7,Retrieval-style,Public task sources,Retrieval QA,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T20,T20-V8,V8,Retrieval-style,Public task sources,Retrieval QA,National/account identifiers,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T21,T21-V1,V1,Retrieval-style,Public task sources,Retrieval QA,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T21,T21-V2,V2,Retrieval-style,Public task sources,Retrieval QA,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T21,T21-V3,V3,Retrieval-style,Public task sources,Retrieval QA,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T21,T21-V4,V4,Retrieval-style,Public task sources,Retrieval QA,Financial references,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T21,T21-V5,V5,Retrieval-style,Public task sources,Retrieval QA,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T21,T21-V6,V6,Retrieval-style,Public task sources,Retrieval QA,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T21,T21-V7,V7,Retrieval-style,Public task sources,Retrieval QA,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T21,T21-V8,V8,Retrieval-style,Public task sources,Retrieval QA,Financial references,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T22,T22-V1,V1,Retrieval-style,Public task sources,Retrieval QA,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T22,T22-V2,V2,Retrieval-style,Public task sources,Retrieval QA,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T22,T22-V3,V3,Retrieval-style,Public task sources,Retrieval QA,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T22,T22-V4,V4,Retrieval-style,Public task sources,Retrieval QA,Medical content,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T22,T22-V5,V5,Retrieval-style,Public task sources,Retrieval QA,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T22,T22-V6,V6,Retrieval-style,Public task sources,Retrieval QA,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T22,T22-V7,V7,Retrieval-style,Public task sources,Retrieval QA,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T22,T22-V8,V8,Retrieval-style,Public task sources,Retrieval QA,Medical content,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T23,T23-V1,V1,Retrieval-style,Public task sources,Retrieval QA,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T23,T23-V2,V2,Retrieval-style,Public task sources,Retrieval QA,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T23,T23-V3,V3,Retrieval-style,Public task sources,Retrieval QA,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T23,T23-V4,V4,Retrieval-style,Public task sources,Retrieval QA,Organization/project terms,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T23,T23-V5,V5,Retrieval-style,Public task sources,Retrieval QA,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T23,T23-V6,V6,Retrieval-style,Public task sources,Retrieval QA,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T23,T23-V7,V7,Retrieval-style,Public task sources,Retrieval QA,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T23,T23-V8,V8,Retrieval-style,Public task sources,Retrieval QA,Organization/project terms,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T24,T24-V1,V1,Retrieval-style,Public task sources,Retrieval QA,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T24,T24-V2,V2,Retrieval-style,Public task sources,Retrieval QA,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T24,T24-V3,V3,Retrieval-style,Public task sources,Retrieval QA,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T24,T24-V4,V4,Retrieval-style,Public task sources,Retrieval QA,Context-dependent confidential spans,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T24,T24-V5,V5,Retrieval-style,Public task sources,Retrieval QA,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T24,T24-V6,V6,Retrieval-style,Public task sources,Retrieval QA,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T24,T24-V7,V7,Retrieval-style,Public task sources,Retrieval QA,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T24,T24-V8,V8,Retrieval-style,Public task sources,Retrieval QA,Context-dependent confidential spans,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T25,T25-V1,V1,Tool-oriented agent,Agent workflow traces,Agent execution,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T25,T25-V2,V2,Tool-oriented agent,Agent workflow traces,Agent execution,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T25,T25-V3,V3,Tool-oriented agent,Agent workflow traces,Agent execution,Person names,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T25,T25-V4,V4,Tool-oriented agent,Agent workflow traces,Agent execution,Person names,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T25,T25-V5,V5,Tool-oriented agent,Agent workflow traces,Agent execution,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T25,T25-V6,V6,Tool-oriented agent,Agent workflow traces,Agent execution,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T25,T25-V7,V7,Tool-oriented agent,Agent workflow traces,Agent execution,Person names,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T25,T25-V8,V8,Tool-oriented agent,Agent workflow traces,Agent execution,Person names,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T26,T26-V1,V1,Tool-oriented agent,Agent workflow traces,Agent execution,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T26,T26-V2,V2,Tool-oriented agent,Agent workflow traces,Agent execution,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T26,T26-V3,V3,Tool-oriented agent,Agent workflow traces,Agent execution,Contact details,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T26,T26-V4,V4,Tool-oriented agent,Agent workflow traces,Agent execution,Contact details,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T26,T26-V5,V5,Tool-oriented agent,Agent workflow traces,Agent execution,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T26,T26-V6,V6,Tool-oriented agent,Agent workflow traces,Agent execution,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T26,T26-V7,V7,Tool-oriented agent,Agent workflow traces,Agent execution,Contact details,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T26,T26-V8,V8,Tool-oriented agent,Agent workflow traces,Agent execution,Contact details,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T27,T27-V1,V1,Tool-oriented agent,Agent workflow traces,Agent execution,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T27,T27-V2,V2,Tool-oriented agent,Agent workflow traces,Agent execution,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T27,T27-V3,V3,Tool-oriented agent,Agent workflow traces,Agent execution,Postal addresses,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T27,T27-V4,V4,Tool-oriented agent,Agent workflow traces,Agent execution,Postal addresses,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T27,T27-V5,V5,Tool-oriented agent,Agent workflow traces,Agent execution,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T27,T27-V6,V6,Tool-oriented agent,Agent workflow traces,Agent execution,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T27,T27-V7,V7,Tool-oriented agent,Agent workflow traces,Agent execution,Postal addresses,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T27,T27-V8,V8,Tool-oriented agent,Agent workflow traces,Agent execution,Postal addresses,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T28,T28-V1,V1,Tool-oriented agent,Agent workflow traces,Agent execution,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T28,T28-V2,V2,Tool-oriented agent,Agent workflow traces,Agent execution,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T28,T28-V3,V3,Tool-oriented agent,Agent workflow traces,Agent execution,National/account identifiers,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T28,T28-V4,V4,Tool-oriented agent,Agent workflow traces,Agent execution,National/account identifiers,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T28,T28-V5,V5,Tool-oriented agent,Agent workflow traces,Agent execution,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T28,T28-V6,V6,Tool-oriented agent,Agent workflow traces,Agent execution,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T28,T28-V7,V7,Tool-oriented agent,Agent workflow traces,Agent execution,National/account identifiers,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T28,T28-V8,V8,Tool-oriented agent,Agent workflow traces,Agent execution,National/account identifiers,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T29,T29-V1,V1,Tool-oriented agent,Agent workflow traces,Agent execution,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T29,T29-V2,V2,Tool-oriented agent,Agent workflow traces,Agent execution,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T29,T29-V3,V3,Tool-oriented agent,Agent workflow traces,Agent execution,Financial references,Essential-privacy,Text-only,template_stratified_family_category_rotation
+test,T29,T29-V4,V4,Tool-oriented agent,Agent workflow traces,Agent execution,Financial references,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+test,T29,T29-V5,V5,Tool-oriented agent,Agent workflow traces,Agent execution,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T29,T29-V6,V6,Tool-oriented agent,Agent workflow traces,Agent execution,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T29,T29-V7,V7,Tool-oriented agent,Agent workflow traces,Agent execution,Financial references,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+test,T29,T29-V8,V8,Tool-oriented agent,Agent workflow traces,Agent execution,Financial references,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T30,T30-V1,V1,Tool-oriented agent,Agent workflow traces,Agent execution,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T30,T30-V2,V2,Tool-oriented agent,Agent workflow traces,Agent execution,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T30,T30-V3,V3,Tool-oriented agent,Agent workflow traces,Agent execution,Medical content,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T30,T30-V4,V4,Tool-oriented agent,Agent workflow traces,Agent execution,Medical content,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T30,T30-V5,V5,Tool-oriented agent,Agent workflow traces,Agent execution,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T30,T30-V6,V6,Tool-oriented agent,Agent workflow traces,Agent execution,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T30,T30-V7,V7,Tool-oriented agent,Agent workflow traces,Agent execution,Medical content,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T30,T30-V8,V8,Tool-oriented agent,Agent workflow traces,Agent execution,Medical content,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T31,T31-V1,V1,Tool-oriented agent,Agent workflow traces,Agent execution,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T31,T31-V2,V2,Tool-oriented agent,Agent workflow traces,Agent execution,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T31,T31-V3,V3,Tool-oriented agent,Agent workflow traces,Agent execution,Organization/project terms,Essential-privacy,Text-only,template_stratified_family_category_rotation
+train,T31,T31-V4,V4,Tool-oriented agent,Agent workflow traces,Agent execution,Organization/project terms,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+train,T31,T31-V5,V5,Tool-oriented agent,Agent workflow traces,Agent execution,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T31,T31-V6,V6,Tool-oriented agent,Agent workflow traces,Agent execution,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T31,T31-V7,V7,Tool-oriented agent,Agent workflow traces,Agent execution,Organization/project terms,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+train,T31,T31-V8,V8,Tool-oriented agent,Agent workflow traces,Agent execution,Organization/project terms,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T32,T32-V1,V1,Tool-oriented agent,Agent workflow traces,Agent execution,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T32,T32-V2,V2,Tool-oriented agent,Agent workflow traces,Agent execution,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T32,T32-V3,V3,Tool-oriented agent,Agent workflow traces,Agent execution,Context-dependent confidential spans,Essential-privacy,Text-only,template_stratified_family_category_rotation
+dev,T32,T32-V4,V4,Tool-oriented agent,Agent workflow traces,Agent execution,Context-dependent confidential spans,Essential-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation
+dev,T32,T32-V5,V5,Tool-oriented agent,Agent workflow traces,Agent execution,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T32,T32-V6,V6,Tool-oriented agent,Agent workflow traces,Agent execution,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T32,T32-V7,V7,Tool-oriented agent,Agent workflow traces,Agent execution,Context-dependent confidential spans,Incidental-privacy,Text-only,template_stratified_family_category_rotation
+dev,T32,T32-V8,V8,Tool-oriented agent,Agent workflow traces,Agent execution,Context-dependent confidential spans,Incidental-privacy,OCR-mediated text-plus-image,template_stratified_family_category_rotation

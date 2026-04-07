@@ -1,0 +1,2 @@
+benchmark,snapshot_root,root_exists,parquet_file_count,wrapper_manifest_rows,split_breakdown,snapshot_revision,current_surface,notes
+FUNSD,src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec,yes,2,50,test:50 | train:149,ccd2a77745b0dc9f154a91db1219ec05c86ce7ec,executed_public_snapshot,"Pinned public FUNSD snapshot acquired, wrapper manifest built, OCR runtime recorded, and executed form rerun completed."

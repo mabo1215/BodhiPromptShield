@@ -1,0 +1,2 @@
+benchmark,method,split,note_count,mention_count,span_precision,span_recall,span_f1,per_percent,text_retention,mean_prompt_eval_count,mean_eval_count,mean_latency_ms,notes
+AI4Privacy PII-Masking-300K (English),Prompted LLM zero-shot de-identification,ai4privacy-test,100,611,0.41,0.70,0.52,26.2,0.92,398.1,163.5,4860.6,Executed local open-weight zero-shot pilot on a held-out public AI4Privacy English slice.

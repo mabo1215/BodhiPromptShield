@@ -1,0 +1,6 @@
+attack_surface,probe_count,model_tag,raw_attack_accuracy_percent,sanitized_attack_accuracy_percent,accuracy_drop_points,notes
+Prompt-history attribute inference,12,llama3:latest,100.0,50.0,50.0,Local Ollama attacker infers one of four sensitive context labels from raw versus placeholder-sanitized prompts.
+Prompt-history attribute inference (oncology),3,llama3:latest,100.0,66.7,33.3,Per-label sanitized attack accuracy on the same probe family.
+Prompt-history attribute inference (finance),3,llama3:latest,100.0,100.0,0.0,Per-label sanitized attack accuracy on the same probe family.
+Prompt-history attribute inference (immigration),3,llama3:latest,100.0,33.3,66.7,Per-label sanitized attack accuracy on the same probe family.
+Prompt-history attribute inference (discipline),3,llama3:latest,100.0,0.0,100.0,Per-label sanitized attack accuracy on the same probe family.

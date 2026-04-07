@@ -1,0 +1,66 @@
+{
+  "benchmark": "FUNSD",
+  "benchmark_family": "ocr-heavy form transfer",
+  "status": "executed_public_slice",
+  "core_metrics": [
+    "ocr_span_precision",
+    "ocr_span_recall",
+    "ocr_span_f1",
+    "multimodal_per",
+    "text_retention",
+    "latency_ms"
+  ],
+  "snapshot": {
+    "revision": "ccd2a77745b0dc9f154a91db1219ec05c86ce7ec",
+    "snapshot_root": "src/experiments/external_data/resource_cache/funsd_dataset/hf_snapshot/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec",
+    "source_url": "https://huggingface.co/datasets/nielsr/funsd-layoutlmv3/tree/ccd2a77745b0dc9f154a91db1219ec05c86ce7ec"
+  },
+  "evaluation_slice": {
+    "split": "test",
+    "document_count": 50,
+    "wrapper_manifest": "funsd_prompt_wrapped_manifest.csv"
+  },
+  "matched_comparators": [
+    {
+      "name": "Raw OCR text prompt",
+      "family": "No protection",
+      "notes": "No sanitization is applied after OCR extraction."
+    },
+    {
+      "name": "OCR + regex masking",
+      "family": "Pattern baseline",
+      "notes": "Mask numeric identifiers and field-style patterns with OCR-text regexes only."
+    },
+    {
+      "name": "OCR + generic de-identification",
+      "family": "Generic de-identification",
+      "notes": "Mask regex hits plus form-like answer text around common field labels without layout routing."
+    },
+    {
+      "name": "OCR + Presidio form de-identification",
+      "family": "Named OCR de-identification",
+      "notes": "Use a real Presidio recognizer stack plus form-specific recognizers and value-span expansion on OCR text."
+    },
+    {
+      "name": "OCR + spaCy form de-identification",
+      "family": "Named OCR de-identification",
+      "notes": "Use a spaCy NER stack plus form-value expansion on OCR text."
+    },
+    {
+      "name": "Proposed multimodal mediation",
+      "family": "Policy-aware mediation",
+      "notes": "Mask likely answer/value regions with OCR-line and layout-aware heuristics while preserving form labels."
+    }
+  ],
+  "sensitivity_mapping": {
+    "protected_tag_family": [
+      "B-ANSWER",
+      "I-ANSWER"
+    ],
+    "mapping_notes": [
+      "FUNSD answer-field spans are treated as the protected privacy-bearing slice, while question/header tokens remain utility-carrying context.",
+      "Gold spans are matched to OCR detections via box overlap so evaluation stays grounded in the OCR transcript rather than in source token offsets.",
+      "The same declared RapidOCR runtime is reused here to form a second public OCR rerun under one documented OCR stack."
+    ]
+  }
+}

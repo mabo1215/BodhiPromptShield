@@ -1,0 +1,5 @@
+benchmark_id,ocr_engine,engine_version,language_pack,preprocessing_stack,render_source,image_asset_bundle,host_class,hardware_summary,os_runtime,python_runtime,invocation_command,notes
+cord_public_receipts,,,,Repository preprocessing or OCR adapter,Public CORD repository cache,Not yet bundled,,,,,See cord_ocr_runtime_manifest.csv for the executed public slice; use this row template for reruns or alternate hosts.
+funsd_public_forms,,,,Pinned FUNSD snapshot plus OCR adapter,External dataset snapshot,Not yet bundled,,,,,See funsd_ocr_runtime_manifest.csv for the executed public slice; use this row template for reruns or alternate hosts.
+sroie_public_receipts,,,,Pinned SROIE snapshot plus OCR adapter,External dataset snapshot,Not yet bundled,,,,,See sroie_ocr_runtime_manifest.csv for the executed public slice; use this row template for reruns or alternate hosts.
+docile_request_gated_documents,,,,Approved DocILE export plus OCR adapter,Request-gated benchmark release,Not yet bundled,,,,,Fill after approved dataset access and OCR/runtime logs are available.

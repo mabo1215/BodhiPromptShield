@@ -1,0 +1,7 @@
+method,document_count,mention_count,ocr_span_precision,ocr_span_recall,ocr_span_f1,multimodal_per,text_retention,mean_latency_ms,notes
+Raw OCR text prompt,100,308,0.00,0.00,0.00,100.0,1.00,633.8,No sanitization is applied after OCR extraction.
+OCR + regex masking,100,308,0.05,0.09,0.07,95.3,0.63,633.8,Mask numeric identifiers and payment-style patterns with OCR-text regexes only.
+OCR + generic de-identification,100,308,0.09,0.15,0.11,88.8,0.62,633.8,Mask regex hits plus generic receipt header and contact-like text spans without policy routing.
+OCR + Presidio receipt de-identification,100,308,0.14,0.29,0.19,74.1,0.57,633.8,Use a real Presidio recognizer stack plus receipt-specific recognizers and line expansion on OCR text.
+OCR + spaCy receipt de-identification,100,308,0.22,0.78,0.35,20.1,0.34,633.8,Use a spaCy NER stack plus receipt-specific line expansion on OCR text.
+Proposed multimodal mediation,100,308,0.25,0.62,0.35,38.2,0.55,633.8,Mask receipt-item and payment-sensitive spans with layout-aware heuristics while preserving summary totals.

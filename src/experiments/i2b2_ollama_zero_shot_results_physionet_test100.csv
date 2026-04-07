@@ -1,0 +1,2 @@
+benchmark,method,split,note_count,mention_count,span_precision,span_recall,span_f1,per_percent,text_retention,mean_prompt_eval_count,mean_eval_count,mean_latency_ms,notes
+PhysioNet relabeled de-identification public transfer,Prompted LLM zero-shot de-identification,physionet-test,100,800,0.47,0.61,0.53,29.5,0.79,269.7,228.7,8237.9,Executed local open-weight zero-shot pilot on the public PhysioNet-relabeled de-identification test slice.

@@ -1,0 +1,2 @@
+run_id,attack_surface,model_tag,probe_count,mean_raw_prompt_length,mean_sanitized_prompt_length,fallback_call_count,os_runtime,run_started_at_utc,run_finished_at_utc,ollama_url,notes
+context-inference-12,Prompt-history attribute inference,llama3:latest,12,116.1,96.1,0,Windows-11-10.0.26200-SP0,2026-04-04T21:43:33.393052+00:00,2026-04-04T21:43:55.856984+00:00,http://127.0.0.1:11434/api/generate,"Executed local inference attacker on raw and sanitized prompt-history probes, with heuristic fallback only if the local Ollama endpoint returned repeated internal errors."

@@ -1,0 +1,2 @@
+run_id,slice_scope,source_render_package,render_package_hash,render_generator,render_generator_version,ocr_engine,ocr_engine_version,ocr_preprocessing,visual_prompt_wrapper,host_class,hardware_summary,os_runtime,python_runtime,execution_log,output_summary,notes
+cppb-multimodal-rerun-001,CPPB V4/V8 multimodal slice,,,,,,,,,,Windows + Python virtual environment,,,multimodal_analysis.csv,Fill from the original CPPB multimodal OCR/render rerun before promoting the slice to exact-regeneration evidence.

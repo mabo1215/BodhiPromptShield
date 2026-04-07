@@ -1,0 +1,7 @@
+benchmark,method,family,execution_status,input_scope,notes
+CORD,Raw OCR text prompt,No protection,executed,Pinned CORD valid split on public snapshot 4f51527df44a7f7f915bee494f1129915118d0e1,No sanitization is applied after OCR extraction.
+CORD,OCR + regex masking,Pattern baseline,executed,Pinned CORD valid split on public snapshot 4f51527df44a7f7f915bee494f1129915118d0e1,Mask numeric identifiers and payment-style patterns with OCR-text regexes only.
+CORD,OCR + generic de-identification,Generic de-identification,executed,Pinned CORD valid split on public snapshot 4f51527df44a7f7f915bee494f1129915118d0e1,Mask regex hits plus generic receipt header and contact-like text spans without policy routing.
+CORD,OCR + Presidio receipt de-identification,Named OCR de-identification,executed,Pinned CORD valid split on public snapshot 4f51527df44a7f7f915bee494f1129915118d0e1,Use a real Presidio recognizer stack plus receipt-specific recognizers and line expansion on OCR text.
+CORD,OCR + spaCy receipt de-identification,Named OCR de-identification,executed,Pinned CORD valid split on public snapshot 4f51527df44a7f7f915bee494f1129915118d0e1,Use a spaCy NER stack plus receipt-specific line expansion on OCR text.
+CORD,Proposed multimodal mediation,Policy-aware mediation,executed,Pinned CORD valid split on public snapshot 4f51527df44a7f7f915bee494f1129915118d0e1,Mask receipt-item and payment-sensitive spans with layout-aware heuristics while preserving summary totals.

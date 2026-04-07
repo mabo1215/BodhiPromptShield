@@ -1,0 +1,2 @@
+benchmark,dataset_root,root_exists,annotation_file_count,image_file_count,wrapper_manifest_rows,split_breakdown,snapshot_revision,current_surface,notes
+CORD,src/experiments/external_data/resource_cache/cord_dataset/hf_snapshot/4f51527df44a7f7f915bee494f1129915118d0e1/extracted/CORD,yes,1000,1000,100,test:100 | train:800 | valid:100,4f51527df44a7f7f915bee494f1129915118d0e1,executed_public_snapshot,"Pinned public CORD snapshot acquired, wrapper manifest built, OCR runtime recorded, and executed receipt rerun completed."

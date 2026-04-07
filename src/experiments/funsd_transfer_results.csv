@@ -1,0 +1,7 @@
+method,document_count,mention_count,ocr_span_precision,ocr_span_recall,ocr_span_f1,multimodal_per,text_retention,mean_latency_ms,notes
+Raw OCR text prompt,50,841,0.00,0.00,0.00,100.0,1.00,1714.8,No sanitization is applied after OCR extraction.
+OCR + regex masking,50,841,0.57,0.15,0.23,96.4,0.98,1714.8,Mask numeric identifiers and field-style patterns with OCR-text regexes only.
+OCR + generic de-identification,50,841,0.39,0.52,0.44,45.9,0.58,1714.8,Mask regex hits plus form-like answer text around common field labels without layout routing.
+OCR + Presidio form de-identification,50,841,0.44,0.76,0.56,21.0,0.49,1714.8,Use a real Presidio recognizer stack plus form-specific recognizers and value-span expansion on OCR text.
+OCR + spaCy form de-identification,50,841,0.44,0.81,0.57,19.9,0.43,1714.8,Use a spaCy NER stack plus form-value expansion on OCR text.
+Proposed multimodal mediation,50,841,0.39,0.58,0.46,42.7,0.55,1714.8,Mask likely answer/value regions with OCR-line and layout-aware heuristics while preserving form labels.

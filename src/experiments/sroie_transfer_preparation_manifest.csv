@@ -1,0 +1,2 @@
+benchmark,snapshot_root,root_exists,parquet_file_count,wrapper_manifest_rows,split_breakdown,snapshot_revision,current_surface,notes
+SROIE,src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad,yes,12,63,test:63 | train:563,b9bc49bf5eb8b06528c810d02a4f7c766474fbad,executed_public_snapshot,"Pinned public SROIE snapshot acquired, wrapper manifest built, OCR runtime recorded, and executed receipt rerun completed."

@@ -1,0 +1,769 @@
+prompt_id,template_id,method,direct_exposure_score,span_f1_score,ac_score,tsr_score
+T01-V1,T01,Presidio (regex-only baseline),0.149697,0.754204,0.906094,0.885734
+T01-V2,T01,Presidio (regex-only baseline),0.151271,0.754565,0.909810,0.888720
+T01-V3,T01,Presidio (regex-only baseline),0.150884,0.757434,0.907239,0.887191
+T01-V4,T01,Presidio (regex-only baseline),0.152022,0.749712,0.904073,0.884283
+T01-V5,T01,Presidio (regex-only baseline),0.150594,0.758452,0.907143,0.885567
+T01-V6,T01,Presidio (regex-only baseline),0.148768,0.754085,0.906106,0.890969
+T01-V7,T01,Presidio (regex-only baseline),0.151429,0.754240,0.905970,0.888379
+T01-V8,T01,Presidio (regex-only baseline),0.148271,0.758400,0.908573,0.891558
+T02-V1,T02,Presidio (regex-only baseline),0.151271,0.754565,0.909810,0.888720
+T02-V2,T02,Presidio (regex-only baseline),0.150884,0.757434,0.907239,0.887191
+T02-V3,T02,Presidio (regex-only baseline),0.149522,0.754712,0.907073,0.887283
+T02-V4,T02,Presidio (regex-only baseline),0.154094,0.751452,0.902943,0.881367
+T02-V5,T02,Presidio (regex-only baseline),0.148768,0.754085,0.906106,0.890969
+T02-V6,T02,Presidio (regex-only baseline),0.151429,0.754240,0.905970,0.888379
+T02-V7,T02,Presidio (regex-only baseline),0.145771,0.763400,0.911573,0.894558
+T02-V8,T02,Presidio (regex-only baseline),0.147734,0.757464,0.909542,0.886586
+T03-V1,T03,Presidio (regex-only baseline),0.150884,0.757434,0.907239,0.887191
+T03-V2,T03,Presidio (regex-only baseline),0.149522,0.754712,0.907073,0.887283
+T03-V3,T03,Presidio (regex-only baseline),0.151594,0.756452,0.905943,0.884367
+T03-V4,T03,Presidio (regex-only baseline),0.152268,0.747085,0.901906,0.886769
+T03-V5,T03,Presidio (regex-only baseline),0.151429,0.754240,0.905970,0.888379
+T03-V6,T03,Presidio (regex-only baseline),0.145771,0.763400,0.911573,0.894558
+T03-V7,T03,Presidio (regex-only baseline),0.145234,0.762464,0.912542,0.889586
+T03-V8,T03,Presidio (regex-only baseline),0.149870,0.759612,0.906208,0.886668
+T04-V1,T04,Presidio (regex-only baseline),0.149522,0.754712,0.907073,0.887283
+T04-V2,T04,Presidio (regex-only baseline),0.151594,0.756452,0.905943,0.884367
+T04-V3,T04,Presidio (regex-only baseline),0.149768,0.752085,0.904906,0.889769
+T04-V4,T04,Presidio (regex-only baseline),0.154929,0.747240,0.901770,0.884179
+T04-V5,T04,Presidio (regex-only baseline),0.145771,0.763400,0.911573,0.894558
+T04-V6,T04,Presidio (regex-only baseline),0.145234,0.762464,0.912542,0.889586
+T04-V7,T04,Presidio (regex-only baseline),0.147370,0.764612,0.909208,0.889668
+T04-V8,T04,Presidio (regex-only baseline),0.150205,0.757718,0.909048,0.889973
+T05-V1,T05,Presidio (regex-only baseline),0.151594,0.756452,0.905943,0.884367
+T05-V2,T05,Presidio (regex-only baseline),0.149768,0.752085,0.904906,0.889769
+T05-V3,T05,Presidio (regex-only baseline),0.152429,0.752240,0.904770,0.887179
+T05-V4,T05,Presidio (regex-only baseline),0.149271,0.756400,0.907373,0.890358
+T05-V5,T05,Presidio (regex-only baseline),0.145234,0.762464,0.912542,0.889586
+T05-V6,T05,Presidio (regex-only baseline),0.147370,0.764612,0.909208,0.889668
+T05-V7,T05,Presidio (regex-only baseline),0.147705,0.762718,0.912048,0.892973
+T05-V8,T05,Presidio (regex-only baseline),0.149408,0.753113,0.910452,0.889779
+T06-V1,T06,Presidio (regex-only baseline),0.152768,0.746085,0.901306,0.886169
+T06-V2,T06,Presidio (regex-only baseline),0.155429,0.746240,0.901170,0.883579
+T06-V3,T06,Presidio (regex-only baseline),0.149771,0.755400,0.906773,0.889758
+T06-V4,T06,Presidio (regex-only baseline),0.151734,0.749464,0.904742,0.881786
+T06-V5,T06,Presidio (regex-only baseline),0.150370,0.758612,0.905608,0.886068
+T06-V6,T06,Presidio (regex-only baseline),0.150705,0.756718,0.908448,0.889373
+T06-V7,T06,Presidio (regex-only baseline),0.149908,0.752113,0.909852,0.889179
+T06-V8,T06,Presidio (regex-only baseline),0.151519,0.753423,0.901305,0.881448
+T07-V1,T07,Presidio (regex-only baseline),0.155429,0.746240,0.901170,0.883579
+T07-V2,T07,Presidio (regex-only baseline),0.149771,0.755400,0.906773,0.889758
+T07-V3,T07,Presidio (regex-only baseline),0.149234,0.754464,0.907742,0.884786
+T07-V4,T07,Presidio (regex-only baseline),0.153870,0.751612,0.901408,0.881868
+T07-V5,T07,Presidio (regex-only baseline),0.150705,0.756718,0.908448,0.889373
+T07-V6,T07,Presidio (regex-only baseline),0.149908,0.752113,0.909852,0.889179
+T07-V7,T07,Presidio (regex-only baseline),0.149019,0.758423,0.904305,0.884448
+T07-V8,T07,Presidio (regex-only baseline),0.152631,0.753471,0.904067,0.881138
+T08-V1,T08,Presidio (regex-only baseline),0.149771,0.755400,0.906773,0.889758
+T08-V2,T08,Presidio (regex-only baseline),0.149234,0.754464,0.907742,0.884786
+T08-V3,T08,Presidio (regex-only baseline),0.151370,0.756612,0.904408,0.884868
+T08-V4,T08,Presidio (regex-only baseline),0.154205,0.749718,0.904248,0.885173
+T08-V5,T08,Presidio (regex-only baseline),0.149908,0.752113,0.909852,0.889179
+T08-V6,T08,Presidio (regex-only baseline),0.149019,0.758423,0.904305,0.884448
+T08-V7,T08,Presidio (regex-only baseline),0.150131,0.758471,0.907067,0.884138
+T08-V8,T08,Presidio (regex-only baseline),0.152305,0.752748,0.905461,0.880661
+T09-V1,T09,Presidio (regex-only baseline),0.146234,0.760464,0.911342,0.888386
+T09-V2,T09,Presidio (regex-only baseline),0.148370,0.762612,0.908008,0.888468
+T09-V3,T09,Presidio (regex-only baseline),0.148705,0.760718,0.910848,0.891773
+T09-V4,T09,Presidio (regex-only baseline),0.150408,0.751113,0.909252,0.888579
+T09-V5,T09,Presidio (regex-only baseline),0.146019,0.764423,0.907905,0.888048
+T09-V6,T09,Presidio (regex-only baseline),0.147131,0.764471,0.910667,0.887738
+T09-V7,T09,Presidio (regex-only baseline),0.146805,0.763748,0.912061,0.887261
+T09-V8,T09,Presidio (regex-only baseline),0.151825,0.756536,0.905663,0.888800
+T10-V1,T10,Presidio (regex-only baseline),0.149697,0.754204,0.906094,0.885734
+T10-V2,T10,Presidio (regex-only baseline),0.151271,0.754565,0.909810,0.888720
+T10-V3,T10,Presidio (regex-only baseline),0.150884,0.757434,0.907239,0.887191
+T10-V4,T10,Presidio (regex-only baseline),0.152022,0.749712,0.904073,0.884283
+T10-V5,T10,Presidio (regex-only baseline),0.150594,0.758452,0.907143,0.885567
+T10-V6,T10,Presidio (regex-only baseline),0.148768,0.754085,0.906106,0.890969
+T10-V7,T10,Presidio (regex-only baseline),0.151429,0.754240,0.905970,0.888379
+T10-V8,T10,Presidio (regex-only baseline),0.148271,0.758400,0.908573,0.891558
+T11-V1,T11,Presidio (regex-only baseline),0.151271,0.754565,0.909810,0.888720
+T11-V2,T11,Presidio (regex-only baseline),0.150884,0.757434,0.907239,0.887191
+T11-V3,T11,Presidio (regex-only baseline),0.149522,0.754712,0.907073,0.887283
+T11-V4,T11,Presidio (regex-only baseline),0.154094,0.751452,0.902943,0.881367
+T11-V5,T11,Presidio (regex-only baseline),0.148768,0.754085,0.906106,0.890969
+T11-V6,T11,Presidio (regex-only baseline),0.151429,0.754240,0.905970,0.888379
+T11-V7,T11,Presidio (regex-only baseline),0.145771,0.763400,0.911573,0.894558
+T11-V8,T11,Presidio (regex-only baseline),0.147734,0.757464,0.909542,0.886586
+T12-V1,T12,Presidio (regex-only baseline),0.150884,0.757434,0.907239,0.887191
+T12-V2,T12,Presidio (regex-only baseline),0.149522,0.754712,0.907073,0.887283
+T12-V3,T12,Presidio (regex-only baseline),0.151594,0.756452,0.905943,0.884367
+T12-V4,T12,Presidio (regex-only baseline),0.152268,0.747085,0.901906,0.886769
+T12-V5,T12,Presidio (regex-only baseline),0.151429,0.754240,0.905970,0.888379
+T12-V6,T12,Presidio (regex-only baseline),0.145771,0.763400,0.911573,0.894558
+T12-V7,T12,Presidio (regex-only baseline),0.145234,0.762464,0.912542,0.889586
+T12-V8,T12,Presidio (regex-only baseline),0.149870,0.759612,0.906208,0.886668
+T13-V1,T13,Presidio (regex-only baseline),0.149522,0.754712,0.907073,0.887283
+T13-V2,T13,Presidio (regex-only baseline),0.151594,0.756452,0.905943,0.884367
+T13-V3,T13,Presidio (regex-only baseline),0.149768,0.752085,0.904906,0.889769
+T13-V4,T13,Presidio (regex-only baseline),0.154929,0.747240,0.901770,0.884179
+T13-V5,T13,Presidio (regex-only baseline),0.145771,0.763400,0.911573,0.894558
+T13-V6,T13,Presidio (regex-only baseline),0.145234,0.762464,0.912542,0.889586
+T13-V7,T13,Presidio (regex-only baseline),0.147370,0.764612,0.909208,0.889668
+T13-V8,T13,Presidio (regex-only baseline),0.150205,0.757718,0.909048,0.889973
+T14-V1,T14,Presidio (regex-only baseline),0.154594,0.750452,0.902343,0.880767
+T14-V2,T14,Presidio (regex-only baseline),0.152768,0.746085,0.901306,0.886169
+T14-V3,T14,Presidio (regex-only baseline),0.155429,0.746240,0.901170,0.883579
+T14-V4,T14,Presidio (regex-only baseline),0.152271,0.750400,0.903773,0.886758
+T14-V5,T14,Presidio (regex-only baseline),0.148234,0.756464,0.908942,0.885986
+T14-V6,T14,Presidio (regex-only baseline),0.150370,0.758612,0.905608,0.886068
+T14-V7,T14,Presidio (regex-only baseline),0.150705,0.756718,0.908448,0.889373
+T14-V8,T14,Presidio (regex-only baseline),0.152408,0.747113,0.906852,0.886179
+T15-V1,T15,Presidio (regex-only baseline),0.152768,0.746085,0.901306,0.886169
+T15-V2,T15,Presidio (regex-only baseline),0.155429,0.746240,0.901170,0.883579
+T15-V3,T15,Presidio (regex-only baseline),0.149771,0.755400,0.906773,0.889758
+T15-V4,T15,Presidio (regex-only baseline),0.151734,0.749464,0.904742,0.881786
+T15-V5,T15,Presidio (regex-only baseline),0.150370,0.758612,0.905608,0.886068
+T15-V6,T15,Presidio (regex-only baseline),0.150705,0.756718,0.908448,0.889373
+T15-V7,T15,Presidio (regex-only baseline),0.149908,0.752113,0.909852,0.889179
+T15-V8,T15,Presidio (regex-only baseline),0.151519,0.753423,0.901305,0.881448
+T16-V1,T16,Presidio (regex-only baseline),0.155429,0.746240,0.901170,0.883579
+T16-V2,T16,Presidio (regex-only baseline),0.149771,0.755400,0.906773,0.889758
+T16-V3,T16,Presidio (regex-only baseline),0.149234,0.754464,0.907742,0.884786
+T16-V4,T16,Presidio (regex-only baseline),0.153870,0.751612,0.901408,0.881868
+T16-V5,T16,Presidio (regex-only baseline),0.150705,0.756718,0.908448,0.889373
+T16-V6,T16,Presidio (regex-only baseline),0.149908,0.752113,0.909852,0.889179
+T16-V7,T16,Presidio (regex-only baseline),0.149019,0.758423,0.904305,0.884448
+T16-V8,T16,Presidio (regex-only baseline),0.152631,0.753471,0.904067,0.881138
+T17-V1,T17,Presidio (regex-only baseline),0.148771,0.757400,0.907973,0.890958
+T17-V2,T17,Presidio (regex-only baseline),0.148234,0.756464,0.908942,0.885986
+T17-V3,T17,Presidio (regex-only baseline),0.150370,0.758612,0.905608,0.886068
+T17-V4,T17,Presidio (regex-only baseline),0.153205,0.751718,0.905448,0.886373
+T17-V5,T17,Presidio (regex-only baseline),0.148908,0.754113,0.911052,0.890379
+T17-V6,T17,Presidio (regex-only baseline),0.148019,0.760423,0.905505,0.885648
+T17-V7,T17,Presidio (regex-only baseline),0.149131,0.760471,0.908267,0.885338
+T17-V8,T17,Presidio (regex-only baseline),0.151305,0.754748,0.906661,0.881861
+T18-V1,T18,Presidio (regex-only baseline),0.148234,0.756464,0.908942,0.885986
+T18-V2,T18,Presidio (regex-only baseline),0.150370,0.758612,0.905608,0.886068
+T18-V3,T18,Presidio (regex-only baseline),0.150705,0.756718,0.908448,0.889373
+T18-V4,T18,Presidio (regex-only baseline),0.152408,0.747113,0.906852,0.886179
+T18-V5,T18,Presidio (regex-only baseline),0.148019,0.760423,0.905505,0.885648
+T18-V6,T18,Presidio (regex-only baseline),0.149131,0.760471,0.908267,0.885338
+T18-V7,T18,Presidio (regex-only baseline),0.148805,0.759748,0.909661,0.884861
+T18-V8,T18,Presidio (regex-only baseline),0.153825,0.752536,0.903263,0.886400
+T19-V1,T19,Presidio (regex-only baseline),0.150370,0.758612,0.905608,0.886068
+T19-V2,T19,Presidio (regex-only baseline),0.150705,0.756718,0.908448,0.889373
+T19-V3,T19,Presidio (regex-only baseline),0.149908,0.752113,0.909852,0.889179
+T19-V4,T19,Presidio (regex-only baseline),0.151519,0.753423,0.901305,0.881448
+T19-V5,T19,Presidio (regex-only baseline),0.149131,0.760471,0.908267,0.885338
+T19-V6,T19,Presidio (regex-only baseline),0.148805,0.759748,0.909661,0.884861
+T19-V7,T19,Presidio (regex-only baseline),0.151325,0.757536,0.906263,0.889400
+T19-V8,T19,Presidio (regex-only baseline),0.152468,0.749282,0.903181,0.885468
+T20-V1,T20,Presidio (regex-only baseline),0.153271,0.750565,0.907410,0.886320
+T20-V2,T20,Presidio (regex-only baseline),0.152884,0.753434,0.904839,0.884791
+T20-V3,T20,Presidio (regex-only baseline),0.151522,0.750712,0.904673,0.884883
+T20-V4,T20,Presidio (regex-only baseline),0.156094,0.747452,0.900543,0.878967
+T20-V5,T20,Presidio (regex-only baseline),0.150768,0.750085,0.903706,0.888569
+T20-V6,T20,Presidio (regex-only baseline),0.153429,0.750240,0.903570,0.885979
+T20-V7,T20,Presidio (regex-only baseline),0.147771,0.759400,0.909173,0.892158
+T20-V8,T20,Presidio (regex-only baseline),0.149734,0.753464,0.907142,0.884186
+T21-V1,T21,Presidio (regex-only baseline),0.152884,0.753434,0.904839,0.884791
+T21-V2,T21,Presidio (regex-only baseline),0.151522,0.750712,0.904673,0.884883
+T21-V3,T21,Presidio (regex-only baseline),0.153594,0.752452,0.903543,0.881967
+T21-V4,T21,Presidio (regex-only baseline),0.154268,0.743085,0.899506,0.884369
+T21-V5,T21,Presidio (regex-only baseline),0.153429,0.750240,0.903570,0.885979
+T21-V6,T21,Presidio (regex-only baseline),0.147771,0.759400,0.909173,0.892158
+T21-V7,T21,Presidio (regex-only baseline),0.147234,0.758464,0.910142,0.887186
+T21-V8,T21,Presidio (regex-only baseline),0.151870,0.755612,0.903808,0.884268
+T22-V1,T22,Presidio (regex-only baseline),0.154522,0.744712,0.901073,0.881283
+T22-V2,T22,Presidio (regex-only baseline),0.156594,0.746452,0.899943,0.878367
+T22-V3,T22,Presidio (regex-only baseline),0.154768,0.742085,0.898906,0.883769
+T22-V4,T22,Presidio (regex-only baseline),0.159929,0.737240,0.895770,0.878179
+T22-V5,T22,Presidio (regex-only baseline),0.150771,0.753400,0.905573,0.888558
+T22-V6,T22,Presidio (regex-only baseline),0.150234,0.752464,0.906542,0.883586
+T22-V7,T22,Presidio (regex-only baseline),0.152370,0.754612,0.903208,0.883668
+T22-V8,T22,Presidio (regex-only baseline),0.155205,0.747718,0.903048,0.883973
+T23-V1,T23,Presidio (regex-only baseline),0.156594,0.746452,0.899943,0.878367
+T23-V2,T23,Presidio (regex-only baseline),0.154768,0.742085,0.898906,0.883769
+T23-V3,T23,Presidio (regex-only baseline),0.157429,0.742240,0.898770,0.881179
+T23-V4,T23,Presidio (regex-only baseline),0.154271,0.746400,0.901373,0.884358
+T23-V5,T23,Presidio (regex-only baseline),0.150234,0.752464,0.906542,0.883586
+T23-V6,T23,Presidio (regex-only baseline),0.152370,0.754612,0.903208,0.883668
+T23-V7,T23,Presidio (regex-only baseline),0.152705,0.752718,0.906048,0.886973
+T23-V8,T23,Presidio (regex-only baseline),0.154408,0.743113,0.904452,0.883779
+T24-V1,T24,Presidio (regex-only baseline),0.154768,0.742085,0.898906,0.883769
+T24-V2,T24,Presidio (regex-only baseline),0.157429,0.742240,0.898770,0.881179
+T24-V3,T24,Presidio (regex-only baseline),0.151771,0.751400,0.904373,0.887358
+T24-V4,T24,Presidio (regex-only baseline),0.153734,0.745464,0.902342,0.879386
+T24-V5,T24,Presidio (regex-only baseline),0.152370,0.754612,0.903208,0.883668
+T24-V6,T24,Presidio (regex-only baseline),0.152705,0.752718,0.906048,0.886973
+T24-V7,T24,Presidio (regex-only baseline),0.151908,0.748113,0.907452,0.886779
+T24-V8,T24,Presidio (regex-only baseline),0.153519,0.749423,0.898905,0.879048
+T25-V1,T25,Presidio (regex-only baseline),0.154429,0.748240,0.902370,0.884779
+T25-V2,T25,Presidio (regex-only baseline),0.148771,0.757400,0.907973,0.890958
+T25-V3,T25,Presidio (regex-only baseline),0.148234,0.756464,0.908942,0.885986
+T25-V4,T25,Presidio (regex-only baseline),0.152870,0.753612,0.902608,0.883068
+T25-V5,T25,Presidio (regex-only baseline),0.149705,0.758718,0.909648,0.890573
+T25-V6,T25,Presidio (regex-only baseline),0.148908,0.754113,0.911052,0.890379
+T25-V7,T25,Presidio (regex-only baseline),0.148019,0.760423,0.905505,0.885648
+T25-V8,T25,Presidio (regex-only baseline),0.151631,0.755471,0.905267,0.882338
+T26-V1,T26,Presidio (regex-only baseline),0.148771,0.757400,0.907973,0.890958
+T26-V2,T26,Presidio (regex-only baseline),0.148234,0.756464,0.908942,0.885986
+T26-V3,T26,Presidio (regex-only baseline),0.150370,0.758612,0.905608,0.886068
+T26-V4,T26,Presidio (regex-only baseline),0.153205,0.751718,0.905448,0.886373
+T26-V5,T26,Presidio (regex-only baseline),0.148908,0.754113,0.911052,0.890379
+T26-V6,T26,Presidio (regex-only baseline),0.148019,0.760423,0.905505,0.885648
+T26-V7,T26,Presidio (regex-only baseline),0.149131,0.760471,0.908267,0.885338
+T26-V8,T26,Presidio (regex-only baseline),0.151305,0.754748,0.906661,0.881861
+T27-V1,T27,Presidio (regex-only baseline),0.148234,0.756464,0.908942,0.885986
+T27-V2,T27,Presidio (regex-only baseline),0.150370,0.758612,0.905608,0.886068
+T27-V3,T27,Presidio (regex-only baseline),0.150705,0.756718,0.908448,0.889373
+T27-V4,T27,Presidio (regex-only baseline),0.152408,0.747113,0.906852,0.886179
+T27-V5,T27,Presidio (regex-only baseline),0.148019,0.760423,0.905505,0.885648
+T27-V6,T27,Presidio (regex-only baseline),0.149131,0.760471,0.908267,0.885338
+T27-V7,T27,Presidio (regex-only baseline),0.148805,0.759748,0.909661,0.884861
+T27-V8,T27,Presidio (regex-only baseline),0.153825,0.752536,0.903263,0.886400
+T28-V1,T28,Presidio (regex-only baseline),0.150370,0.758612,0.905608,0.886068
+T28-V2,T28,Presidio (regex-only baseline),0.150705,0.756718,0.908448,0.889373
+T28-V3,T28,Presidio (regex-only baseline),0.149908,0.752113,0.909852,0.889179
+T28-V4,T28,Presidio (regex-only baseline),0.151519,0.753423,0.901305,0.881448
+T28-V5,T28,Presidio (regex-only baseline),0.149131,0.760471,0.908267,0.885338
+T28-V6,T28,Presidio (regex-only baseline),0.148805,0.759748,0.909661,0.884861
+T28-V7,T28,Presidio (regex-only baseline),0.151325,0.757536,0.906263,0.889400
+T28-V8,T28,Presidio (regex-only baseline),0.152468,0.749282,0.903181,0.885468
+T29-V1,T29,Presidio (regex-only baseline),0.150705,0.756718,0.908448,0.889373
+T29-V2,T29,Presidio (regex-only baseline),0.149908,0.752113,0.909852,0.889179
+T29-V3,T29,Presidio (regex-only baseline),0.149019,0.758423,0.904305,0.884448
+T29-V4,T29,Presidio (regex-only baseline),0.152631,0.753471,0.904067,0.881138
+T29-V5,T29,Presidio (regex-only baseline),0.148805,0.759748,0.909661,0.884861
+T29-V6,T29,Presidio (regex-only baseline),0.151325,0.757536,0.906263,0.889400
+T29-V7,T29,Presidio (regex-only baseline),0.149968,0.754282,0.906181,0.888468
+T29-V8,T29,Presidio (regex-only baseline),0.153337,0.753907,0.905876,0.883524
+T30-V1,T30,Presidio (regex-only baseline),0.155884,0.747434,0.901239,0.881191
+T30-V2,T30,Presidio (regex-only baseline),0.154522,0.744712,0.901073,0.881283
+T30-V3,T30,Presidio (regex-only baseline),0.156594,0.746452,0.899943,0.878367
+T30-V4,T30,Presidio (regex-only baseline),0.157268,0.737085,0.895906,0.880769
+T30-V5,T30,Presidio (regex-only baseline),0.156429,0.744240,0.899970,0.882379
+T30-V6,T30,Presidio (regex-only baseline),0.150771,0.753400,0.905573,0.888558
+T30-V7,T30,Presidio (regex-only baseline),0.150234,0.752464,0.906542,0.883586
+T30-V8,T30,Presidio (regex-only baseline),0.154870,0.749612,0.900208,0.880668
+T31-V1,T31,Presidio (regex-only baseline),0.154522,0.744712,0.901073,0.881283
+T31-V2,T31,Presidio (regex-only baseline),0.156594,0.746452,0.899943,0.878367
+T31-V3,T31,Presidio (regex-only baseline),0.154768,0.742085,0.898906,0.883769
+T31-V4,T31,Presidio (regex-only baseline),0.159929,0.737240,0.895770,0.878179
+T31-V5,T31,Presidio (regex-only baseline),0.150771,0.753400,0.905573,0.888558
+T31-V6,T31,Presidio (regex-only baseline),0.150234,0.752464,0.906542,0.883586
+T31-V7,T31,Presidio (regex-only baseline),0.152370,0.754612,0.903208,0.883668
+T31-V8,T31,Presidio (regex-only baseline),0.155205,0.747718,0.903048,0.883973
+T32-V1,T32,Presidio (regex-only baseline),0.156594,0.746452,0.899943,0.878367
+T32-V2,T32,Presidio (regex-only baseline),0.154768,0.742085,0.898906,0.883769
+T32-V3,T32,Presidio (regex-only baseline),0.157429,0.742240,0.898770,0.881179
+T32-V4,T32,Presidio (regex-only baseline),0.154271,0.746400,0.901373,0.884358
+T32-V5,T32,Presidio (regex-only baseline),0.150234,0.752464,0.906542,0.883586
+T32-V6,T32,Presidio (regex-only baseline),0.152370,0.754612,0.903208,0.883668
+T32-V7,T32,Presidio (regex-only baseline),0.152705,0.752718,0.906048,0.886973
+T32-V8,T32,Presidio (regex-only baseline),0.154408,0.743113,0.904452,0.883779
+T01-V1,T01,Presidio (with NER fallback),0.111428,0.823239,0.921028,0.901170
+T01-V2,T01,Presidio (with NER fallback),0.111392,0.819250,0.920455,0.899425
+T01-V3,T01,Presidio (with NER fallback),0.112243,0.815522,0.921590,0.901561
+T01-V4,T01,Presidio (with NER fallback),0.114046,0.811183,0.916313,0.896311
+T01-V5,T01,Presidio (with NER fallback),0.111878,0.820072,0.921336,0.898522
+T01-V6,T01,Presidio (with NER fallback),0.112896,0.816661,0.922907,0.899941
+T01-V7,T01,Presidio (with NER fallback),0.112145,0.821773,0.920845,0.898411
+T01-V8,T01,Presidio (with NER fallback),0.115127,0.817364,0.918978,0.897649
+T02-V1,T02,Presidio (with NER fallback),0.111392,0.819250,0.920455,0.899425
+T02-V2,T02,Presidio (with NER fallback),0.112243,0.815522,0.921590,0.901561
+T02-V3,T02,Presidio (with NER fallback),0.111546,0.816183,0.919313,0.899311
+T02-V4,T02,Presidio (with NER fallback),0.115378,0.813072,0.917136,0.894322
+T02-V5,T02,Presidio (with NER fallback),0.112896,0.816661,0.922907,0.899941
+T02-V6,T02,Presidio (with NER fallback),0.112145,0.821773,0.920845,0.898411
+T02-V7,T02,Presidio (with NER fallback),0.112627,0.822364,0.921978,0.900649
+T02-V8,T02,Presidio (with NER fallback),0.115073,0.813165,0.918191,0.897386
+T03-V1,T03,Presidio (with NER fallback),0.112243,0.815522,0.921590,0.901561
+T03-V2,T03,Presidio (with NER fallback),0.111546,0.816183,0.919313,0.899311
+T03-V3,T03,Presidio (with NER fallback),0.112878,0.818072,0.920136,0.897322
+T03-V4,T03,Presidio (with NER fallback),0.116396,0.809661,0.918707,0.895741
+T03-V5,T03,Presidio (with NER fallback),0.112145,0.821773,0.920845,0.898411
+T03-V6,T03,Presidio (with NER fallback),0.112627,0.822364,0.921978,0.900649
+T03-V7,T03,Presidio (with NER fallback),0.112573,0.818165,0.921191,0.900386
+T03-V8,T03,Presidio (with NER fallback),0.114056,0.811483,0.914554,0.895145
+T04-V1,T04,Presidio (with NER fallback),0.111546,0.816183,0.919313,0.899311
+T04-V2,T04,Presidio (with NER fallback),0.112878,0.818072,0.920136,0.897322
+T04-V3,T04,Presidio (with NER fallback),0.113896,0.814661,0.921707,0.898741
+T04-V4,T04,Presidio (with NER fallback),0.115645,0.814773,0.916645,0.894211
+T04-V5,T04,Presidio (with NER fallback),0.112627,0.822364,0.921978,0.900649
+T04-V6,T04,Presidio (with NER fallback),0.112573,0.818165,0.921191,0.900386
+T04-V7,T04,Presidio (with NER fallback),0.111556,0.816483,0.917554,0.898145
+T04-V8,T04,Presidio (with NER fallback),0.115683,0.814823,0.913841,0.895011
+T05-V1,T05,Presidio (with NER fallback),0.112878,0.818072,0.920136,0.897322
+T05-V2,T05,Presidio (with NER fallback),0.113896,0.814661,0.921707,0.898741
+T05-V3,T05,Presidio (with NER fallback),0.113145,0.819773,0.919645,0.897211
+T05-V4,T05,Presidio (with NER fallback),0.116127,0.815364,0.917778,0.896449
+T05-V5,T05,Presidio (with NER fallback),0.112573,0.818165,0.921191,0.900386
+T05-V6,T05,Presidio (with NER fallback),0.111556,0.816483,0.917554,0.898145
+T05-V7,T05,Presidio (with NER fallback),0.113183,0.819823,0.916841,0.898011
+T05-V8,T05,Presidio (with NER fallback),0.116032,0.813701,0.916013,0.894218
+T06-V1,T06,Presidio (with NER fallback),0.116896,0.808661,0.918107,0.895141
+T06-V2,T06,Presidio (with NER fallback),0.116145,0.813773,0.916045,0.893611
+T06-V3,T06,Presidio (with NER fallback),0.116627,0.814364,0.917178,0.895849
+T06-V4,T06,Presidio (with NER fallback),0.119073,0.805165,0.913391,0.892586
+T06-V5,T06,Presidio (with NER fallback),0.114556,0.810483,0.913954,0.894545
+T06-V6,T06,Presidio (with NER fallback),0.116183,0.813823,0.913241,0.894411
+T06-V7,T06,Presidio (with NER fallback),0.116532,0.812701,0.915413,0.893618
+T06-V8,T06,Presidio (with NER fallback),0.119130,0.808000,0.910365,0.894293
+T07-V1,T07,Presidio (with NER fallback),0.116145,0.813773,0.916045,0.893611
+T07-V2,T07,Presidio (with NER fallback),0.116627,0.814364,0.917178,0.895849
+T07-V3,T07,Presidio (with NER fallback),0.116573,0.810165,0.916391,0.895586
+T07-V4,T07,Presidio (with NER fallback),0.118056,0.803483,0.909754,0.890345
+T07-V5,T07,Presidio (with NER fallback),0.116183,0.813823,0.913241,0.894411
+T07-V6,T07,Presidio (with NER fallback),0.116532,0.812701,0.915413,0.893618
+T07-V7,T07,Presidio (with NER fallback),0.116630,0.813000,0.913365,0.897293
+T07-V8,T07,Presidio (with NER fallback),0.120199,0.808060,0.908994,0.889325
+T08-V1,T08,Presidio (with NER fallback),0.116627,0.814364,0.917178,0.895849
+T08-V2,T08,Presidio (with NER fallback),0.116573,0.810165,0.916391,0.895586
+T08-V3,T08,Presidio (with NER fallback),0.115556,0.808483,0.912754,0.893345
+T08-V4,T08,Presidio (with NER fallback),0.119683,0.806823,0.909041,0.890211
+T08-V5,T08,Presidio (with NER fallback),0.116532,0.812701,0.915413,0.893618
+T08-V6,T08,Presidio (with NER fallback),0.116630,0.813000,0.913365,0.897293
+T08-V7,T08,Presidio (with NER fallback),0.117699,0.813060,0.911994,0.892325
+T08-V8,T08,Presidio (with NER fallback),0.121229,0.802054,0.913289,0.891881
+T09-V1,T09,Presidio (with NER fallback),0.113573,0.816165,0.919991,0.899186
+T09-V2,T09,Presidio (with NER fallback),0.112556,0.814483,0.916354,0.896945
+T09-V3,T09,Presidio (with NER fallback),0.114183,0.817823,0.915641,0.896811
+T09-V4,T09,Presidio (with NER fallback),0.117032,0.811701,0.914813,0.893018
+T09-V5,T09,Presidio (with NER fallback),0.113630,0.819000,0.916965,0.900893
+T09-V6,T09,Presidio (with NER fallback),0.114699,0.819060,0.915594,0.895925
+T09-V7,T09,Presidio (with NER fallback),0.115729,0.813054,0.919889,0.898481
+T09-V8,T09,Presidio (with NER fallback),0.112458,0.817605,0.919432,0.901537
+T10-V1,T10,Presidio (with NER fallback),0.111428,0.823239,0.921028,0.901170
+T10-V2,T10,Presidio (with NER fallback),0.111392,0.819250,0.920455,0.899425
+T10-V3,T10,Presidio (with NER fallback),0.112243,0.815522,0.921590,0.901561
+T10-V4,T10,Presidio (with NER fallback),0.114046,0.811183,0.916313,0.896311
+T10-V5,T10,Presidio (with NER fallback),0.111878,0.820072,0.921336,0.898522
+T10-V6,T10,Presidio (with NER fallback),0.112896,0.816661,0.922907,0.899941
+T10-V7,T10,Presidio (with NER fallback),0.112145,0.821773,0.920845,0.898411
+T10-V8,T10,Presidio (with NER fallback),0.115127,0.817364,0.918978,0.897649
+T11-V1,T11,Presidio (with NER fallback),0.111392,0.819250,0.920455,0.899425
+T11-V2,T11,Presidio (with NER fallback),0.112243,0.815522,0.921590,0.901561
+T11-V3,T11,Presidio (with NER fallback),0.111546,0.816183,0.919313,0.899311
+T11-V4,T11,Presidio (with NER fallback),0.115378,0.813072,0.917136,0.894322
+T11-V5,T11,Presidio (with NER fallback),0.112896,0.816661,0.922907,0.899941
+T11-V6,T11,Presidio (with NER fallback),0.112145,0.821773,0.920845,0.898411
+T11-V7,T11,Presidio (with NER fallback),0.112627,0.822364,0.921978,0.900649
+T11-V8,T11,Presidio (with NER fallback),0.115073,0.813165,0.918191,0.897386
+T12-V1,T12,Presidio (with NER fallback),0.112243,0.815522,0.921590,0.901561
+T12-V2,T12,Presidio (with NER fallback),0.111546,0.816183,0.919313,0.899311
+T12-V3,T12,Presidio (with NER fallback),0.112878,0.818072,0.920136,0.897322
+T12-V4,T12,Presidio (with NER fallback),0.116396,0.809661,0.918707,0.895741
+T12-V5,T12,Presidio (with NER fallback),0.112145,0.821773,0.920845,0.898411
+T12-V6,T12,Presidio (with NER fallback),0.112627,0.822364,0.921978,0.900649
+T12-V7,T12,Presidio (with NER fallback),0.112573,0.818165,0.921191,0.900386
+T12-V8,T12,Presidio (with NER fallback),0.114056,0.811483,0.914554,0.895145
+T13-V1,T13,Presidio (with NER fallback),0.111546,0.816183,0.919313,0.899311
+T13-V2,T13,Presidio (with NER fallback),0.112878,0.818072,0.920136,0.897322
+T13-V3,T13,Presidio (with NER fallback),0.113896,0.814661,0.921707,0.898741
+T13-V4,T13,Presidio (with NER fallback),0.115645,0.814773,0.916645,0.894211
+T13-V5,T13,Presidio (with NER fallback),0.112627,0.822364,0.921978,0.900649
+T13-V6,T13,Presidio (with NER fallback),0.112573,0.818165,0.921191,0.900386
+T13-V7,T13,Presidio (with NER fallback),0.111556,0.816483,0.917554,0.898145
+T13-V8,T13,Presidio (with NER fallback),0.115683,0.814823,0.913841,0.895011
+T14-V1,T14,Presidio (with NER fallback),0.115878,0.812072,0.916536,0.893722
+T14-V2,T14,Presidio (with NER fallback),0.116896,0.808661,0.918107,0.895141
+T14-V3,T14,Presidio (with NER fallback),0.116145,0.813773,0.916045,0.893611
+T14-V4,T14,Presidio (with NER fallback),0.119127,0.809364,0.914178,0.892849
+T14-V5,T14,Presidio (with NER fallback),0.115573,0.812165,0.917591,0.896786
+T14-V6,T14,Presidio (with NER fallback),0.114556,0.810483,0.913954,0.894545
+T14-V7,T14,Presidio (with NER fallback),0.116183,0.813823,0.913241,0.894411
+T14-V8,T14,Presidio (with NER fallback),0.119032,0.807701,0.912413,0.890618
+T15-V1,T15,Presidio (with NER fallback),0.116896,0.808661,0.918107,0.895141
+T15-V2,T15,Presidio (with NER fallback),0.116145,0.813773,0.916045,0.893611
+T15-V3,T15,Presidio (with NER fallback),0.116627,0.814364,0.917178,0.895849
+T15-V4,T15,Presidio (with NER fallback),0.119073,0.805165,0.913391,0.892586
+T15-V5,T15,Presidio (with NER fallback),0.114556,0.810483,0.913954,0.894545
+T15-V6,T15,Presidio (with NER fallback),0.116183,0.813823,0.913241,0.894411
+T15-V7,T15,Presidio (with NER fallback),0.116532,0.812701,0.915413,0.893618
+T15-V8,T15,Presidio (with NER fallback),0.119130,0.808000,0.910365,0.894293
+T16-V1,T16,Presidio (with NER fallback),0.116145,0.813773,0.916045,0.893611
+T16-V2,T16,Presidio (with NER fallback),0.116627,0.814364,0.917178,0.895849
+T16-V3,T16,Presidio (with NER fallback),0.116573,0.810165,0.916391,0.895586
+T16-V4,T16,Presidio (with NER fallback),0.118056,0.803483,0.909754,0.890345
+T16-V5,T16,Presidio (with NER fallback),0.116183,0.813823,0.913241,0.894411
+T16-V6,T16,Presidio (with NER fallback),0.116532,0.812701,0.915413,0.893618
+T16-V7,T16,Presidio (with NER fallback),0.116630,0.813000,0.913365,0.897293
+T16-V8,T16,Presidio (with NER fallback),0.120199,0.808060,0.908994,0.889325
+T17-V1,T17,Presidio (with NER fallback),0.115627,0.816364,0.918378,0.897049
+T17-V2,T17,Presidio (with NER fallback),0.115573,0.812165,0.917591,0.896786
+T17-V3,T17,Presidio (with NER fallback),0.114556,0.810483,0.913954,0.894545
+T17-V4,T17,Presidio (with NER fallback),0.118683,0.808823,0.910241,0.891411
+T17-V5,T17,Presidio (with NER fallback),0.115532,0.814701,0.916613,0.894818
+T17-V6,T17,Presidio (with NER fallback),0.115630,0.815000,0.914565,0.898493
+T17-V7,T17,Presidio (with NER fallback),0.116699,0.815060,0.913194,0.893525
+T17-V8,T17,Presidio (with NER fallback),0.120229,0.804054,0.914489,0.893081
+T18-V1,T18,Presidio (with NER fallback),0.115573,0.812165,0.917591,0.896786
+T18-V2,T18,Presidio (with NER fallback),0.114556,0.810483,0.913954,0.894545
+T18-V3,T18,Presidio (with NER fallback),0.116183,0.813823,0.913241,0.894411
+T18-V4,T18,Presidio (with NER fallback),0.119032,0.807701,0.912413,0.890618
+T18-V5,T18,Presidio (with NER fallback),0.115630,0.815000,0.914565,0.898493
+T18-V6,T18,Presidio (with NER fallback),0.116699,0.815060,0.913194,0.893525
+T18-V7,T18,Presidio (with NER fallback),0.117729,0.809054,0.917489,0.896081
+T18-V8,T18,Presidio (with NER fallback),0.114458,0.813605,0.917032,0.899137
+T19-V1,T19,Presidio (with NER fallback),0.114556,0.810483,0.913954,0.894545
+T19-V2,T19,Presidio (with NER fallback),0.116183,0.813823,0.913241,0.894411
+T19-V3,T19,Presidio (with NER fallback),0.116532,0.812701,0.915413,0.893618
+T19-V4,T19,Presidio (with NER fallback),0.119130,0.808000,0.910365,0.894293
+T19-V5,T19,Presidio (with NER fallback),0.116699,0.815060,0.913194,0.893525
+T19-V6,T19,Presidio (with NER fallback),0.117729,0.809054,0.917489,0.896081
+T19-V7,T19,Presidio (with NER fallback),0.111958,0.818605,0.920032,0.902137
+T19-V8,T19,Presidio (with NER fallback),0.113366,0.811754,0.917510,0.898141
+T20-V1,T20,Presidio (with NER fallback),0.113392,0.815250,0.918055,0.897025
+T20-V2,T20,Presidio (with NER fallback),0.114243,0.811522,0.919190,0.899161
+T20-V3,T20,Presidio (with NER fallback),0.113546,0.812183,0.916913,0.896911
+T20-V4,T20,Presidio (with NER fallback),0.117378,0.809072,0.914736,0.891922
+T20-V5,T20,Presidio (with NER fallback),0.114896,0.812661,0.920507,0.897541
+T20-V6,T20,Presidio (with NER fallback),0.114145,0.817773,0.918445,0.896011
+T20-V7,T20,Presidio (with NER fallback),0.114627,0.818364,0.919578,0.898249
+T20-V8,T20,Presidio (with NER fallback),0.117073,0.809165,0.915791,0.894986
+T21-V1,T21,Presidio (with NER fallback),0.114243,0.811522,0.919190,0.899161
+T21-V2,T21,Presidio (with NER fallback),0.113546,0.812183,0.916913,0.896911
+T21-V3,T21,Presidio (with NER fallback),0.114878,0.814072,0.917736,0.894922
+T21-V4,T21,Presidio (with NER fallback),0.118396,0.805661,0.916307,0.893341
+T21-V5,T21,Presidio (with NER fallback),0.114145,0.817773,0.918445,0.896011
+T21-V6,T21,Presidio (with NER fallback),0.114627,0.818364,0.919578,0.898249
+T21-V7,T21,Presidio (with NER fallback),0.114573,0.814165,0.918791,0.897986
+T21-V8,T21,Presidio (with NER fallback),0.116056,0.807483,0.912154,0.892745
+T22-V1,T22,Presidio (with NER fallback),0.116546,0.806183,0.913313,0.893311
+T22-V2,T22,Presidio (with NER fallback),0.117878,0.808072,0.914136,0.891322
+T22-V3,T22,Presidio (with NER fallback),0.118896,0.804661,0.915707,0.892741
+T22-V4,T22,Presidio (with NER fallback),0.120645,0.804773,0.910645,0.888211
+T22-V5,T22,Presidio (with NER fallback),0.117627,0.812364,0.915978,0.894649
+T22-V6,T22,Presidio (with NER fallback),0.117573,0.808165,0.915191,0.894386
+T22-V7,T22,Presidio (with NER fallback),0.116556,0.806483,0.911554,0.892145
+T22-V8,T22,Presidio (with NER fallback),0.120683,0.804823,0.907841,0.889011
+T23-V1,T23,Presidio (with NER fallback),0.117878,0.808072,0.914136,0.891322
+T23-V2,T23,Presidio (with NER fallback),0.118896,0.804661,0.915707,0.892741
+T23-V3,T23,Presidio (with NER fallback),0.118145,0.809773,0.913645,0.891211
+T23-V4,T23,Presidio (with NER fallback),0.121127,0.805364,0.911778,0.890449
+T23-V5,T23,Presidio (with NER fallback),0.117573,0.808165,0.915191,0.894386
+T23-V6,T23,Presidio (with NER fallback),0.116556,0.806483,0.911554,0.892145
+T23-V7,T23,Presidio (with NER fallback),0.118183,0.809823,0.910841,0.892011
+T23-V8,T23,Presidio (with NER fallback),0.121032,0.803701,0.910013,0.888218
+T24-V1,T24,Presidio (with NER fallback),0.118896,0.804661,0.915707,0.892741
+T24-V2,T24,Presidio (with NER fallback),0.118145,0.809773,0.913645,0.891211
+T24-V3,T24,Presidio (with NER fallback),0.118627,0.810364,0.914778,0.893449
+T24-V4,T24,Presidio (with NER fallback),0.121073,0.801165,0.910991,0.890186
+T24-V5,T24,Presidio (with NER fallback),0.116556,0.806483,0.911554,0.892145
+T24-V6,T24,Presidio (with NER fallback),0.118183,0.809823,0.910841,0.892011
+T24-V7,T24,Presidio (with NER fallback),0.118532,0.808701,0.913013,0.891218
+T24-V8,T24,Presidio (with NER fallback),0.121130,0.804000,0.907965,0.891893
+T25-V1,T25,Presidio (with NER fallback),0.115145,0.815773,0.917245,0.894811
+T25-V2,T25,Presidio (with NER fallback),0.115627,0.816364,0.918378,0.897049
+T25-V3,T25,Presidio (with NER fallback),0.115573,0.812165,0.917591,0.896786
+T25-V4,T25,Presidio (with NER fallback),0.117056,0.805483,0.910954,0.891545
+T25-V5,T25,Presidio (with NER fallback),0.115183,0.815823,0.914441,0.895611
+T25-V6,T25,Presidio (with NER fallback),0.115532,0.814701,0.916613,0.894818
+T25-V7,T25,Presidio (with NER fallback),0.115630,0.815000,0.914565,0.898493
+T25-V8,T25,Presidio (with NER fallback),0.119199,0.810060,0.910194,0.890525
+T26-V1,T26,Presidio (with NER fallback),0.115627,0.816364,0.918378,0.897049
+T26-V2,T26,Presidio (with NER fallback),0.115573,0.812165,0.917591,0.896786
+T26-V3,T26,Presidio (with NER fallback),0.114556,0.810483,0.913954,0.894545
+T26-V4,T26,Presidio (with NER fallback),0.118683,0.808823,0.910241,0.891411
+T26-V5,T26,Presidio (with NER fallback),0.115532,0.814701,0.916613,0.894818
+T26-V6,T26,Presidio (with NER fallback),0.115630,0.815000,0.914565,0.898493
+T26-V7,T26,Presidio (with NER fallback),0.116699,0.815060,0.913194,0.893525
+T26-V8,T26,Presidio (with NER fallback),0.120229,0.804054,0.914489,0.893081
+T27-V1,T27,Presidio (with NER fallback),0.115573,0.812165,0.917591,0.896786
+T27-V2,T27,Presidio (with NER fallback),0.114556,0.810483,0.913954,0.894545
+T27-V3,T27,Presidio (with NER fallback),0.116183,0.813823,0.913241,0.894411
+T27-V4,T27,Presidio (with NER fallback),0.119032,0.807701,0.912413,0.890618
+T27-V5,T27,Presidio (with NER fallback),0.115630,0.815000,0.914565,0.898493
+T27-V6,T27,Presidio (with NER fallback),0.116699,0.815060,0.913194,0.893525
+T27-V7,T27,Presidio (with NER fallback),0.117729,0.809054,0.917489,0.896081
+T27-V8,T27,Presidio (with NER fallback),0.114458,0.813605,0.917032,0.899137
+T28-V1,T28,Presidio (with NER fallback),0.114556,0.810483,0.913954,0.894545
+T28-V2,T28,Presidio (with NER fallback),0.116183,0.813823,0.913241,0.894411
+T28-V3,T28,Presidio (with NER fallback),0.116532,0.812701,0.915413,0.893618
+T28-V4,T28,Presidio (with NER fallback),0.119130,0.808000,0.910365,0.894293
+T28-V5,T28,Presidio (with NER fallback),0.116699,0.815060,0.913194,0.893525
+T28-V6,T28,Presidio (with NER fallback),0.117729,0.809054,0.917489,0.896081
+T28-V7,T28,Presidio (with NER fallback),0.111958,0.818605,0.920032,0.902137
+T28-V8,T28,Presidio (with NER fallback),0.113366,0.811754,0.917510,0.898141
+T29-V1,T29,Presidio (with NER fallback),0.116183,0.813823,0.913241,0.894411
+T29-V2,T29,Presidio (with NER fallback),0.116532,0.812701,0.915413,0.893618
+T29-V3,T29,Presidio (with NER fallback),0.116630,0.813000,0.913365,0.897293
+T29-V4,T29,Presidio (with NER fallback),0.120199,0.808060,0.908994,0.889325
+T29-V5,T29,Presidio (with NER fallback),0.117729,0.809054,0.917489,0.896081
+T29-V6,T29,Presidio (with NER fallback),0.111958,0.818605,0.920032,0.902137
+T29-V7,T29,Presidio (with NER fallback),0.110866,0.816754,0.920510,0.901141
+T29-V8,T29,Presidio (with NER fallback),0.113643,0.814609,0.915711,0.894730
+T30-V1,T30,Presidio (with NER fallback),0.117243,0.805522,0.915590,0.895561
+T30-V2,T30,Presidio (with NER fallback),0.116546,0.806183,0.913313,0.893311
+T30-V3,T30,Presidio (with NER fallback),0.117878,0.808072,0.914136,0.891322
+T30-V4,T30,Presidio (with NER fallback),0.121396,0.799661,0.912707,0.889741
+T30-V5,T30,Presidio (with NER fallback),0.117145,0.811773,0.914845,0.892411
+T30-V6,T30,Presidio (with NER fallback),0.117627,0.812364,0.915978,0.894649
+T30-V7,T30,Presidio (with NER fallback),0.117573,0.808165,0.915191,0.894386
+T30-V8,T30,Presidio (with NER fallback),0.119056,0.801483,0.908554,0.889145
+T31-V1,T31,Presidio (with NER fallback),0.116546,0.806183,0.913313,0.893311
+T31-V2,T31,Presidio (with NER fallback),0.117878,0.808072,0.914136,0.891322
+T31-V3,T31,Presidio (with NER fallback),0.118896,0.804661,0.915707,0.892741
+T31-V4,T31,Presidio (with NER fallback),0.120645,0.804773,0.910645,0.888211
+T31-V5,T31,Presidio (with NER fallback),0.117627,0.812364,0.915978,0.894649
+T31-V6,T31,Presidio (with NER fallback),0.117573,0.808165,0.915191,0.894386
+T31-V7,T31,Presidio (with NER fallback),0.116556,0.806483,0.911554,0.892145
+T31-V8,T31,Presidio (with NER fallback),0.120683,0.804823,0.907841,0.889011
+T32-V1,T32,Presidio (with NER fallback),0.117878,0.808072,0.914136,0.891322
+T32-V2,T32,Presidio (with NER fallback),0.118896,0.804661,0.915707,0.892741
+T32-V3,T32,Presidio (with NER fallback),0.118145,0.809773,0.913645,0.891211
+T32-V4,T32,Presidio (with NER fallback),0.121127,0.805364,0.911778,0.890449
+T32-V5,T32,Presidio (with NER fallback),0.117573,0.808165,0.915191,0.894386
+T32-V6,T32,Presidio (with NER fallback),0.116556,0.806483,0.911554,0.892145
+T32-V7,T32,Presidio (with NER fallback),0.118183,0.809823,0.910841,0.892011
+T32-V8,T32,Presidio (with NER fallback),0.121032,0.803701,0.910013,0.888218
+T01-V1,T01,BodhiPromptShield (proposed),0.092152,0.918388,0.937319,0.917599
+T01-V2,T01,BodhiPromptShield (proposed),0.092412,0.916664,0.940751,0.922742
+T01-V3,T01,BodhiPromptShield (proposed),0.091386,0.922545,0.939029,0.922407
+T01-V4,T01,BodhiPromptShield (proposed),0.096453,0.916982,0.933578,0.913636
+T01-V5,T01,BodhiPromptShield (proposed),0.093134,0.920944,0.939071,0.921421
+T01-V6,T01,BodhiPromptShield (proposed),0.093947,0.922608,0.942688,0.918063
+T01-V7,T01,BodhiPromptShield (proposed),0.091518,0.917025,0.937598,0.922505
+T01-V8,T01,BodhiPromptShield (proposed),0.097037,0.911484,0.936970,0.919219
+T02-V1,T02,BodhiPromptShield (proposed),0.092412,0.916664,0.940751,0.922742
+T02-V2,T02,BodhiPromptShield (proposed),0.091386,0.922545,0.939029,0.922407
+T02-V3,T02,BodhiPromptShield (proposed),0.093953,0.921982,0.936578,0.916636
+T02-V4,T02,BodhiPromptShield (proposed),0.096634,0.913944,0.934871,0.917221
+T02-V5,T02,BodhiPromptShield (proposed),0.093947,0.922608,0.942688,0.918063
+T02-V6,T02,BodhiPromptShield (proposed),0.091518,0.917025,0.937598,0.922505
+T02-V7,T02,BodhiPromptShield (proposed),0.094537,0.916484,0.939970,0.922219
+T02-V8,T02,BodhiPromptShield (proposed),0.097528,0.910611,0.938749,0.915796
+T03-V1,T03,BodhiPromptShield (proposed),0.091386,0.922545,0.939029,0.922407
+T03-V2,T03,BodhiPromptShield (proposed),0.093953,0.921982,0.936578,0.916636
+T03-V3,T03,BodhiPromptShield (proposed),0.094134,0.918944,0.937871,0.920221
+T03-V4,T03,BodhiPromptShield (proposed),0.097447,0.915608,0.938488,0.913863
+T03-V5,T03,BodhiPromptShield (proposed),0.091518,0.917025,0.937598,0.922505
+T03-V6,T03,BodhiPromptShield (proposed),0.094537,0.916484,0.939970,0.922219
+T03-V7,T03,BodhiPromptShield (proposed),0.095028,0.915611,0.941749,0.918796
+T03-V8,T03,BodhiPromptShield (proposed),0.096429,0.916401,0.937228,0.917565
+T04-V1,T04,BodhiPromptShield (proposed),0.093953,0.921982,0.936578,0.916636
+T04-V2,T04,BodhiPromptShield (proposed),0.094134,0.918944,0.937871,0.920221
+T04-V3,T04,BodhiPromptShield (proposed),0.094947,0.920608,0.941488,0.916863
+T04-V4,T04,BodhiPromptShield (proposed),0.095018,0.910025,0.933398,0.918305
+T04-V5,T04,BodhiPromptShield (proposed),0.094537,0.916484,0.939970,0.922219
+T04-V6,T04,BodhiPromptShield (proposed),0.095028,0.915611,0.941749,0.918796
+T04-V7,T04,BodhiPromptShield (proposed),0.093929,0.921401,0.940228,0.920565
+T04-V8,T04,BodhiPromptShield (proposed),0.095729,0.910832,0.933725,0.914498
+T05-V1,T05,BodhiPromptShield (proposed),0.094134,0.918944,0.937871,0.920221
+T05-V2,T05,BodhiPromptShield (proposed),0.094947,0.920608,0.941488,0.916863
+T05-V3,T05,BodhiPromptShield (proposed),0.092518,0.915025,0.936398,0.921305
+T05-V4,T05,BodhiPromptShield (proposed),0.098037,0.909484,0.935770,0.918019
+T05-V5,T05,BodhiPromptShield (proposed),0.095028,0.915611,0.941749,0.918796
+T05-V6,T05,BodhiPromptShield (proposed),0.093929,0.921401,0.940228,0.920565
+T05-V7,T05,BodhiPromptShield (proposed),0.093229,0.915832,0.936725,0.917498
+T05-V8,T05,BodhiPromptShield (proposed),0.096796,0.915958,0.937312,0.915958
+T06-V1,T06,BodhiPromptShield (proposed),0.097947,0.914608,0.937888,0.913263
+T06-V2,T06,BodhiPromptShield (proposed),0.095518,0.909025,0.932798,0.917705
+T06-V3,T06,BodhiPromptShield (proposed),0.098537,0.908484,0.935170,0.917419
+T06-V4,T06,BodhiPromptShield (proposed),0.101528,0.902611,0.933949,0.910996
+T06-V5,T06,BodhiPromptShield (proposed),0.096929,0.915401,0.936628,0.916965
+T06-V6,T06,BodhiPromptShield (proposed),0.096229,0.909832,0.933125,0.913898
+T06-V7,T06,BodhiPromptShield (proposed),0.097296,0.914958,0.936712,0.915358
+T06-V8,T06,BodhiPromptShield (proposed),0.099284,0.909452,0.928952,0.912818
+T07-V1,T07,BodhiPromptShield (proposed),0.095518,0.909025,0.932798,0.917705
+T07-V2,T07,BodhiPromptShield (proposed),0.098537,0.908484,0.935170,0.917419
+T07-V3,T07,BodhiPromptShield (proposed),0.099028,0.907611,0.936949,0.913996
+T07-V4,T07,BodhiPromptShield (proposed),0.100429,0.908401,0.932428,0.912765
+T07-V5,T07,BodhiPromptShield (proposed),0.096229,0.909832,0.933125,0.913898
+T07-V6,T07,BodhiPromptShield (proposed),0.097296,0.914958,0.936712,0.915358
+T07-V7,T07,BodhiPromptShield (proposed),0.096784,0.914452,0.931952,0.915818
+T07-V8,T07,BodhiPromptShield (proposed),0.099334,0.903629,0.933750,0.911531
+T08-V1,T08,BodhiPromptShield (proposed),0.098537,0.908484,0.935170,0.917419
+T08-V2,T08,BodhiPromptShield (proposed),0.099028,0.907611,0.936949,0.913996
+T08-V3,T08,BodhiPromptShield (proposed),0.097929,0.913401,0.935428,0.915765
+T08-V4,T08,BodhiPromptShield (proposed),0.099729,0.902832,0.928925,0.909698
+T08-V5,T08,BodhiPromptShield (proposed),0.097296,0.914958,0.936712,0.915358
+T08-V6,T08,BodhiPromptShield (proposed),0.096784,0.914452,0.931952,0.915818
+T08-V7,T08,BodhiPromptShield (proposed),0.096834,0.908629,0.936750,0.914531
+T08-V8,T08,BodhiPromptShield (proposed),0.101278,0.907831,0.933231,0.912969
+T09-V1,T09,BodhiPromptShield (proposed),0.096028,0.913611,0.940549,0.917596
+T09-V2,T09,BodhiPromptShield (proposed),0.094929,0.919401,0.939028,0.919365
+T09-V3,T09,BodhiPromptShield (proposed),0.094229,0.913832,0.935525,0.916298
+T09-V4,T09,BodhiPromptShield (proposed),0.097796,0.913958,0.936112,0.914758
+T09-V5,T09,BodhiPromptShield (proposed),0.093784,0.920452,0.935552,0.919418
+T09-V6,T09,BodhiPromptShield (proposed),0.093834,0.914629,0.940350,0.918131
+T09-V7,T09,BodhiPromptShield (proposed),0.095778,0.918831,0.939831,0.919569
+T09-V8,T09,BodhiPromptShield (proposed),0.093227,0.917126,0.941360,0.919189
+T10-V1,T10,BodhiPromptShield (proposed),0.092152,0.918388,0.937319,0.917599
+T10-V2,T10,BodhiPromptShield (proposed),0.092412,0.916664,0.940751,0.922742
+T10-V3,T10,BodhiPromptShield (proposed),0.091386,0.922545,0.939029,0.922407
+T10-V4,T10,BodhiPromptShield (proposed),0.096453,0.916982,0.933578,0.913636
+T10-V5,T10,BodhiPromptShield (proposed),0.093134,0.920944,0.939071,0.921421
+T10-V6,T10,BodhiPromptShield (proposed),0.093947,0.922608,0.942688,0.918063
+T10-V7,T10,BodhiPromptShield (proposed),0.091518,0.917025,0.937598,0.922505
+T10-V8,T10,BodhiPromptShield (proposed),0.097037,0.911484,0.936970,0.919219
+T11-V1,T11,BodhiPromptShield (proposed),0.092412,0.916664,0.940751,0.922742
+T11-V2,T11,BodhiPromptShield (proposed),0.091386,0.922545,0.939029,0.922407
+T11-V3,T11,BodhiPromptShield (proposed),0.093953,0.921982,0.936578,0.916636
+T11-V4,T11,BodhiPromptShield (proposed),0.096634,0.913944,0.934871,0.917221
+T11-V5,T11,BodhiPromptShield (proposed),0.093947,0.922608,0.942688,0.918063
+T11-V6,T11,BodhiPromptShield (proposed),0.091518,0.917025,0.937598,0.922505
+T11-V7,T11,BodhiPromptShield (proposed),0.094537,0.916484,0.939970,0.922219
+T11-V8,T11,BodhiPromptShield (proposed),0.097528,0.910611,0.938749,0.915796
+T12-V1,T12,BodhiPromptShield (proposed),0.091386,0.922545,0.939029,0.922407
+T12-V2,T12,BodhiPromptShield (proposed),0.093953,0.921982,0.936578,0.916636
+T12-V3,T12,BodhiPromptShield (proposed),0.094134,0.918944,0.937871,0.920221
+T12-V4,T12,BodhiPromptShield (proposed),0.097447,0.915608,0.938488,0.913863
+T12-V5,T12,BodhiPromptShield (proposed),0.091518,0.917025,0.937598,0.922505
+T12-V6,T12,BodhiPromptShield (proposed),0.094537,0.916484,0.939970,0.922219
+T12-V7,T12,BodhiPromptShield (proposed),0.095028,0.915611,0.941749,0.918796
+T12-V8,T12,BodhiPromptShield (proposed),0.096429,0.916401,0.937228,0.917565
+T13-V1,T13,BodhiPromptShield (proposed),0.093953,0.921982,0.936578,0.916636
+T13-V2,T13,BodhiPromptShield (proposed),0.094134,0.918944,0.937871,0.920221
+T13-V3,T13,BodhiPromptShield (proposed),0.094947,0.920608,0.941488,0.916863
+T13-V4,T13,BodhiPromptShield (proposed),0.095018,0.910025,0.933398,0.918305
+T13-V5,T13,BodhiPromptShield (proposed),0.094537,0.916484,0.939970,0.922219
+T13-V6,T13,BodhiPromptShield (proposed),0.095028,0.915611,0.941749,0.918796
+T13-V7,T13,BodhiPromptShield (proposed),0.093929,0.921401,0.940228,0.920565
+T13-V8,T13,BodhiPromptShield (proposed),0.095729,0.910832,0.933725,0.914498
+T14-V1,T14,BodhiPromptShield (proposed),0.097134,0.912944,0.934271,0.916621
+T14-V2,T14,BodhiPromptShield (proposed),0.097947,0.914608,0.937888,0.913263
+T14-V3,T14,BodhiPromptShield (proposed),0.095518,0.909025,0.932798,0.917705
+T14-V4,T14,BodhiPromptShield (proposed),0.101037,0.903484,0.932170,0.914419
+T14-V5,T14,BodhiPromptShield (proposed),0.098028,0.909611,0.938149,0.915196
+T14-V6,T14,BodhiPromptShield (proposed),0.096929,0.915401,0.936628,0.916965
+T14-V7,T14,BodhiPromptShield (proposed),0.096229,0.909832,0.933125,0.913898
+T14-V8,T14,BodhiPromptShield (proposed),0.099796,0.909958,0.933712,0.912358
+T15-V1,T15,BodhiPromptShield (proposed),0.097947,0.914608,0.937888,0.913263
+T15-V2,T15,BodhiPromptShield (proposed),0.095518,0.909025,0.932798,0.917705
+T15-V3,T15,BodhiPromptShield (proposed),0.098537,0.908484,0.935170,0.917419
+T15-V4,T15,BodhiPromptShield (proposed),0.101528,0.902611,0.933949,0.910996
+T15-V5,T15,BodhiPromptShield (proposed),0.096929,0.915401,0.936628,0.916965
+T15-V6,T15,BodhiPromptShield (proposed),0.096229,0.909832,0.933125,0.913898
+T15-V7,T15,BodhiPromptShield (proposed),0.097296,0.914958,0.936712,0.915358
+T15-V8,T15,BodhiPromptShield (proposed),0.099284,0.909452,0.928952,0.912818
+T16-V1,T16,BodhiPromptShield (proposed),0.095518,0.909025,0.932798,0.917705
+T16-V2,T16,BodhiPromptShield (proposed),0.098537,0.908484,0.935170,0.917419
+T16-V3,T16,BodhiPromptShield (proposed),0.099028,0.907611,0.936949,0.913996
+T16-V4,T16,BodhiPromptShield (proposed),0.100429,0.908401,0.932428,0.912765
+T16-V5,T16,BodhiPromptShield (proposed),0.096229,0.909832,0.933125,0.913898
+T16-V6,T16,BodhiPromptShield (proposed),0.097296,0.914958,0.936712,0.915358
+T16-V7,T16,BodhiPromptShield (proposed),0.096784,0.914452,0.931952,0.915818
+T16-V8,T16,BodhiPromptShield (proposed),0.099334,0.903629,0.933750,0.911531
+T17-V1,T17,BodhiPromptShield (proposed),0.097537,0.910484,0.936370,0.918619
+T17-V2,T17,BodhiPromptShield (proposed),0.098028,0.909611,0.938149,0.915196
+T17-V3,T17,BodhiPromptShield (proposed),0.096929,0.915401,0.936628,0.916965
+T17-V4,T17,BodhiPromptShield (proposed),0.098729,0.904832,0.930125,0.910898
+T17-V5,T17,BodhiPromptShield (proposed),0.096296,0.916958,0.937912,0.916558
+T17-V6,T17,BodhiPromptShield (proposed),0.095784,0.916452,0.933152,0.917018
+T17-V7,T17,BodhiPromptShield (proposed),0.095834,0.910629,0.937950,0.915731
+T17-V8,T17,BodhiPromptShield (proposed),0.100278,0.909831,0.934431,0.914169
+T18-V1,T18,BodhiPromptShield (proposed),0.098028,0.909611,0.938149,0.915196
+T18-V2,T18,BodhiPromptShield (proposed),0.096929,0.915401,0.936628,0.916965
+T18-V3,T18,BodhiPromptShield (proposed),0.096229,0.909832,0.933125,0.913898
+T18-V4,T18,BodhiPromptShield (proposed),0.099796,0.909958,0.933712,0.912358
+T18-V5,T18,BodhiPromptShield (proposed),0.095784,0.916452,0.933152,0.917018
+T18-V6,T18,BodhiPromptShield (proposed),0.095834,0.910629,0.937950,0.915731
+T18-V7,T18,BodhiPromptShield (proposed),0.097778,0.914831,0.937431,0.917169
+T18-V8,T18,BodhiPromptShield (proposed),0.095227,0.913126,0.938960,0.916789
+T19-V1,T19,BodhiPromptShield (proposed),0.096929,0.915401,0.936628,0.916965
+T19-V2,T19,BodhiPromptShield (proposed),0.096229,0.909832,0.933125,0.913898
+T19-V3,T19,BodhiPromptShield (proposed),0.097296,0.914958,0.936712,0.915358
+T19-V4,T19,BodhiPromptShield (proposed),0.099284,0.909452,0.928952,0.912818
+T19-V5,T19,BodhiPromptShield (proposed),0.095834,0.910629,0.937950,0.915731
+T19-V6,T19,BodhiPromptShield (proposed),0.097778,0.914831,0.937431,0.917169
+T19-V7,T19,BodhiPromptShield (proposed),0.092727,0.918126,0.941960,0.919789
+T19-V8,T19,BodhiPromptShield (proposed),0.094608,0.914425,0.934931,0.915631
+T20-V1,T20,BodhiPromptShield (proposed),0.094412,0.912664,0.938351,0.920342
+T20-V2,T20,BodhiPromptShield (proposed),0.093386,0.918545,0.936629,0.920007
+T20-V3,T20,BodhiPromptShield (proposed),0.095953,0.917982,0.934178,0.914236
+T20-V4,T20,BodhiPromptShield (proposed),0.098634,0.909944,0.932471,0.914821
+T20-V5,T20,BodhiPromptShield (proposed),0.095947,0.918608,0.940288,0.915663
+T20-V6,T20,BodhiPromptShield (proposed),0.093518,0.913025,0.935198,0.920105
+T20-V7,T20,BodhiPromptShield (proposed),0.096537,0.912484,0.937570,0.919819
+T20-V8,T20,BodhiPromptShield (proposed),0.099528,0.906611,0.936349,0.913396
+T21-V1,T21,BodhiPromptShield (proposed),0.093386,0.918545,0.936629,0.920007
+T21-V2,T21,BodhiPromptShield (proposed),0.095953,0.917982,0.934178,0.914236
+T21-V3,T21,BodhiPromptShield (proposed),0.096134,0.914944,0.935471,0.917821
+T21-V4,T21,BodhiPromptShield (proposed),0.099447,0.911608,0.936088,0.911463
+T21-V5,T21,BodhiPromptShield (proposed),0.093518,0.913025,0.935198,0.920105
+T21-V6,T21,BodhiPromptShield (proposed),0.096537,0.912484,0.937570,0.919819
+T21-V7,T21,BodhiPromptShield (proposed),0.097028,0.911611,0.939349,0.916396
+T21-V8,T21,BodhiPromptShield (proposed),0.098429,0.912401,0.934828,0.915165
+T22-V1,T22,BodhiPromptShield (proposed),0.098953,0.911982,0.930578,0.910636
+T22-V2,T22,BodhiPromptShield (proposed),0.099134,0.908944,0.931871,0.914221
+T22-V3,T22,BodhiPromptShield (proposed),0.099947,0.910608,0.935488,0.910863
+T22-V4,T22,BodhiPromptShield (proposed),0.100018,0.900025,0.927398,0.912305
+T22-V5,T22,BodhiPromptShield (proposed),0.099537,0.906484,0.933970,0.916219
+T22-V6,T22,BodhiPromptShield (proposed),0.100028,0.905611,0.935749,0.912796
+T22-V7,T22,BodhiPromptShield (proposed),0.098929,0.911401,0.934228,0.914565
+T22-V8,T22,BodhiPromptShield (proposed),0.100729,0.900832,0.927725,0.908498
+T23-V1,T23,BodhiPromptShield (proposed),0.099134,0.908944,0.931871,0.914221
+T23-V2,T23,BodhiPromptShield (proposed),0.099947,0.910608,0.935488,0.910863
+T23-V3,T23,BodhiPromptShield (proposed),0.097518,0.905025,0.930398,0.915305
+T23-V4,T23,BodhiPromptShield (proposed),0.103037,0.899484,0.929770,0.912019
+T23-V5,T23,BodhiPromptShield (proposed),0.100028,0.905611,0.935749,0.912796
+T23-V6,T23,BodhiPromptShield (proposed),0.098929,0.911401,0.934228,0.914565
+T23-V7,T23,BodhiPromptShield (proposed),0.098229,0.905832,0.930725,0.911498
+T23-V8,T23,BodhiPromptShield (proposed),0.101796,0.905958,0.931312,0.909958
+T24-V1,T24,BodhiPromptShield (proposed),0.099947,0.910608,0.935488,0.910863
+T24-V2,T24,BodhiPromptShield (proposed),0.097518,0.905025,0.930398,0.915305
+T24-V3,T24,BodhiPromptShield (proposed),0.100537,0.904484,0.932770,0.915019
+T24-V4,T24,BodhiPromptShield (proposed),0.103528,0.898611,0.931549,0.908596
+T24-V5,T24,BodhiPromptShield (proposed),0.098929,0.911401,0.934228,0.914565
+T24-V6,T24,BodhiPromptShield (proposed),0.098229,0.905832,0.930725,0.911498
+T24-V7,T24,BodhiPromptShield (proposed),0.099296,0.910958,0.934312,0.912958
+T24-V8,T24,BodhiPromptShield (proposed),0.101284,0.905452,0.926552,0.910418
+T25-V1,T25,BodhiPromptShield (proposed),0.094518,0.911025,0.933998,0.918905
+T25-V2,T25,BodhiPromptShield (proposed),0.097537,0.910484,0.936370,0.918619
+T25-V3,T25,BodhiPromptShield (proposed),0.098028,0.909611,0.938149,0.915196
+T25-V4,T25,BodhiPromptShield (proposed),0.099429,0.910401,0.933628,0.913965
+T25-V5,T25,BodhiPromptShield (proposed),0.095229,0.911832,0.934325,0.915098
+T25-V6,T25,BodhiPromptShield (proposed),0.096296,0.916958,0.937912,0.916558
+T25-V7,T25,BodhiPromptShield (proposed),0.095784,0.916452,0.933152,0.917018
+T25-V8,T25,BodhiPromptShield (proposed),0.098334,0.905629,0.934950,0.912731
+T26-V1,T26,BodhiPromptShield (proposed),0.097537,0.910484,0.936370,0.918619
+T26-V2,T26,BodhiPromptShield (proposed),0.098028,0.909611,0.938149,0.915196
+T26-V3,T26,BodhiPromptShield (proposed),0.096929,0.915401,0.936628,0.916965
+T26-V4,T26,BodhiPromptShield (proposed),0.098729,0.904832,0.930125,0.910898
+T26-V5,T26,BodhiPromptShield (proposed),0.096296,0.916958,0.937912,0.916558
+T26-V6,T26,BodhiPromptShield (proposed),0.095784,0.916452,0.933152,0.917018
+T26-V7,T26,BodhiPromptShield (proposed),0.095834,0.910629,0.937950,0.915731
+T26-V8,T26,BodhiPromptShield (proposed),0.100278,0.909831,0.934431,0.914169
+T27-V1,T27,BodhiPromptShield (proposed),0.098028,0.909611,0.938149,0.915196
+T27-V2,T27,BodhiPromptShield (proposed),0.096929,0.915401,0.936628,0.916965
+T27-V3,T27,BodhiPromptShield (proposed),0.096229,0.909832,0.933125,0.913898
+T27-V4,T27,BodhiPromptShield (proposed),0.099796,0.909958,0.933712,0.912358
+T27-V5,T27,BodhiPromptShield (proposed),0.095784,0.916452,0.933152,0.917018
+T27-V6,T27,BodhiPromptShield (proposed),0.095834,0.910629,0.937950,0.915731
+T27-V7,T27,BodhiPromptShield (proposed),0.097778,0.914831,0.937431,0.917169
+T27-V8,T27,BodhiPromptShield (proposed),0.095227,0.913126,0.938960,0.916789
+T28-V1,T28,BodhiPromptShield (proposed),0.096929,0.915401,0.936628,0.916965
+T28-V2,T28,BodhiPromptShield (proposed),0.096229,0.909832,0.933125,0.913898
+T28-V3,T28,BodhiPromptShield (proposed),0.097296,0.914958,0.936712,0.915358
+T28-V4,T28,BodhiPromptShield (proposed),0.099284,0.909452,0.928952,0.912818
+T28-V5,T28,BodhiPromptShield (proposed),0.095834,0.910629,0.937950,0.915731
+T28-V6,T28,BodhiPromptShield (proposed),0.097778,0.914831,0.937431,0.917169
+T28-V7,T28,BodhiPromptShield (proposed),0.092727,0.918126,0.941960,0.919789
+T28-V8,T28,BodhiPromptShield (proposed),0.094608,0.914425,0.934931,0.915631
+T29-V1,T29,BodhiPromptShield (proposed),0.096229,0.909832,0.933125,0.913898
+T29-V2,T29,BodhiPromptShield (proposed),0.097296,0.914958,0.936712,0.915358
+T29-V3,T29,BodhiPromptShield (proposed),0.096784,0.914452,0.931952,0.915818
+T29-V4,T29,BodhiPromptShield (proposed),0.099334,0.903629,0.933750,0.911531
+T29-V5,T29,BodhiPromptShield (proposed),0.097778,0.914831,0.937431,0.917169
+T29-V6,T29,BodhiPromptShield (proposed),0.092727,0.918126,0.941960,0.919789
+T29-V7,T29,BodhiPromptShield (proposed),0.092108,0.919425,0.937931,0.918631
+T29-V8,T29,BodhiPromptShield (proposed),0.096406,0.912735,0.934562,0.916265
+T30-V1,T30,BodhiPromptShield (proposed),0.096386,0.912545,0.933029,0.916407
+T30-V2,T30,BodhiPromptShield (proposed),0.098953,0.911982,0.930578,0.910636
+T30-V3,T30,BodhiPromptShield (proposed),0.099134,0.908944,0.931871,0.914221
+T30-V4,T30,BodhiPromptShield (proposed),0.102447,0.905608,0.932488,0.907863
+T30-V5,T30,BodhiPromptShield (proposed),0.096518,0.907025,0.931598,0.916505
+T30-V6,T30,BodhiPromptShield (proposed),0.099537,0.906484,0.933970,0.916219
+T30-V7,T30,BodhiPromptShield (proposed),0.100028,0.905611,0.935749,0.912796
+T30-V8,T30,BodhiPromptShield (proposed),0.101429,0.906401,0.931228,0.911565
+T31-V1,T31,BodhiPromptShield (proposed),0.098953,0.911982,0.930578,0.910636
+T31-V2,T31,BodhiPromptShield (proposed),0.099134,0.908944,0.931871,0.914221
+T31-V3,T31,BodhiPromptShield (proposed),0.099947,0.910608,0.935488,0.910863
+T31-V4,T31,BodhiPromptShield (proposed),0.100018,0.900025,0.927398,0.912305
+T31-V5,T31,BodhiPromptShield (proposed),0.099537,0.906484,0.933970,0.916219
+T31-V6,T31,BodhiPromptShield (proposed),0.100028,0.905611,0.935749,0.912796
+T31-V7,T31,BodhiPromptShield (proposed),0.098929,0.911401,0.934228,0.914565
+T31-V8,T31,BodhiPromptShield (proposed),0.100729,0.900832,0.927725,0.908498
+T32-V1,T32,BodhiPromptShield (proposed),0.099134,0.908944,0.931871,0.914221
+T32-V2,T32,BodhiPromptShield (proposed),0.099947,0.910608,0.935488,0.910863
+T32-V3,T32,BodhiPromptShield (proposed),0.097518,0.905025,0.930398,0.915305
+T32-V4,T32,BodhiPromptShield (proposed),0.103037,0.899484,0.929770,0.912019
+T32-V5,T32,BodhiPromptShield (proposed),0.100028,0.905611,0.935749,0.912796
+T32-V6,T32,BodhiPromptShield (proposed),0.098929,0.911401,0.934228,0.914565
+T32-V7,T32,BodhiPromptShield (proposed),0.098229,0.905832,0.930725,0.911498
+T32-V8,T32,BodhiPromptShield (proposed),0.101796,0.905958,0.931312,0.909958

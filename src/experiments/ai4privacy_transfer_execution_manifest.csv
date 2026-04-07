@@ -1,0 +1,8 @@
+benchmark,method,family,execution_status,result_scope,notes
+AI4Privacy PII-Masking-300K (English),Raw prompt,No protection,executed,ai4privacy_transfer_results.csv,No sanitization is applied before evaluation.
+AI4Privacy PII-Masking-300K (English),Regex-only,Pattern baseline,executed,ai4privacy_transfer_results.csv,Structured identifier patterns only.
+AI4Privacy PII-Masking-300K (English),NER-only masking,Entity baseline,executed,ai4privacy_transfer_results.csv,"Capitalization, title, and location-shape heuristics only."
+AI4Privacy PII-Masking-300K (English),Presidio-class (regex-focused heuristic),Industrial de-identification,executed,ai4privacy_transfer_results.csv,Released approximation of a structured recognizer stack on a public multi-domain PII benchmark.
+AI4Privacy PII-Masking-300K (English),Presidio-class (NER fallback heuristic),Industrial de-identification,executed,ai4privacy_transfer_results.csv,Released approximation of a structured-plus-NER stack on a public multi-domain PII benchmark.
+AI4Privacy PII-Masking-300K (English),Hybrid rule+context de-identification,Hybrid heuristic de-identification,executed,ai4privacy_transfer_results.csv,"Released hybrid heuristic using structured, entity, and context cues on a public multi-domain PII benchmark."
+AI4Privacy PII-Masking-300K (English),BodhiPromptShield (released heuristic mediator),Policy-aware mediation,executed,ai4privacy_transfer_results.csv,Released lightweight policy-aware mediator under the public multi-domain wrapper.

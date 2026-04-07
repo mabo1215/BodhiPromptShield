@@ -1,0 +1,68 @@
+{
+  "benchmark": "SROIE",
+  "benchmark_family": "ocr-heavy receipt transfer",
+  "status": "executed_public_slice",
+  "core_metrics": [
+    "ocr_span_precision",
+    "ocr_span_recall",
+    "ocr_span_f1",
+    "multimodal_per",
+    "text_retention",
+    "latency_ms"
+  ],
+  "snapshot": {
+    "revision": "b9bc49bf5eb8b06528c810d02a4f7c766474fbad",
+    "snapshot_root": "src/experiments/external_data/resource_cache/sroie_dataset/hf_snapshot/b9bc49bf5eb8b06528c810d02a4f7c766474fbad",
+    "source_url": "https://huggingface.co/datasets/rajistics/sroie_processed/tree/b9bc49bf5eb8b06528c810d02a4f7c766474fbad"
+  },
+  "evaluation_slice": {
+    "split": "test",
+    "document_count": 63,
+    "wrapper_manifest": "sroie_prompt_wrapped_manifest.csv"
+  },
+  "matched_comparators": [
+    {
+      "name": "Raw OCR text prompt",
+      "family": "No protection",
+      "notes": "No sanitization is applied after OCR extraction."
+    },
+    {
+      "name": "OCR + regex masking",
+      "family": "Pattern baseline",
+      "notes": "Mask numeric identifiers and receipt-style patterns with OCR-text regexes only."
+    },
+    {
+      "name": "OCR + generic de-identification",
+      "family": "Generic de-identification",
+      "notes": "Mask regex hits plus upper receipt header lines without policy routing."
+    },
+    {
+      "name": "OCR + Presidio receipt de-identification",
+      "family": "Named OCR de-identification",
+      "notes": "Use a real Presidio recognizer stack plus receipt-specific line expansion on OCR text."
+    },
+    {
+      "name": "OCR + spaCy receipt de-identification",
+      "family": "Named OCR de-identification",
+      "notes": "Use a spaCy NER stack plus receipt-specific line expansion on OCR text."
+    },
+    {
+      "name": "Proposed multimodal mediation",
+      "family": "Policy-aware mediation",
+      "notes": "Mask sensitive receipt header and contact fields while preserving total-value utility."
+    }
+  ],
+  "sensitivity_mapping": {
+    "protected_fields": [
+      "company",
+      "address",
+      "date"
+    ],
+    "utility_field": "total",
+    "mapping_notes": [
+      "SROIE company, address, and date fields are treated as the protected public receipt-privacy slice, while total is retained as utility-carrying content.",
+      "Gold spans are approximated on the OCR transcript by matching receipt-field tokens from the structured target sequence to OCR tokens.",
+      "The same declared RapidOCR runtime and named comparator roster are reused so SROIE forms a third public OCR rerun under one wrapper discipline."
+    ]
+  }
+}
