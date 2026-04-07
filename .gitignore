@@ -25,6 +25,7 @@ __init__.py
 agents/*
 USAGE.md
 src/experiments/*
+.gitmodules
 
 run_src.bat
 run_src.ps1
