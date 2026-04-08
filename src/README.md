@@ -31,6 +31,7 @@
   - `external_wrapper_release_card.md`：集中说明 TAB / i2b2 external wrapper 的 protocol invariants、comparator roster、落盘文件与 licensing boundary。
   - `acquire_external_resources.py`：生成 external dataset / baseline / provenance resource 的 machine-readable acquisition manifest，并可选缓存公开 GitHub 资源；当前也记录 i2b2-Synthea、CORD mirror/license 和 Ollama runtime surface。
   - `build_cppb_source_manifest.py`：从已发布的 template inventory 与 prompt manifest 生成 source-level CPPB provenance manifest。
+  - `build_hf_cppb_dataset.py`：把 CPPB 的已发布 manifest/split/card 打包成 Hugging Face-ready dataset bundle，并可选直接上传到 `hf.co/datasets/<repo_id>`。
   - `ocr_external_transfer.py`：基于 acquisition manifest 生成 OCR-heavy public transfer 的 protocol scaffold 与 benchmark availability manifest。
   - `tab_zero_shot_prompt_template.txt` / `ai4privacy_zero_shot_prompt_template.txt` / `i2b2_zero_shot_prompt_template.txt`：冻结 zero-shot semantic baselines 的固定 prompt surface，并被当前 TAB / AI4Privacy / synthetic i2b2 本地 Ollama pilots 直接复用。
   - `build_ai4privacy_pii300k_export.py`：把公开 `ai4privacy/pii-masking-300k` English 子集转成统一的 normalized export，并按 deterministic hash surface 划分 `train/dev/test`。
@@ -157,6 +158,10 @@
   - `python src/experiments/build_cppb_manifest.py`
 - 生成 CPPB source-level provenance 工件：
   - `python src/experiments/build_cppb_source_manifest.py`
+- 生成 Hugging Face-ready CPPB dataset bundle：
+  - `python src/experiments/build_hf_cppb_dataset.py --clean`
+- 直接上传 CPPB 到 Hugging Face dataset repo：
+  - `python src/experiments/build_hf_cppb_dataset.py --clean --repo-id <your-hf-org-or-username>/CPPB --upload`
 - 生成 category-wise supporting artifact：
   - `python src/experiments/categorywise_analysis.py`
 - 生成 multimodal supporting artifact：

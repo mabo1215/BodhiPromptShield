@@ -1,0 +1,59 @@
+{
+  "dataset_name": "CPPB",
+  "pretty_name": "Controlled Prompt-Privacy Benchmark",
+  "paper_title": "BodhiPromptShield: Pre-Inference Prompt Mediation for Suppressing Privacy Propagation in LLM/VLM Agents",
+  "paper_url": "https://arxiv.org/abs/2604.05793",
+  "release_scope": "prompt-stub-manifest",
+  "raw_prompt_release": false,
+  "ocr_source_asset_release": false,
+  "total_rows": 256,
+  "template_count": 32,
+  "split_counts": {
+    "train": 128,
+    "dev": 64,
+    "test": 64
+  },
+  "subset_counts": {
+    "Essential-privacy": 128,
+    "Incidental-privacy": 128
+  },
+  "prompt_family_counts": {
+    "Direct requests": 64,
+    "Document-oriented": 64,
+    "Retrieval-style": 64,
+    "Tool-oriented agent": 64
+  },
+  "primary_privacy_category_counts": {
+    "Person names": 32,
+    "Contact details": 32,
+    "Postal addresses": 32,
+    "National/account identifiers": 32,
+    "Financial references": 32,
+    "Medical content": 32,
+    "Organization/project terms": 32,
+    "Context-dependent confidential spans": 32
+  },
+  "modality_counts": {
+    "Text-only": 192,
+    "OCR-mediated text-plus-image": 64
+  },
+  "row_schema": [
+    "prompt_id",
+    "template_id",
+    "variant_id",
+    "prompt_family",
+    "prompt_source",
+    "downstream_task_type",
+    "primary_privacy_category",
+    "subset",
+    "modality",
+    "template_stub",
+    "prompt_stub",
+    "split",
+    "release_scope",
+    "raw_prompt_released",
+    "ocr_source_asset_released",
+    "paper_title",
+    "paper_url"
+  ]
+}

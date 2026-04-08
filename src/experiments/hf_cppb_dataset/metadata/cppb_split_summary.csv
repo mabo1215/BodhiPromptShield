@@ -1,0 +1,19 @@
+split_order,split,axis,breakdown
+1,train,Template count,16
+1,train,Prompt count,128 (50.0%)
+1,train,Prompt families,Direct requests 4; Document-oriented 4; Retrieval-style 4; Tool-oriented agent 4
+1,train,Privacy categories,Person names 2; Contact details 2; Postal addresses 2; National/account identifiers 2; Financial references 2; Medical content 2; Organization/project terms 2; Context-dependent confidential spans 2
+1,train,Subsets,Essential-privacy 64; Incidental-privacy 64
+1,train,Modality,Text-only 96; OCR-mediated text-plus-image 32
+2,dev,Template count,8
+2,dev,Prompt count,64 (25.0%)
+2,dev,Prompt families,Direct requests 2; Document-oriented 2; Retrieval-style 2; Tool-oriented agent 2
+2,dev,Privacy categories,Person names 1; Contact details 1; Postal addresses 1; National/account identifiers 1; Financial references 1; Medical content 1; Organization/project terms 1; Context-dependent confidential spans 1
+2,dev,Subsets,Essential-privacy 32; Incidental-privacy 32
+2,dev,Modality,Text-only 48; OCR-mediated text-plus-image 16
+3,test,Template count,8
+3,test,Prompt count,64 (25.0%)
+3,test,Prompt families,Direct requests 2; Document-oriented 2; Retrieval-style 2; Tool-oriented agent 2
+3,test,Privacy categories,Person names 1; Contact details 1; Postal addresses 1; National/account identifiers 1; Financial references 1; Medical content 1; Organization/project terms 1; Context-dependent confidential spans 1
+3,test,Subsets,Essential-privacy 32; Incidental-privacy 32
+3,test,Modality,Text-only 48; OCR-mediated text-plus-image 16
