@@ -24,6 +24,8 @@ __init__.py
 .idea/
 agents/*
 USAGE.md
+AGENTS.md
+src/AGENTS.md
 src/experiments/external_data/*
 src/experiments/external_data/
 src/experiments/i2b2_ollama_zero_shot_stability_runs/*

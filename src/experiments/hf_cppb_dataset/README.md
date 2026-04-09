@@ -18,7 +18,7 @@ tags:
 - redaction
 - llm-agents
 - evaluation
-license: other
+license: apache-2.0
 configs:
 - config_name: default
   data_files:
@@ -78,6 +78,12 @@ Main columns:
 ## Limitations
 
 This package is a controlled benchmark manifest, not a full raw-prompt corpus. It should be interpreted as a benchmark-authored release card surface that preserves provenance, split semantics, and release boundaries. If you need end-to-end multimodal regeneration assets or licensed external benchmark inputs, use the repository protocols instead of this Hugging Face package.
+
+## License
+
+The released dataset package in this repository is distributed under Apache License 2.0 for the benchmark-authored manifest surface, documentation, and packaging code.
+
+Third-party datasets, external assets, and upstream source materials referenced by the repository or paper remain subject to their own original licenses or access terms and are not relicensed by this dataset card.
 
 ## Citation
 
