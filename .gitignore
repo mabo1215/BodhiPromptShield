@@ -13,6 +13,7 @@ env/
 *.egg
 docs/academic-research-skills/
 AGENTS.md
+.claude/
 
 # Generated figures (paper uses fig/ from run_src)
 paper/fig/
