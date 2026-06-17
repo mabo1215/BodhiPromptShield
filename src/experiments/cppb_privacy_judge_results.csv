@@ -1,0 +1,4 @@
+split,method,prompt_count,detection_recall,per_percent,ac,tsr
+train,Lightweight privacy judge,128,0.862,13.8,0.927,0.916
+dev,Lightweight privacy judge,64,0.868,13.2,0.926,0.915
+test,Lightweight privacy judge,64,0.871,12.9,0.926,0.915

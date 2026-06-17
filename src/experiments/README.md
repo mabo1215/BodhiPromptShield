@@ -199,6 +199,14 @@
   - Compact comparison of the learned classifier against rule/industrial/hybrid/proposed detectors (backs appendix `tab:lightclf`)
 - `ai4privacy_lightweight_classifier_runtime_manifest.csv`
   - Training configuration and runtime manifest for the lightweight learned classifier baseline
+- `cppb_privacy_judge_baseline.py`
+  - Train and evaluate a stable lightweight privacy-judge (logistic-regression sensitivity rater) on the released CPPB train/dev/test split
+- `cppb_privacy_judge_results.csv`
+  - Per-split (train/dev/test) judge metrics: detection recall, PER, AC, TSR
+- `cppb_privacy_judge_comparison.csv`
+  - Held-out CPPB test-split comparison of the judge against regex/NER/enterprise/proposed methods (backs appendix `tab:judge`)
+- `cppb_privacy_judge_runtime_manifest.csv`
+  - Model/feature/training configuration manifest for the CPPB privacy-judge baseline
 - `i2b2_matched_baseline_protocol.json`
   - Protocol scaffold for i2b2 prompt-wrapper external transfer
 - `i2b2_zero_shot_prompt_template.txt`
@@ -275,6 +283,7 @@ python src/experiments/adversarial_robustness_suite.py
 python src/experiments/context_inference_attack_suite.py
 python src/experiments/secure_mapping_adversary_suite.py
 python src/experiments/ai4privacy_lightweight_classifier_baseline.py
+python src/experiments/cppb_privacy_judge_baseline.py
 python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl
 python src/experiments/i2b2_external_transfer.py
 python src/experiments/i2b2_matched_baseline_suite.py
@@ -297,6 +306,7 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 - `tab:multimodal`
 - `tab:crossmodel`
 - `tab:lightclf`
+- `tab:judge`
 - `tab:mapadv`
 - `tab:hardcase`
 - `tab:restore`

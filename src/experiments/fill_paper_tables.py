@@ -12,6 +12,7 @@ This script only updates tables that are directly backed by repository CSVs:
     - tab:multimodal       <- multimodal_analysis.csv
     - tab:crossmodel       <- crossmodel_portability_results.csv
     - tab:lightclf         <- lightweight_classifier_comparison.csv
+    - tab:judge            <- cppb_privacy_judge_comparison.csv
     - tab:mapadv           <- secure_mapping_adversary_results.csv
     - tab:hardcase         <- hardcase_analysis.csv
   - tab:restore          <- restoration_boundary_analysis.csv
@@ -274,6 +275,25 @@ def build_lightclf_table() -> str:
     )
 
 
+def build_judge_table() -> str:
+    rows = _read_csv("cppb_privacy_judge_comparison.csv")
+    header = "Method & PER (\\%) & AC & TSR " + r"\\" + "\n"
+    body = "\n".join(
+        f"{_tex_escape(row['method'])} & {_fmt_float(row['per_percent'])} & "
+        f"{float(row['ac']):.2f} & {float(row['tsr']):.2f} \\\\"
+        for row in rows
+    )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccc}\n"
+        + "\\toprule\n"
+        + header
+        + "\\midrule\n"
+        f"{body}\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
 def build_mapadv_table() -> str:
     rows = _read_csv("secure_mapping_adversary_results.csv")
     body = "\n".join(
@@ -487,6 +507,7 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:multimodal": build_multimodal_table,
     "tab:crossmodel": build_crossmodel_table,
     "tab:lightclf": build_lightclf_table,
+    "tab:judge": build_judge_table,
     "tab:mapadv": build_mapadv_table,
     "tab:hardcase": build_hardcase_table,
     "tab:restore": build_restore_table,

@@ -1,0 +1,6 @@
+method,per_percent,ac,tsr
+Regex-only,61.6,0.968,0.957
+NER-only masking,49.0,0.908,0.888
+Enterprise staged redaction,8.3,0.917,0.896
+Lightweight privacy judge,12.9,0.926,0.915
+Proposed (utility-constrained),9.5,0.938,0.917
