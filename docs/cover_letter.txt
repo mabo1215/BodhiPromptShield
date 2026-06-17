@@ -1,7 +1,28 @@
-Track Justification Statement
+Dear Editors,
 
-Track: Machine Learning and Security
+We are pleased to submit our manuscript, "BodhiPromptShield: Pre-Inference Prompt Mediation for Suppressing Surface-Form Privacy Propagation in LLM Agent Pipelines," for consideration by ACM Transactions on Privacy and Security.
 
-This paper fits the Machine Learning and Security track because it studies a security problem specific to LLM/VLM agents: privacy propagation across retrieval, memory, tool calls, OCR, and logs. Rather than treating de-identification as a document-only NLP task, it formulates prompt privacy as a pre-inference security control problem for ML systems. The paper proposes a policy-aware mediation framework that detects sensitive spans, applies placeholders, abstraction, or symbolic mapping, and delays restoration until authorized boundaries. The evaluation focuses on security-relevant outcomes, including privacy exposure, stage-wise propagation, utility retention, and adversarial surface-form robustness.
+This manuscript studies a deployment-time privacy problem in LLM agent pipelines: raw user content can propagate beyond a single model call into retrieval queries, memory writes, tool arguments, OCR-derived text, and logs. Existing de-identification middleware is usually evaluated at a document or ingress boundary, but agent workflows create additional internal boundaries where protected content may be copied, restored too early, or exposed to downstream components. We therefore frame prompt privacy as a propagation-control problem across agent boundaries rather than as a single-document redaction problem.
 
-The work is practically relevant to real-world agentic systems such as enterprise assistants, document-processing pipelines, and privacy-sensitive support workflows. Its threat model covers honest-but-curious downstream observers, adaptive prompt adversaries using paraphrase or homoglyph evasion, and misuse of restoration surfaces. The main actionable insight is that privacy failures in ML agents often arise from propagation through intermediate states, so defenses should be enforced before retrieval, memory writes, and tool execution, not only through document-boundary de-identification or post hoc filtering.
+The paper presents BodhiPromptShield, a policy-aware pre-inference mediation layer that detects privacy-sensitive spans, routes them through typed placeholders, semantic abstraction, or secure symbolic mapping, and delays exact-value restoration until authorized execution boundaries. The manuscript is intentionally positioned as a privacy engineering and systems-security contribution. It does not claim a new cryptographic primitive, end-to-end differential privacy, or formal recovery-resistance guarantee. Instead, it evaluates whether interface-layer mediation can reduce explicit surface-form propagation while preserving downstream task behavior under controlled conditions.
+
+The main contributions are:
+
+1. A propagation-oriented formulation of prompt privacy for LLM agent pipelines, including a threat-to-evaluation mapping for downstream observers, adaptive prompt adversaries, mapping-table risks, and context-inference risks.
+2. A practical mediation design that combines sensitive-span extraction, policy-conditioned sanitization, and controlled restoration timing across retrieval, memory, and tool-use boundaries.
+3. A controlled evaluation protocol using the paper-specific Controlled Prompt-Privacy Benchmark (CPPB), with metrics for direct exposure, stage-wise surface-form propagation, answer consistency, task success, restoration behavior, and latency.
+4. A bounded evidence package that separates record-backed core results from supporting slices, including policy sensitivity, restoration-boundary checks, OCR-mediated inputs, hard-case analysis, repeated-run stability, leave-template-out generalization, and public text-transfer slices on TAB and AI4Privacy.
+
+Under the controlled CPPB evaluation, stage-wise surface-form exposure is reduced across retrieval, memory, and tool invocation boundaries, while the balanced mediation profile preserves high downstream utility. The manuscript also reports comparisons against lightweight masking, generic de-identification, an enterprise staged-redaction baseline, and supporting Presidio-class and public-transfer baselines. Throughout the paper, we explicitly state that the results are controlled surface-form propagation measurements rather than broad claims about semantic recovery resistance, arbitrary prompt-injection robustness, or complete multimodal/VLM privacy protection.
+
+We believe the manuscript is a good fit for ACM TOPS because it addresses privacy protection and systems security in an emerging class of AI-enabled systems, provides a concrete middleware design, and emphasizes threat alignment, deployment assumptions, and reproducible evaluation artifacts. The work should be of interest to readers studying privacy-preserving systems, secure ML deployment, agent security, prompt privacy, and practical de-identification mechanisms.
+
+This submission is original, has not been published previously, and is not under consideration elsewhere. All authors have approved the submission. The project repository and supporting artifacts will be released publicly upon acceptance; URLs are omitted from the review version to preserve anonymity.
+
+Thank you for considering our manuscript.
+
+Sincerely,
+
+Bo Ma
+Jinsong Wu
+Weiqi Yan

@@ -15,6 +15,7 @@ docs/academic-research-skills/
 AGENTS.md
 .claude/
 agents/
+submit/
 
 # Generated figures (paper uses fig/ from run_src)
 paper/fig/
