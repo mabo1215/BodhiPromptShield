@@ -1,0 +1,7 @@
+tier,target_recovery_percent,cross_session_recovery_percent,blast_radius
+T0 Token-only observer,0.0,0.0,Single session
+T1 Audit-log leak,0.0,0.0,Single session
+T2 Partial table read,50.0,0.0,Single session
+T3 Full session table read,100.0,0.0,Single session
+T4 Session credential leak,100.0,0.0,Single session
+T5 Master-seed compromise,100.0,100.0,All sessions

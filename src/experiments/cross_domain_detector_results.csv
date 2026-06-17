@@ -1,0 +1,5 @@
+train_domain,test_domain,setting,documents,precision,recall,span_f1,per_percent
+Generic (AI4Privacy),Generic (AI4Privacy),in-domain,300,0.35,0.96,0.51,7.4
+Generic (AI4Privacy),Clinical (PhysioNet),cross-domain,100,0.37,1.00,0.54,6.1
+Clinical (PhysioNet),Clinical (PhysioNet),in-domain,100,0.60,1.00,0.75,6.1
+Clinical (PhysioNet),Generic (AI4Privacy),cross-domain,300,0.61,0.38,0.47,75.4

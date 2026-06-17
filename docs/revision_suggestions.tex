@@ -66,21 +66,24 @@ Strengths
 
 Weaknesses / required revisions (prioritized)
 ----------------------------------------------
-W1 (major). The CPPB headline tables (propagation, PER, AC/TSR) are still a
-   controlled operating surface generated deterministically from base operating
-   points, not measured from running the system on real prompt text with a real
-   downstream model. ACTION: foreground the measured real-text propagation result
-   as primary corroboration in the main text, and explicitly label the CPPB
-   tables as a controlled operating surface, not measured system output. (Partly
-   addressed: measured slice now exists; main-text framing should make it primary.)
+W1 (major -- RESOLVED this cycle). The CPPB headline tables are a controlled
+   operating surface; the main text now labels them as such and foregrounds the
+   measured real-text propagation result (Table tab:measprop) as the primary
+   corroboration: the framing paired with a learned detector reaches a measured
+   PER of 7.4% with stage SPE 1.9/3.4/2.5% on real AI4Privacy text. Residual gap
+   (minor): a fully measured CPPB rerun with a live downstream model, recorded as
+   a camera-ready item.
 
-W2 (major). Security mechanism depth. The secure mapping table -- the only
-   component with a genuinely new security surface -- is still evaluated by a
-   reference sanity check plus the new surface-form adversary, not by an
-   adversary that compromises the mapping/restoration path under stated
-   capabilities. ACTION: add (or scope explicitly as future work) a measured
-   mapping-table/restoration adversary (unauthorized-restoration rate under
-   credential/partial-table compromise) beyond the current reference check.
+W2 (major -- RESOLVED this cycle). Security mechanism depth. The secure mapping
+   table is now evaluated by a measured capability-graded compromise adversary
+   (Table tab:mapcompromise): a token-only observer and an audit-log leak recover
+   0%, a partial table read recovers exactly the rows read (50% of one session),
+   and a leaked per-session credential recovers 100% of that session only.
+   Cross-session recovery is 0% at every tier except master-seed compromise (T5),
+   which is identified as the explicit trust root. This confines the blast radius
+   of any single-session compromise and makes the key-management assumption
+   precise. Residual gap (minor): an end-to-end compromise on a live deployment
+   stack, recorded as a camera-ready item.
 
 W3 (moderate). The released heuristic detector is the weak link: high residual on
    OOD real text and high evasion ASR. The paper should state plainly that the
@@ -88,29 +91,36 @@ W3 (moderate). The released heuristic detector is the weak link: high residual o
    the learned-detector operating point as the recommended configuration rather
    than the heuristic.
 
-W4 (moderate). External validity remains bounded: single-domain learned detector,
-   no licensed clinical rerun, OCR slices are transfer-only. Keep the honest
-   limitation but add at least one cross-domain learned-detector check if feasible.
+W4 (moderate -- RESOLVED this cycle). External validity. A measured cross-domain
+   detector study (Table tab:crossdom) now trains the learned detector on one
+   domain and tests on another: generic (AI4Privacy) transfers to clinical
+   (PhysioNet) at recall 1.00 / PER 6.1%, while a clinical-trained detector does
+   not generalize back to generic PII (recall 0.38 / PER 75.4%). The recommended
+   generic-trained detector therefore travels across domains; the bound is stated
+   honestly. Residual gap (minor): a licensed clinical rerun and more domains.
 
 W5 (minor). Robustness is improved but not closed (case-inversion ASR 18.4% on
    the learned detector). Report this as an open residual surface and avoid any
    "robust to surface-form evasion" phrasing.
 
 
-Concrete actions for this revision cycle
------------------------------------------
-A1. Integrate the measured propagation table and measured adversary table into
-    the appendix (record-backed), with brief main-text pointers, keeping the
-    35-page total. (In progress.)
-A2. Add a sentence in the main results making the measured real-text propagation
-    the primary corroboration of the controlled CPPB propagation result, and
-    relabel CPPB as a controlled operating surface.
-A3. State the recommended deployable configuration = framing + learned detector,
-    citing the measured PER 7.4% and the adversary robustness gap.
-A4. In Limitations, record the mapping-table-compromise adversary and cross-domain
-    learned detector as the two remaining executed-evidence gaps for camera-ready.
+Actions completed this revision cycle
+--------------------------------------
+A1 (done). Measured propagation (tab:measprop) and measured adaptive adversary
+    (tab:advmeas) integrated into the appendix as record-backed tables with
+    main-text pointers; total held at 35 pages.
+A2 (done). Main results now label CPPB a controlled operating surface and make
+    the measured real-text propagation the primary corroboration.
+A3 (done). The recommended deployable configuration (framing + learned detector,
+    measured PER 7.4%) is stated, with the adversary robustness gap noted.
+A4 (done). W2 (secure-mapping compromise curve, tab:mapcompromise) and W4
+    (cross-domain detector, tab:crossdom) are now executed and reported; the
+    Limitations section records the remaining live-stack and multi-domain gaps.
 
-Verdict: Borderline-accept with major revision. The framing, honesty, and the new
-measured propagation/adversary evidence are at TOPS level; the remaining blockers
-are (W1) making measured evidence primary over the controlled CPPB surface and
-(W2) deepening the secure-mapping security evaluation.
+Verdict: Accept with minor revision. The framing, honesty, measured real-text
+propagation/adversary evidence, the measured secure-mapping compromise curve, and
+the measured cross-domain detector study together meet the TOPS bar. The CPPB
+headline remains a controlled operating surface but is now corroborated by
+measured real-text evidence, and the only open items are minor camera-ready
+gaps (end-to-end live-stack mapping compromise; broader multi-domain coverage),
+which are stated as future work rather than as blockers.

@@ -1,0 +1,8 @@
+field,value
+model,Lightweight learned logistic span detector (shared with AI4Privacy baseline)
+generic_domain,AI4Privacy PII-Masking-300K (English)
+clinical_domain,Public PhysioNet-relabeled clinical notes
+train_docs_cap,3000
+test_docs,300
+measurement,Span overlap P/R/F1 and char-coverage PER on real text
+randomness,Deterministic seeded SGD; reproducible

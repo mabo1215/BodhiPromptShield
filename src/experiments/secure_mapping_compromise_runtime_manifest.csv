@@ -1,0 +1,8 @@
+field,value
+mechanism,Reference per-session secure mapping table (opaque BPSMAP tokens)
+sessions,6
+values_per_session,8
+credential_model,"Per-session credential = SHA256(HMAC(master, session_id) || '-restore')"
+tiers,T0 Token-only observer; T1 Audit-log leak; T2 Partial table read; T3 Full session table read; T4 Session credential leak; T5 Master-seed compromise
+measurement,"Recovered (token,value) pairs actually obtained by running the mechanism"
+trust_root,Only master-seed compromise (T5) defeats per-session isolation

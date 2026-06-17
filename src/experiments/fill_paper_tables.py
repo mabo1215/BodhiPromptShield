@@ -344,6 +344,45 @@ def build_judge_table() -> str:
     )
 
 
+def build_mapcompromise_table() -> str:
+    rows = _read_csv("secure_mapping_compromise_results.csv")
+    header = "Adversary capability & Target (\\%) & Cross-session (\\%) & Blast radius " + r"\\" + "\n"
+    body = "\n".join(
+        f"{_tex_escape(row['tier'])} & {_fmt_float(row['target_recovery_percent'])} & "
+        f"{_fmt_float(row['cross_session_recovery_percent'])} & {_tex_escape(row['blast_radius'])} \\\\"
+        for row in rows
+    )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcc>{\\raggedright\\arraybackslash}p{1.45cm}}\n"
+        + "\\toprule\n"
+        + header
+        + "\\midrule\n"
+        f"{body}\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+def build_crossdom_table() -> str:
+    rows = _read_csv("cross_domain_detector_results.csv")
+    header = "Train $\\rightarrow$ Test & Setting & Rec. & F1 & PER (\\%) " + r"\\" + "\n"
+    body = "\n".join(
+        f"{_tex_escape(row['train_domain'])} $\\rightarrow$ {_tex_escape(row['test_domain'])} & "
+        f"{_tex_escape(row['setting'])} & {float(row['recall']):.2f} & {float(row['span_f1']):.2f} & "
+        f"{_fmt_float(row['per_percent'])} \\\\"
+        for row in rows
+    )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}X>{\\raggedright\\arraybackslash}p{1.5cm}ccc}\n"
+        + "\\toprule\n"
+        + header
+        + "\\midrule\n"
+        f"{body}\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
 def build_mapadv_table() -> str:
     rows = _read_csv("secure_mapping_adversary_results.csv")
     body = "\n".join(
@@ -560,6 +599,8 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:judge": build_judge_table,
     "tab:measprop": build_measprop_table,
     "tab:advmeas": build_advmeas_table,
+    "tab:mapcompromise": build_mapcompromise_table,
+    "tab:crossdom": build_crossdom_table,
     "tab:mapadv": build_mapadv_table,
     "tab:hardcase": build_hardcase_table,
     "tab:restore": build_restore_table,

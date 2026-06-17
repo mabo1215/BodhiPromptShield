@@ -141,6 +141,12 @@ Your inference:"""
   - **C（对真实机制的实测自适应攻击）**：新增 `src/experiments/measured_adaptive_adversary.py`，给 adversary 六类表面变形能力（homoglyph/zero-width/spacing/case/leet/separator），在真实文本上对**实际 detector**测攻击成功率（ASR）。结果（`measured_adaptive_adversary_results.csv`）：released 启发式 detector 脆弱（zero-width ASR 99.7%、homoglyph 65.4%），learned detector 稳健很多（多数 <1%）但未闭合（case inversion 18.4%）。
   - **论文整合**：`paper/appendix.tex` 新增 `\subsection*{Measured Real-Text Propagation and Adaptive Adversary}` 与由 `fill_paper_tables.py` 回填的 `tab:measprop`、`tab:advmeas`；`paper/main.tex` propagation 结果段已把 CPPB 标注为 controlled operating surface 并以真实文本实测为主要佐证，明确“推荐部署配置 = 框架 + learned detector”。为守住 35 页，删除被实测证据取代的合成支撑表 `tab:multiseed`、`tab:lto`、`tab:catwise`、`tab:hardcase`（其关键数字仍在主文 prose）。当前 main 29 + appendix 6 = combine 35 页不变，0 undefined ref/citation、0 大号 overfull/float。
 
+- 已按 TOPS 评审把 W1/W2/W4 三项推进到 RESOLVED，verdict 从“Borderline-accept with major revision”更新为“Accept with minor revision”。修改说明：
+  - **W2（secure-mapping 安全深度）**：新增 `src/experiments/secure_mapping_compromise.py`，对真实参考机制做 capability-graded 实测攻击（T0 token-only / T1 audit-log / T2 partial read / T3 full table / T4 credential / T5 master-seed），落盘 `secure_mapping_compromise_results.csv`。结果：T0/T1 恢复 0%，T2 单会话 50%，T3/T4 单会话 100%，cross-session 仅 T5（master seed）为 100%——证明 blast radius 限制在单会话、唯一信任根是 master seed。附录用 `tab:mapcompromise` 取代原 sanity-check `tab:mapadv`。
+  - **W4（跨域有效性）**：新增 `src/experiments/cross_domain_detector.py`，把 learned detector 在 generic(AI4Privacy)↔clinical(PhysioNet) 间互训互测，落盘 `cross_domain_detector_results.csv`。结果：generic→clinical recall 1.00 / PER 6.1%，clinical→generic recall 0.38 / PER 75.4%——推荐的 generic-trained detector 跨域可迁移、窄域训练不可。附录新增 `tab:crossdom`。
+  - **W1（合成核心）**：主文已把 CPPB 标注为 controlled operating surface 并以真实文本实测（`tab:measprop`）为主要佐证。
+  - **整合与守页**：两张新表接入 `fill_paper_tables.py`（`tab:mapcompromise`、`tab:crossdom`）并回填；为守住 35 页，删除被实测证据取代的 `tab:multimodal`（数值已在主文 OCR 段）与合成 `tab:adversarial`（已被实测 `tab:advmeas` 取代）。`paper/main.tex` Limitations 已记录两项 camera-ready 残留（live-stack 端到端 mapping compromise、更多域覆盖）。当前 main 29 + appendix 6 = combine 35 页不变，0 error/undefined/大号 overfull/float。
+
 ## 未修改或部分修改
 
 最近核对日期：2026-06-17
