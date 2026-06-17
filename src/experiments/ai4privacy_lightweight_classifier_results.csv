@@ -1,0 +1,2 @@
+method,document_count,mention_count,span_precision,span_recall,span_f1,per_percent,text_retention,notes
+Lightweight learned classifier (logistic regression),2997,19392,0.36,0.95,0.53,7.6,0.79,Token-level class-weighted logistic regression trained on 3000 public ai4privacy-train documents using lexical/shape/context features; evaluated on the held-out test split.

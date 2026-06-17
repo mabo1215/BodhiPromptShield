@@ -256,19 +256,19 @@
 
 ## 6. 文稿执行清单
 
-- [ ] Abstract 加入 controlled/surface-form/scope guard。
-- [ ] Introduction 增加 running example 和 enterprise isolation 之后的 residual threat。
-- [ ] Threat Model 增加 threat-to-experiment table。
-- [ ] 删除、压缩或降级未测量的 `R_prop`、loss weight 叙事。
-- [ ] SPE 全文统一解释为 explicit surface-form propagation。
-- [ ] Secure Mapping 增加 token、table、partial read、session isolation、restoration boundary、audit 描述。
-- [ ] Related Work 增加 Presidio、enterprise redaction、LLM judge/classifier baseline 的差异讨论。
-- [ ] Experimental Setup 明确 CPPB 是 paper-specific controlled benchmark。
-- [ ] Results 中前移 TAB transfer 并增加 precision drop error taxonomy。
-- [ ] Multimodal/VLM claim 降级为 OCR-mediated，除非补充真实 VLM loop。
-- [ ] Cross-model slice 披露 model family 或降级 claim。
-- [ ] Appendix 增加 CPPB template/data card、adversary protocol、baseline protocol。
-- [ ] 全文检查图表字号和术语首次定义。
+- [x] Abstract 加入 controlled/surface-form/scope guard。（main.tex 摘要末句已显式声明 "controlled systems results about explicit surface-form propagation, not formal privacy guarantees, recovery-resistance bounds, or broad public-benchmark transfer claims"。）
+- [x] Introduction 增加 running example 和 enterprise isolation 之后的 residual threat。（reimbursement assistant running example + tenant isolation/access control 之后的 within-agent residual threat 段落已落地。）
+- [x] Threat Model 增加 threat-to-experiment table。（四类 adversary 的 capability/protected surface/experiment/claim-status 表已存在。）
+- [x] 删除、压缩或降级未测量的 `R_prop`、loss weight 叙事。（R_prop 已降级为 conceptual deployment-risk view，SPE 不再被称为其强 proxy。）
+- [x] SPE 全文统一解释为 explicit surface-form propagation。（main.tex 多处统一为 explicit surface-form propagation metric，非 recovery-resistance。）
+- [x] Secure Mapping 增加 token、table、partial read、session isolation、restoration boundary、audit 描述。（threat-surface 表 + 本轮新增 executed sanity check `tab:mapadv`。）
+- [x] Related Work / Setup 增加 Presidio、enterprise redaction、LLM judge/classifier baseline 的差异讨论。（本轮新增 formal lightweight learned classifier 小节与 `tab:lightclf`；prompted judge 仍为 pilot。）
+- [x] Experimental Setup 明确 CPPB 是 paper-specific controlled benchmark。（"CPPB remains a paper-specific controlled benchmark rather than a mature community benchmark" 已落地。）
+- [~] Results 中前移 TAB transfer 并增加 precision drop error taxonomy。（precision-drop three-factor error taxonomy 已补；前移到 Experimental Setup 仍待版面允许时处理。）
+- [x] Multimodal/VLM claim 降级为 OCR-mediated，除非补充真实 VLM loop。（标题/正文已收紧为 OCR-mediated multimodal inputs。）
+- [x] Cross-model slice 披露 model family 或降级 claim。（本轮已补 family/size-class/hosting-mode 披露，claim 降级为 family-level portability check。）
+- [~] Appendix 增加 CPPB template/data card、adversary protocol、baseline protocol。（data-card/release-card、adversary protocol、baseline protocol 已在 appendix；尚缺 appendix 内逐模板 inventory 摘要。）
+- [x] 全文检查图表字号和术语首次定义。（本轮清理 appendix overfull/float，主文无大号告警；术语首用定义已就位。）
 
 ## 7. 建议的返修策略
 

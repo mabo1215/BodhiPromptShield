@@ -79,9 +79,9 @@
 - `multimodal_analysis.csv`
   - Appendix table `tab:multimodal`
 - `crossmodel_portability_results.csv`
-  - Appendix table `tab:crossmodel`
+  - Appendix table `tab:crossmodel` (now with family / size-class / hosting-mode disclosure per backend)
 - `crossmodel_runtime_log.csv`
-  - Alias-level runtime log for the appendix cross-model portability slice
+  - Family-level runtime log for the appendix cross-model portability slice (family, size class, hosting mode, openness, decoding profile)
 - `crossmodel_named_rerun_manifest_template.csv`
   - Template for promoting the appendix cross-model slice from alias-level reporting to a named rerun with full provenance
 - `hardcase_analysis.csv`
@@ -183,6 +183,22 @@
   - Probe-level raw/sanitized prompts, predicted labels, and attacker mode for the context-inference suite
 - `context_inference_attack_runtime_manifest.csv`
   - Runtime manifest for the executed context-inference suite
+- `secure_mapping_adversary_suite.py`
+  - Execute the minimal secure mapping-table adversary sanity check (unauthorized restoration, partial table read, cross-session token unlinkability) on a reference per-session table
+- `secure_mapping_adversary_results.csv`
+  - Per-scenario summary outcomes for the executed mapping-table adversary sanity check (backs appendix `tab:mapadv`)
+- `secure_mapping_adversary_scenario_log.csv`
+  - Per-probe boundary/recovery log for the executed mapping-table adversary scenarios
+- `secure_mapping_adversary_runtime_manifest.csv`
+  - Token format, derivation, and configuration manifest for the executed mapping-table adversary suite
+- `ai4privacy_lightweight_classifier_baseline.py`
+  - Train and evaluate a token-level logistic-regression privacy-span classifier on public AI4Privacy splits as a formal lightweight learned baseline
+- `ai4privacy_lightweight_classifier_results.csv`
+  - Held-out AI4Privacy test-split metrics for the lightweight learned classifier baseline
+- `lightweight_classifier_comparison.csv`
+  - Compact comparison of the learned classifier against rule/industrial/hybrid/proposed detectors (backs appendix `tab:lightclf`)
+- `ai4privacy_lightweight_classifier_runtime_manifest.csv`
+  - Training configuration and runtime manifest for the lightweight learned classifier baseline
 - `i2b2_matched_baseline_protocol.json`
   - Protocol scaffold for i2b2 prompt-wrapper external transfer
 - `i2b2_zero_shot_prompt_template.txt`
@@ -257,6 +273,8 @@ python src/experiments/build_ai4privacy_pii300k_export.py --split ai4privacy-tes
 python src/experiments/ai4privacy_ollama_zero_shot_baseline.py --input src/experiments/ai4privacy_pii300k_english_export_test100.jsonl --model llama3:latest --output-tag test100
 python src/experiments/adversarial_robustness_suite.py
 python src/experiments/context_inference_attack_suite.py
+python src/experiments/secure_mapping_adversary_suite.py
+python src/experiments/ai4privacy_lightweight_classifier_baseline.py
 python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl
 python src/experiments/i2b2_external_transfer.py
 python src/experiments/i2b2_matched_baseline_suite.py
@@ -278,6 +296,8 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 - `tab:catwise`
 - `tab:multimodal`
 - `tab:crossmodel`
+- `tab:lightclf`
+- `tab:mapadv`
 - `tab:hardcase`
 - `tab:restore`
 - `tab:ablation`

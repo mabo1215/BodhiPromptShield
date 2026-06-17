@@ -1,0 +1,22 @@
+scenario,probe,authorized,tokens,recovered,recovery_rate
+Unauthorized restoration,Authorized tool boundary,yes,8,8,1.000
+Unauthorized restoration,Retrieval boundary,no,8,0,0.000
+Unauthorized restoration,Memory boundary,no,8,0,0.000
+Unauthorized restoration,Log boundary,no,8,0,0.000
+Unauthorized restoration,Adaptive prompt adversary (guessed credential),no,8,0,0.000
+Partial table read,Attacker reads 0/8 target rows,no,8,0,0.000
+Partial table read,Cross-session recovery from 0 leaked rows,no,8,0,0.000
+Partial table read,Attacker reads 2/8 target rows,no,8,2,0.250
+Partial table read,Cross-session recovery from 2 leaked rows,no,8,0,0.000
+Partial table read,Attacker reads 4/8 target rows,no,8,4,0.500
+Partial table read,Cross-session recovery from 4 leaked rows,no,8,0,0.000
+Partial table read,Attacker reads 8/8 target rows,no,8,8,1.000
+Partial table read,Cross-session recovery from 8 leaked rows,no,8,0,0.000
+Cross-session unlinkability,Same value across two sessions: Jane Doe,no,2,0,0.000
+Cross-session unlinkability,Same value across two sessions: jane.doe@example.c,no,2,0,0.000
+Cross-session unlinkability,Same value across two sessions: +1-202-555-0143,no,2,0,0.000
+Cross-session unlinkability,Same value across two sessions: 4111 1111 1111 111,no,2,0,0.000
+Cross-session unlinkability,Same value across two sessions: 123-45-6789,no,2,0,0.000
+Cross-session unlinkability,"Same value across two sessions: 10 Downing Street,",no,2,0,0.000
+Cross-session unlinkability,Same value across two sessions: DOB 1984-07-22,no,2,0,0.000
+Cross-session unlinkability,Same value across two sessions: Patient MRN 88213,no,2,0,0.000

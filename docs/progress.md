@@ -1,6 +1,6 @@
 # 论文进度
 
-最后更新：2026-04-05
+最后更新：2026-06-17
 
 ## 建议使用相关数据扩充实验
 
@@ -126,6 +126,10 @@ Your inference:"""
 - 已把 adversarial robustness 从静态表升级为 executed probe suite；修改说明：`src/experiments/adversarial_robustness_suite.py` 现不再生成手写占位 CSV，而是执行 deterministic probe family，新增 `adversarial_probe_logs.csv` 并刷新 `adversarial_robustness_results.csv` / `adversarial_attack_inventory.csv`；当前 Unicode/confusable homoglyph probes 在 regex-only baseline 下的平均 exposure 为 94.1\%，加入 confusable folding 的 released shield 后降到 43.9\%，对应 span-level recovery 44.4\%，而 paraphrase / mixed-language / restoration-trigger 三类仍只显示部分覆盖，因此论文已同步改写为“hardening improved one attack family but robustness is not closed”。
 - 已补首个 executed context-inference attack suite；修改说明：仓库已新增 `context_inference_attack_suite.py`、`context_inference_attack_results.csv`、`context_inference_attack_prompt_logs.csv` 与 `context_inference_attack_runtime_manifest.csv`，用本地 Ollama attacker 在 raw prompt 与 placeholder-sanitized prompt-history 上做四分类属性推断；当前整体 raw attack accuracy 为 100.0\%，sanitized 仍有 50.0\%，其中 finance probes 仍为 100.0\%，discipline probes 则降到 0.0\%。这条 threat 已从“完全未测”推进到 executed supporting evidence，同时也证明 contextual leakage 仍然是真实限制而不是 purely hypothetical concern。
 - 已执行 fresh review reset；修改说明：由于外部改写后的 `docs/revision_suggestions.tex` 已回退成与当前稿件状态不一致的旧版泛化评审，本轮在同步 executed adversarial 与 context-inference evidence 后，已按仓库规则重写为新的独立英文评审。新的 review 不再重复已关闭事项，而是把剩余重点聚焦到 adaptive attack coverage、现代 baseline family 强度、formal privacy scope 约束，以及 exact-disclosure ceiling 四个真实未闭合问题。
+- 已完成 cross-model 的 family-level disclosure（对应 Review #541A 第 4 点与改进计划 E5）；修改说明：`src/experiments/crossmodel_analysis.py` 现为每个 backend 输出 `model_family / size_class / hosting_mode / openness / decoding_profile`，并重新生成 `crossmodel_portability_results.csv` 与 `crossmodel_runtime_log.csv`；`src/experiments/fill_paper_tables.py` 的 `tab:crossmodel` 现渲染为带 family/size/hosting 列的 tabularx；`paper/main.tex` 的 Cross-Model Validation 段落与 `paper/appendix.tex` 的表格 caption、artifact-map、external-closure 行均改写为 family-level 披露（open-weight 本地指令模型、闭源托管通用模型、OCR-capable 托管多模态模型），并显式说明仅 exact vendor/model/version 仍保留。`src/experiments/crossmodel_portability_manifest.md` 已同步。
+- 已把 secure symbolic mapping 从 design-only 推进到 executed adversary sanity check（对应 Review #541A 第 1/3 点、改进计划 E4 与 mapping-table adversary 行）；修改说明：仓库已新增 `src/experiments/secure_mapping_adversary_suite.py`，实现一个 reference 的 per-session 不透明 token 表（`BPSMAP-<nonce>-<ctr>`，HMAC-SHA256 派生），并执行三类场景，落盘 `secure_mapping_adversary_results.csv`、`secure_mapping_adversary_scenario_log.csv` 与 `secure_mapping_adversary_runtime_manifest.csv`。结果：未授权 restoration 0%（仅 authorized boundary 100%）、partial table read 的恢复量等于读到的行且 cross-session 恢复 0%、token-only 观察者跨会话链接 0%。`paper/appendix.tex` 新增由 `fill_paper_tables.py` 回填的 `tab:mapadv`，`paper/main.tex` 的 secure-mapping 段落与 threat-model 行已从 design analysis 改为 executed reference sanity check。
+- 已清理 appendix 版式告警（对应 Review #541B 版式意见与改进计划 P2）；修改说明：把过长的 `tab:artifact-map` 拆成两个 `table*`（新增 `tab:artifact-map-2`），消除 `Float too large for page by 63pt`；把 `tab:adversarial`、`tab:splitheldout`、`tab:contextattack` 改为换行 tabularx / 收紧表头与 tabcolsep，消除 136pt 及多处 overfull。当前 `paper/main.pdf`（18 页）与 `paper/appendix.pdf`（13 页）均成功构建，appendix 仅剩 1 处 0.57pt 的可忽略 overfull，主文无大号 overfull/float 告警。
+- 已把 lightweight learned-classifier baseline 从 pilot 提升为 formal baseline（对应 Review #541B span-identification 对比与改进计划 P1）；修改说明：仓库已新增 `src/experiments/ai4privacy_lightweight_classifier_baseline.py`，用纯标准库实现 token 级 class-weighted logistic regression，在公开 AI4Privacy train split 训练、held-out test split 评估，并落盘 `ai4privacy_lightweight_classifier_results.csv`、`lightweight_classifier_comparison.csv` 与 `ai4privacy_lightweight_classifier_runtime_manifest.csv`。结果显示该 learned classifier 在公开多域 PII 上 recall 0.95、PER 7.6%（高于规则/工业/混合 detector），但 precision 0.36、retention 0.79 较低。`paper/appendix.tex` 新增由 `fill_paper_tables.py` 回填的 `tab:lightclf` 与一段诚实解读，`paper/main.tex` 新增 Lightweight Learned-Classifier Baseline 小节，明确本文贡献是 propagation-control framing 而非 detector 本身。
 
 ## 未修改或部分修改
 
@@ -133,29 +137,28 @@ Your inference:"""
 
 以下条目来自对 `docs/revision_suggestions.tex` 中 Review #541A / #541B 的逐条核对。当前 `paper/main.tex` 与 `paper/appendix.tex` 已经完成核心 P0 收口，包括 threat-to-evaluation mapping、SPE 的 surface-form 边界说明、`R_prop` 降级、secure mapping threat surface、CPPB controlled benchmark 口径、TAB precision drop 解释，以及 OCR-mediated 而非完整 VLM-loop 的范围收紧。剩余事项如下。
 
+本轮已完成此前列在最高优先级的四项（cross-model family-level disclosure、secure mapping 最小实验、appendix 版式清理、lightweight classifier 正式 baseline），详见“已全部修改”。剩余事项如下。
+
 ### 部分完成
 
-- Cross-model validation 透明度仍不完整；当前论文已将该结果降级为 alias-level portability check，并提供 named rerun manifest/template，但仍未公开 vendor / model / version，也未至少披露 reviewer 要求的 model family / size class / hosting mode。建议下一步至少补充 family-level disclosure，例如 open-weight local instruction model、closed hosted model、OCR-capable hosted model，并同步更新 `paper/main.tex`、`paper/appendix.tex` 与 `src/experiments/crossmodel_portability_manifest.md`。
-- LLM/privacy judge 或 lightweight classifier baseline 仍只是部分回应；仓库已有 prompted-LLM zero-shot pilot、runtime template 和若干 public slice，但主文仍承认 broader semantic baseline family incomplete。若要更强回应 Review #541B，应将一个小型 privacy judge / lightweight classifier 在 CPPB 或 TAB/AI4Privacy 上作为正式 baseline，而不只是 pilot/protocol。
 - CPPB template/data-card 说明已明显增强，但 reviewer 提到的 “actual 32 templates how written/selected, sensitive spans how injected, quality judged” 仍主要分散在 manifests、release card 和 appendix prose 中。建议补一个 appendix-level template inventory summary 或明确给出 `cppb_template_inventory.csv` 的论文内摘要。
-- TAB transfer 已解释 precision drop，并承认相对 Presidio(+NER) 是 privacy-retention trade-off；但它仍位于 Results 后段。若版面允许，可在 Experimental Setup 中更早声明 TAB 是主要 external transfer slice，避免 reviewer 觉得它是最后补丁。
+  - 需要你决策：是否同意把 `cppb_template_inventory.csv` 的逐模板摘要直接放进 appendix（会增加约半页篇幅）？A:
+- TAB transfer 已解释 precision drop，并承认相对 Presidio(+NER) 是 privacy-retention trade-off；但它仍位于 Results 后段。若版面允许，可在 Experimental Setup 中更早声明 TAB 是主要 external transfer slice，避免 reviewer 觉得它是最后补丁。当前无须用户决策，可在后续轮次自动处理。
 - Adversarial robustness 与 context-inference 已从未测推进到 executed supporting evidence，但 coverage 仍然 partial。当前 homoglyph hardening 有改善，paraphrase / mixed-language / restoration-trigger 仍显示弱覆盖；论文已诚实标注，但若要强回应安全审稿人，需要扩大 attack families 和 success metrics。
-- Secure symbolic mapping 已补 threat surface、token format、partial table read 和 cross-task isolation assumption，但 mapping-table adversary 仍主要是 design analysis + restoration-boundary evidence，缺少完整攻击实验。
+- Secure symbolic mapping 现已补上 executed reference sanity check（unauthorized restoration / partial table read / cross-session unlinkability，见 `tab:mapadv`），但仍是 reference-design sanity check，缺少完整 table-compromise 攻击实验与真实部署密钥管理评估。
 - Multimodal/VLM 问题已通过标题和正文收紧为 OCR-mediated multimodal inputs，但 public OCR slices 的 exact OCR/runtime/provenance 仍有部分 disclosure gap，不能支撑完整 VLM-loop privacy claim。
-- 图表和版式已经能成功构建，但 appendix 仍存在 overfull / float warnings，尤其是一个 `Float too large for page by 63pt` 和若干 table overfull。Review #541B 对图表过小和版式清晰度有意见，因此这项仍只能算部分完成。
+- Lightweight learned classifier 现已是公开 AI4Privacy 上的 formal baseline（`tab:lightclf`），但仅覆盖文本域 PII；尚未在 CPPB agent-task 设置或临床域上训练同类 classifier，也未加入一个稳定的 prompted privacy-judge 正式 baseline（当前 judge 路径仍是 zero-shot pilot）。
 
 ### 未完成或仍有风险
 
-- 未完成 full named cross-model rerun；当前仍不能回答 reviewer “which model families?” 到足够具体的程度。
-- 未完成 mapping-table adversary 的最小实证测试；建议增加 unauthorized restoration rate、partial table read scenario、cross-session token unlinkability sanity check，并输出对应 CSV / appendix table。
-- 未完成完整 lightweight classifier / privacy judge baseline；现有 zero-shot LLM pilot 不等同于一个稳定、可比较的正式 baseline family。
-- 未完成更广泛的 public-benchmark external validity；当前 TAB、AI4Privacy、clinical supporting slice 和 OCR slices 已有进展，但论文仍不能声称 broad cross-benchmark generalization。
-- 未完成 appendix 排版清理；构建无 error，但 presentation concern 仍可能被 reviewer 注意到。
+- 未完成 full named cross-model rerun；family/size/hosting 已披露，但仍未公开 exact vendor/model/version，无法支撑 named benchmarking。
+- 未完成 secure mapping 的完整 table-compromise 攻击评估；当前仅为 reference-design sanity check，不等同于在真实密钥管理/审计栈上的端到端攻防实验。
+- 未完成更广泛的 public-benchmark external validity；当前 TAB、AI4Privacy（含 learned classifier）、clinical supporting slice 和 OCR slices 已有进展，但论文仍不能声称 broad cross-benchmark generalization。
 - 未完成 full external benchmark package；CPPB 仍是 paper-specific controlled benchmark，不是成熟 community benchmark，仍缺少更完整的 annotation instructions、quality-control details、raw multimodal source assets / licensing packets 和 exemplar-level documentation。
 
 ### 当前建议优先级
 
-1. 先补 cross-model family-level disclosure，因为这是 Review #541A 明确列入 author response 的问题，成本较低且收益高。
-2. 再补 secure mapping 最小实验，将 mapping-table adversary 从 design-only 推进到至少一个 sanity-check evidence slice。
-3. 然后清理 appendix 中的 overfull/float warnings，尤其是过宽表格和过大的 float。
-4. 最后视时间决定是否正式化 lightweight privacy judge / classifier baseline；如果来不及，至少在 response 中明确现有 pilot 的范围和不足。
+1. 补 CPPB appendix-level template inventory summary（依赖上面的用户决策），直接回应 Review #541B 对 benchmark 构造透明度的意见。
+2. 把 lightweight classifier 思路扩到 CPPB / 临床域，并将 prompted privacy-judge 从 zero-shot pilot 升级为稳定可比较的正式 baseline。
+3. 视时间扩大 adversarial / mapping-table 攻击的 families 与 success metrics，缩小与“完整攻防评估”的差距。
+4. 持续补强外部 benchmark 覆盖与 exact-disclosure（named cross-model、licensed clinical、完整 OCR provenance），但这些受外部数据/凭据限制，属长期项。

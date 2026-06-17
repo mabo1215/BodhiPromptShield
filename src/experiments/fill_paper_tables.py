@@ -11,6 +11,8 @@ This script only updates tables that are directly backed by repository CSVs:
     - tab:catwise          <- categorywise_analysis.csv
     - tab:multimodal       <- multimodal_analysis.csv
     - tab:crossmodel       <- crossmodel_portability_results.csv
+    - tab:lightclf         <- lightweight_classifier_comparison.csv
+    - tab:mapadv           <- secure_mapping_adversary_results.csv
     - tab:hardcase         <- hardcase_analysis.csv
   - tab:restore          <- restoration_boundary_analysis.csv
   - tab:ablation         <- sanitization_mode_ablation.csv
@@ -220,18 +222,72 @@ def build_multimodal_table() -> str:
 
 def build_crossmodel_table() -> str:
     rows = sorted(_read_csv("crossmodel_portability_results.csv"), key=lambda row: int(row["order"]))
-    header = "Model backend & PER (\\%) & AC & TSR " + r"\\" + "\n"
+    header = (
+        "Backend & Family / size / hosting & PER (\\%) & AC & TSR " + r"\\" + "\n"
+    )
     body = "\n".join(
-        f"{_tex_escape(row['backend_alias'])} & {_fmt_float(row['per_percent'])} & {float(row['ac']):.2f} & {float(row['tsr']):.2f} \\\\" for row in rows
+        f"{_tex_escape(row['backend_alias'])} & "
+        f"{_tex_escape(row['model_family'])}, {_tex_escape(row['size_class'])}, {_tex_escape(row['hosting_mode'])} & "
+        f"{_fmt_float(row['per_percent'])} & {float(row['ac']):.2f} & {float(row['tsr']):.2f} \\\\"
+        for row in rows
     )
     return (
-        "\\begin{tabular}{lccc}\n"
+        "\\begin{tabularx}{\\linewidth}{lXccc}\n"
         + "\\toprule\n"
         + header
         + "\\midrule\n"
         f"{body}\n"
         + "\\bottomrule\n"
-        + "\\end{tabular}"
+        + "\\end{tabularx}"
+    )
+
+
+def _lightclf_short_name(method: str) -> str:
+    mapping = {
+        "Regex-only": "Regex-only",
+        "Presidio-class (NER fallback heuristic)": "Presidio-class (+NER)",
+        "Hybrid rule+context de-identification": "Hybrid rule+context de-id",
+        "Lightweight learned classifier (logistic regression)": "Lightweight learned classifier",
+        "BodhiPromptShield (released heuristic mediator)": "BodhiPromptShield (heuristic)",
+    }
+    return mapping.get(method, method)
+
+
+def build_lightclf_table() -> str:
+    rows = _read_csv("lightweight_classifier_comparison.csv")
+    header = "Method & Prec. & Rec. & Span F1 & PER (\\%) & Retention " + r"\\" + "\n"
+    body = "\n".join(
+        f"{_tex_escape(_lightclf_short_name(row['method']))} & "
+        f"{float(row['span_precision']):.2f} & {float(row['span_recall']):.2f} & "
+        f"{float(row['span_f1']):.2f} & {_fmt_float(row['per_percent'])} & "
+        f"{float(row['text_retention']):.2f} \\\\"
+        for row in rows
+    )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccccc}\n"
+        + "\\toprule\n"
+        + header
+        + "\\midrule\n"
+        f"{body}\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+def build_mapadv_table() -> str:
+    rows = _read_csv("secure_mapping_adversary_results.csv")
+    body = "\n".join(
+        f"{_tex_escape(row['scenario'])} & {_tex_escape(row['interpretation'])} \\\\"
+        for row in rows
+    )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}p{2.05cm}>{\\raggedright\\arraybackslash}X}\n"
+        + "\\toprule\n"
+        + "Adversary scenario & Measured outcome \\\\\n"
+        + "\\midrule\n"
+        f"{body}\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
     )
 
 
@@ -430,6 +486,8 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:catwise": build_catwise_table,
     "tab:multimodal": build_multimodal_table,
     "tab:crossmodel": build_crossmodel_table,
+    "tab:lightclf": build_lightclf_table,
+    "tab:mapadv": build_mapadv_table,
     "tab:hardcase": build_hardcase_table,
     "tab:restore": build_restore_table,
     "tab:ablation": build_ablation_table,

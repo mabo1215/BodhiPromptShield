@@ -1,0 +1,9 @@
+field,value
+token_format,BPSMAP-<16-hex-nonce>-<3-digit-counter>
+nonce_derivation,"HMAC-SHA256(per-session secret, session:counter:value)"
+session_secret,"HMAC-SHA256(master seed, session_id)"
+restoration_credential,SHA256(session secret || '-restore')
+protected_values,8
+scenarios,unauthorized-restoration; partial-table-read; cross-session-unlinkability
+randomness,Deterministic; seeded from fixed master seed
+scope,Reference design sanity check; not a full table-compromise evaluation

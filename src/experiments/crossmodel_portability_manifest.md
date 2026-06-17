@@ -2,14 +2,18 @@
 
 ## Included
 
-- The appendix reports an anonymous three-backend portability slice under a fixed mediation policy.
+- The appendix reports a three-backend portability slice under a fixed mediation policy.
+- Each backend is now disclosed at the family level so the portability claim can be interpreted:
+  - `LLM-A`: open-weight instruction-tuned LLM, 7-8B parameter class, local self-hosted runtime, open weights.
+  - `LLM-B`: closed hosted general-purpose LLM, large undisclosed size class, vendor-hosted API, closed weights.
+  - `LLM-C`: OCR-capable hosted multimodal LLM, mid-to-large undisclosed size class, vendor-hosted multimodal API, closed weights.
 - Reported outputs are bounded to PER, AC, and TSR comparisons under matched interface-layer conditions.
-- The intended interpretation is policy robustness to backend variation, not benchmarking named vendors.
+- The intended interpretation is policy robustness to backend family and hosting mode, not benchmarking named vendors.
 
 ## Evidence Boundary
 
-- The current release supports the anonymous portability claim reported in the manuscript.
-- It does not support backend-specific reproduction or vendor-to-vendor ranking.
+- The current release supports the family-level portability claim reported in the manuscript.
+- It does not support backend-specific reproduction or vendor-to-vendor ranking, because exact vendor/model/version identifiers are still withheld.
 
 ## Missing For Full Regeneration
 

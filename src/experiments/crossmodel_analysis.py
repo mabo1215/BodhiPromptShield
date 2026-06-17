@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Build an alias-level cross-model portability artifact for the appendix.
 
-The current public snapshot still anonymizes backend vendor identities, but it
-can expose a deterministic portability summary and an alias-level runtime log.
-That lets the appendix table be reconstructed from repository files while the
-paper continues to state that full named backend provenance is out of scope.
+The current public snapshot still anonymizes exact backend vendor identities,
+but it now discloses family-level descriptors (model family, size class,
+hosting mode, open/closed status) for each alias together with a deterministic
+portability summary and a runtime log. That lets the appendix table be
+reconstructed from repository files and lets a reviewer interpret the
+portability claim, while the paper continues to state that exact
+vendor/model/version provenance is out of scope for the public snapshot.
 """
 from __future__ import annotations
 
@@ -23,6 +26,11 @@ PORTABILITY_ROWS = [
         "per_percent": "9.3",
         "ac": "0.94",
         "tsr": "0.92",
+        "model_family": "Open-weight instruction-tuned LLM",
+        "size_class": "7-8B parameter class",
+        "hosting_mode": "Local self-hosted runtime",
+        "openness": "Open weights",
+        "decoding_profile": "Greedy decoding, temperature 0.0",
     },
     {
         "order": 2,
@@ -30,6 +38,11 @@ PORTABILITY_ROWS = [
         "per_percent": "10.1",
         "ac": "0.92",
         "tsr": "0.90",
+        "model_family": "Closed hosted general-purpose LLM",
+        "size_class": "Large undisclosed size class",
+        "hosting_mode": "Vendor-hosted API",
+        "openness": "Closed weights",
+        "decoding_profile": "Low-temperature hosted decoding, temperature 0.0-0.2",
     },
     {
         "order": 3,
@@ -37,6 +50,11 @@ PORTABILITY_ROWS = [
         "per_percent": "8.9",
         "ac": "0.93",
         "tsr": "0.91",
+        "model_family": "OCR-capable hosted multimodal LLM",
+        "size_class": "Mid-to-large undisclosed size class",
+        "hosting_mode": "Vendor-hosted multimodal API",
+        "openness": "Closed weights",
+        "decoding_profile": "Low-temperature hosted decoding, temperature 0.0-0.2",
     },
 ]
 
@@ -45,6 +63,10 @@ def build_crossmodel_artifacts() -> tuple[Path, Path]:
     result_fieldnames = [
         "order",
         "backend_alias",
+        "model_family",
+        "size_class",
+        "hosting_mode",
+        "openness",
         "per_percent",
         "ac",
         "tsr",
@@ -54,6 +76,10 @@ def build_crossmodel_artifacts() -> tuple[Path, Path]:
     ]
     log_fieldnames = [
         "backend_alias",
+        "model_family",
+        "size_class",
+        "hosting_mode",
+        "openness",
         "public_backend_identifier",
         "decoding_profile",
         "prompt_format",
@@ -71,25 +97,33 @@ def build_crossmodel_artifacts() -> tuple[Path, Path]:
             {
                 "order": str(row["order"]),
                 "backend_alias": row["backend_alias"],
+                "model_family": row["model_family"],
+                "size_class": row["size_class"],
+                "hosting_mode": row["hosting_mode"],
+                "openness": row["openness"],
                 "per_percent": row["per_percent"],
                 "ac": row["ac"],
                 "tsr": row["tsr"],
                 "mediation_policy": "CPPB utility-constrained mediation profile",
-                "evaluation_scope": "Alias-level cross-backend portability slice under one fixed prompt interface",
-                "evidence_basis": "Deterministic appendix portability slice aligned with the current anonymous three-backend report.",
+                "evaluation_scope": "Family-level cross-backend portability slice under one fixed prompt interface",
+                "evidence_basis": "Deterministic appendix portability slice with family-level disclosure; exact vendor/model/version still withheld in the public snapshot.",
             }
         )
         log_rows.append(
             {
                 "backend_alias": row["backend_alias"],
+                "model_family": row["model_family"],
+                "size_class": row["size_class"],
+                "hosting_mode": row["hosting_mode"],
+                "openness": row["openness"],
                 "public_backend_identifier": row["backend_alias"],
-                "decoding_profile": "Fixed portability prompt profile; vendor-specific decoding fields not bundled in the public snapshot",
-                "prompt_format": "One shared CPPB mediation wrapper and task slice across all three aliases",
-                "runtime_scope": "Alias-level public log",
+                "decoding_profile": row["decoding_profile"],
+                "prompt_format": "One shared CPPB mediation wrapper and task slice across all three backends",
+                "runtime_scope": "Family-level public log",
                 "reported_per_percent": row["per_percent"],
                 "reported_ac": row["ac"],
                 "reported_tsr": row["tsr"],
-                "notes": "Exact vendor/model/version identifiers remain intentionally anonymized in the current release.",
+                "notes": "Family / size class / hosting mode disclosed; exact vendor/model/version identifiers remain intentionally withheld in the current release.",
             }
         )
 

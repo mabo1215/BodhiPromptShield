@@ -1,0 +1,6 @@
+method,family,span_precision,span_recall,span_f1,per_percent,text_retention
+Regex-only,Pattern baseline,0.76,0.36,0.49,63.4,0.98
+Presidio-class (NER fallback heuristic),Industrial de-identification,0.23,0.44,0.30,52.5,0.70
+Hybrid rule+context de-identification,Hybrid heuristic de-identification,0.23,0.44,0.30,52.5,0.70
+Lightweight learned classifier (logistic regression),Lightweight learned baseline,0.36,0.95,0.53,7.6,0.79
+BodhiPromptShield (released heuristic mediator),Policy-aware mediation,0.23,0.44,0.30,52.5,0.70
