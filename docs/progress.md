@@ -128,3 +128,34 @@ Your inference:"""
 - 已执行 fresh review reset；修改说明：由于外部改写后的 `docs/revision_suggestions.tex` 已回退成与当前稿件状态不一致的旧版泛化评审，本轮在同步 executed adversarial 与 context-inference evidence 后，已按仓库规则重写为新的独立英文评审。新的 review 不再重复已关闭事项，而是把剩余重点聚焦到 adaptive attack coverage、现代 baseline family 强度、formal privacy scope 约束，以及 exact-disclosure ceiling 四个真实未闭合问题。
 
 ## 未修改或部分修改
+
+最近核对日期：2026-06-17
+
+以下条目来自对 `docs/revision_suggestions.tex` 中 Review #541A / #541B 的逐条核对。当前 `paper/main.tex` 与 `paper/appendix.tex` 已经完成核心 P0 收口，包括 threat-to-evaluation mapping、SPE 的 surface-form 边界说明、`R_prop` 降级、secure mapping threat surface、CPPB controlled benchmark 口径、TAB precision drop 解释，以及 OCR-mediated 而非完整 VLM-loop 的范围收紧。剩余事项如下。
+
+### 部分完成
+
+- Cross-model validation 透明度仍不完整；当前论文已将该结果降级为 alias-level portability check，并提供 named rerun manifest/template，但仍未公开 vendor / model / version，也未至少披露 reviewer 要求的 model family / size class / hosting mode。建议下一步至少补充 family-level disclosure，例如 open-weight local instruction model、closed hosted model、OCR-capable hosted model，并同步更新 `paper/main.tex`、`paper/appendix.tex` 与 `src/experiments/crossmodel_portability_manifest.md`。
+- LLM/privacy judge 或 lightweight classifier baseline 仍只是部分回应；仓库已有 prompted-LLM zero-shot pilot、runtime template 和若干 public slice，但主文仍承认 broader semantic baseline family incomplete。若要更强回应 Review #541B，应将一个小型 privacy judge / lightweight classifier 在 CPPB 或 TAB/AI4Privacy 上作为正式 baseline，而不只是 pilot/protocol。
+- CPPB template/data-card 说明已明显增强，但 reviewer 提到的 “actual 32 templates how written/selected, sensitive spans how injected, quality judged” 仍主要分散在 manifests、release card 和 appendix prose 中。建议补一个 appendix-level template inventory summary 或明确给出 `cppb_template_inventory.csv` 的论文内摘要。
+- TAB transfer 已解释 precision drop，并承认相对 Presidio(+NER) 是 privacy-retention trade-off；但它仍位于 Results 后段。若版面允许，可在 Experimental Setup 中更早声明 TAB 是主要 external transfer slice，避免 reviewer 觉得它是最后补丁。
+- Adversarial robustness 与 context-inference 已从未测推进到 executed supporting evidence，但 coverage 仍然 partial。当前 homoglyph hardening 有改善，paraphrase / mixed-language / restoration-trigger 仍显示弱覆盖；论文已诚实标注，但若要强回应安全审稿人，需要扩大 attack families 和 success metrics。
+- Secure symbolic mapping 已补 threat surface、token format、partial table read 和 cross-task isolation assumption，但 mapping-table adversary 仍主要是 design analysis + restoration-boundary evidence，缺少完整攻击实验。
+- Multimodal/VLM 问题已通过标题和正文收紧为 OCR-mediated multimodal inputs，但 public OCR slices 的 exact OCR/runtime/provenance 仍有部分 disclosure gap，不能支撑完整 VLM-loop privacy claim。
+- 图表和版式已经能成功构建，但 appendix 仍存在 overfull / float warnings，尤其是一个 `Float too large for page by 63pt` 和若干 table overfull。Review #541B 对图表过小和版式清晰度有意见，因此这项仍只能算部分完成。
+
+### 未完成或仍有风险
+
+- 未完成 full named cross-model rerun；当前仍不能回答 reviewer “which model families?” 到足够具体的程度。
+- 未完成 mapping-table adversary 的最小实证测试；建议增加 unauthorized restoration rate、partial table read scenario、cross-session token unlinkability sanity check，并输出对应 CSV / appendix table。
+- 未完成完整 lightweight classifier / privacy judge baseline；现有 zero-shot LLM pilot 不等同于一个稳定、可比较的正式 baseline family。
+- 未完成更广泛的 public-benchmark external validity；当前 TAB、AI4Privacy、clinical supporting slice 和 OCR slices 已有进展，但论文仍不能声称 broad cross-benchmark generalization。
+- 未完成 appendix 排版清理；构建无 error，但 presentation concern 仍可能被 reviewer 注意到。
+- 未完成 full external benchmark package；CPPB 仍是 paper-specific controlled benchmark，不是成熟 community benchmark，仍缺少更完整的 annotation instructions、quality-control details、raw multimodal source assets / licensing packets 和 exemplar-level documentation。
+
+### 当前建议优先级
+
+1. 先补 cross-model family-level disclosure，因为这是 Review #541A 明确列入 author response 的问题，成本较低且收益高。
+2. 再补 secure mapping 最小实验，将 mapping-table adversary 从 design-only 推进到至少一个 sanity-check evidence slice。
+3. 然后清理 appendix 中的 overfull/float warnings，尤其是过宽表格和过大的 float。
+4. 最后视时间决定是否正式化 lightweight privacy judge / classifier baseline；如果来不及，至少在 response 中明确现有 pilot 的范围和不足。
