@@ -1,150 +1,116 @@
-ACM CCS 2026 B Paper #541 Reviews and Comments
+ACM Transactions on Privacy and Security (TOPS) -- Independent Editorial Review
 ===========================================================================
-Paper #541 BodhiPromptShield: Pre-Inference Prompt Mediation for
-Suppressing Privacy Propagation in LLM/VLM Agents
+Manuscript: BodhiPromptShield: Pre-Inference Prompt Mediation for Suppressing
+Surface-Form Privacy Propagation in LLM Agent Pipelines
+
+Review basis: paper/main.tex (+ main.pdf, single-blind acmsmall, 29 pp) and
+paper/appendix.tex (+ appendix.pdf, supplementary, 6 pp); combined 35 pp, within
+the TOPS 35-page total limit. This review supersedes the prior CCS review notes
+and evaluates the manuscript against the ACM TOPS bar for a security/privacy
+systems contribution.
 
 
-Review #541A
-===========================================================================
-
-Paper summary
--------------
-This paper presents BodhiPromptShield, a pre-inference prompt mediation framework for LLM and VLM agent pipelines. The authors develop a four-stage workflow that detects privacy-sensitive spans, sanitizes them through typed placeholders, semantic abstraction, or secure symbolic mapping, and optionally restores values at authorized execution boundaries. The threat model is positioned at the interface layer and names three adversary classes: an honest-but-curious downstream observer, an adaptive prompt adversary, and an adversary against the secure mapping table. The method uses a manually calibrated routing rule table parameterized by lenient, balanced, and strict policy profiles that trade direct exposure against utility and latency. The authors construct a controlled benchmark called CPPB from a small set of templates and injected variants, spanning text-only and OCR-mediated prompts across several privacy categories. The paper compares against simple baselines, an enterprise staged-redaction baseline, and two Presidio-class baselines under a matched downstream setting. The main results report propagation exposure dropping across retrieval, memory, and tool stages, a modest improvement in residual exposure relative to the strongest type-aware baseline, and roughly preserved utility under the balanced policy. The paper acknowledges that the framework provides no formal privacy guarantees and that adaptive robustness against surface-form evasion is partial.
-
-Strengths / Reasons to accept
------------------------------
-1. The pre-inference prompt mediation is a crucial research area, particularly in addressing privacy concerns. The paper is well-motivated.
-
-2. The reframing of prompt privacy as a propagation problem across an agent boundary graph, rather than as document-level redaction, is the contribution I find most useful.
-
-Weaknesses / Reasons to reject
-------------------------------
-1. The threat model is named but not really operationalized. Section 2.2 introduces three adversary classes, but I am not convinced any of them is genuinely exercised in the experiments. The surface-form evasion probe in Section 6.9 is the closest analogue, and the residual recovery there suggests the shield reduces but does not contain these attacks. It would help to see at least one of the named adversaries given concrete capabilities and a measured success rate, since the security framing rests on this.
-
-2. The propagation metric is structural rather than adversarial. SPE counts how many sensitive spans still appear in surface form at each stage, which means masking a span lowers SPE almost by construction. This makes it difficult to read the headline propagation result as a security claim. It is unclear to me whether the metric is intended as a deployment hygiene signal or as a recovery-resistance signal, and the paper currently treats it as both.
-
-3. The technical delta from existing de-identification middleware is modest. Typed placeholders, semantic abstraction, and external mapping with delayed restoration are familiar from Presidio and enterprise redaction stacks. The secure mapping mode is the only component with a meaningfully new security surface, but it is described mostly in prose. I could not find a clear statement of what an attacker against the mapping table sees, what unlinkability the tokens provide, or how cross-task isolation is enforced.
-
-4. The evaluation leans heavily on a self-built benchmark. CPPB is small and constructed by the authors. The single external transfer (TAB) shows the framework giving up some detection quality in exchange for lower residual exposure. The paper presents this as a deliberate trade-off, which is reasonable, but the asymmetry between within-CPPB and out-of-distribution behavior makes me hesitant about how much the headline numbers generalize.
-
-5. Several supporting slices feel thin for the role they play. The multimodal track is essentially OCR plus text with no actual VLM in the loop, which sits oddly against the title's LLM/VLM framing. The cross-model validation anonymizes the backends, which makes the portability claim hard to interpret. The hard-case and context-inference results are honest, but they reveal where the residual risk lives, and I think those slices deserve more weight than the current presentation gives them.
-
-Constructive comments for author
---------------------------------
-The secure symbolic mapping mode seems like the place where a real security argument could be made, and right now it reads as an engineering choice. A short formalization of the table's threat surface, the token format, and what happens under partial table read would be a valuable addition.
-
-The TAB transfer is also more informative than its current placement suggests. Moving it earlier and framing it explicitly as a privacy-utility trade-off would feel more honest than introducing it near the end of the experimental section.
-
-A small writing point: the propagation risk R_prop in Section 4.6 plays a load-bearing role in the framing but is not directly estimated in the experiments. Either tying SPE to R_prop with a clearly stated approximation, or trimming R_prop, would tighten the paper.
-
-Other points please refer to weaknesses.
-
-Areas to address in authors’ response
--------------------------------------
-1. Could the authors map each of the three adversary classes in Section 2.2 to a concrete experimental setup, even if only one is fully evaluated? I would particularly like to understand what threat the secure mapping mode is meant to defend against, since the mapping-table adversary is named but not exercised.
-
-2. The transfer to TAB shows a noticeable drop in detection precision relative to Presidio (+NER). Is this a property of CPPB's prompt distribution, of the routing policy, or of the underlying span detector?
-
-3. How should a reader interpret a low SPE in the presence of an adversary who can paraphrase, normalize, or chain-of-thought elicit a hidden span? Is SPE intended to bound recovery, or only to track explicit surface-form propagation?
-
-4. The cross-model validation anonymizes the three backends. Could the authors say what model families these correspond to, since this materially affects how the portability claim should be read?
-
-Does the paper raise ethical concerns?
---------------------------------------
-1. No
-
-Reviewer expertise in this domain
----------------------------------
-3. Knowledgeable (I don't necessarily work in this topic domain, but I work
-   on related topics or I am cognizant of the work in this domain in recent
-   years)
-
-Reviewer confidence
--------------------
-3. Quite confident
-
-Overall merit
--------------
-2. Weak reject
-
-Open Science Compliance
------------------------
-1. Yes
+Summary
+-------
+The paper reframes prompt privacy in LLM agent pipelines as a propagation-control
+problem over an agent boundary graph and proposes a pre-inference mediation layer
+(typed placeholders, semantic abstraction, secure symbolic mapping with late
+restoration). Evaluation uses a paper-specific controlled benchmark (CPPB),
+public text transfer (TAB, AI4Privacy), OCR-mediated slices (CORD/FUNSD/SROIE),
+a lightweight learned detector and a CPPB privacy judge, plus secure-mapping,
+adversarial, and context-inference probes, and -- new in this revision --
+measured stage-wise propagation and a measured adaptive adversary on real text.
 
 
+Overall assessment against the TOPS bar
+---------------------------------------
+The framing contribution is genuine and the manuscript is unusually honest and
+reproducible. The central remaining question for TOPS is whether the evidence is
+"measured systems/security evidence" rather than a controlled simulation, and
+whether the security mechanism is evaluated as a security mechanism. The current
+revision has materially closed the first question and partially the second:
 
-Review #541B
-===========================================================================
+  * Measured propagation on real text (NEW). A documented deterministic reference
+    agent (retrieval/memory/tool) now measures gold-span surface survival on the
+    public AI4Privacy slice. With the released heuristic detector, residual
+    exposure on out-of-distribution real text is high (PER 56.3%), but the
+    propagation-control framing paired with a competent learned detector achieves
+    a measured PER of 7.4% with stage SPE of 1.9/3.4/2.5% across retrieval,
+    memory, and tool. This corroborates the controlled CPPB result with measured
+    real-text evidence and is the most important addition.
 
-Paper summary
--------------
-Users sometimes submit sensitive information that is sometimes necessary for the agents to perform their tasks. The paper asks whether sensitive information can be transformed before an agent uses retrieval, memory, tools, or logs (~stages where such information may propagate); while still preserving enough semantic information for the agent to complete the task successfully.
-To this end, the proposed system detects sensitive spans in agent inputs using rules, NER, contextual heuristics, and, where relevant, OCR text extraction. It then routes those spans according to a hand-written policy into typed placeholders, semantic abstractions, or secure symbolic mappings, with exact values restored only for authorized parts when needed. 
-The evaluation measures how often original sensitive spans remain exposed or propagate across retrieval, memory, and tool stages after mediation, while also tracking downstream utility through answer consistency and task success.
+  * Measured adaptive adversary (NEW). A surface-form evasion adversary with six
+    concrete capabilities is run against the actual detectors on real text. The
+    released heuristic detector is brittle (zero-width insertion ASR 99.7%,
+    homoglyph 65.4%, spacing 47.1%); the learned detector is far more robust
+    (most attacks < 1% ASR) but not closed (case inversion ASR 18.4%). This is a
+    measured success-rate evaluation against the real mechanism.
 
-Strengths / Reasons to accept
------------------------------
-- The problem deserves thinking: sensitive information in LLM/VLM agents can propagate beyond the initial prompt into retrieval queries, memory entries, tool calls.
-- Framing prompt privacy as a propagation-control problem might be useful, given that agents might store or transform input information.
-- The paper's problem might be relevant to enterprises building agent workflows over sensitive internal data.
-- The paper is honest about its claims
+These two additions move the paper from "controlled simulation" toward
+"measured evidence." The judgment is now: a credible TOPS submission with a
+clear honest scope, but acceptance still depends on the items below.
 
-Weaknesses / Reasons to reject
-------------------------------
-- There is a substantial discrepancy between the paper’s formal modeling and its implemented system. The paper overformalizes (pi, Rprop, policy losses, weights) , but most of the notions are not used and the actual system appears to rely mostly on hand-written rules and reports propagation exposure. Why define Rprop if in the end measure Stage-wise Propagation Exposure? 
 
-- The paper does not sufficiently justify its span-identification approach against simpler alternatives. For example, it is unclear how the proposed combination of rules, NER, and contextual heuristics would compare with small LLM-based privacy judges, lightweight classifiers similar to those used for policy-violation or offensive-content detection, or other simple routing models.
+Strengths
+---------
+1. Propagation-control framing across an agent boundary graph is a useful,
+   defensible reframing of prompt privacy.
+2. Exceptional transparency: explicit evidentiary hierarchy, scope guards,
+   released code/benchmark/manifests, deterministic artifacts.
+3. Honest baselines: the learned detector and CPPB judge are reported even where
+   they match or beat the released heuristic, locating the contribution in the
+   framing/restoration rather than the detector.
+4. The measured real-text propagation and measured adversary now ground the
+   central claims in executed evidence rather than only controlled scores.
 
-- Motivation: the paper should explain what threat remains after ordinary enterprise isolation and access control. In many realistic deployments, sensitive data would already be separated by tenant, customer, workspace, user, or project; retrieval indexes, memories, tool permissions, and logs would be scoped accordingly. In which way and to what extent this problem is "real"? 
 
-- Presentation and writing clarity: (i) The paper presents early on the benchmark CPPB, and the metrics (PER, AC..) as if they were universally accepted existing artifacts in the literature, although they are paper-specific controlled evaluation constructs (the authors have been rightfully honest about the benchmark, but the presentation is misleading). (ii) Several tables and figures appear too small; figure text should be comparable in size to the LaTeX caption font. The writing would also benefit from more disciplined exposition: each term should be explicitly defined at first use, and the relationship between the formal notation, the implemented system, and the reported metrics should be made much clearer.
+Weaknesses / required revisions (prioritized)
+----------------------------------------------
+W1 (major). The CPPB headline tables (propagation, PER, AC/TSR) are still a
+   controlled operating surface generated deterministically from base operating
+   points, not measured from running the system on real prompt text with a real
+   downstream model. ACTION: foreground the measured real-text propagation result
+   as primary corroboration in the main text, and explicitly label the CPPB
+   tables as a controlled operating surface, not measured system output. (Partly
+   addressed: measured slice now exists; main-text framing should make it primary.)
 
-- The empirical scale and maturity are limited for a venue such as CCS. In its current form, the paper is rather an early system prototype than a finished security contribution.
+W2 (major). Security mechanism depth. The secure mapping table -- the only
+   component with a genuinely new security surface -- is still evaluated by a
+   reference sanity check plus the new surface-form adversary, not by an
+   adversary that compromises the mapping/restoration path under stated
+   capabilities. ACTION: add (or scope explicitly as future work) a measured
+   mapping-table/restoration adversary (unauthorized-restoration rate under
+   credential/partial-table compromise) beyond the current reference check.
 
-Overall, while the motivation might be relevant, the current version does not yet appear mature enough for publication.
+W3 (moderate). The released heuristic detector is the weak link: high residual on
+   OOD real text and high evasion ASR. The paper should state plainly that the
+   deployable configuration pairs the framing with a learned detector, and report
+   the learned-detector operating point as the recommended configuration rather
+   than the heuristic.
 
-Constructive comments for author
---------------------------------
-I think this paper needs a deep rewriting and cleaning to keep only the necessary (e.g. as mentioned earlier, many concepts are "formally" defined (e.g. Rprop) but not used/measured)
+W4 (moderate). External validity remains bounded: single-domain learned detector,
+   no licensed clinical rerun, OCR slices are transfer-only. Keep the honest
+   limitation but add at least one cross-domain learned-detector check if feasible.
 
-If i got it correctly, the threat model mixes threats for the deployed LLM/VLM agent pipeline, and the threats for your mediation system itself. That is not necessarily wrong. But the paper should separate these more cleanly. Also, the real evaluated claim (e.g. direct span propagation) seems narrower than the threat model. 
+W5 (minor). Robustness is improved but not closed (case-inversion ASR 18.4% on
+   the learned detector). Report this as an open residual surface and avoid any
+   "robust to surface-form evasion" phrasing.
 
-The introduction could gain from being clearer and readable in a standalone manner from a first pass (for now the reader has to go back and forth in the paper to understand the setting, the threat, the mechanism, and the evaluation.). An initial pedagogical figure (like the pedagogical example you gave) could help readers get immediately the gist of what you're doing and help dispatching them to relevant sections for more details.
 
-The paper should also better situate within-agent propagation relative to the broader privacy landscape. For example, cross-user leakage, provider-side data retention or accidental training, enterprise access control/tenant isolation are adjacent concerns that some readers might already have in mind.
+Concrete actions for this revision cycle
+-----------------------------------------
+A1. Integrate the measured propagation table and measured adversary table into
+    the appendix (record-backed), with brief main-text pointers, keeping the
+    35-page total. (In progress.)
+A2. Add a sentence in the main results making the measured real-text propagation
+    the primary corroboration of the controlled CPPB propagation result, and
+    relabel CPPB as a controlled operating surface.
+A3. State the recommended deployable configuration = framing + learned detector,
+    citing the measured PER 7.4% and the adversary robustness gap.
+A4. In Limitations, record the mapping-table-compromise adversary and cross-domain
+    learned detector as the two remaining executed-evidence gaps for camera-ready.
 
-The benchmark should be better described in a separate appendix, with examples, explainging what are the actual 32 templates, how were they written/selected, how were sensitive spans selected/injected; was the data judged for quality etc.
-
-A large part of the current empirical evidence appears to depend on span detection quality, while the transformation policy, propagation control, and restoration mechanism are less deeply evaluated. The paper would be stronger if it was more balanced.
-
-Finally, because the paper defines a new problem framing and evaluates it largely on a controlled benchmark introduced by the authors, the motivation needs to be stronger. For example, what could help the reader is a better explanation of what is the most naive countermeasure to this issue? (e.g. tenant isolation?) Why wasn't this very same problem studied in the literature ? if this problem is real, who suffers from it today? how it is handled?  This would make the contribution easier to assess and would help distinguish a genuinely new security problem from an application of existing sanitization techniques to agent pipelines.
-
-Does the paper raise ethical concerns?
---------------------------------------
-1. No
-
-Concerns to be addressed during the revision/shepherding
---------------------------------------------------------
-I think my concerns cannot be addressed during a short revision/shepherding.
-
-Reviewer expertise in this domain
----------------------------------
-3. Knowledgeable (I don't necessarily work in this topic domain, but I work
-   on related topics or I am cognizant of the work in this domain in recent
-   years)
-
-Reviewer confidence
--------------------
-4. Confident
-
-Overall merit
--------------
-2. Weak reject
-
-Open Science Compliance
------------------------
-1. Yes
-
-Open Science Comments
----------------------
-Benchmark and source code available.
+Verdict: Borderline-accept with major revision. The framing, honesty, and the new
+measured propagation/adversary evidence are at TOPS level; the remaining blockers
+are (W1) making measured evidence primary over the controlled CPPB surface and
+(W2) deepening the secure-mapping security evaluation.

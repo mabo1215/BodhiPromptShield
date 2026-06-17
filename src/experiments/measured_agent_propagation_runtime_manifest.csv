@@ -1,0 +1,9 @@
+field,value
+benchmark,"AI4Privacy PII-Masking-300K (English), real text + gold spans"
+split,ai4privacy-test
+documents,300
+mentions,1806
+pipeline,"Documented deterministic reference agent (retrieval=first half, memory=verbatim, tool=structured fields)"
+measurement,Exact gold-span surface survival + char-coverage PER/retention
+llm_in_loop,None (measurement is exact and reproducible without a model)
+dependencies,Pure Python standard library + repository detection helpers

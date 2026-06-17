@@ -13,6 +13,8 @@ This script only updates tables that are directly backed by repository CSVs:
     - tab:crossmodel       <- crossmodel_portability_results.csv
     - tab:lightclf         <- lightweight_classifier_comparison.csv
     - tab:judge            <- cppb_privacy_judge_comparison.csv
+    - tab:measprop         <- measured_agent_propagation_results.csv
+    - tab:advmeas          <- measured_adaptive_adversary_results.csv
     - tab:mapadv           <- secure_mapping_adversary_results.csv
     - tab:hardcase         <- hardcase_analysis.csv
   - tab:restore          <- restoration_boundary_analysis.csv
@@ -275,6 +277,54 @@ def build_lightclf_table() -> str:
     )
 
 
+def build_measprop_table() -> str:
+    rows = _read_csv("measured_agent_propagation_results.csv")
+    header = "Method & Retrieval & Memory & Tool & PER & Ret. " + r"\\" + "\n"
+    body = "\n".join(
+        f"{_tex_escape(row['method'])} & {_fmt_float(row['retrieval_spe'])} & "
+        f"{_fmt_float(row['memory_spe'])} & {_fmt_float(row['tool_spe'])} & "
+        f"{_fmt_float(row['per_percent'])} & {float(row['text_retention']):.2f} \\\\"
+        for row in rows
+    )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccccc}\n"
+        + "\\toprule\n"
+        + header
+        + "\\midrule\n"
+        f"{body}\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+def build_advmeas_table() -> str:
+    rows = _read_csv("measured_adaptive_adversary_results.csv")
+    by_attack: dict[str, dict[str, str]] = {}
+    order: list[str] = []
+    for row in rows:
+        atk = row["attack_family"]
+        if atk not in by_attack:
+            by_attack[atk] = {}
+            order.append(atk)
+        key = "heur" if row["detector"].startswith("Released") else "learn"
+        by_attack[atk][key] = row["attack_success_rate"]
+    header = "Attack family & Heuristic ASR (\\%) & Learned ASR (\\%) " + r"\\" + "\n"
+    body = "\n".join(
+        f"{_tex_escape(atk)} & {_fmt_float(by_attack[atk].get('heur', '0'))} & "
+        f"{_fmt_float(by_attack[atk].get('learn', '0'))} \\\\"
+        for atk in order
+    )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcc}\n"
+        + "\\toprule\n"
+        + header
+        + "\\midrule\n"
+        f"{body}\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
 def build_judge_table() -> str:
     rows = _read_csv("cppb_privacy_judge_comparison.csv")
     header = "Method & PER (\\%) & AC & TSR " + r"\\" + "\n"
@@ -508,6 +558,8 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:crossmodel": build_crossmodel_table,
     "tab:lightclf": build_lightclf_table,
     "tab:judge": build_judge_table,
+    "tab:measprop": build_measprop_table,
+    "tab:advmeas": build_advmeas_table,
     "tab:mapadv": build_mapadv_table,
     "tab:hardcase": build_hardcase_table,
     "tab:restore": build_restore_table,

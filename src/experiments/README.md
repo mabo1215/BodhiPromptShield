@@ -207,6 +207,18 @@
   - Held-out CPPB test-split comparison of the judge against regex/NER/enterprise/proposed methods (backs appendix `tab:judge`)
 - `cppb_privacy_judge_runtime_manifest.csv`
   - Model/feature/training configuration manifest for the CPPB privacy-judge baseline
+- `measured_agent_propagation.py`
+  - Measure stage-wise surface-form propagation on real AI4Privacy text through a documented deterministic reference agent (retrieval/memory/tool); reports measured SPE/PER/retention per method, including the framing paired with a learned detector
+- `measured_agent_propagation_results.csv`
+  - Measured propagation results on the real-text test slice (backs appendix `tab:measprop`)
+- `measured_agent_propagation_runtime_manifest.csv`
+  - Pipeline/measurement manifest for the measured propagation experiment
+- `measured_adaptive_adversary.py`
+  - Run a measured adaptive surface-form adversary (six attack families) against the actual released heuristic and learned detectors on real text
+- `measured_adaptive_adversary_results.csv`
+  - Measured attack success rates per attack family and detector (backs appendix `tab:advmeas`)
+- `measured_adaptive_adversary_runtime_manifest.csv`
+  - Attack/detector/measurement manifest for the measured adversary experiment
 - `i2b2_matched_baseline_protocol.json`
   - Protocol scaffold for i2b2 prompt-wrapper external transfer
 - `i2b2_zero_shot_prompt_template.txt`
@@ -284,6 +296,8 @@ python src/experiments/context_inference_attack_suite.py
 python src/experiments/secure_mapping_adversary_suite.py
 python src/experiments/ai4privacy_lightweight_classifier_baseline.py
 python src/experiments/cppb_privacy_judge_baseline.py
+python src/experiments/measured_agent_propagation.py
+python src/experiments/measured_adaptive_adversary.py
 python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl
 python src/experiments/i2b2_external_transfer.py
 python src/experiments/i2b2_matched_baseline_suite.py
@@ -307,6 +321,8 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 - `tab:crossmodel`
 - `tab:lightclf`
 - `tab:judge`
+- `tab:measprop`
+- `tab:advmeas`
 - `tab:mapadv`
 - `tab:hardcase`
 - `tab:restore`
