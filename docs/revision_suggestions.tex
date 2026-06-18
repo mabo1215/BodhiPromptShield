@@ -66,13 +66,16 @@ Strengths
 
 Weaknesses / required revisions (prioritized)
 ----------------------------------------------
-W1 (major -- RESOLVED this cycle). The CPPB headline tables are a controlled
-   operating surface; the main text now labels them as such and foregrounds the
-   measured real-text propagation result (Table tab:measprop) as the primary
-   corroboration: the framing paired with a learned detector reaches a measured
-   PER of 7.4% with stage SPE 1.9/3.4/2.5% on real AI4Privacy text. Residual gap
-   (minor): a fully measured CPPB rerun with a live downstream model, recorded as
-   a camera-ready item.
+W1 (major -- RESOLVED this cycle). The measured evidence is now the main-text
+   PRIMARY: the synthetic CPPB propagation/adversary tables are demoted to a
+   controlled-operating-surface reference in the appendix, while the main Results
+   lead with measured propagation (Table tab:measprop, AI4Privacy reference agent
+   PER 7.4% and real PrivacyLens agent-task trajectories PER 1.8%), the measured
+   adaptive adversary (Table tab:advmeas), and the measured secure mapping-table
+   compromise curve (Table tab:mapcompromise, in the secure-mapping section).
+   PrivacyLens also measures the open frontier: 83% of its sensitive items remain
+   semantically conveyed under the same mediation, stated explicitly. Residual
+   gap (minor): a fully measured CPPB rerun with a live downstream model.
 
 W2 (major -- RESOLVED this cycle). Security mechanism depth. The secure mapping
    table is now evaluated by a measured capability-graded compromise adversary
@@ -99,9 +102,13 @@ W4 (moderate -- RESOLVED this cycle). External validity. A measured cross-domain
    generic-trained detector therefore travels across domains; the bound is stated
    honestly. Residual gap (minor): a licensed clinical rerun and more domains.
 
-W5 (minor). Robustness is improved but not closed (case-inversion ASR 18.4% on
-   the learned detector). Report this as an open residual surface and avoid any
-   "robust to surface-form evasion" phrasing.
+W5 (minor -- RESOLVED this cycle). The measured adversary now spans eight
+   families including mixed-language fullwidth and semantic paraphrase
+   (digit spell-out). The learned detector is robust to pure surface noise
+   (most attacks < 1% ASR) but the strongest evasions are semantic: paraphrase
+   digit spell-out reaches 28.2% ASR and case inversion 18.4%. The paper reports
+   semantic-paraphrase evasion as an open residual surface and makes no
+   "robust to evasion" claim.
 
 
 Actions completed this revision cycle

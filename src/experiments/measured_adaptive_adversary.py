@@ -66,6 +66,16 @@ def _has_digit_run(s: str) -> bool:
     return False
 
 
+def _has_alnum(s: str) -> bool:
+    return any(ch.isalnum() for ch in s)
+
+
+DIGIT_WORDS = {
+    "0": "zero", "1": "one", "2": "two", "3": "three", "4": "four",
+    "5": "five", "6": "six", "7": "seven", "8": "eight", "9": "nine",
+}
+
+
 def _mut_homoglyph(s: str) -> str:
     return "".join(HOMOGLYPH.get(ch, ch) for ch in s)
 
@@ -90,6 +100,23 @@ def _mut_separator(s: str) -> str:
     return " ".join(s)  # break digit runs with spaces
 
 
+def _mut_fullwidth(s: str) -> str:
+    out = []
+    for ch in s:
+        code = ord(ch)
+        if 0x21 <= code <= 0x7E:
+            out.append(chr(code + 0xFEE0))  # ASCII -> fullwidth
+        elif ch == " ":
+            out.append("　")  # ideographic space
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def _mut_spell_digits(s: str) -> str:
+    return "".join(DIGIT_WORDS[ch] + " " if ch in DIGIT_WORDS else ch for ch in s)
+
+
 ATTACKS = [
     ("Homoglyph substitution", _mut_homoglyph, _has_alpha),
     ("Zero-width insertion", _mut_zerowidth, _has_alpha),
@@ -97,6 +124,8 @@ ATTACKS = [
     ("Case inversion", _mut_case, _has_alpha),
     ("Leetspeak", _mut_leet, _has_alpha),
     ("Separator injection (ids)", _mut_separator, _has_digit_run),
+    ("Mixed-language fullwidth", _mut_fullwidth, _has_alnum),
+    ("Paraphrase (digit spell-out)", _mut_spell_digits, _has_digit_run),
 ]
 
 

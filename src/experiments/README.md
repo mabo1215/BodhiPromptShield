@@ -214,7 +214,13 @@
 - `measured_agent_propagation_runtime_manifest.csv`
   - Pipeline/measurement manifest for the measured propagation experiment
 - `measured_adaptive_adversary.py`
-  - Run a measured adaptive surface-form adversary (six attack families) against the actual released heuristic and learned detectors on real text
+  - Run a measured adaptive adversary (eight families: surface-form, mixed-language fullwidth, and semantic paraphrase/digit spell-out) against the actual released heuristic and learned detectors on real text
+- `measured_privacylens_propagation.py`
+  - Measure propagation on real PrivacyLens agent-task trajectories (NeurIPS'24): exact concrete-identifier surface survival per method + semantic-residue rate; backs the PrivacyLens block of appendix `tab:measprop`
+- `measured_privacylens_propagation_results.csv`
+  - Measured per-method propagation on the 493 PrivacyLens real trajectories
+- `external_data/privacylens/main_data.json`
+  - Downloaded PrivacyLens dataset (SALT-NLP/PrivacyLens; not redistributed in submit/)
 - `measured_adaptive_adversary_results.csv`
   - Measured attack success rates per attack family and detector (backs appendix `tab:advmeas`)
 - `measured_adaptive_adversary_runtime_manifest.csv`
@@ -298,6 +304,7 @@ python src/experiments/ai4privacy_lightweight_classifier_baseline.py
 python src/experiments/cppb_privacy_judge_baseline.py
 python src/experiments/measured_agent_propagation.py
 python src/experiments/measured_adaptive_adversary.py
+python src/experiments/measured_privacylens_propagation.py
 python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl
 python src/experiments/i2b2_external_transfer.py
 python src/experiments/i2b2_matched_baseline_suite.py

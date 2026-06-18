@@ -1,0 +1,6 @@
+method,documents,retrieval_spe,memory_spe,tool_spe,per_percent,text_retention
+No protection,493,100.0,100.0,0.0,100.0,1.00
+Regex-only,493,0.0,12.6,0.0,11.5,0.99
+NER-only masking,493,100.0,98.9,0.0,99.0,0.85
+Proposed (released heuristic detector),493,0.0,11.5,0.0,10.5,0.59
+Proposed (learned detector),493,0.0,1.9,0.0,1.8,0.75

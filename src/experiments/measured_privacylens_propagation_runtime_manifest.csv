@@ -1,0 +1,8 @@
+field,value
+benchmark,"PrivacyLens (NeurIPS 2024 D&B), 493 real agent trajectories"
+source,github.com/SALT-NLP/PrivacyLens data/main_data.json
+gold,user identity (name/email) + verbatim e-mails and digit-run identifiers in the trajectory
+stages,retrieval=user_instruction; memory=executable_trajectory; tool=final_action
+semantic_residue_percent,83.0
+semantic_note,Percent of sensitive_info_items whose fact content survives the learned-detector mediation (surface mediation does not contain semantic leakage)
+llm_in_loop,None; exact character-coverage measurement

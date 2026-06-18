@@ -5,9 +5,13 @@ Released heuristic detector,Intra-token spacing,893,0.33,0.17,47.1
 Released heuristic detector,Case inversion,893,0.33,0.27,18.0
 Released heuristic detector,Leetspeak,893,0.33,0.22,33.6
 Released heuristic detector,Separator injection (ids),472,0.56,0.57,0.0
+Released heuristic detector,Mixed-language fullwidth,1165,0.41,0.20,50.6
+Released heuristic detector,Paraphrase (digit spell-out),472,0.56,0.19,65.9
 Learned detector,Homoglyph substitution,893,0.95,0.95,0.2
 Learned detector,Zero-width insertion,893,0.95,0.94,0.8
 Learned detector,Intra-token spacing,893,0.95,0.96,0.0
 Learned detector,Case inversion,893,0.95,0.77,18.4
 Learned detector,Leetspeak,893,0.95,0.99,0.0
 Learned detector,Separator injection (ids),472,1.00,1.00,0.0
+Learned detector,Mixed-language fullwidth,1165,0.96,0.95,0.9
+Learned detector,Paraphrase (digit spell-out),472,1.00,0.72,28.2

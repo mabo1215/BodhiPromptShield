@@ -147,34 +147,47 @@ Your inference:"""
   - **W1（合成核心）**：主文已把 CPPB 标注为 controlled operating surface 并以真实文本实测（`tab:measprop`）为主要佐证。
   - **整合与守页**：两张新表接入 `fill_paper_tables.py`（`tab:mapcompromise`、`tab:crossdom`）并回填；为守住 35 页，删除被实测证据取代的 `tab:multimodal`（数值已在主文 OCR 段）与合成 `tab:adversarial`（已被实测 `tab:advmeas` 取代）。`paper/main.tex` Limitations 已记录两项 camera-ready 残留（live-stack 端到端 mapping compromise、更多域覆盖）。当前 main 29 + appendix 6 = combine 35 页不变，0 error/undefined/大号 overfull/float。
 
+- 已完成建议优先级 #3（扩大 adversarial / mapping-table 攻击的 families 与 success metrics）。修改说明：
+  - **mapping-table 攻击**：已由 W2 的 `secure_mapping_compromise.py`（capability-graded 实测恢复曲线，`tab:mapcompromise`）覆盖——blast radius 限单会话、唯一信任根为 master seed。
+  - **adversarial families 扩展**：`src/experiments/measured_adaptive_adversary.py` 已从 6 类扩到 **8 类**，新增 `Mixed-language fullwidth`（全角 Unicode）与 `Paraphrase (digit spell-out)`（数字拼写成英文词，语义改写）两类，仍在真实 AI4Privacy 文本上对**真实 detector** 实测 ASR。结果：released 启发式 detector 全面脆弱（paraphrase 65.9%、fullwidth 50.6%、zero-width 99.7%、homoglyph 65.4%）；learned detector 对纯表面噪声稳健（多数 <1%），但**语义改写**是最强逃逸——paraphrase digit spell-out 对 learned detector 仍达 **28.2% ASR**、case inversion 18.4%，因为拼写数字移除了 detector 依赖的 digit/shape 线索。`paper/appendix.tex` 的 `tab:advmeas` 与解读段已更新，明确把 semantic-paraphrase evasion 标注为 open residual surface，不做 “robust to evasion” 声明（回应 review W5）。当前 main 29 + appendix 6 = combine 35 页不变，0 error/undefined/大号 overfull/float。
+- 已新增"真实 agent-task 切片"以进一步加强外部有效性（用户选定 PrivacyLens 路线）。修改说明：从 `github.com/SALT-NLP/PrivacyLens` 下载 `main_data.json`（493 个真实 agent 轨迹，NeurIPS'24，带 explicit sensitive items 与 user identity），新增 `src/experiments/measured_privacylens_propagation.py`：以 user identity + 轨迹内 verbatim emails/digit-id 为**精确 gold**，对真实 detector 在真实 agent 轨迹上**实测**表面传播（无 LLM、确定性），落盘 `measured_privacylens_propagation_results.csv`。结果：框架 + learned detector 把真实轨迹上的具体标识符传播压到 **PER 1.8%**（heuristic 10.5%、regex 11.5%、NER-only 99%、no-protection 100%）；同时实测**语义残留 83%**——同一 mediation 下 83% 的 PrivacyLens sensitive_info_items 仍被语义性传达（它们是事实而非表面 span），诚实印证"表面传播控制不收敛语义泄漏"这一开放前沿，与 paraphrase-evasion 结论一致。整合：`tab:measprop` 已合并为 AI4Privacy + PrivacyLens 两段式表格（page-neutral），并把数值已在主文 prose 的 `tab:tabtransfer`（TAB 表）下沉删除以守 35 页。main 29 + appendix 6 = combine 35 页不变，0 error/undefined/大号 overfull/float。
+- 已逐条核对 `docs/revision_suggestions_backup_20260618_034359.txt`（原 ACM CCS 2026 #541A/#541B 评审），全部 weakness 与 author-response 项均已落实，结论如下：
+  - **#541A**：W1 threat model operationalize → 三类 named adversary 现已**各有实测表**（adaptive=`tab:advmeas`、mapping-table=`tab:mapcompromise`、context-inference=`tab:contextattack`），含 measured success rate；W2 SPE 结构性 → 已统一为 explicit surface-form propagation / deployment-hygiene，明确不上界 recovery，并由 measured paraphrase 攻击（learned 28.2% ASR）具体说明；W3 技术增量/secure mapping 仅 prose → 已补 threat-surface 表 + token format + **实测 compromise 曲线**（cross-session isolation 实测）；W4 自建 benchmark/泛化 → CPPB 标注 controlled，新增**真实文本实测传播**（`tab:measprop`）与**跨域 detector**（`tab:crossdom`）+ TAB error taxonomy；W5 薄切片 → title 去 VLM 收紧为 OCR-mediated、cross-model family 披露（`tab:crossmodel`）、context-inference 升为实测表。Response areas 1–4（adversary 映射、TAB precision drop、SPE 语义、cross-model family）全部已答。
+  - **#541B**：形式化/实现不一致（`R_prop`）→ 降级且显式声明未估计；span detection vs 更简单替代 → `tab:lightclf`+`tab:judge`+`tab:crossdom`；enterprise isolation 后残留威胁 → within-agent residual-threat 段 + running example；CPPB/PER/AC 当成既有标准 → 已改写为 paper-specific controlled + 术语首用定义；图表过小 → acmsmall 单栏放大、版式无大号告警；deployed vs mediation 威胁分离 → §2 two-surface 已分；broader privacy landscape / naive countermeasure → intro 已补；32 templates 的 appendix 数据卡 → `CPPB Construction and Data Card`+`tab:app-examples`；评估偏重 detection → restoration/ablation/propagation/mapping-compromise 等非 detector 组件均有评估。
+  - 结论：backup 评审提出的问题在当前 `paper/main.tex` 与 `paper/appendix.tex` 中**已全部解决或诚实收口**；剩余仅为受外部数据/凭据限制的长期项（见下）。
+
+- 已按用户 A+B 重排正文/附录，使"实测证据"成为正文主线（回应 review W1 的"measured primary"，并修正 venue 残留）。修改说明：
+  - **A**：正文 §6.6 把合成对抗表 `tab:adv_main` 替换为**实测** `tab:advmeas`（8 类、对真实 detector 实测 ASR，含 paraphrase 28.2% 关键发现），合成版删除；并修掉残留的 "TIFS-style reviewers"→"security reviewers"。
+  - **B**：把 `tab:measprop`（AI4Privacy + 真实 PrivacyLens 轨迹，PER 7.4%/1.8% + 83% 语义残留）提升到正文 §6.1 作为 propagation **headline**，合成 `tab:propagation` 下沉附录改写为 "Controlled CPPB Operating Surface"（并移除其合成折线图 `fig:propagation_curve`）；把 `tab:mapcompromise`（secure mapping 实测 compromise 曲线 T0–T5）提升到正文 §4.8 安全小节。
+  - 三类 named adversary 的实测表（adaptive=`tab:advmeas`、mapping-table=`tab:mapcompromise`、context-inference 仍在附录 `tab:contextattack`）与实测传播现在都在或指向正文，附录保留 controlled operating surface 与 supporting slices（restore/ablation/lightclf/judge/crossdom/crossmodel + 数据卡 + 算法）。
+  - 页数：实测表进正文恰好顶替了合成 propagation 表 + 折线图 + 合成对抗表，**main 仍 29 页**、appendix 收敛到 5 页、combine 34 页（≤35）；构建 0 error/undefined/大号 overfull/float。修复了 moved label 的跨文档 \ref（`tab:propagation` 等）。
+
 ## 未修改或部分修改
 
-最近核对日期：2026-06-17
+最近核对日期：2026-06-18
 
-以下条目来自对 `docs/revision_suggestions.tex` 中 Review #541A / #541B 的逐条核对。当前 `paper/main.tex` 与 `paper/appendix.tex` 已经完成核心 P0 收口，包括 threat-to-evaluation mapping、SPE 的 surface-form 边界说明、`R_prop` 降级、secure mapping threat surface、CPPB controlled benchmark 口径、TAB precision drop 解释，以及 OCR-mediated 而非完整 VLM-loop 的范围收紧。剩余事项如下。
-
-本轮已完成此前列在最高优先级的四项（cross-model family-level disclosure、secure mapping 最小实验、appendix 版式清理、lightweight classifier 正式 baseline），详见“已全部修改”。剩余事项如下。
+原 ACM CCS #541A/#541B 评审以及后续 TOPS 独立评审（`docs/revision_suggestions.tex`）的核心 P0/P1 项均已落地（threat-to-evaluation mapping、SPE surface-form 边界、`R_prop` 降级、secure mapping threat surface + 实测 compromise、CPPB controlled benchmark 口径、TAB precision-drop taxonomy、OCR-mediated scope、family-level cross-model、lightweight classifier/judge、实测传播与实测 adversary）。本节仅保留少数仍属表达/版面层面的部分完成项。
 
 ### 部分完成
 
 - ACM TOPS 投稿口径已按用户最终决策定稿并落地：正文压到“恰好 29 页”、附录收敛到“恰好 6 页”，合计 35 页正好满足 TOPS“总计 ≤ 35 页”限制；main 与 appendix 保持两个独立 PDF 分开编译（已确认 ACM 也允许 `\appendix` 合并为单 PDF，本轮仍按用户选择保持分开）。该决策已关闭，详见“已全部修改”。
 - 【已解决】CPPB benchmark 的 appendix 级数据卡已补齐，直接回应 Review #541B “describe the actual 32 templates, how written/selected, how spans injected, quality judged in a separate appendix”。`paper/appendix.tex` 新增 `\subsection*{CPPB Construction and Data Card}`：写明 32 templates × 4 prompt families（来源为公开任务/对话/文档场景而非真实用户记录）、每模板 8 个固定 variant 的 span 注入方式（V1–V4 essential / V5–V8 incidental，V4/V8 为 OCR 切片）、8 类隐私类别的 32/类与 128/128 平衡、span 文本/字符偏移/类别/子集/模态均为 construction-time 标签并经人工核对，以及新增 `tab:app-examples` 展示按模式（placeholder/abstract/symbolic）注入与脱敏的代表性模板示例。附录仍保持恰好 6 页（原有页面有余量），main 29 + appendix 6 = combine 35 页不变，构建 0 undefined ref/citation、0 大号 overfull/float。
 - TAB transfer 已解释 precision drop，并承认相对 Presidio(+NER) 是 privacy-retention trade-off；但它仍位于 Results 后段。若版面允许，可在 Experimental Setup 中更早声明 TAB 是主要 external transfer slice，避免 reviewer 觉得它是最后补丁。当前无须用户决策，可在后续轮次自动处理。
-- Adversarial robustness 与 context-inference 已从未测推进到 executed supporting evidence，但 coverage 仍然 partial。当前 homoglyph hardening 有改善，paraphrase / mixed-language / restoration-trigger 仍显示弱覆盖；论文已诚实标注，但若要强回应安全审稿人，需要扩大 attack families 和 success metrics。
-- Secure symbolic mapping 现已补上 executed reference sanity check（unauthorized restoration / partial table read / cross-session unlinkability，见 `tab:mapadv`），但仍是 reference-design sanity check，缺少完整 table-compromise 攻击实验与真实部署密钥管理评估。
+- 【已解决（W5/优先级#3）】Adversarial robustness 已从 6 类扩到 8 类**实测**攻击（含 paraphrase digit spell-out 与 mixed-language fullwidth），对真实 detector 在真实文本上测 ASR；论文诚实标注 semantic-paraphrase（learned detector 28.2% ASR）为 open residual surface。context-inference 亦有 executed 证据（`tab:contextattack`）。剩余仅为长期项：真实 multi-turn / CoT-elicitation 大规模攻击面。
+- 【已解决（W2）】Secure symbolic mapping 已从 reference sanity check 升级为 capability-graded **实测** compromise 曲线（`tab:mapcompromise`，T0–T5）：单会话 blast radius、master seed 为唯一信任根；剩余仅为长期项：真实部署密钥管理/审计栈上的端到端攻防。
 - Multimodal/VLM 问题已通过标题和正文收紧为 OCR-mediated multimodal inputs，但 public OCR slices 的 exact OCR/runtime/provenance 仍有部分 disclosure gap，不能支撑完整 VLM-loop privacy claim。
 - 【已解决】CPPB 上的稳定 lightweight privacy-judge baseline 已补齐，回应 Review #541B “compare against small LLM-based privacy judges / lightweight classifiers”。仓库新增 `src/experiments/cppb_privacy_judge_baseline.py`：一个 prompt-level logistic-regression 隐私敏感度 judge，仅用 manifest 特征（category/family/subset/modality/source/task），在已发布的 CPPB train split 训练、frozen 后在 held-out dev/test 评估，确定性 SGD（零初始化、固定种子）保证稳定。落盘 `cppb_privacy_judge_results.csv`、`cppb_privacy_judge_comparison.csv`、`cppb_privacy_judge_runtime_manifest.csv`。结果稳定且可泛化（train/dev/test PER 13.8/13.2/12.9%），test 上 PER 12.9% / AC 0.93 / TSR 0.92——优于 regex/NER，接近 proposed，但因缺少 restoration governance，residual exposure 高于 proposed（12.9% vs 9.5%），恰好支撑“贡献在传播控制与延迟恢复而非 detector”这一叙事。`paper/appendix.tex` 新增由 `fill_paper_tables.py` 回填的 `tab:judge` 与解读段落，`paper/main.tex` 的 learned-baseline 小节已加入 judge 结论；为保持附录恰好 6 页，删除了与之高度重复的 `tab:baseline`（CPPB Presidio 对比，已被 judge 表与 AI4Privacy `tab:lightclf` 覆盖）与 `tab:splitheldout`（held-out 泛化已由 judge 表与 `tab:lto` 体现）。main 29 + appendix 6 = combine 35 页不变，0 undefined ref/citation、0 大号 overfull/float。剩余：尚未在临床域训练同类 judge，prompted-LLM judge 仍是 zero-shot pilot（非正式 baseline）。
 
 ### 未完成或仍有风险
 
-- 未完成 full named cross-model rerun；family/size/hosting 已披露，但仍未公开 exact vendor/model/version，无法支撑 named benchmarking。
-- 未完成 secure mapping 的完整 table-compromise 攻击评估；当前仅为 reference-design sanity check，不等同于在真实密钥管理/审计栈上的端到端攻防实验。
-- 未完成更广泛的 public-benchmark external validity；当前 TAB、AI4Privacy（含 learned classifier）、clinical supporting slice 和 OCR slices 已有进展，但论文仍不能声称 broad cross-benchmark generalization。
-- 未完成 full external benchmark package；CPPB 仍是 paper-specific controlled benchmark，不是成熟 community benchmark，仍缺少更完整的 annotation instructions、quality-control details、raw multimodal source assets / licensing packets 和 exemplar-level documentation。
+仅剩以下长期项，全部受外部数据/凭据限制，已在论文 Limitations 诚实标注为 future / camera-ready，不构成 accept 阻塞：
 
-### 当前建议优先级
+- Named cross-model rerun：exact vendor/model/version 仍未公开（受厂商/匿名约束）；family/size/hosting 已披露。
+- Live-stack 端到端 mapping-table compromise：机制级实测曲线已完成（`tab:mapcompromise`），真实部署密钥/审计栈上的端到端攻防留作 camera-ready。
+- 更广 cross-domain / licensed clinical 覆盖：generic↔clinical 实测已完成（`tab:crossdom`），更多域与 licensed i2b2 rerun 受许可限制。
+- 把 CPPB 推进为成熟 community benchmark：仍缺更完整的 annotation/quality-control 细节与 raw multimodal source assets / licensing packets。
 
-1. 补 CPPB appendix-level template inventory summary（依赖上面的用户决策），直接回应 Review #541B 对 benchmark 构造透明度的意见。
-2. 把 lightweight classifier 思路扩到 CPPB / 临床域，并将 prompted privacy-judge 从 zero-shot pilot 升级为稳定可比较的正式 baseline。
-3. 视时间扩大 adversarial / mapping-table 攻击的 families 与 success metrics，缩小与“完整攻防评估”的差距。
-4. 持续补强外部 benchmark 覆盖与 exact-disclosure（named cross-model、licensed clinical、完整 OCR provenance），但这些受外部数据/凭据限制，属长期项。
+### 当前建议
+
+- 原优先级 #1–#3（CPPB 数据卡、lightweight judge/classifier、扩大 adversarial+mapping 攻击）均已完成，详见“已全部修改”。
+- 本轮无需新增实验；剩余仅为上述长期外部受限项。下一步以 author-response 形式把每条 review 意见对应到已落地的表/段即可，无其它阻塞项。

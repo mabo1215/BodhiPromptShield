@@ -277,21 +277,30 @@ def build_lightclf_table() -> str:
     )
 
 
-def build_measprop_table() -> str:
-    rows = _read_csv("measured_agent_propagation_results.csv")
-    header = "Method & Retrieval & Memory & Tool & PER & Ret. " + r"\\" + "\n"
-    body = "\n".join(
+def _measprop_rows(csv_name: str) -> str:
+    rows = _read_csv(csv_name)
+    return "\n".join(
         f"{_tex_escape(row['method'])} & {_fmt_float(row['retrieval_spe'])} & "
         f"{_fmt_float(row['memory_spe'])} & {_fmt_float(row['tool_spe'])} & "
         f"{_fmt_float(row['per_percent'])} & {float(row['text_retention']):.2f} \\\\"
         for row in rows
     )
+
+
+def build_measprop_table() -> str:
+    header = "Method & Retr. & Mem. & Tool & PER & Ret. " + r"\\" + "\n"
+    ai4 = _measprop_rows("measured_agent_propagation_results.csv")
+    pl = _measprop_rows("measured_privacylens_propagation_results.csv")
     return (
         "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccccc}\n"
         + "\\toprule\n"
         + header
         + "\\midrule\n"
-        f"{body}\n"
+        + "\\multicolumn{6}{l}{\\emph{AI4Privacy PII text, reference agent (300 docs)}} \\\\\n"
+        + f"{ai4}\n"
+        + "\\midrule\n"
+        + "\\multicolumn{6}{l}{\\emph{PrivacyLens real agent trajectories (493 tasks)}} \\\\\n"
+        + f"{pl}\n"
         + "\\bottomrule\n"
         + "\\end{tabularx}"
     )
