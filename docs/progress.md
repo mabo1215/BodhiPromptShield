@@ -162,6 +162,13 @@ Your inference:"""
   - 三类 named adversary 的实测表（adaptive=`tab:advmeas`、mapping-table=`tab:mapcompromise`、context-inference 仍在附录 `tab:contextattack`）与实测传播现在都在或指向正文，附录保留 controlled operating surface 与 supporting slices（restore/ablation/lightclf/judge/crossdom/crossmodel + 数据卡 + 算法）。
   - 页数：实测表进正文恰好顶替了合成 propagation 表 + 折线图 + 合成对抗表，**main 仍 29 页**、appendix 收敛到 5 页、combine 34 页（≤35）；构建 0 error/undefined/大号 overfull/float。修复了 moved label 的跨文档 \ref（`tab:propagation` 等）。
 
+- 已完成 ACM TOPS 投稿前清理：统一作者单位、把附录并入正文为单一投稿稿。修改说明：
+  - **作者单位一致性**：附录原先把 Jinsong Wu 的单位写成 University of Chile（Santiago, Chile），与正文的 Guilin University of Electronic Technology（Guilin, China）冲突，评审会被当成拼接/元数据错误。现已按用户确认把附录单位统一为 GUET（Guilin, China），与正文一致。
+  - **附录并入正文**：原 `paper/appendix.tex` 是带独立 title/author block 的独立 ACM article，会造成"第二篇论文被拼接进来"的印象。现已把附录全部内容（Notation、CPPB Data Card、Controlled Operating Surface、Restoration/Ablation、Threat-Aligned Evidence、External Transfer/Learned-Baseline、Cross-Model、Core Algorithm 八节及全部表格/算法）通过 `\appendix` 合并进 `paper/main.tex`，附录章节自动编号为 A–H；同时把 `makecell` 宏包并入正文 preamble。
+  - **构建链收口**：`paper/build.bat` 与 `paper/build.sh` 不再单独编译 appendix，也不再生成 combine.pdf，只构建单一 `paper/main.pdf`；已删除冗余的 `paper/appendix.tex`、`paper/appendix.pdf`、`paper/combine.pdf`。
+  - **编译验证**：合并后 `paper/main.pdf` 单文件 34 页，0 error、无 undefined/multiply-defined reference。
+  - **核查无需修改项**：评审提到的 Proposition 2.2 求和公式异常字符（`Í𝑛` 等）只是从 PDF 复制数学时的提取噪声，`main.tex` 源码本身已是标准 `\left(\sum_{i=1}^{n}\varepsilon_{c_i}\right)$-local differential privacy`，无需改源码；`\documentclass[acmsmall,review]{acmart}` 对 ACM 期刊（TOPS）评审稿是正确格式（review 选项带行号），Vol/No/Article 0 与 DOI nnnnnnn 是所有 ACM 评审稿都带的"未分配"占位符，保留即可；用户确认采用非匿名评审，故保留作者署名与 GitHub artifact 链接。
+
 ## 未修改或部分修改
 
 最近核对日期：2026-06-18
