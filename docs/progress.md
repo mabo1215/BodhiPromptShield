@@ -23,6 +23,7 @@
 - 本机 NVIDIA GPU 可用（RTX 4050 Laptop，约 6 GB VRAM）；本轮只用 GPU 做 smoke test，不用它生成无法复核的论文数值。
 - 已核对 `docs/Design.md` 的资源需求：三项正式证据实验均可在本地 CPU/现有数据上完成；3090 仅对 live LLM、较大模型并行或吞吐敏感的 OCR 重跑有帮助，且不能解决 prompt assets、agent stack、模型标识或授权数据缺失。
 - 当前本机 `127.0.0.1:11434` Ollama HTTP endpoint 可响应并返回模型元数据，但命令行客户端不存在；因此“fresh CPPB live rerun”仍因轻量 prompt stubs 和缺少冻结的 downstream agent-stack/runtime 而未解锁。
+- 已开始 vGPU 3090 部署预检：SSH 可连接，但远程容器没有 `/dev/nvidia*` GPU 设备映射，`nvidia-smi` 为不可执行占位文件；同时缺少 Python/Ollama/vLLM，根盘仅剩约 6.9 GB。当前阻塞是容器 GPU 透传与运行时配置，不是 48 GB 显存容量；待提供 GPU-enabled 容器/修复映射后再继续安装。
 - GPU smoke test 已通过；`paper/build.bat` 已成功生成 33 页 `paper/main.pdf`，最终日志无 undefined citation/reference 或 fatal error。final diff review 已完成；论文子仓库 commit `1f1f996` 与父仓库 commit `51f60bf` 已分别推送到对应 remotes，且父仓库 gitlink 已指向论文 commit。
 
 ### 仍未完成或明确阻塞
