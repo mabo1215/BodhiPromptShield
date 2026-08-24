@@ -1,0 +1,38 @@
+Dear Authors:
+
+this email concerns your submission # TOPS-2026-06-0395 titled:
+
+"BodhiPromptShield: Pre-Inference Prompt Mediation for Suppressing Surface-Form Privacy Propagation in LLM Agent Pipelines}"
+
+I regret to inform you that, in light of the Associate Editor's recommendation,
+your submission cannot be accepted for publication.
+
+Thank you for considering ACM Transactions on Privacy and Security.
+
+Sincerely,
+Prof. Michael Waidner
+Editor in Chief, ACM Transactions on Privacy and Security
+
+=========
+AE Comments:
+=========
+
+Summary
+
+The authors propose middleware that replaces sensitive spans before an LLM agent uses retrieval, memory and tools. The threat model and released code are strengths. The main concern is weak novelty supported by a small, constructed evaluation.
+
+Comments
+
+1. Placeholder substitution, local mapping and later restoration already appear in prior work, including PrivacyRestore and Casper. The authors do not cite these close systems and do not compare to them. The propagation framing alone does no constitute sufficient novelty.
+
+2. CPPB contains 256 prompts from only 32 templates. The authors use full-dataset results for the main claims. This design creates a high risk of overfitting. Identical development and test scores add to this concern.
+
+3. The main propagation experiment uses a deterministic reference agent. On real PrivacyLens trajectories, 83% of sensitive facts remain semantically exposed. SPE measures literal span survival and misses contextual disclosure. The authors' own inference attack still reaches 50% accuracy after sanitization.
+
+4. Enterprise redaction achieves lower exposure than the proposed configuration, 8.1% versus 9.3% PER. The proposed method gains only 0.02 in AC and TSR. A custom utility rubric without independent validation cannot establish a meaningful improvement.
+
+5. The learned detector reaches only 0.53 Span F1 with 0.36 precision on AI4Privacy. The authors also withhold exact model identities and omit parts of the OCR and runtime records. These gaps prevent an assessment of deployment value and do not enable reproducibility.
+
+6. The span-level LDP analysis covers only an optional replacement step under restrictive assumptions. It gives no guarantee for the evaluated system.
+
+The submission needs a clear technical contribution and a new evaluation on real agent stacks with strong baselines and realistic privacy attacks. I therefore recommend a reject.
