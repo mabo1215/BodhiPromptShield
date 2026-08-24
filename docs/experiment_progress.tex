@@ -10,7 +10,7 @@
 
 \section*{Revision-cycle experiment progress}
 \noindent
-Last updated: 2026-08-25 10:07 NZST. Percentages describe repository work,
+Last updated: 2026-08-25 10:09 NZST. Percentages describe repository work,
 not a claim that blocked experiments are complete. The latest AE decision is
 reject; this table supersedes the earlier revision-cycle status notes.
 
@@ -34,7 +34,7 @@ Semantic leakage & Kept semantic residue and context-inference accuracy separate
 Baseline correction & Recomputed enterprise gap (+1.20 PER points, +0.02 AC, +0.02 TSR) and removed superiority wording. & Baseline comparison CSV; main-text Results/Limitations & Done & 100\% \\
 Reproducibility & Disclosed lightweight detector configuration and audited missing model/OCR/runtime identifiers. & Review audit runtime manifest; main-text implementation details & Done & 100\% \\
 Formal scope & Removed optional span-level LDP proposition and stated no end-to-end formal privacy guarantee. & \texttt{paper/main.tex}, Formal Privacy Scope & Done & 100\% \\
-Paper QA / handoff & GPU smoke test and paper compilation passed; review diff, commit nested paper repo and parent repo, then push both remotes. & Build log, Git history, remote status & In progress & 85\% \\
+Paper QA / handoff & GPU smoke test, paper compilation, final diff review, nested paper commit, parent commit, and both pushes passed. & Build log, Git history, remote status & Done & 100\% \\
 \end{longtable}
 
 \section*{Next-step plan}
@@ -53,8 +53,8 @@ Experiment / task & Current state & Next action & Complete & Estimated finish (N
 \endfoot
 GPU smoke test & Passed; RTX 4050 available; no local Ollama endpoint. & Detector path and a small CUDA tensor operation completed. & 100\% & 2026-08-25 10:07 \\
 Paper build & Passed; source and bibliography edits are in place. & Keep final log and inspect remaining non-fatal layout warnings. & 100\% & 2026-08-25 10:07 \\
-Final audit & Prepared; new audit CSVs and propagation outputs exist. & Run status/diff checks and verify only intended files are staged. & 80\% & 2026-08-25 10:20 \\
-Git handoff & Waiting on build and final audit. & Commit/push nested \texttt{paper} submodule, update parent gitlink, then push parent repo. & 30\% & 2026-08-25 12:30 \\
+Final audit & Audit CSVs and propagation outputs exist; parent and submodule trees are clean. & Keep remote commit IDs and final clean-tree check as the handoff record. & 100\% & 2026-08-25 10:09 \\
+Git handoff & Both repositories are pushed and the parent gitlink points to the pushed paper commit. & No further action in this cycle. & 100\% & 2026-08-25 10:09 \\
 Fresh CPPB live rerun & Blocked by prompt stubs and missing downstream LLM endpoint. & Obtain complete prompt assets and frozen local/remote model runtime. & 0\% & Pending prerequisite \\
 Independent utility validation & Protocol not yet executed. & Add human/task-level reference set and preregistered scoring before new claims. & 0\% & 2026-08-26 17:00 (estimate) \\
 Named cross-model rerun & Manifest template ready; exact identifiers absent. & Execute with model digest, decoding, prompt format, and host metadata. & 0\% & Pending access / disclosure \\

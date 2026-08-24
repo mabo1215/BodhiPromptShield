@@ -21,7 +21,7 @@
 
 - 已通过新增审计脚本、两个 measured propagation 脚本和 Python syntax check。
 - 本机 NVIDIA GPU 可用（RTX 4050 Laptop，约 6 GB VRAM）；本轮只用 GPU 做 smoke test，不用它生成无法复核的论文数值。
-- GPU smoke test 已通过；`paper/build.bat` 已成功生成 33 页 `paper/main.pdf`，最终日志无 undefined citation/reference 或 fatal error。剩余 final diff review 与 parent/submodule 两层 commit/push。
+- GPU smoke test 已通过；`paper/build.bat` 已成功生成 33 页 `paper/main.pdf`，最终日志无 undefined citation/reference 或 fatal error。final diff review 已完成；论文子仓库 commit `1f1f996` 与父仓库 commit `51f60bf` 已分别推送到对应 remotes，且父仓库 gitlink 已指向论文 commit。
 
 ### 仍未完成或明确阻塞
 
