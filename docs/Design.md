@@ -32,8 +32,26 @@ executed evidence from claims that must be withdrawn or left as future work.
 3. The local GPU smoke test will exercise the learned-detector path and a
    small CUDA tensor operation.  It is only an execution check; it is not
    used to manufacture new paper numbers.  The full LLM attack rerun is
-   optional and remains blocked if no local inference endpoint/model is
-   available.
+   optional; an available endpoint alone does not remove the prompt-asset and
+   frozen-agent-stack prerequisites.
+
+## Resource feasibility (checked 2026-08-25)
+
+| Experiment or task | Local feasibility | RTX 3090 requirement | Blocking condition |
+| --- | --- | --- | --- |
+| Measured AI4Privacy propagation | Runs locally on CPU from the bundled export | Not required | None for the planned deterministic measurement |
+| Measured PrivacyLens propagation | Runs locally on CPU from the bundled trajectories | Not required | None for exact surface-form and semantic-residue measurement |
+| CPPB split/provenance/baseline audit | Runs locally on CPU and uses repository CSVs | Not required | It audits legacy artifacts; it cannot replace a fresh live rerun |
+| Learned detector baseline | Runs locally on CPU; the local GPU is sufficient for a smoke test | Not required | None for the current lightweight classifier |
+| OCR transfer reruns | CPU-capable; local execution is sufficient for small pinned slices | Optional for throughput | OCR/data/runtime provenance must be available |
+| Fresh live CPPB or agent-stack rerun | Technically possible only with a callable model and complete prompt/agent assets | Recommended for larger local models or parallel runs | Current prompt manifest is still lightweight stubs; a 3090 alone does not resolve this |
+| Named cross-model rerun | Requires the target model/API and exact disclosure metadata | Not a GPU problem | Vendor/model access, digest, decoding, and hosting metadata |
+| Independent utility validation | Human/task-level evaluation is CPU-only | Not required | A reference set and independent scoring protocol are still needed |
+
+The three planned evidence-producing scripts and their acceptance criteria are
+therefore local tasks. The vGPU 3090 should be reserved for an explicitly
+approved live-model rerun, larger-model inference, or throughput-sensitive
+OCR batch; it is not a prerequisite for the current revision-cycle evidence.
 
 ## Manuscript changes gated by evidence
 

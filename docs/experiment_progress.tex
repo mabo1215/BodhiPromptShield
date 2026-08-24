@@ -51,11 +51,11 @@ Experiment / task & Current state & Next action & Complete & Estimated finish (N
 \endhead
 \bottomrule
 \endfoot
-GPU smoke test & Passed; RTX 4050 available; no local Ollama endpoint. & Detector path and a small CUDA tensor operation completed. & 100\% & 2026-08-25 10:07 \\
+GPU smoke test & Passed; RTX 4050 available; local Ollama HTTP endpoint responds, but the CLI is absent. & Detector path and a small CUDA tensor operation completed. & 100\% & 2026-08-25 10:07 \\
 Paper build & Passed; source and bibliography edits are in place. & Keep final log and inspect remaining non-fatal layout warnings. & 100\% & 2026-08-25 10:07 \\
 Final audit & Audit CSVs and propagation outputs exist; parent and submodule trees are clean. & Keep remote commit IDs and final clean-tree check as the handoff record. & 100\% & 2026-08-25 10:09 \\
 Git handoff & Both repositories are pushed and the parent gitlink points to the pushed paper commit. & No further action in this cycle. & 100\% & 2026-08-25 10:09 \\
-Fresh CPPB live rerun & Blocked by prompt stubs and missing downstream LLM endpoint. & Obtain complete prompt assets and frozen local/remote model runtime. & 0\% & Pending prerequisite \\
+Fresh CPPB live rerun & Blocked by lightweight prompt stubs and the absence of a frozen downstream agent-stack/model runtime. & Obtain complete prompt assets and a frozen local/remote model runtime. & 0\% & Pending prerequisite \\
 Independent utility validation & Protocol not yet executed. & Add human/task-level reference set and preregistered scoring before new claims. & 0\% & 2026-08-26 17:00 (estimate) \\
 Named cross-model rerun & Manifest template ready; exact identifiers absent. & Execute with model digest, decoding, prompt format, and host metadata. & 0\% & Pending access / disclosure \\
 \end{longtable}
