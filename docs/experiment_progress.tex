@@ -1,0 +1,63 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.6cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{longtable}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\begin{document}
+
+\section*{Revision-cycle experiment progress}
+\noindent
+Last updated: 2026-08-25 10:07 NZST. Percentages describe repository work,
+not a claim that blocked experiments are complete. The latest AE decision is
+reject; this table supersedes the earlier revision-cycle status notes.
+
+\scriptsize
+\begin{longtable}{p{0.14\textwidth}p{0.25\textwidth}p{0.29\textwidth}p{0.10\textwidth}p{0.10\textwidth}}
+\caption{Concrete modifications and experiment status for the current review cycle.}\label{tab:revision_progress}\\
+\toprule
+Item & Review-driven modification & Evidence / repository artifact & Status & Complete \\
+\midrule
+\endfirsthead
+\toprule
+Item & Review-driven modification & Evidence / repository artifact & Status & Complete \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Prior work & Added PrivacyRestore and Casper citations, comparison matrix, and an explicit novelty boundary. & \texttt{paper/main.tex}, \texttt{paper/ref.bib} & Done & 100\% \\
+CPPB audit & Validated template-disjoint 16/8/8 split and flagged legacy/generated score provenance; removed unsupported generalization claim. & Review audit script/CSV and \texttt{tab:cppb\_audit} & Done & 100\% \\
+Real propagation & Re-ran exact AI4Privacy reference-agent measurement and real PrivacyLens trajectory measurement. & Real-text propagation result CSVs & Done & 100\% \\
+Semantic leakage & Kept semantic residue and context-inference accuracy separate from literal SPE/PER. & PrivacyLens runtime manifest; context-inference result CSV & Done & 100\% \\
+Baseline correction & Recomputed enterprise gap (+1.20 PER points, +0.02 AC, +0.02 TSR) and removed superiority wording. & Baseline comparison CSV; main-text Results/Limitations & Done & 100\% \\
+Reproducibility & Disclosed lightweight detector configuration and audited missing model/OCR/runtime identifiers. & Review audit runtime manifest; main-text implementation details & Done & 100\% \\
+Formal scope & Removed optional span-level LDP proposition and stated no end-to-end formal privacy guarantee. & \texttt{paper/main.tex}, Formal Privacy Scope & Done & 100\% \\
+Paper QA / handoff & GPU smoke test and paper compilation passed; review diff, commit nested paper repo and parent repo, then push both remotes. & Build log, Git history, remote status & In progress & 85\% \\
+\end{longtable}
+
+\section*{Next-step plan}
+
+\begin{longtable}{p{0.18\textwidth}p{0.20\textwidth}p{0.23\textwidth}p{0.09\textwidth}p{0.10\textwidth}}
+\caption{Running and prepared experiments, completion estimates, and New Zealand time.}\label{tab:next_steps}\\
+\toprule
+Experiment / task & Current state & Next action & Complete & Estimated finish (NZST) \\
+\midrule
+\endfirsthead
+\toprule
+Experiment / task & Current state & Next action & Complete & Estimated finish (NZST) \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+GPU smoke test & Passed; RTX 4050 available; no local Ollama endpoint. & Detector path and a small CUDA tensor operation completed. & 100\% & 2026-08-25 10:07 \\
+Paper build & Passed; source and bibliography edits are in place. & Keep final log and inspect remaining non-fatal layout warnings. & 100\% & 2026-08-25 10:07 \\
+Final audit & Prepared; new audit CSVs and propagation outputs exist. & Run status/diff checks and verify only intended files are staged. & 80\% & 2026-08-25 10:20 \\
+Git handoff & Waiting on build and final audit. & Commit/push nested \texttt{paper} submodule, update parent gitlink, then push parent repo. & 30\% & 2026-08-25 12:30 \\
+Fresh CPPB live rerun & Blocked by prompt stubs and missing downstream LLM endpoint. & Obtain complete prompt assets and frozen local/remote model runtime. & 0\% & Pending prerequisite \\
+Independent utility validation & Protocol not yet executed. & Add human/task-level reference set and preregistered scoring before new claims. & 0\% & 2026-08-26 17:00 (estimate) \\
+Named cross-model rerun & Manifest template ready; exact identifiers absent. & Execute with model digest, decoding, prompt format, and host metadata. & 0\% & Pending access / disclosure \\
+\end{longtable}
+
+\end{document}

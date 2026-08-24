@@ -1,0 +1,6 @@
+field,value
+script,review_revision_audit.py
+python,3.9.0
+platform,Windows-10-10.0.22621-SP0
+input_scope,"Bundled CPPB, PrivacyLens, baseline, attack, and OCR manifests"
+provenance_policy,Legacy/generated score logs are flagged and are not promoted to live rerun evidence

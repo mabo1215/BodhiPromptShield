@@ -219,6 +219,10 @@
   - Measure propagation on real PrivacyLens agent-task trajectories (NeurIPS'24): exact concrete-identifier surface survival per method + semantic-residue rate; backs the PrivacyLens block of appendix `tab:measprop`
 - `measured_privacylens_propagation_results.csv`
   - Measured per-method propagation on the 493 PrivacyLens real trajectories
+- `review_revision_audit.py`
+  - Audit the CPPB split integrity, legacy/generated score-log provenance, enterprise-baseline gap, and model/OCR/runtime metadata completeness for the latest AE revision cycle
+- `review_revision_audit.csv` / `review_revision_audit_runtime_manifest.csv`
+  - Machine-readable audit outputs; generated CPPB score logs are explicitly flagged as non-live evidence
 - `external_data/privacylens/main_data.json`
   - Downloaded PrivacyLens dataset (SALT-NLP/PrivacyLens; not redistributed in submit/)
 - `measured_adaptive_adversary_results.csv`
@@ -305,6 +309,7 @@ python src/experiments/cppb_privacy_judge_baseline.py
 python src/experiments/measured_agent_propagation.py
 python src/experiments/measured_adaptive_adversary.py
 python src/experiments/measured_privacylens_propagation.py
+python src/experiments/review_revision_audit.py
 python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl
 python src/experiments/i2b2_external_transfer.py
 python src/experiments/i2b2_matched_baseline_suite.py

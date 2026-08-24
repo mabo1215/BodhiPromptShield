@@ -1,6 +1,33 @@
 # 论文进度
 
-最后更新：2026-06-17
+最后更新：2026-08-25
+
+## 2026-08-25 新审稿意见（AESuggestion）对应 revision cycle
+
+本节是当前状态的优先记录；下方 2026-06-17 的内容保留为历史工作日志。新的 AE 意见给出 reject，主要问题是近邻工作缺失、CPPB 模板规模与 full-dataset 评估造成的过拟合疑虑、PrivacyLens 语义泄露、enterprise redaction 直接暴露更低、detector/runtime/OCR 可复现性不足，以及 span-level LDP 被误读为系统保证。
+
+### 本轮已完成
+
+- 已先在 `docs/Design.md` 写入本轮实验计划，逐项区分可执行证据、历史/generated score log 与必须降级的 claim。
+- 已新增 `src/experiments/review_revision_audit.py`，并生成 `review_revision_audit.csv` 与 `review_revision_audit_runtime_manifest.csv`。审计确认 CPPB train/dev/test 为 16/8/8 templates、128/64/64 prompts，跨 split template overlap 为 0、重复 prompt ID 为 0；同时明确 bundled CPPB score log 不是 fresh end-to-end rerun，near-zero dev/test gap 不再被当作泛化证据。
+- 已重跑 `measured_agent_propagation.py`：AI4Privacy real-text reference agent 上 learned detector 的 PER 为 7.4%，retrieval/memory/tool SPE 为 1.9/3.4/2.5%。
+- 已重跑 `measured_privacylens_propagation.py`：493 条真实 PrivacyLens agent trajectory 上 exact identifier PER 为 1.8%，但 semantic residue 为 83.0%；论文现在把 surface-form survival 与 semantic disclosure 分开解释。
+- 已由审计从 `prompt_method_comparison.csv` 重新计算 enterprise gap：proposed 相对 enterprise staged redaction 的 PER 为 +1.20 percentage points，AC/TSR 仅 +0.02/+0.02；论文不再声称直接暴露或 utility superiority。
+- 已在 `paper/main.tex` / `paper/ref.bib` 补充 PrivacyRestore、Casper 的 primary citations 和 comparison matrix，明确 placeholder/local restoration 不是本文新颖性来源；title 也收紧为不暗示完整 VLM-loop 验证。
+- 已删除正文中的 optional span-level LDP proposition，改为明确的 no end-to-end formal privacy guarantee scope statement；PER/SPE/semantic residue/ASR 现在均作为 empirical measurements，不作为 recovery 或 inference bounds。
+- 已降级 alias-only cross-model portability 表，披露 metadata audit 发现的 exact model/version/digest 缺口；轻量 learned detector 的 17 个特征、训练文档数、epochs、learning rate、L2、class weight、threshold 等已写入正文。
+
+### 当前验证状态
+
+- 已通过新增审计脚本、两个 measured propagation 脚本和 Python syntax check。
+- 本机 NVIDIA GPU 可用（RTX 4050 Laptop，约 6 GB VRAM）；本轮只用 GPU 做 smoke test，不用它生成无法复核的论文数值。
+- GPU smoke test 已通过；`paper/build.bat` 已成功生成 33 页 `paper/main.pdf`，最终日志无 undefined citation/reference 或 fatal error。剩余 final diff review 与 parent/submodule 两层 commit/push。
+
+### 仍未完成或明确阻塞
+
+- CPPB 的 fresh live end-to-end template-disjoint rerun：当前 prompt manifest 是 lightweight stubs，且没有可直接调用的本地 downstream LLM endpoint；不能把旧 score log 改写成新实验。
+- AC/TSR 的 independent human/task validation：当前只能保留 custom rubric 的 matched result，不能宣称 meaningful utility improvement。
+- named cross-model rerun、完整 model digest、live-stack mapping compromise 与更多 domain/clinical rerun：已有 manifest/template，但缺少可公开的 filled runtime records 或授权数据。
 
 ## 建议使用相关数据扩充实验
 
