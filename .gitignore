@@ -28,6 +28,7 @@ tmp/
 __init__.py
 
 .vscode/
+!.vscode/settings.json
 .idea/
 agents/*
 USAGE.md
