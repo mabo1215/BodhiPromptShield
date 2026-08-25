@@ -21,7 +21,7 @@
   "source_split_manifest": "cppb_split_manifest.csv",
   "source_split_manifest_sha256": "fa01bda097d6cfa7cb684aafc85b160be990d2b7de8a982f53cce36993c522b4",
   "generator": "build_cppb_full_annotations.py",
-  "generator_sha256": "8ab4e8c4230f34fcaadf2faa40e0b61cbd88b4782f52c63afeb3b9200b42781b",
+  "generator_sha256": "969808b6c62746dc4937b04aeb602db6b2535bcefc1d70e895b1f6bde47175e7",
   "outputs": [
     "C:/source/BodhiPromptShield/data/cppb_full_annotations.jsonl",
     "C:/source/BodhiPromptShield/data/cppb_full_annotations.csv"

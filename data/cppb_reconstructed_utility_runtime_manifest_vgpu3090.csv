@@ -1,0 +1,29 @@
+field,value
+run_id,cppb-reconstructed-utility-vgpu3090
+benchmark,CPPB reconstructed annotation surface
+scope,"test split, 48 text-only prompts, 4 matched conditions"
+historical_raw_prompt_recovery,false
+model_tag,llama3.2:latest
+model_digest,a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72
+model_family,llama
+model_parameter_size,3.2B
+model_quantization,Q4_K_M
+model_format,gguf
+ollama_url,http://127.0.0.1:11434/api/generate
+temperature,0.0
+top_p,1.0
+num_predict,256
+seed,20260825
+prompt_count,48
+condition_count,4
+output_count,192
+annotation_sha256,203aeb88f4fcc292258dd6ddb9a63b49b43d6a29a1620ada18b1e1aa974e8cee
+hardware_summary,"NVIDIA GeForce RTX 3090, 49152 MiB, 31212 MiB, 17341 MiB, 0 %"
+os_runtime,Linux-5.15.0-119-generic-x86_64-with-glibc2.35
+python_runtime,"3.10.12 (main, Jul 15 2026, 23:40:17) [GCC 11.4.0]"
+run_started_at_utc,2026-08-25T02:53:09.414403+00:00
+run_finished_at_utc,2026-08-25T02:57:15.626923+00:00
+detail_output,cppb_reconstructed_utility_outputs_vgpu3090.csv
+blind_review_output,cppb_reconstructed_blind_review_vgpu3090.csv
+method_key_output,cppb_reconstructed_blind_method_key_vgpu3090.csv
+notes,New reconstructed protocol; do not merge into historical CPPB score artifacts.
