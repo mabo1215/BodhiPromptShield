@@ -333,7 +333,10 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())#!/usr/bin/env python3
+    raise SystemExit(main())
+
+''' The historical duplicate block below is retained only as provenance.
+#!/usr/bin/env python3
 """Run a local Ollama-backed zero-shot de-identification pilot on AI4Privacy records."""
 from __future__ import annotations
 
@@ -669,3 +672,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+'''

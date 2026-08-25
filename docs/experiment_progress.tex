@@ -58,7 +58,7 @@ Git handoff & Both repositories are pushed and the parent gitlink points to the 
 Fresh CPPB live rerun & Blocked by lightweight prompt stubs and the absence of a frozen downstream agent-stack/model runtime. & Obtain complete prompt assets and a frozen local/remote model runtime. & 0\% & Pending prerequisite \\
 Independent utility validation & Protocol not yet executed. & Add human/task-level reference set and preregistered scoring before new claims. & 0\% & 2026-08-26 17:00 (estimate) \\
 Named cross-model rerun & Manifest template ready; exact identifiers absent. & Execute with model digest, decoding, prompt format, and host metadata. & 0\% & Pending access / disclosure \\
-vGPU 3090 deployment & RTX 3090 is mapped with 48 GB VRAM; source sync, Python 3.10 venv, requirements, and deterministic core experiments completed on the remote data volume. Ollama/model runtime remains incomplete because the 1.32 GB binary transfer is throttled to tens of KB/s. & Provide a faster remote download path, prebuilt runtime, or mounted Ollama package/model; then run the live LLM smoke and CPPB rerun. & 70\% & Runtime transfer blocked \\
+vGPU 3090 deployment & RTX 3090 is mapped with 48 GB VRAM; source sync, Python 3.10 venv, requirements, Ollama 0.32.15, llama3.2:latest, CUDA live smoke, and TAB dev:32 pilot completed. & Retain the runtime manifest and treat the TAB pilot as supporting evidence; the separate CPPB fresh rerun remains blocked by incomplete prompt assets and downstream agent-stack provenance. & 100\% & 2026-08-25 17:47 \\
 \end{longtable}
 
 \end{document}

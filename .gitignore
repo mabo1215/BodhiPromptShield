@@ -16,6 +16,8 @@ AGENTS.md
 .claude/
 agents/
 submit/
+docs/build/
+*.pdf
 
 # Generated figures (paper uses fig/ from run_src)
 paper/fig/
