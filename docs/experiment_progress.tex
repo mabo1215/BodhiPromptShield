@@ -10,7 +10,7 @@
 
 \section*{Revision-cycle experiment progress}
 \noindent
-Last updated: 2026-08-25 10:09 NZST. Percentages describe repository work,
+Last updated: 2026-08-25 14:31 NZST. Percentages describe repository work,
 not a claim that blocked experiments are complete. The latest AE decision is
 reject; this table supersedes the earlier revision-cycle status notes.
 
@@ -28,9 +28,11 @@ Item & Review-driven modification & Evidence / repository artifact & Status & Co
 \bottomrule
 \endfoot
 Prior work & Added PrivacyRestore and Casper citations, comparison matrix, and an explicit novelty boundary. & \texttt{paper/main.tex}, \texttt{paper/ref.bib} & Done & 100\% \\
-CPPB audit & Validated template-disjoint 16/8/8 split and flagged legacy/generated score provenance; removed unsupported generalization claim. & Review audit script/CSV and \texttt{tab:cppb\_audit} & Done & 100\% \\
+CPPB audit & Validated template-disjoint 16/8/8 split, zero cross-split template overlap, and zero duplicate prompt IDs; flagged legacy/generated full-release scores and removed unsupported generalization wording. & Review audit script/CSV, split manifest, and \texttt{tab:cppb\_audit} & Done (structural audit) & 100\% \\
+CPPB reconstructed annotations & Generated 256 deterministic prompt records with exact Python-style [start,end) character offsets from the released stub manifest; historical raw prompt recovery remains unavailable. & \texttt{data/cppb\_full\_annotations.jsonl}, CSV view, provenance metadata & Done (reconstructed surface) & 100\% \\
 Real propagation & Re-ran exact AI4Privacy reference-agent measurement and real PrivacyLens trajectory measurement. & Real-text propagation result CSVs & Done & 100\% \\
 Semantic leakage & Kept semantic residue and context-inference accuracy separate from literal SPE/PER. & PrivacyLens runtime manifest; context-inference result CSV & Done & 100\% \\
+Real-stack and attack closure & Added measured real-text agent propagation, PrivacyLens trajectories, adaptive surface-form/semantic attacks, secure-mapping compromise probes, and named lightweight comparator surfaces; retained bounded claims where the stack is deterministic or reconstructed. & Measured propagation/adversary, PrivacyLens, context-inference, mapping-compromise, and baseline CSV/runtime artifacts & Done (bounded evidence) & 100\% \\
 Baseline correction & Recomputed enterprise gap (+1.20 PER points, +0.02 AC, +0.02 TSR) and removed superiority wording. & Baseline comparison CSV; main-text Results/Limitations & Done & 100\% \\
 Reproducibility & Disclosed lightweight detector configuration and audited missing model/OCR/runtime identifiers. & Review audit runtime manifest; main-text implementation details & Done & 100\% \\
 Formal scope & Removed optional span-level LDP proposition and stated no end-to-end formal privacy guarantee. & \texttt{paper/main.tex}, Formal Privacy Scope & Done & 100\% \\
@@ -55,7 +57,7 @@ GPU smoke test & Passed; RTX 4050 available; local Ollama HTTP endpoint responds
 Paper build & Passed; source and bibliography edits are in place. & Keep final log and inspect remaining non-fatal layout warnings. & 100\% & 2026-08-25 10:07 \\
 Final audit & Audit CSVs and propagation outputs exist; parent and submodule trees are clean. & Keep remote commit IDs and final clean-tree check as the handoff record. & 100\% & 2026-08-25 10:09 \\
 Git handoff & Both repositories are pushed and the parent gitlink points to the pushed paper commit. & No further action in this cycle. & 100\% & 2026-08-25 10:09 \\
-Fresh CPPB live rerun & Blocked by lightweight prompt stubs and the absence of a frozen downstream agent-stack/model runtime. & Obtain complete prompt assets and a frozen local/remote model runtime. & 0\% & Pending prerequisite \\
+Original CPPB live rerun & Blocked because historical raw prompts/OCR assets are not present and no frozen downstream agent-stack/model runtime exists. & Treat the reconstructed surface separately; obtain original assets or freeze a new protocol before making live claims. & 0\% & Pending prerequisite \\
 Independent utility validation & Protocol not yet executed. & Add human/task-level reference set and preregistered scoring before new claims. & 0\% & 2026-08-26 17:00 (estimate) \\
 Named cross-model rerun & Manifest template ready; exact identifiers absent. & Execute with model digest, decoding, prompt format, and host metadata. & 0\% & Pending access / disclosure \\
 vGPU 3090 deployment & RTX 3090 is mapped with 48 GB VRAM; source sync, Python 3.10 venv, requirements, Ollama 0.32.15, llama3.2:latest, CUDA live smoke, and TAB dev:32 pilot completed. & Retain the runtime manifest and treat the TAB pilot as supporting evidence; the separate CPPB fresh rerun remains blocked by incomplete prompt assets and downstream agent-stack provenance. & 100\% & 2026-08-25 17:47 \\

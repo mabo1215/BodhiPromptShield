@@ -29,7 +29,13 @@ executed evidence from claims that must be withdrawn or left as future work.
    recording their provenance, compute the enterprise-vs-proposed gaps, and
    audit model/OCR/runtime metadata completeness.  The output is an audit
    artifact, not a fabricated replacement for a live CPPB rerun.
-3. The local GPU smoke test will exercise the learned-detector path and a
+3. `src/experiments/build_cppb_full_annotations.py` reconstructs a new,
+   deterministic prompt/annotation surface from the public CPPB stubs.  It
+   provides exact Python-style `[start, end)` character offsets, but it does
+   not recover the historical raw CPPB prompts.  Text-only rows are available
+   for a separately frozen reconstructed protocol; OCR rows remain blocked by
+   the missing render package and OCR assets.
+4. The local GPU smoke test will exercise the learned-detector path and a
    small CUDA tensor operation.  It is only an execution check; it is not
    used to manufacture new paper numbers.  The full LLM attack rerun is
    optional; an available endpoint alone does not remove the prompt-asset and

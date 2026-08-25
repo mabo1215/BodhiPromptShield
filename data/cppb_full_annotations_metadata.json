@@ -1,0 +1,29 @@
+{
+  "dataset_name": "CPPB reconstructed annotation surface",
+  "record_count": 256,
+  "template_count": 32,
+  "split_counts": {
+    "train": 128,
+    "dev": 64,
+    "test": 64
+  },
+  "modality_counts": {
+    "Text-only": 192,
+    "OCR-mediated text-plus-image": 64
+  },
+  "historical_raw_prompts_recovered": false,
+  "reconstruction_status": "new deterministic synthetic prompts generated from released stub metadata",
+  "annotation_convention": "Python Unicode code-point character offsets (not UTF-8 byte or token offsets), half-open [start, end); prompt_text[start:end] == sensitive_spans[0].text",
+  "text_only_execution": "eligible for a separately frozen reconstructed protocol",
+  "ocr_execution": "not eligible until original render package, OCR engine/version, preprocessing, and image assets are supplied",
+  "source_manifest": "cppb_prompt_manifest.csv",
+  "source_manifest_sha256": "590e68e8ab18d75616038eef37271c39b695cfe8f577273dcdb21a025aaefc05",
+  "source_split_manifest": "cppb_split_manifest.csv",
+  "source_split_manifest_sha256": "fa01bda097d6cfa7cb684aafc85b160be990d2b7de8a982f53cce36993c522b4",
+  "generator": "build_cppb_full_annotations.py",
+  "generator_sha256": "8ab4e8c4230f34fcaadf2faa40e0b61cbd88b4782f52c63afeb3b9200b42781b",
+  "outputs": [
+    "C:/source/BodhiPromptShield/data/cppb_full_annotations.jsonl",
+    "C:/source/BodhiPromptShield/data/cppb_full_annotations.csv"
+  ]
+}
