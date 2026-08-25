@@ -23,11 +23,12 @@
 - 本机 NVIDIA GPU 可用（RTX 4050 Laptop，约 6 GB VRAM）；本轮只用 GPU 做 smoke test，不用它生成无法复核的论文数值。
 - 已核对 `docs/Design.md` 的资源需求：三项正式证据实验均可在本地 CPU/现有数据上完成；3090 仅对 live LLM、较大模型并行或吞吐敏感的 OCR 重跑有帮助，且不能解决 prompt assets、agent stack、模型标识或授权数据缺失。
 - 当前本机 `127.0.0.1:11434` Ollama HTTP endpoint 可响应并返回模型元数据，但命令行客户端不存在；因此“fresh CPPB live rerun”仍因轻量 prompt stubs 和缺少冻结的 downstream agent-stack/runtime 而未解锁。
-- 已开始 vGPU 3090 部署预检：SSH 可连接，但远程容器没有 `/dev/nvidia*` GPU 设备映射，`nvidia-smi` 为不可执行占位文件；同时缺少 Python/Ollama/vLLM，根盘仅剩约 6.9 GB。当前阻塞是容器 GPU 透传与运行时配置，不是 48 GB 显存容量；待提供 GPU-enabled 容器/修复映射后再继续安装。
+- vGPU 3090 已恢复可用并完成基础部署：远端已识别 RTX 3090（48 GB，约 48.5 GB 空闲），`/dev/nvidia*` 映射正常；已在 `/autodl-fs/data` 同步源码、建立 Python 3.10 venv 并安装 requirements。远端已实际运行 `review_revision_audit.py`、`measured_agent_propagation.py` 和 `measured_privacylens_propagation.py`，结果与本地确定性结果一致。Ollama 1.32 GB 二进制受 SSH 文件传输链路限速暂未完成，尚未开始 fresh live LLM rerun；这不是显存容量问题。
 - GPU smoke test 已通过；`paper/build.bat` 已成功生成 33 页 `paper/main.pdf`，最终日志无 undefined citation/reference 或 fatal error。final diff review 已完成；论文子仓库 commit `1f1f996` 与父仓库 commit `51f60bf` 已分别推送到对应 remotes，且父仓库 gitlink 已指向论文 commit。
 
 ### 仍未完成或明确阻塞
 
+- vGPU Ollama/model runtime：基础 Python/CPU 证据环境已完成，但 Ollama 二进制从本地传入远端的链路约为几十 KB/s；需要更快的远端下载源、预置镜像或用户提供可挂载的模型/运行时，才能继续 `llama3.2` 下载与 GPU live smoke。
 - CPPB 的 fresh live end-to-end template-disjoint rerun：当前 prompt manifest 仍是 lightweight stubs；虽然本机 Ollama HTTP endpoint 可响应，但尚未形成可复核的 frozen downstream agent-stack/model runtime，不能把旧 score log 改写成新实验。
 - AC/TSR 的 independent human/task validation：当前只能保留 custom rubric 的 matched result，不能宣称 meaningful utility improvement。
 - named cross-model rerun、完整 model digest、live-stack mapping compromise 与更多 domain/clinical rerun：已有 manifest/template，但缺少可公开的 filled runtime records 或授权数据。
