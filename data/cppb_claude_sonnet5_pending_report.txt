@@ -1,0 +1,40 @@
+Claude Sonnet 5 (subagent) pending utility review report
+
+Inputs used:
+- data/cppb_reconstructed_blind_review_vgpu3090.csv
+- data/cppb_reconstructed_blind_ratings_vgpu3090.csv
+- data/cppb_reconstructed_blind_review_instructions.md
+
+Rater: 6 parallel general-purpose Claude Sonnet 5 subagents (rater_id = claude_sonnet5),
+each blind-scoring an independent ~25-item batch of the pending review items using only
+the fields available to a human rater (prompt_text, task_objective, task_success_criteria,
+required_output_components, model_output), per the rubric in the instructions file.
+
+ID and output checks:
+- Source rows: 192
+- Existing ratings rows (human raters, pre-run): 88
+- Unique rated review_item_id values (pre-run): 44
+- Pending review_item_id count: 148
+- Output JSONL lines: 148
+- Parsed output objects: 148
+- Output duplicate IDs: 0
+- Missing pending IDs in output: 0
+- Extra IDs in output: 0
+- JSON parse errors: 0
+- Objects with an incorrect field set: 0
+- Objects with out-of-range scores: 0
+
+Score distributions for the 148 pending IDs (claude_sonnet5):
+- task_success_score: 0 = 130, 1 = 18
+- faithfulness_score: 0 = 95, 1 = 44, 2 = 9
+- required_fields_score: 0 = 129, 1 = 19
+
+Cross-judge agreement vs. openai_luna on the same 148 pending IDs:
+- task_success_score: exact agreement 134/148 = 90.5%
+- faithfulness_score: exact agreement 133/148 = 89.9%
+- required_fields_score: exact agreement 130/148 = 87.8%
+- faithfulness_score mean absolute difference: 0.101 (0-2 scale)
+
+Output files:
+- data/cppb_claude_sonnet5_pending_ratings.jsonl
+- data/cppb_reconstructed_blind_ratings_vgpu3090_completed_claude_sonnet5.csv (88 existing + 148 new = 236 rows)

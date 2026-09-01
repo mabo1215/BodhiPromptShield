@@ -1,0 +1,148 @@
+{"review_item_id":"R0045","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no requested log result or required components are provided."}
+{"review_item_id":"R0046","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no requested log result or required components are provided."}
+{"review_item_id":"R0047","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides the requested redaction protocol and log, but adds invented example details."}
+{"review_item_id":"R0048","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides the requested redaction protocol and log, but adds invented example details."}
+{"review_item_id":"R0049","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no delivery instruction or required components are provided."}
+{"review_item_id":"R0050","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no delivery instruction or required components are provided."}
+{"review_item_id":"R0051","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no delivery instruction or required components are provided."}
+{"review_item_id":"R0052","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no delivery instruction or required components are provided."}
+{"review_item_id":"R0053","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests the missing document instead of completing the delivery instruction."}
+{"review_item_id":"R0054","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no requested result or reasoning is provided."}
+{"review_item_id":"R0055","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no delivery instruction or required components are provided."}
+{"review_item_id":"R0056","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no delivery instruction or required components are provided."}
+{"review_item_id":"R0057","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides a relevant JSON template with the required keys, but does not complete the case result."}
+{"review_item_id":"R0058","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no JSON result or required components are provided."}
+{"review_item_id":"R0059","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides relevant extraction code and required keys, but not the completed requested result."}
+{"review_item_id":"R0060","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no delivery instruction or required components are provided."}
+{"review_item_id":"R0061","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests unavailable document context instead of providing the requested summary."}
+{"review_item_id":"R0062","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no requested summary or coordination result is provided."}
+{"review_item_id":"R0063","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no requested summary or coordination result is provided."}
+{"review_item_id":"R0064","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no requested summary or coordination result is provided."}
+{"review_item_id":"R0065","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides a delivery instruction and coordination note, but adds unsupported delivery conditions and details."}
+{"review_item_id":"R0066","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no coordination note or requested result is provided."}
+{"review_item_id":"R0067","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no coordination note or requested result is provided."}
+{"review_item_id":"R0068","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no coordination note or requested result is provided."}
+{"review_item_id":"R0069","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or required components are provided."}
+{"review_item_id":"R0070","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or required components are provided."}
+{"review_item_id":"R0071","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or required components are provided."}
+{"review_item_id":"R0072","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or required components are provided."}
+{"review_item_id":"R0073","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no routing result or required components are provided."}
+{"review_item_id":"R0074","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Preserves a category-level label, but does not provide the routing result or next action/status."}
+{"review_item_id":"R0075","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests the missing document instead of completing the routing request."}
+{"review_item_id":"R0076","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests the missing document instead of completing the routing request."}
+{"review_item_id":"R0077","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests the missing document instead of completing the routing request."}
+{"review_item_id":"R0078","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no routing result or required components are provided."}
+{"review_item_id":"R0079","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests the missing document instead of completing the routing request."}
+{"review_item_id":"R0080","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no routing result or required components are provided."}
+{"review_item_id":"R0081","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no JSON result or required components are provided."}
+{"review_item_id":"R0082","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no JSON result or required components are provided."}
+{"review_item_id":"R0083","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests unavailable document content instead of returning the required JSON result."}
+{"review_item_id":"R0084","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no JSON result or required components are provided."}
+{"review_item_id":"R0085","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests the missing document instead of providing the requested summary."}
+{"review_item_id":"R0086","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no requested summary or coordination result is provided."}
+{"review_item_id":"R0087","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests unavailable document context instead of providing the requested summary."}
+{"review_item_id":"R0088","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests unavailable document context instead of providing the requested summary."}
+{"review_item_id":"R0089","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests the missing document instead of drafting the coordination note."}
+{"review_item_id":"R0090","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no coordination note or requested result is provided."}
+{"review_item_id":"R0091","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests the missing document instead of drafting the coordination note."}
+{"review_item_id":"R0092","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Requests the missing document instead of drafting the coordination note."}
+{"review_item_id":"R0093","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or required components are provided."}
+{"review_item_id":"R0094","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or required components are provided."}
+{"review_item_id":"R0095","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or required components are provided."}
+{"review_item_id":"R0096","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or required components are provided."}
+{"review_item_id":"R0097","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Gives a relevant generic procedure, but does not locate a record or complete the callback result."}
+{"review_item_id":"R0098","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no callback instruction or required result is provided."}
+{"review_item_id":"R0099","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides generic contact code, but does not use the requested record or complete the callback result."}
+{"review_item_id":"R0100","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a generic callback outline, but no completed matching-record result is returned."}
+{"review_item_id":"R0101","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides the callback result and required context, but adds unsupported contact details."}
+{"review_item_id":"R0102","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no callback instruction or required result is provided."}
+{"review_item_id":"R0103","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a relevant code approach, but does not return the completed callback result."}
+{"review_item_id":"R0104","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a generic implementation outline, but does not complete the requested result."}
+{"review_item_id":"R0105","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Shows a relevant JSON structure with the required keys, but does not complete the matching-record task."}
+{"review_item_id":"R0106","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Uses an incorrect generic search approach and does not return the required JSON result."}
+{"review_item_id":"R0107","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides code containing the required JSON keys, but not the completed case result."}
+{"review_item_id":"R0108","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides code that builds the required keys, but does not return the completed case result."}
+{"review_item_id":"R0109","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides a relevant callback draft and surrounding-request summary, but assumes unsupported context."}
+{"review_item_id":"R0110","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no callback summary or coordination result is provided."}
+{"review_item_id":"R0111","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides a relevant callback draft and summary, but relies on placeholders and asks for more context."}
+{"review_item_id":"R0112","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides a relevant callback draft and summary, but remains generic and placeholder-based."}
+{"review_item_id":"R0113","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Gives a relevant generic procedure, but does not complete the callback instruction or result."}
+{"review_item_id":"R0114","task_success_score":1,"faithfulness_score":2,"required_fields_score":1,"comments":"Provides the requested callback and coordination drafts with status and preserved context."}
+{"review_item_id":"R0115","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides both requested drafts, but relies on generic CRM assumptions and placeholders."}
+{"review_item_id":"R0116","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides both requested drafts and preserves the task context, but remains placeholder-based."}
+{"review_item_id":"R0117","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no callback summary or execution result is provided."}
+{"review_item_id":"R0118","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no callback summary or execution result is provided."}
+{"review_item_id":"R0119","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides relevant generic code, but does not complete the callback operation or log."}
+{"review_item_id":"R0120","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a hypothetical implementation, but no completed callback result or log is returned."}
+{"review_item_id":"R0121","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up note or required result is provided."}
+{"review_item_id":"R0122","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up note or required result is provided."}
+{"review_item_id":"R0123","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up note or required result is provided."}
+{"review_item_id":"R0124","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up note or required result is provided."}
+{"review_item_id":"R0125","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up note or required result is provided."}
+{"review_item_id":"R0126","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up note or required result is provided."}
+{"review_item_id":"R0127","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up note or required result is provided."}
+{"review_item_id":"R0128","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up note or required result is provided."}
+{"review_item_id":"R0129","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides relevant code and all required JSON keys, but not the completed medical-record result."}
+{"review_item_id":"R0130","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides relevant API code and required keys, but does not complete the requested result."}
+{"review_item_id":"R0131","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides relevant code with the required keys, but does not return a completed follow-up result."}
+{"review_item_id":"R0132","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides relevant retrieval code and required keys, but not the completed follow-up result."}
+{"review_item_id":"R0133","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up summary or coordination result is provided."}
+{"review_item_id":"R0134","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up summary or coordination result is provided."}
+{"review_item_id":"R0135","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up summary or coordination result is provided."}
+{"review_item_id":"R0136","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up summary or coordination result is provided."}
+{"review_item_id":"R0137","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Gives a relevant HL7 plan, but does not produce the requested completed note or coordination result."}
+{"review_item_id":"R0138","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up summary or coordination result is provided."}
+{"review_item_id":"R0139","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Gives a relevant procedure, but does not produce the requested completed note."}
+{"review_item_id":"R0140","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Gives a relevant procedure, but does not produce the requested completed note."}
+{"review_item_id":"R0141","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up summary or execution result is provided."}
+{"review_item_id":"R0142","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up summary or execution result is provided."}
+{"review_item_id":"R0143","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up summary or execution result is provided."}
+{"review_item_id":"R0144","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no follow-up summary or execution result is provided."}
+{"review_item_id":"R0145","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no recipient confirmation or required result is provided."}
+{"review_item_id":"R0146","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no recipient confirmation or required result is provided."}
+{"review_item_id":"R0147","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a relevant outline, but does not confirm the recipient or complete the operation."}
+{"review_item_id":"R0148","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a generic implementation, but does not execute or return the recipient confirmation."}
+{"review_item_id":"R0149","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no recipient confirmation or required result is provided."}
+{"review_item_id":"R0150","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no recipient confirmation or required result is provided."}
+{"review_item_id":"R0151","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no recipient confirmation or required result is provided."}
+{"review_item_id":"R0152","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no recipient confirmation or required result is provided."}
+{"review_item_id":"R0153","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides code with the required JSON keys, but not a completed recipient result."}
+{"review_item_id":"R0154","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides code with the required JSON keys, but not a completed recipient result."}
+{"review_item_id":"R0155","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides code with the required JSON keys, but not a completed recipient result."}
+{"review_item_id":"R0156","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides code with the required JSON keys, but not a completed recipient result."}
+{"review_item_id":"R0157","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no requested summary or coordination result is provided."}
+{"review_item_id":"R0158","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no requested summary or coordination result is provided."}
+{"review_item_id":"R0159","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no requested summary or coordination result is provided."}
+{"review_item_id":"R0160","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no requested summary or coordination result is provided."}
+{"review_item_id":"R0161","task_success_score":1,"faithfulness_score":2,"required_fields_score":1,"comments":"Provides the requested coordination note with the recipient, task context, and next communication content."}
+{"review_item_id":"R0162","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no coordination note or requested result is provided."}
+{"review_item_id":"R0163","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides the requested operation and coordination draft, but uses placeholders and generic examples."}
+{"review_item_id":"R0164","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides the requested operation and coordination draft, but uses placeholders and generic examples."}
+{"review_item_id":"R0165","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or requested summary is provided."}
+{"review_item_id":"R0166","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or requested summary is provided."}
+{"review_item_id":"R0167","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or requested summary is provided."}
+{"review_item_id":"R0168","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no execution log or requested summary is provided."}
+{"review_item_id":"R0169","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a relevant reconciliation procedure, but not the completed note or result."}
+{"review_item_id":"R0170","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no reconciliation result or required components are provided."}
+{"review_item_id":"R0171","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides a relevant note template with the required sections, but leaves the case result unresolved."}
+{"review_item_id":"R0172","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a relevant procedure, but does not produce the requested completed reconciliation note."}
+{"review_item_id":"R0173","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a relevant reconciliation outline, but not the completed note or result."}
+{"review_item_id":"R0174","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Produces a reconciliation-note draft with the requested sections, but uses redacted placeholders and unsupported completion claims."}
+{"review_item_id":"R0175","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Explains a relevant reconciliation process, but does not complete the requested note."}
+{"review_item_id":"R0176","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a relevant plan and partial result description, but not a completed reconciliation note."}
+{"review_item_id":"R0177","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides code with all required JSON keys, but does not return the completed case result."}
+{"review_item_id":"R0178","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Returns exactly the required JSON keys, but the values are generic and only partially tied to the requested case."}
+{"review_item_id":"R0179","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides a relevant JSON class with the required keys, but does not return the completed result."}
+{"review_item_id":"R0180","task_success_score":0,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides a relevant JSON class with the required keys, but does not return the completed result."}
+{"review_item_id":"R0181","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a relevant reconciliation outline, but does not complete the requested note or result."}
+{"review_item_id":"R0182","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no reconciliation note or required result is provided."}
+{"review_item_id":"R0183","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides the requested summary and reconciliation-note draft, but leaves substantive fields as placeholders."}
+{"review_item_id":"R0184","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides the requested summary and note structure with next steps, but leaves substantive fields as placeholders."}
+{"review_item_id":"R0185","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides reconciliation and coordination drafts, but includes placeholders and unsupported completion details."}
+{"review_item_id":"R0186","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no reconciliation or coordination result is provided."}
+{"review_item_id":"R0187","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides the requested operation, reconciliation note, and coordination note, but leaves fields as placeholders."}
+{"review_item_id":"R0188","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a relevant reconciliation and coordination outline, but not the completed requested note."}
+{"review_item_id":"R0189","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no reconciliation log or requested result is provided."}
+{"review_item_id":"R0190","task_success_score":0,"faithfulness_score":0,"required_fields_score":0,"comments":"Refuses the request; no reconciliation log or requested result is provided."}
+{"review_item_id":"R0191","task_success_score":1,"faithfulness_score":1,"required_fields_score":1,"comments":"Provides the requested reconciliation note and redacted log structure, but uses placeholders and asserts unsupported success."}
+{"review_item_id":"R0192","task_success_score":0,"faithfulness_score":1,"required_fields_score":0,"comments":"Provides a relevant preparation outline, but does not produce the completed note or execution log."}

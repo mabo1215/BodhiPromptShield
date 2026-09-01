@@ -52,9 +52,19 @@ revision has materially closed the first question and partially the second:
     (most attacks < 1% ASR) but not closed (case inversion ASR 18.4%). This is a
     measured success-rate evaluation against the real mechanism.
 
-These two additions move the paper from "controlled simulation" toward
+These additions move the paper from "controlled simulation" toward
 "measured evidence." The judgment is now: a credible TOPS submission with a
 clear honest scope, but acceptance still depends on the items below.
+
+  * Independent blind utility review (NEW). An OpenAI Luna review of the 148
+    pending reconstructed CPPB rows finds task success on 20/148 (13.5%);
+    faithfulness is 0/1/2 on 89/57/2 rows, and all required output components
+    are present on 37/148 (25.0%). This is not a privacy-detection score and
+    does not manually score exact raw-value exposure. It is nevertheless direct
+    evidence of a substantial utility caveat: refusals and generic
+    template/code responses often avoid exposure without completing the user's
+    requested action. The paper should report this utility result separately
+    from privacy protection and distinguish safe refusal from useful completion.
 
 
 Strengths
@@ -116,9 +126,17 @@ W5 (minor -- RESOLVED this cycle). The measured adversary now spans eight
    semantic-paraphrase evasion as an open residual surface and makes no
    "robust to evasion" claim.
 
+W6 (moderate -- NEW). The independent blind utility review shows that the
+   reconstructed CPPB prompts remain difficult to complete under sensitive
+   context: 128/148 rows fail task success, only 2/148 are fully faithful, and
+   111/148 lack all required output components. This must be reported as a
+   utility limitation, with refusals, generic templates, and completed drafts
+   separated in the analysis. The result must not be presented as a privacy
+   detection metric or as evidence about the hidden condition/method.
 
-Actions completed this revision cycle
---------------------------------------
+
+Actions completed and remaining in this revision cycle
+------------------------------------------------------
 A1 (done). Measured propagation (tab:measprop) and measured adaptive adversary
     (tab:advmeas) integrated into the appendix as record-backed tables with
     main-text pointers; total held at 35 pages.
@@ -130,12 +148,20 @@ A4 (done). W2 (secure-mapping compromise curve, tab:mapcompromise) and W4
     (cross-domain detector, tab:crossdom) are now executed and reported; the
     Limitations section records the remaining live-stack and multi-domain gaps.
 
-Verdict: Accept with minor revision. The framing, honesty, measured real-text
-propagation/adversary evidence, the measured secure-mapping compromise curve, and
-the measured cross-domain detector study together meet the TOPS bar. The CPPB
-headline remains a controlled operating surface but is now corroborated by
-measured real-text evidence, and the only open items are minor camera-ready
-gaps (end-to-end live-stack mapping compromise; broader multi-domain coverage),
-which are stated as future work rather than as blockers.
+A5 (new -- required). Add the Luna blind utility review to the appendix or
+    supplementary artifact, report the 148-row denominators and the three score
+    distributions, and include a per-template breakdown if available. Explain
+    that exact raw-value exposure is checked separately and that safe refusal
+    is not equivalent to successful task completion.
+
+Verdict: Accept with minor revision, conditional on an explicit utility caveat.
+The framing, honesty, measured real-text propagation/adversary evidence, the
+measured secure-mapping compromise curve, and the measured cross-domain detector
+study meet the TOPS bar. The CPPB headline remains a controlled operating
+surface but is now corroborated by measured real-text evidence. The Luna review
+does not change the privacy-security result, but it does require the paper to
+state plainly that safe mediation can still fail to complete sensitive tasks;
+the live-stack compromise, broader multi-domain coverage, and utility reporting
+remain camera-ready items.
 \end{verbatim}
 \end{document}

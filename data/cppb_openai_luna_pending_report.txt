@@ -1,0 +1,30 @@
+OpenAI Luna pending utility review report
+
+Inputs used:
+- data/cppb_reconstructed_blind_review_vgpu3090.csv
+- data/cppb_reconstructed_blind_ratings_vgpu3090.csv
+- data/cppb_reconstructed_blind_review_instructions.md
+
+ID and output checks:
+- Source rows: 192
+- Unique source review_item_id values: 192
+- Existing ratings rows: 88
+- Unique rated review_item_id values: 44
+- Existing-rating duplicate ID groups: 16
+- Pending review_item_id count: 148
+- Duplicate source IDs: 0
+- Output JSONL lines: 148
+- Parsed output objects: 148
+- Output duplicate IDs: 0
+- Missing pending IDs in output: 0
+- Extra IDs in output: 0
+- JSON parse errors: 0
+- Objects with an incorrect field set: 0
+
+Score distributions for the 148 pending IDs:
+- task_success_score: 0 = 128, 1 = 20
+- faithfulness_score: 0 = 89, 1 = 57, 2 = 2
+- required_fields_score: 0 = 111, 1 = 37
+
+Output file:
+- data/cppb_openai_luna_pending_ratings.jsonl
