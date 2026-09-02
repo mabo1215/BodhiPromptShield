@@ -43,6 +43,13 @@ DETAIL_OUTPUT_PATH = EXPERIMENTS_DIR / "tab_ollama_zero_shot_document_metrics.cs
 RUNTIME_MANIFEST_PATH = EXPERIMENTS_DIR / "tab_ollama_zero_shot_runtime_manifest.csv"
 RUN_LOG_PATH = EXPERIMENTS_DIR / "tab_ollama_zero_shot_run_log.csv"
 DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
+DEFAULT_SEED = 20260903
+GENERATION_OPTIONS = {
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "seed": DEFAULT_SEED,
+    "num_predict": 256,
+}
 
 
 def _build_prompt(document_text: str) -> str:
@@ -62,7 +69,15 @@ def _changed_spans(original_text: str, sanitized_text: str) -> list[tuple[int, i
 
 
 def _ollama_generate(prompt: str, model: str, ollama_url: str) -> dict[str, Any]:
-    payload = json.dumps({"model": model, "prompt": prompt, "stream": False}).encode("utf-8")
+    payload = json.dumps(
+        {
+            "model": model,
+            "prompt": prompt,
+            "stream": False,
+            "keep_alive": "30m",
+            "options": GENERATION_OPTIONS,
+        }
+    ).encode("utf-8")
     request = urllib.request.Request(
         ollama_url,
         data=payload,
@@ -279,6 +294,10 @@ def run_zero_shot_pilot(
                 "python_runtime",
                 "run_started_at_utc",
                 "run_finished_at_utc",
+                "temperature",
+                "top_p",
+                "num_predict",
+                "seed",
                 "memory_usage_note",
                 "ollama_url",
                 "notes",
@@ -309,6 +328,10 @@ def run_zero_shot_pilot(
                 "python_runtime": sys.version.split()[0],
                 "run_started_at_utc": run_started_at.isoformat(),
                 "run_finished_at_utc": run_finished_at.isoformat(),
+                "temperature": str(GENERATION_OPTIONS["temperature"]),
+                "top_p": str(GENERATION_OPTIONS["top_p"]),
+                "num_predict": str(GENERATION_OPTIONS["num_predict"]),
+                "seed": str(GENERATION_OPTIONS["seed"]),
                 "memory_usage_note": "Not exposed by the Ollama generate API in this pilot; keep as unresolved metadata.",
                 "ollama_url": ollama_url,
                 "notes": "This runtime manifest records a local open-weight pilot slice rather than a full released TAB rerun.",
