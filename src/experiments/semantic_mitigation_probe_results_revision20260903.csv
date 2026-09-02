@@ -1,0 +1,5 @@
+variant,probe_count,accuracy_percent,execution_status,notes
+raw,12,,dry_run_not_scored,Heuristic context abstraction/access-control candidates; not a semantic privacy guarantee.
+placeholder,12,,dry_run_not_scored,Heuristic context abstraction/access-control candidates; not a semantic privacy guarantee.
+context_abstraction,12,,dry_run_not_scored,Heuristic context abstraction/access-control candidates; not a semantic privacy guarantee.
+access_control,12,,dry_run_not_scored,Heuristic context abstraction/access-control candidates; not a semantic privacy guarantee.

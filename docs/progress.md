@@ -1,6 +1,16 @@
 # 论文进度
 
-最后更新：2026-09-03  NZST
+最后更新：2026-09-03 10:22 NZST
+
+## 2026-09-03 revision cycle continuation：数值统一、实验准备与本地 smoke test（当前新增）
+
+- 已统一主文与附录 privacy-judge 表的企业基线和提出方法数值：统一为企业 staged redaction `8.1%`、提出方法 `9.3%`。同步修改了 `paper/main.tex`、`src/experiments/cppb_privacy_judge_baseline.py`、`cppb_privacy_judge_comparison.csv` 和 runtime manifest；表格回填后仍保持该数值。
+- 已在修改代码前把当前 TOPS review 的剩余实验项写入 `docs/Design.md`，分为 RC-01 reconstructed CPPB live text pilot、RC-02 semantic mitigation probe、RC-03 Casper/PrivacyRestore、RC-04 live mapping compromise、RC-05 human utility validation、RC-06 named runtime/TAB pilot，并记录各自的证据边界和阻塞条件。
+- 已新增 `prepare_vgpu3090_revision_cycle.py`、`revision_cycle_gpu_smoke.py` 和 `semantic_mitigation_probe.py`。vGPU 预检清单已生成到 `data/revision_cycle_vgpu3090_manifest.json`：RC-01、RC-02、RC-06 可在授权开卡后运行；近邻系统同协议比较、live mapping 和人工评分按前置条件阻塞。
+- 本地 RTX 4050 CUDA smoke test 已通过，使用 CUDA 12.1 / PyTorch 2.5.1，512×512 矩阵校验和为 `2.3073265252774707e+18`，记录在 `data/revision_cycle_gpu_smoke_20260903.json`。该文件只证明执行环境可用，不产生论文结果。
+- 已完成 semantic mitigation probe 的全 12 条 dry-run 和现有 review audit、AI4Privacy propagation、PrivacyLens propagation 的本地复核；未把 dry-run 或 smoke 数据写入论文 canonical 结果。
+- `paper/build.bat` 已重新构建 `paper/main.pdf`，生成 34 页 PDF；无 fatal error、undefined citation/reference。MiKTeX 仍报告既有 BibTeX 元数据 warning 和少量版式 overfull/underfull warning，但本次修改未引入编译错误。
+- 当前未连接或启动 vGPU 3090；代码、输入检查和运行命令已准备好，等待用户授权开卡后再执行带 `revision20260903` 后缀的实验，避免覆盖 canonical 工件。
 
 ## 2026-09-03 修订意见、utility 回填与本机实验审计（当前权威状态）
 

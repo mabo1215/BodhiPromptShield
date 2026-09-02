@@ -1,0 +1,12 @@
+field,value
+model,llama3:latest
+ollama_url,http://127.0.0.1:11434/api/generate
+seed,20260903
+temperature,0.0
+top_p,1.0
+probe_count,12
+dry_run,true
+python_version,3.9.0
+nvidia_smi,"NVIDIA GeForce RTX 4050 Laptop GPU, 6141 MiB, 5857 MiB, 67 MiB"
+run_started_utc,2026-09-02T22:28:43.444378+00:00
+claim_boundary,Preparation/heuristic mitigation probe; no semantic protection claim without frozen executed evidence.

@@ -11,10 +11,10 @@ if not exist "%BUILD_DIR%" mkdir "%BUILD_DIR%"
 call :resolve_tool PDFLATEX_BIN PDFLATEX pdflatex.exe "C:\Program Files\MiKTeX\miktex\bin\x64\pdflatex.exe"
 if errorlevel 1 goto :fail
 
-call :build_one experiment_progress
+call :build_one ExperimentProgress
 if errorlevel 1 goto :fail
 
-call :build_one revision_suggestions
+call :build_one RevisionSuggestions
 if errorlevel 1 goto :fail
 
 echo [INFO] Documentation build finished.

@@ -1,0 +1,91 @@
+{
+  "manifest_version": "revision-cycle-v1",
+  "purpose": "vGPU 3090 preparation; no experiment results",
+  "output_tag": "revision20260903",
+  "model": "llama3.2:latest",
+  "repository": "BodhiPromptShield",
+  "inputs": {
+    "cppb_annotations": {
+      "path": "data/cppb_full_annotations.jsonl",
+      "sha256": "203aeb88f4fcc292258dd6ddb9a63b49b43d6a29a1620ada18b1e1aa974e8cee",
+      "record_count": 256,
+      "test_text_record_count": 48,
+      "test_template_ids": [
+        "T04",
+        "T08",
+        "T11",
+        "T15",
+        "T18",
+        "T22",
+        "T25",
+        "T29"
+      ],
+      "historical_raw_prompts_recovered": false
+    },
+    "tab_json_files": [
+      "src/experiments/external_data/tab/echr_dev.json",
+      "src/experiments/external_data/tab/echr_test.json",
+      "src/experiments/external_data/tab/echr_train.json"
+    ]
+  },
+  "repository_checks": {
+    "required_files": {
+      "src/experiments/cppb_reconstructed_ollama_utility_pilot.py": true,
+      "src/experiments/tab_ollama_zero_shot_baseline.py": true,
+      "src/experiments/semantic_mitigation_probe.py": true,
+      "src/experiments/revision_cycle_gpu_smoke.py": true
+    },
+    "required_files_pass": true
+  },
+  "jobs": [
+    {
+      "id": "RC-01_cppb_reconstructed_live_text",
+      "status": "ready_for_authorized_vgpu_run",
+      "command": "python src/experiments/cppb_reconstructed_ollama_utility_pilot.py --model llama3.2:latest --output-tag revision20260903",
+      "scope": "48 reconstructed text-only test prompts, 8 held-out templates, four matched conditions",
+      "claim_boundary": "not historical CPPB recovery; no OCR rows"
+    },
+    {
+      "id": "RC-02_semantic_mitigation_probe",
+      "status": "ready_for_authorized_vgpu_run",
+      "command": "python src/experiments/semantic_mitigation_probe.py --model llama3.2:latest --output-tag revision20260903",
+      "scope": "frozen raw/placeholder/context-abstraction/access-control attack panel",
+      "claim_boundary": "no mitigation claim until attacker/runtime/output records are complete"
+    },
+    {
+      "id": "RC-03_same_protocol_closest_systems",
+      "status": "blocked_external_implementation",
+      "command": "",
+      "scope": "Casper and PrivacyRestore under the frozen CPPB protocol",
+      "claim_boundary": "conceptual comparison only until reproducible implementations or authorized outputs exist"
+    },
+    {
+      "id": "RC-04_live_mapping_compromise",
+      "status": "blocked_live_service",
+      "command": "",
+      "scope": "deployed mapping service, credential, audit, and session-isolation probes",
+      "claim_boundary": "existing evidence is mechanism-level, not live-stack evidence"
+    },
+    {
+      "id": "RC-05_independent_human_utility",
+      "status": "blocked_human_raters",
+      "command": "",
+      "scope": "blinded UI and fixed utility rubric",
+      "claim_boundary": "not a GPU experiment; model-based pilot remains separate"
+    },
+    {
+      "id": "RC-06_tab_runtime_pilot",
+      "status": "ready_for_authorized_vgpu_run",
+      "command": "python src/experiments/tab_ollama_zero_shot_baseline.py --split dev --max-documents 32 --model llama3.2:latest --output-tag revision20260903",
+      "scope": "TAB dev:32 named local-model pilot",
+      "claim_boundary": "external pilot only; not CPPB closure or a cross-model comparison"
+    },
+    {
+      "id": "GPU_smoke_only",
+      "status": "ready_for_local_or_vgpu_check",
+      "command": "python src/experiments/revision_cycle_gpu_smoke.py --output data/revision_cycle_gpu_smoke_revision20260903.json",
+      "scope": "small CUDA allocation and matrix checksum",
+      "claim_boundary": "execution check only; never paper evidence"
+    }
+  ]
+}

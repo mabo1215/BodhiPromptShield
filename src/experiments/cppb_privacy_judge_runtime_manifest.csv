@@ -1,5 +1,6 @@
 field,value
 benchmark,CPPB (released template-stratified split)
+comparison_baseline_scope,Enterprise/proposed rows use canonical prompt_method_comparison.csv operating points; judge row uses held-out test split.
 train_prompts,128
 dev_prompts,64
 test_prompts,64

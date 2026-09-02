@@ -44,6 +44,7 @@ from pathlib import Path
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 SPLIT_MANIFEST_PATH = EXPERIMENTS_DIR / "cppb_split_manifest.csv"
 METHOD_SUMMARY_PATH = EXPERIMENTS_DIR / "cppb_split_method_summary.csv"
+CANONICAL_METHOD_PATH = EXPERIMENTS_DIR / "prompt_method_comparison.csv"
 RESULTS_PATH = EXPERIMENTS_DIR / "cppb_privacy_judge_results.csv"
 COMPARISON_PATH = EXPERIMENTS_DIR / "cppb_privacy_judge_comparison.csv"
 RUNTIME_PATH = EXPERIMENTS_DIR / "cppb_privacy_judge_runtime_manifest.csv"
@@ -197,24 +198,37 @@ def run() -> None:
         writer.writeheader()
         writer.writerows(result_rows)
 
-    # Held-out test-split comparison with the existing CPPB methods.
+    # Keep the enterprise/proposed rows aligned with the canonical CPPB
+    # operating-point table used by the main text.  The judge itself remains a
+    # held-out test-split result; mixing the two scopes without an explicit
+    # convention was the source of the 8.3/9.5 versus 8.1/9.3 inconsistency.
     method_summary = {
         row["setting"]: row
         for row in _read_csv(METHOD_SUMMARY_PATH)
         if row["split"] == "test"
     }
+    canonical_summary = {
+        row["method"]: row
+        for row in _read_csv(CANONICAL_METHOD_PATH)
+    }
     test_metrics = _evaluate(weights, by_split["test"])
     comparison_rows: list[dict[str, str]] = []
     for setting in COMPARISON_SETTINGS:
-        src = method_summary.get(setting)
+        src = canonical_summary.get(setting) if setting in {
+            "Enterprise staged redaction",
+            "Proposed (utility-constrained)",
+        } else method_summary.get(setting)
         if src is None:
             continue
+        per_key = "per" if "per" in src else "per_mean"
+        ac_key = "ac" if "ac" in src else "ac_mean"
+        tsr_key = "tsr" if "tsr" in src else "tsr_mean"
         comparison_rows.append(
             {
                 "method": setting,
-                "per_percent": f"{float(src['per_mean']):.1f}",
-                "ac": f"{float(src['ac_mean']):.3f}",
-                "tsr": f"{float(src['tsr_mean']):.3f}",
+                "per_percent": f"{float(src[per_key]):.1f}",
+                "ac": f"{float(src[ac_key]):.3f}",
+                "tsr": f"{float(src[tsr_key]):.3f}",
             }
         )
     # Insert the judge just before the proposed method for readability.
@@ -236,6 +250,7 @@ def run() -> None:
 
     runtime_rows = [
         {"field": "benchmark", "value": "CPPB (released template-stratified split)"},
+        {"field": "comparison_baseline_scope", "value": "Enterprise/proposed rows use canonical prompt_method_comparison.csv operating points; judge row uses held-out test split."},
         {"field": "train_prompts", "value": str(len(by_split["train"]))},
         {"field": "dev_prompts", "value": str(len(by_split["dev"]))},
         {"field": "test_prompts", "value": str(len(by_split["test"]))},

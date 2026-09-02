@@ -1,0 +1,15 @@
+{
+  "test": "revision-cycle-cuda-smoke",
+  "evidentiary_status": "execution_check_only",
+  "torch_version": "2.5.1+cu121",
+  "cuda_version": "12.1",
+  "device": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "device_capability": "8.9",
+  "matrix_size": 512,
+  "seed": 20260903,
+  "checksum": 2.3073265252774707e+18,
+  "elapsed_ms": 98.805,
+  "python_version": "3.9.0",
+  "platform": "Windows-10-10.0.22621-SP0",
+  "nvidia_smi": "NVIDIA GeForce RTX 4050 Laptop GPU, 6141 MiB, 5739 MiB, 185 MiB, 610.62"
+}

@@ -90,3 +90,56 @@ OCR batch; it is not a prerequisite for the current revision-cycle evidence.
 - The propagation scripts and audit pass locally; a CUDA smoke test is
   recorded when the local GPU is available.
 - `paper/main.tex` builds successfully with the repository's build script.
+
+
+## 2026-09-03 TOPS revision-cycle continuation plan
+
+This section is the execution plan for the remaining items in
+`docs/RevisionSuggestions.tex`. It is written before the new preparation code
+and keeps the evidence boundary explicit: a reconstructed live pilot is not a
+recovery of the historical CPPB run, and a preparation manifest is not an
+experimental result.
+
+### Review-to-experiment map
+
+| ID | Remaining review item | Frozen protocol / deliverable | Current feasibility and boundary |
+| --- | --- | --- | --- |
+| RC-01 | Fresh CPPB live downstream rerun (E2/E7) | Run the 48 text-only prompts in the reconstructed test split (8 held-out templates) under four matched conditions with a named Ollama model, temperature 0, top-$p$ 1, fixed seed, prompt hashes, model digest, and runtime manifest. Keep OCR rows out until the original render/OCR package is available. | Ready for a separately labelled reconstructed live pilot; it does not establish historical CPPB recovery or community-benchmark generalization. RTX 3090 is recommended for throughput but cannot supply missing original assets. |
+| RC-02 | Semantic/context-inference mitigation (E3/E7) | Generate a frozen attack panel comparing placeholder masking with context-aware abstraction and an access-control/redaction variant; score four-way attribute inference with the same attacker prompt, seed, model, and sanitized-context hashes. Report mitigation only if the attacker and all prompts are recorded. | Preparation is possible locally; a meaningful result requires a frozen attacker runtime and an approved mitigation definition. No mitigation number will be written to the paper before execution. |
+| RC-03 | Same-protocol Casper/PrivacyRestore comparison (E1/E7) | Freeze the CPPB text-only protocol, condition mapping, detector/decoder settings, and metrics; record implementation commit, model/runtime identity, and output hashes for each comparator. | Blocked until reproducible implementations or authorized outputs are supplied. A conceptual table remains the only honest current evidence. |
+| RC-04 | Live mapping-table compromise (E7) | Exercise a deployed mapping service with token-only, audit-log, partial-table, credential, session-isolation, and recovery probes; capture session IDs, capability tier, recovered rows, and blast radius. | Blocked until a live service, credential model, and audit path are available. Existing reference-mechanism results remain mechanism-level evidence. |
+| RC-05 | Independent human/task utility validation (E4/W6) | Use the existing blinded UI and fixed rubric; collect independent human ratings, calculate agreement, and keep safe refusal separate from useful completion. | CPU/UI preparation is complete; execution depends on human raters and is not a GPU experiment. |
+| RC-06 | Named model/OCR/runtime disclosure (E5) | Run a preflight that checks model tag/digest, prompt-manifest hash, decoding settings, host/GPU, Python/Ollama versions, OCR engine/version, and output paths before any vGPU job. | Preflight is executable now; exact named records remain blocked where the source artifact or vendor identity is unavailable. |
+
+### Code and staged outputs
+
+The current continuation adds three safe preparation/execution checks:
+
+1. `src/experiments/prepare_vgpu3090_revision_cycle.py` validates the
+   reconstructed CPPB input surface, test-template disjointness, required
+   scripts, and public TAB input. It
+   writes a timestamped-free deterministic JSON manifest with ready/blocked
+   jobs and copyable commands. It contains no credentials.
+2. `src/experiments/revision_cycle_gpu_smoke.py` performs a small CUDA tensor
+   operation and records device/runtime metadata. It is an execution check only
+   and must never be used to create paper metrics.
+
+The vGPU run, when authorized, will use an output tag such as
+`revision20260903` so canonical artifacts cannot be overwritten. The first
+3090 job will be RC-01's reconstructed text-only pilot; RC-02, RC-03, and RC-04
+will remain queued or blocked unless their prerequisite attacker/service/
+comparator inputs are present.
+
+### Acceptance criteria for this continuation
+
+- The preparation manifest passes with no credential or secret material written
+  to the repository.
+- The CUDA smoke test reports a successful device allocation and deterministic
+  matrix checksum on the available local GPU.
+- The reconstructed live pilot, if run, writes model digest, prompt hashes,
+  decoding settings, runtime metadata, and an explicit reconstruction-status
+  field for every output.
+- No paper claim or canonical summary CSV is changed from a smoke test or from
+  a blocked preparation manifest.
+- `paper/main.tex`, `docs/progress.md`, and `docs/ExperimentProgress.tex` are
+  updated only after the corresponding artifact and provenance check exists.

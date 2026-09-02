@@ -19,6 +19,12 @@
   - Source hashes, reconstruction provenance, counts, and the text-only/OCR execution boundary
 - `cppb_reconstructed_ollama_utility_pilot.py`
   - Runs the 48 text-only reconstructed test prompts under four matched conditions through named Ollama Llama 3.2 and emits the 192-output blind-review artifacts
+- `prepare_vgpu3090_revision_cycle.py`
+  - Validates the reconstructed CPPB/TAB inputs and writes a credential-free, timestamp-free readiness manifest for the current revision-cycle jobs; it does not execute experiments
+- `revision_cycle_gpu_smoke.py`
+  - Runs a small CUDA allocation/matrix-checksum smoke test and records device metadata as an execution check only
+- `semantic_mitigation_probe.py`
+  - Runs or dry-runs the tagged four-way semantic/context-inference mitigation panel; heuristic variants are explicitly non-evidentiary until a frozen attacker/runtime execution is recorded
 - `cppb_blind_review_ui.py`
   - Local Gradio interface for raters to score A/B/C/D outputs and save resumable human ratings without loading the analyst-only method key
 - `cppb_split_manifest.csv`
