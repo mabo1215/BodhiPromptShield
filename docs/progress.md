@@ -6,6 +6,8 @@
 
 本节覆盖 `docs/revision_suggestions.tex`、当前 `paper/` 源码、实验工件和本机运行状态；下方 2026-08-25 内容保留为历史快照。当前论文的主文与附录已经合并在 `paper/main.tex`：文件在附录起始处使用 `\\appendix`，仓库中不存在独立的 `paper/appendix.tex`。当前 `paper/main.pdf` 为单文件 34 页；旧记录中“main + appendix”或独立 `paper/appendix.tex` 的表述不再是当前文件拓扑。
 
+本次同步后的详细实验完成百分比、预计 NZ 时间和备注见 `docs/experiment_progress.tex` 的 `Next-step plan`；该表已移除本轮已经完成的 vGPU pilot、blind scoring 和 utility manuscript integration。
+
 ### 与 `revision_suggestions.tex` 的逐项核对
 
 | 项目 | 当前核对结果 | 状态 |
@@ -16,6 +18,27 @@
 | W4：cross-domain evidence | `tab:crossdom` 与 `cross_domain_detector_results.csv` 已存在，Generic→Clinical 已实测；licensed i2b2 和更多域仍未完成。 | 有界完成 |
 | W5：八类 adversarial families | `tab:advmeas` 与 `measured_adaptive_adversary_results.csv` 已记录八类攻击；semantic-paraphrase residual 已作为开放问题。 | 已完成；残余风险已披露 |
 | W6 / A5：独立 blind utility review | Luna 与 Claude 的 148 条 pending 评分、agreement、response-family summary 和 per-template breakdown 已回填 `paper/main.tex` 附录，并明确这是 external model-based pilot，不是 human validation；论文已区分 safe refusal、generic template/code、useful completion 与 other partial responses。 | 论文整合已完成；human validation 仍未完成 |
+
+### AE 原始六条意见与当前论文闭合状态
+
+| AE 意见 | 当前 `paper/main.tex` 是否已修改 | `revision_suggestions.tex` 是否已记录 | 仍未闭合的证据 |
+|---|---|---|---|
+| 1. Casper/PrivacyRestore 近邻工作与比较 | 已补引用、概念比较表和 novelty boundary；明确没有同协议复现 | 已记录为 E1，明确 direct head-to-head open | 同条件实证比较未完成 |
+| 2. CPPB 规模/过拟合 | 已补 benchmark card、16/8/8 template-disjoint split、审计和历史 score-log 限制 | 已记录为 E2，明确 fresh live rerun open | 缺原始 prompt/OCR 和 frozen downstream stack，未完成 fresh live rerun |
+| 3. deterministic agent、83% 语义残留、SPE/推断攻击 | 已写入 deterministic reference agent、83% semantic residue、50% context-inference，并限制 SPE 解释范围 | 已记录为 E3 | 语义泄露和推断攻击仍未被解决，仅完成测量 |
+| 4. enterprise redaction 与 utility 验证 | 已写入 8.1% vs 9.3%、AC/TSR +0.02/+0.02；附录已回填 Luna/Claude pilot 并区分 refusal/completion | 已记录为 E4，A5 已标记完成 | 独立 human/task utility validation 未完成，rubric 仍非独立人工验证 |
+| 5. learned detector、model/OCR/runtime 披露 | 已报告 Span F1 0.53、precision 0.36，并补轻量 detector 配置和 metadata audit | 已记录为 E5 | exact named model/version/digest、完整 OCR/runtime 和 named rerun 记录仍不完整 |
+| 6. span-level LDP 不能保证整个系统 | 已删除系统级 LDP 保证叙事，明确 no end-to-end formal guarantee 及覆盖边界 | 已记录为 E6 | 若要求真正系统级保证，仍未完成；当前是正确的 scope correction |
+
+### vGPU 实验覆盖审计
+
+| vGPU 实验记录 | 已完成内容 | 覆盖的修改意见 | 未覆盖内容 |
+|---|---|---|---|
+| `data/cppb_reconstructed_utility_run_log_vgpu3090.csv` | RTX 3090 上 `llama3.2:latest`，48 个 reconstructed text-only prompts × 4 条件 = 192 outputs，含 digest、runtime manifest 和 blind-review surface | 为 W6/A5 提供可分析的 utility pilot；验证 named local runtime surface | 不是 256-prompt fresh CPPB live rerun，不含原始 OCR，也不能证明泛化或 human utility |
+| `src/experiments/tab_ollama_zero_shot_run_log_vgpu3090.csv` | TAB `dev:32` zero-shot pilot，2,037 mentions，含 model digest、CUDA/Linux/Python/Ollama runtime 记录 | 提供一个公开 transfer 的 live model smoke/pilot 和运行记录 | 不是 CPPB downstream rerun，不是 Casper/PrivacyRestore 对比，也不是 named cross-model closure |
+| 其余 vGPU/运行记录 | 未发现 Casper/PrivacyRestore 同协议运行、live mapping deployment、semantic mitigation 或原始 CPPB V4/V8 exact regeneration 记录 | 目前只能支撑 bounded pilot claims | 不能把现有 vGPU 记录升级成 AE 所要求的完整证据 |
+
+判断：现有 vGPU 实验覆盖了 reconstructed utility pilot 和一个 TAB live pilot，但没有覆盖全部 AE 所需实验。开启 vGPU 只能加速后续推理；在原始 prompt/OCR、冻结 agent stack、命名 backend、部署 mapping service 或人工 raters 未到位前，开卡不会使这些实验变成可复核证据。
 
 ### 本机记录和排队状态
 
@@ -28,15 +51,16 @@
 
 | 未完成意见 | 必需实验/动作 | 本机覆盖情况 | 是否有可运行排队项 |
 |---|---|---|---|
-| W6 / A5 utility 报告 | 将 Luna/Claude 盲评分与限制写入论文并重编译 | 已回填 summary/per-template 表；已编译确认（34 页、0 个 undefined refs） | 否，只有已完成工件 |
 | 独立 human/task utility | 盲 UI 收集人工评分并计算 agreement | UI 和 rubric 已有，人工评分未收集 | 否 |
+| E1 residual | Casper/PrivacyRestore 同协议实证比较 | 当前只有 primary citations 和概念比较表，尚无复现实现或同协议运行记录 | 否，资源/实现阻塞 |
 | W1 residual | frozen downstream stack 上的 CPPB fresh template-disjoint live rerun | 只有 reconstructed pilot；原始 prompt/OCR 与 frozen stack 缺失 | 否，当前阻塞 |
 | W2 residual | live deployment mapping service、credential/audit/session-isolation attack | reference capability curve 已完成，live stack 未建立 | 否 |
-| cross-model residual | named vendor/model/version/digest rerun | 只有 alias/family artifact 和 manifest template | 否 |
+| E5 residual | named vendor/model/version/digest、OCR、runtime disclosure/rerun | 只有 alias/family artifact 和 manifest template；完整记录未填 | 否 |
+| E3 residual | semantic leakage/context-inference mitigation | 83% semantic residue 和 50% inference 已测量，防护机制尚未实验 | 否 |
 | W4 residual | licensed i2b2 与更多 domain 的 filled transfer | PhysioNet generic↔clinical 已完成；i2b2 等待许可/数据 | 仅 protocol，不可运行 |
 | multimodal provenance residual | 原始 CPPB V4/V8 render/OCR/runtime exact regeneration | public OCR slices 有记录，原始 CPPB exact manifest 未填 | 否，源数据阻塞 |
 
-结论：现有本机实验记录已经覆盖 W1、W2、W3、W4、W5 所需的有界证据；W6/A5 的 external model-based utility pilot 已回填论文，但独立 human/task utility validation 仍未完成。没有遗漏一个“应该已经排队但未记录”的可运行实验；其余开放实验均受原始资产、许可、命名运行时或 live deployment stack 限制，不能用现有 pilot 或历史 score log 代替。
+结论：现有本机实验记录已经覆盖 W1、W2、W3、W4、W5 所需的有界证据，W6/A5 的 external model-based utility pilot 也已回填并编译进论文；独立 human/task utility validation 仍未完成。vGPU 已覆盖 reconstructed CPPB utility pilot 和 TAB dev:32 live pilot，但没有覆盖 fresh CPPB、近邻系统同协议比较、semantic-inference mitigation 或 live deployment compromise。没有遗漏一个“应该已经排队但未记录”的可运行实验；其余开放实验均受原始资产、许可、命名运行时或 live deployment stack 限制，不能用现有 pilot 或历史 score log 代替。
 
 ## 2026-08-25 新审稿意见（AESuggestion）对应 revision cycle（历史快照）
 

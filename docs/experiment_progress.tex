@@ -10,10 +10,12 @@
 
 \section*{Revision-cycle experiment progress}
 \noindent
-Last updated: 2026-09-01 13:49 NZST. Percentages describe repository work,
+Last updated: 2026-09-03 09:41 NZST. Percentages describe repository work,
 not a claim that blocked experiments are complete. The recorded AE decision is
-reject; the current TOPS-oriented review is accept with minor revision
-conditional on an explicit utility caveat. This table supersedes earlier
+reject; the current TOPS-oriented review is accept with minor revision, and the
+explicit utility caveat is now present in the manuscript. The current paper is
+the single 34-page file \texttt{paper/main.tex}; its appendix is embedded
+after the appendix declaration. This table supersedes earlier
 revision-cycle status notes.
 
 \scriptsize
@@ -29,22 +31,29 @@ Item & Review-driven modification & Evidence / repository artifact & Status & Co
 \endhead
 \bottomrule
 \endfoot
-Prior work & Added PrivacyRestore and Casper citations, comparison matrix, and an explicit novelty boundary. & \texttt{paper/main.tex}, \texttt{paper/ref.bib} & Done & 100\% \\
-CPPB audit & Validated template-disjoint 16/8/8 split, zero cross-split template overlap, and zero duplicate prompt IDs; flagged legacy/generated full-release scores and removed unsupported generalization wording. & Review audit script/CSV, split manifest, and \texttt{tab:cppb\_audit} & Done (structural audit) & 100\% \\
+Prior work & Added PrivacyRestore and Casper citations, comparison matrix, and an explicit novelty boundary; same-protocol head-to-head reproduction remains unavailable. & \texttt{paper/main.tex}, \texttt{paper/ref.bib} & Partial (conceptual only) & 75\% \\
+CPPB audit & Validated template-disjoint 16/8/8 split, zero cross-split template overlap, and zero duplicate prompt IDs; flagged legacy/generated full-release scores and removed unsupported generalization wording. & Review audit script/CSV, split manifest, and \texttt{tab:cppb\_audit} & Partial (structural audit; live rerun open) & 80\% \\
 CPPB reconstructed annotations & Generated 256 deterministic prompt records with exact Python-style [start,end) character offsets from the released stub manifest; historical raw prompt recovery remains unavailable. & \texttt{data/cppb\_full\_annotations.jsonl}, CSV view, provenance metadata & Done (reconstructed surface) & 100\% \\
 Reconstructed text-only utility pilot & Generated 48 test prompts $\times$ 4 matched conditions with named \texttt{llama3.2:latest}; randomized A/B/C/D blind table and local rater UI are complete. & Utility output CSV/JSONL; blind-review CSV; runtime and method-key manifests; Gradio rater UI & Done (pilot generation) & 100\% \\
 Independent blind utility scoring & OpenAI Luna and Claude Sonnet 5 completed the 148 pending rows; each produced a checked 236-row completed rating file and inter-judge agreement report. & Luna/Claude JSONL, completed CSVs, and reports & Done (model-based blind scoring) & 100\% \\
-W6/A5 utility reporting & Blind-score artifacts are complete, but \texttt{paper/main.tex} does not yet report the utility review or separate safe refusal from useful completion. & Luna/Claude reports and the manuscript's utility/limitations sections & Manuscript update pending & 50\% \\
+W6/A5 utility reporting & Integrated the Luna/Claude 148-row blind utility review, agreement, response-family coding, and per-template breakdown; safe refusal is separated from useful completion. & Luna/Claude completed CSVs, three summary CSVs, and Appendix C Tables 16--17 in \texttt{paper/main.tex} & Done (model-based pilot; human validation open) & 100\% \\
 Real propagation & Re-ran exact AI4Privacy reference-agent measurement and real PrivacyLens trajectory measurement. & Real-text propagation result CSVs & Done & 100\% \\
-Semantic leakage & Kept semantic residue and context-inference accuracy separate from literal SPE/PER. & PrivacyLens runtime manifest; context-inference result CSV & Done & 100\% \\
-Real-stack and attack closure & Added measured real-text agent propagation, PrivacyLens trajectories, adaptive surface-form/semantic attacks, secure-mapping compromise probes, and named lightweight comparator surfaces; retained bounded claims where the stack is deterministic or reconstructed. & Measured propagation/adversary, PrivacyLens, context-inference, mapping-compromise, and baseline CSV/runtime artifacts & Done (bounded evidence) & 100\% \\
+Semantic leakage & Kept semantic residue and context-inference accuracy separate from literal SPE/PER; mitigation is still open. & PrivacyLens runtime manifest; context-inference result CSV & Done (failure measured; mitigation open) & 100\% \\
+Real-stack and attack closure & Added measured real-text agent propagation, PrivacyLens trajectories, adaptive surface-form/semantic attacks, secure-mapping compromise probes, and named lightweight comparator surfaces; retained bounded claims where the stack is deterministic or reconstructed. & Measured propagation/adversary, PrivacyLens, context-inference, mapping-compromise, and baseline CSV/runtime artifacts & Done (bounded evidence; live closure open) & 85\% \\
 Baseline correction & Recomputed enterprise gap (+1.20 PER points, +0.02 AC, +0.02 TSR) and removed superiority wording. & Baseline comparison CSV; main-text Results/Limitations & Done & 100\% \\
-Reproducibility & Disclosed lightweight detector configuration and audited missing model/OCR/runtime identifiers. & Review audit runtime manifest; main-text implementation details & Done & 100\% \\
-Formal scope & Removed optional span-level LDP proposition and stated no end-to-end formal privacy guarantee. & \texttt{paper/main.tex}, Formal Privacy Scope & Done & 100\% \\
-Paper QA / handoff & GPU smoke test, single-file paper compilation, final diff review, nested paper commit, parent commit, and both pushes passed. & \texttt{paper/main.tex} (appendix is embedded after the appendix declaration); \texttt{paper/main.pdf}; build log and Git history & Done (pre-utility update) & 100\% \\
+Reproducibility & Disclosed lightweight detector configuration and audited missing model, OCR, and runtime identifiers; exact named rerun records remain incomplete. & Review audit runtime manifest; main-text implementation details; cross-model/OCR manifests & Partial (audit complete; disclosure gap open) & 75\% \\
+Formal scope & Removed optional span-level LDP proposition and stated no end-to-end formal privacy guarantee. & \texttt{paper/main.tex}, Formal Privacy Scope & Done (claim correction; no system guarantee) & 100\% \\
+vGPU coverage audit & Verified the RTX 3090 reconstructed CPPB utility pilot (48 prompts $\times$ 4 conditions $=192$ outputs) and the TAB dev:32 zero-shot pilot with named \texttt{llama3.2:latest}, digest, and runtime manifests. & CPPB utility vGPU log/runtime manifest; TAB vGPU log/runtime manifest & Done (bounded pilot coverage) & 100\% \\
+Paper QA / handoff & Single-file paper compilation, final diff review, and rendered appendix inspection passed after utility integration. & \texttt{paper/main.tex}; \texttt{paper/main.pdf}; build log & Done (34 pages; no undefined refs) & 100\% \\
 \end{longtable}
 
 \section*{Next-step plan}
+
+No experiment in this table is currently executing. Completed vGPU pilots,
+measured propagation/adversary runs, blind scoring, and manuscript integration
+have been moved to the completed table above. The remaining rows are
+prerequisite-gated or require new human/deployment resources; their percentages
+are completion estimates for the repository task, not success probabilities.
 
 \begin{longtable}{p{0.15\textwidth}p{0.16\textwidth}p{0.19\textwidth}p{0.07\textwidth}p{0.12\textwidth}p{0.13\textwidth}}
 \caption{Running and incomplete experiments, completion estimates, New Zealand time, and notes.}\label{tab:next_steps}\\
@@ -58,13 +67,15 @@ Experiment / task & Current state & Next action & Complete & Estimated finish (N
 \endhead
 \bottomrule
 \endfoot
-Manuscript utility integration (W6/A5) & Luna and Claude blind-score artifacts and agreement report are complete; no corresponding section or table is present in \texttt{paper/main.tex}. & Add the utility result to the appendix section or supplementary pointer, separate it from privacy metrics, then rebuild and inspect the single PDF. & 50\% & 2026-09-02 15:00 & No new experiment is required for the first manuscript update. \\
-Human/task utility validation & Model-based blind scoring is complete; no independent human ratings have been collected. & Recruit/collect human ratings with the existing blind UI, then aggregate task success, faithfulness, required fields, and agreement without unblinding conditions early. & 25\% & TBD (human raters) & The two model judges are evidence of a model-based review, not human validation. \\
-Original CPPB live end-to-end rerun & Reconstructed pilot exists, but historical raw prompts/OCR assets and a frozen downstream agent-stack/model runtime are unavailable. & Obtain the missing assets and freeze the runtime, or keep the claim explicitly limited to the reconstructed controlled surface. & 0\% & TBD after prerequisite & No runnable local queue item was found; do not rewrite legacy score logs as a fresh rerun. \\
-Live-stack mapping-table compromise & Capability-graded reference-design compromise curve is complete; live deployment stack and audit/credential path are not available. & Freeze a live mapping service, credential model, audit path, and session-isolation probe before claiming end-to-end compromise evidence. & 50\% & TBD after deployment stack & The existing mapping results satisfy mechanism-level evidence only. \\
-Named cross-model rerun & Alias/family-level artifact and disclosure template exist; exact vendor, model, version, and runtime record is absent. & Run or obtain authorized named backends with digest, decoding, prompt fingerprint, host, and runtime metadata. & 0\% & TBD after access & No active execution record; disclosure is also required. \\
-Broader domain and licensed clinical coverage & Generic-to-clinical transfer is executed through PhysioNet; licensed i2b2 and additional domains remain protocol-only or pending access. & Obtain approved clinical data and complete the filled runtime/result manifests under the existing wrapper. & 60\% & TBD after data access & Current \texttt{tab:crossdom} is sufficient for the bounded claim; broader coverage remains future work. \\
-Original CPPB multimodal/OCR regeneration & Public CORD, FUNSD, and SROIE slices have records, but the original CPPB V4 and V8 render, OCR, and runtime provenance is not filled. & Recover the original render package and OCR runtime record, then execute the exact regeneration manifest if authorization permits. & 25\% & TBD after source & Source access and authorization are required; this is not a new W5 adversarial experiment. \\
+Independent human/task utility validation & The Luna/Claude model-based pilot is integrated, but no independent human ratings have been collected. & Recruit/collect blinded human ratings with the existing UI, then aggregate task success, faithfulness, required fields, response family, and agreement. & 25\% & 2026-09-08 17:00 (conditional) & Human raters are required; vGPU does not remove this gap. \\
+Same-protocol Casper / PrivacyRestore comparison & Citations and a conceptual comparison table are present, but neither implementation is reproduced under CPPB or the real-agent protocol. & Obtain reproducible implementations/data or document an authorized same-protocol reproduction and report matched privacy/utility results. & 15\% & TBD after access & A vGPU can accelerate inference only after the systems and protocol inputs are available. \\
+Original CPPB live end-to-end rerun & The 3090 reconstructed pilot is complete, but historical raw prompts/OCR assets and a frozen downstream agent-stack/model runtime are unavailable. & Recover original assets; freeze detector, model, decoding, and runtime; run independently held-out templates; otherwise retain the bounded reconstructed claim. & 0\% & TBD after assets and runtime & The existing 48-prompt $\times$ 4-condition pilot is not a fresh CPPB rerun; do not rewrite legacy score logs. \\
+Named model, OCR, and runtime disclosure & Alias/family-level records and public OCR transfer manifests exist, but exact vendor, model, version, and digest plus original CPPB OCR provenance are incomplete. & Fill named backend, model digest, prompt fingerprint, decoding, host, OCR engine/version, and runtime manifests for the claimed experiments. & 40\% & TBD after authorization & This is a disclosure prerequisite for the cross-model and multimodal claims, not a score to be inferred from aliases. \\
+Semantic/context-inference mitigation & The paper measures 83\% semantic residue and 50\% sanitized context-inference accuracy, but no mitigation experiment is complete. & Design and evaluate context-aware abstraction, downstream access control, or multi-turn inference defenses with a frozen attack protocol. & 10\% & TBD after mechanism and stack & Current vGPU artifacts measure the failure; they do not establish semantic-inference protection. \\
+Live-stack mapping-table compromise & The capability-graded reference compromise curve is complete, but a live deployment stack, audit path, credential model, and session-isolation probe are absent. & Freeze a live mapping service and execute credential, audit/log, session-isolation, and recovery probes before claiming deployment-level compromise resistance. & 50\% & TBD after deployment stack & Existing results support mechanism-level evidence only; vGPU alone is insufficient. \\
+Broader domain and licensed clinical coverage & Generic-to-clinical transfer is executed through PhysioNet; licensed i2b2 and additional domains remain protocol-only or pending access. & Obtain approved clinical data and complete the filled runtime/result manifests under the existing wrapper. & 60\% & TBD after data access & Current \texttt{tab:crossdom} supports only the bounded public-transfer claim. \\
+Original CPPB multimodal/OCR regeneration & Public CORD, FUNSD, and SROIE slices have executed records, but the original CPPB V4/V8 render, OCR, and runtime provenance is not filled. & Recover the original render package and OCR runtime record, then execute exact regeneration if authorization permits. & 25\% & TBD after source and authorization & Public OCR transfer does not substitute for original CPPB multimodal provenance. \\
+End-to-end LDP/system guarantee & The manuscript correctly removes the optional span-level LDP result from the guarantee story; no system-level proof exists. & A new mechanism and proof covering the complete agent state, restoration path, and inference surface would be required. & 0\% & Not planned in current cycle & This is a scope correction, not a pending claim that should be marked complete. \\
 \end{longtable}
 
 \end{document}
