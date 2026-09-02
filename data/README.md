@@ -40,7 +40,26 @@ outputs:
   hardware, and run provenance.
 
 This is a reconstructed utility pilot, not the original CPPB live rerun.
-Human scoring is required before treating it as independent utility evidence.
+The completed blind-rating artifacts are external model-based utility pilots;
+they are not human validation and do not score exact raw-value exposure.
+
+The completed ratings and deterministic summaries are:
+
+- `cppb_reconstructed_blind_ratings_vgpu3090_completed_openai_luna.csv` and
+  `...completed_claude_sonnet5.csv`: the original 88 rows plus 148 pending
+  blind ratings from each external rater;
+- `cppb_blind_utility_summary.csv`: score distributions and descriptive
+  response-family counts for both raters;
+- `cppb_blind_utility_by_template.csv`: per-template breakdown for the seven
+  template IDs represented in the pending reconstructed slice;
+- `cppb_blind_utility_agreement.csv`: exact agreement and mean absolute
+  difference between the two external raters.
+
+The summaries are regenerated with:
+
+```text
+python src/experiments/analyze_blind_utility_review.py
+```
 
 The local scoring interface is started with:
 

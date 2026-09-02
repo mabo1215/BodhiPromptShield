@@ -1,10 +1,10 @@
 # 论文进度
 
-最后更新：2026-09-01 13:49 NZST
+最后更新：2026-09-03  NZST
 
-## 2026-09-01 修订意见与本机实验审计（当前权威状态）
+## 2026-09-03 修订意见、utility 回填与本机实验审计（当前权威状态）
 
-本节覆盖 `docs/revision_suggestions.tex`、当前 `paper/` 源码、实验工件和本机运行状态；下方 2026-08-25 内容保留为历史快照。当前论文的主文与附录已经合并在 `paper/main.tex`：文件在第 834 行使用 `\\appendix`，仓库中不存在独立的 `paper/appendix.tex`。当前 `paper/main.pdf` 为单文件 33 页；旧记录中“main + appendix”或独立 `paper/appendix.tex` 的表述不再是当前文件拓扑。
+本节覆盖 `docs/revision_suggestions.tex`、当前 `paper/` 源码、实验工件和本机运行状态；下方 2026-08-25 内容保留为历史快照。当前论文的主文与附录已经合并在 `paper/main.tex`：文件在附录起始处使用 `\\appendix`，仓库中不存在独立的 `paper/appendix.tex`。当前 `paper/main.pdf` 为单文件 34 页；旧记录中“main + appendix”或独立 `paper/appendix.tex` 的表述不再是当前文件拓扑。
 
 ### 与 `revision_suggestions.tex` 的逐项核对
 
@@ -15,11 +15,11 @@
 | W3 / A3：推荐 learned detector | 正文已明确推荐“framing + learned detector”，并在 adversary 段说明 heuristic detector 的弱点。 | 论文修改已完成 |
 | W4：cross-domain evidence | `tab:crossdom` 与 `cross_domain_detector_results.csv` 已存在，Generic→Clinical 已实测；licensed i2b2 和更多域仍未完成。 | 有界完成 |
 | W5：八类 adversarial families | `tab:advmeas` 与 `measured_adaptive_adversary_results.csv` 已记录八类攻击；semantic-paraphrase residual 已作为开放问题。 | 已完成；残余风险已披露 |
-| W6 / A5：独立 blind utility review | Luna 与 Claude 的 148 条 pending 评分及 agreement 报告已生成，但 `paper/main.tex` 尚未写入 utility 评审结果，尚未区分 safe refusal 与 useful completion。 | 工件完成；论文未完成 |
+| W6 / A5：独立 blind utility review | Luna 与 Claude 的 148 条 pending 评分、agreement、response-family summary 和 per-template breakdown 已回填 `paper/main.tex` 附录，并明确这是 external model-based pilot，不是 human validation；论文已区分 safe refusal、generic template/code、useful completion 与 other partial responses。 | 论文整合已完成；human validation 仍未完成 |
 
 ### 本机记录和排队状态
 
-- `data/cppb_reconstructed_blind_ratings_vgpu3090_completed_openai_luna.csv` 和 `...completed_claude_sonnet5.csv` 各含 236 行、192 个唯一 `review_item_id`；两套评分均覆盖 148 条 pending ID。Luna/Claude 的三项 exact agreement 分别为 task success 90.5%、faithfulness 89.9%、required fields 87.8%。
+- `data/cppb_reconstructed_blind_ratings_vgpu3090_completed_openai_luna.csv` 和 `...completed_claude_sonnet5.csv` 各含 236 行、192 个唯一 `review_item_id`；两套评分均覆盖 148 条 pending ID。Luna/Claude 的三项 exact agreement 分别为 task success 90.5%、faithfulness 89.9%、required fields 87.8%。新增 `cppb_blind_utility_summary.csv`、`cppb_blind_utility_by_template.csv` 和 `cppb_blind_utility_agreement.csv`，并由 `analyze_blind_utility_review.py` 可重生成。
 - 已检查 `src/experiments/*execution_manifest.csv`：TAB、CORD、FUNSD、SROIE 和 PhysioNet public transfer 有 executed 记录；TAB zero-shot semantic baseline 仍为 `pending_external_runtime`；licensed i2b2 仍为 `waiting_for_licensed_data`，clinical pipeline 与 zero-shot baseline 仍为 `pending_external_runtime`。
 - 已检查 named cross-model、CPPB multimodal exact-regeneration 和 external-baseline manifest：它们是 template/protocol，不是已排队的 filled runtime。没有发现待运行的 Python、Ollama、pdflatex/bibtex 实验进程，也没有匹配的 Windows Scheduled Task。
 - `.claude/scheduled_tasks.lock` 当前由 PID 16744 的 `claude` 进程持有；该进程不是上述实验执行器，本次审计未停止或修改它。
@@ -28,7 +28,7 @@
 
 | 未完成意见 | 必需实验/动作 | 本机覆盖情况 | 是否有可运行排队项 |
 |---|---|---|---|
-| W6 / A5 utility 报告 | 将 Luna/Claude 盲评分与限制写入论文并重编译 | 评分、报告、完成版 CSV 已有；论文未接入 | 否，只有已完成工件 |
+| W6 / A5 utility 报告 | 将 Luna/Claude 盲评分与限制写入论文并重编译 | 已回填 summary/per-template 表；已编译确认（34 页、0 个 undefined refs） | 否，只有已完成工件 |
 | 独立 human/task utility | 盲 UI 收集人工评分并计算 agreement | UI 和 rubric 已有，人工评分未收集 | 否 |
 | W1 residual | frozen downstream stack 上的 CPPB fresh template-disjoint live rerun | 只有 reconstructed pilot；原始 prompt/OCR 与 frozen stack 缺失 | 否，当前阻塞 |
 | W2 residual | live deployment mapping service、credential/audit/session-isolation attack | reference capability curve 已完成，live stack 未建立 | 否 |
@@ -36,7 +36,7 @@
 | W4 residual | licensed i2b2 与更多 domain 的 filled transfer | PhysioNet generic↔clinical 已完成；i2b2 等待许可/数据 | 仅 protocol，不可运行 |
 | multimodal provenance residual | 原始 CPPB V4/V8 render/OCR/runtime exact regeneration | public OCR slices 有记录，原始 CPPB exact manifest 未填 | 否，源数据阻塞 |
 
-结论：现有本机实验记录已经覆盖 W1、W2、W3、W4、W5 所需的有界证据；没有遗漏一个“应该已经排队但未记录”的可运行实验。当前真正需要推进的是 W6/A5 的论文整合和人工 utility 验证；其余开放实验均受原始资产、许可、命名运行时或 live deployment stack 限制，不能用现有 pilot 或历史 score log 代替。
+结论：现有本机实验记录已经覆盖 W1、W2、W3、W4、W5 所需的有界证据；W6/A5 的 external model-based utility pilot 已回填论文，但独立 human/task utility validation 仍未完成。没有遗漏一个“应该已经排队但未记录”的可运行实验；其余开放实验均受原始资产、许可、命名运行时或 live deployment stack 限制，不能用现有 pilot 或历史 score log 代替。
 
 ## 2026-08-25 新审稿意见（AESuggestion）对应 revision cycle（历史快照）
 

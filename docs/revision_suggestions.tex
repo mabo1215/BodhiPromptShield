@@ -67,6 +67,65 @@ clear honest scope, but acceptance still depends on the items below.
     from privacy protection and distinguish safe refusal from useful completion.
 
 
+Traceability to the original AE comments
+-----------------------------------------
+The following traceability block preserves the unresolved parts of the AE
+decision in `docs/AESuggestion.txt`. The new measurements below should not be
+read as silently closing every original objection: some objections are now
+explicitly bounded rather than experimentally eliminated.
+
+  E1 (novelty and closest systems -- partially addressed). The manuscript now
+      cites Casper and PrivacyRestore and gives a conceptual comparison table,
+      but it does not reproduce either system under the same CPPB or real-text
+      protocol. The empirical novelty boundary therefore remains the
+      agent-boundary propagation measurement and restoration governance, not
+      placeholder substitution; a direct head-to-head comparison remains open.
+
+  E2 (CPPB scale and overfitting -- not closed). The manuscript reports the
+      256 prompts, 32 templates, template-disjoint 16/8/8 split, and the
+      near-identical bundled dev/test scores. Because the score logs are
+      historical/generated records and the prompt manifest contains stubs,
+      they are retained only as a provenance audit. A fresh live downstream
+      rerun with frozen detector selection and independently held-out templates
+      is still required.
+
+  E3 (semantic/contextual disclosure -- measured but not solved). The
+      deterministic reference-agent experiment, the 83% PrivacyLens semantic
+      residue, and the 50% sanitized context-inference accuracy are now
+      reported. SPE is intentionally limited to explicit surface-form survival;
+      it does not upper-bound semantic disclosure or attribute inference. The
+      remaining semantic leakage is therefore an open limitation.
+
+  E4 (enterprise baseline and utility validation -- not closed). The current
+      artifact still has lower direct PER for enterprise staged redaction
+      (8.1%) than for the proposed setting (9.3%), with only +0.02/+0.02 AC/TSR
+      and no independent validation of the custom rubric. The blind Luna/Claude
+      utility review is a separate reconstructed pilot: it does not score raw
+      exposure and must be reported separately, with safe refusal distinguished
+      from useful task completion.
+
+  E5 (detector and reproducibility disclosure -- partially addressed). The
+      learned detector's 0.53 Span F1 and 0.36 precision are now reported, but
+      exact vendor/model/version identifiers, complete OCR provenance, and all
+      runtime details needed for a named rerun are not yet part of the public
+      evidence backbone. The deployment-value claim must remain bounded until
+      those records or an explicit disclosure exception are supplied.
+
+  E6 (span-level LDP scope -- claim correction, not a system guarantee). The
+      optional span-level LDP analysis has been removed from the system's
+      guarantee story. Any retained discussion is only a restricted mechanism
+      analysis; it does not guarantee the evaluated pipeline and does not cover
+      inference, prompt injection, untouched context, or restoration-table
+      compromise.
+
+  E7 (overall requested evaluation -- partially addressed). Real-text
+      propagation, context inference, adaptive surface-form attacks, and a
+      capability-graded mapping-table study now provide measured supporting
+      evidence. However, the work still lacks a fresh live downstream CPPB
+      stack, same-protocol Casper/PrivacyRestore comparisons, fully named
+      cross-model/runtime records, and protection against semantic inference.
+
+
 Strengths
 ---------
 1. Propagation-control framing across an agent boundary graph is a useful,
@@ -134,6 +193,13 @@ W6 (moderate -- NEW). The independent blind utility review shows that the
    separated in the analysis. The result must not be presented as a privacy
    detection metric or as evidence about the hidden condition/method.
 
+W7 (moderate -- AE traceability). The original AE objections about closest
+   prior systems, CPPB overfitting, contextual inference, enterprise utility,
+   reproducibility disclosure, and the limited LDP analysis are now preserved
+   explicitly in E1--E7 above. They should remain visible in the camera-ready
+   evidence map even where the paper's response is a scope reduction rather
+   than a new experiment.
+
 
 Actions completed and remaining in this revision cycle
 ------------------------------------------------------
@@ -148,11 +214,18 @@ A4 (done). W2 (secure-mapping compromise curve, tab:mapcompromise) and W4
     (cross-domain detector, tab:crossdom) are now executed and reported; the
     Limitations section records the remaining live-stack and multi-domain gaps.
 
-A5 (new -- required). Add the Luna blind utility review to the appendix or
+A5 (new -- required). Add the completed Luna/Claude blind utility review to the appendix or
     supplementary artifact, report the 148-row denominators and the three score
     distributions, and include a per-template breakdown if available. Explain
     that exact raw-value exposure is checked separately and that safe refusal
     is not equivalent to successful task completion.
+
+A6 (new -- required for AE traceability). Add an explicit response matrix for
+    E1--E7 to the revision package. Either run same-protocol Casper/PrivacyRestore
+    comparisons or state them as unavailable and keep the novelty claim narrow.
+    Retain the CPPB live-rerun, named runtime/OCR disclosure, semantic-inference
+    limitation, and no-end-to-end-LDP-guarantee statements as outstanding or
+    bounded items rather than marking them as resolved.
 
 Verdict: Accept with minor revision, conditional on an explicit utility caveat.
 The framing, honesty, measured real-text propagation/adversary evidence, the

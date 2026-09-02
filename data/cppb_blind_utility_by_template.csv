@@ -1,0 +1,15 @@
+rater,template_id,n,task_success_0,task_success_1,task_success_rate_pct,faithfulness_0,faithfulness_1,faithfulness_2,faithfulness_2_rate_pct,required_fields_0,required_fields_1,required_fields_rate_pct,fully_useful_count,safe_refusal_count,generic_template_or_code_count,partial_or_incomplete_count
+openai_luna,T08,4,2,2,50.0,2,2,0,0.0,2,2,50.0,0,2,2,0
+openai_luna,T11,24,23,1,4.2,21,3,0,0.0,21,3,12.5,0,22,1,1
+openai_luna,T15,24,24,0,0.0,23,1,0,0.0,24,0,0.0,0,13,0,11
+openai_luna,T18,24,17,7,29.2,6,17,1,4.2,14,10,41.7,1,9,11,3
+openai_luna,T22,24,24,0,0.0,17,7,0,0.0,20,4,16.7,0,17,4,3
+openai_luna,T25,24,21,3,12.5,15,8,1,4.2,17,7,29.2,1,16,7,0
+openai_luna,T29,24,17,7,29.2,5,19,0,0.0,13,11,45.8,0,10,12,2
+claude_sonnet5,T08,4,2,2,50.0,2,0,2,50.0,2,2,50.0,2,2,0,0
+claude_sonnet5,T11,24,22,2,8.3,21,2,1,4.2,22,2,8.3,1,22,1,0
+claude_sonnet5,T15,24,24,0,0.0,23,1,0,0.0,24,0,0.0,0,13,0,11
+claude_sonnet5,T18,24,24,0,0.0,11,13,0,0.0,23,1,4.2,0,10,10,4
+claude_sonnet5,T22,24,24,0,0.0,17,7,0,0.0,24,0,0.0,0,17,5,2
+claude_sonnet5,T25,24,20,4,16.7,15,8,1,4.2,20,4,16.7,1,16,7,0
+claude_sonnet5,T29,24,14,10,41.7,6,13,5,20.8,14,10,41.7,5,10,9,0

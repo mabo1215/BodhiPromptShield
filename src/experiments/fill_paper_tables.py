@@ -22,7 +22,9 @@ This script only updates tables that are directly backed by repository CSVs:
     - tab:multiseed        <- multiseed_method_summary.csv
     - tab:lto              <- leavetemplateout_summary.csv
     - tab:baseline         <- external_baseline_comparison.csv
-    - tab:tabtransfer      <- tab_transfer_results.csv
+  - tab:tabtransfer      <- tab_transfer_results.csv
+  - tab:blindutility     <- data/cppb_blind_utility_summary.csv
+  - tab:blindutilitytemplate <- data/cppb_blind_utility_by_template.csv
 
 It intentionally does NOT touch illustrative or manually curated tables such as:
   - tab:example
@@ -47,6 +49,12 @@ EXPERIMENTS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def _read_csv(name: str) -> list[dict[str, str]]:
     path = os.path.join(EXPERIMENTS_DIR, name)
+    with open(path, "r", encoding="utf-8", newline="") as f:
+        return list(csv.DictReader(f))
+
+
+def _read_data_csv(name: str) -> list[dict[str, str]]:
+    path = os.path.join(REPO_ROOT, "data", name)
     with open(path, "r", encoding="utf-8", newline="") as f:
         return list(csv.DictReader(f))
 
@@ -594,6 +602,79 @@ def build_tab_transfer_table() -> str:
     )
 
 
+def build_blind_utility_table() -> str:
+    rows = _read_data_csv("cppb_blind_utility_summary.csv")
+    display_names = {
+        "openai_luna": "OpenAI Luna",
+        "claude_sonnet5": "Claude Sonnet 5",
+    }
+    body_lines = []
+    for row in rows:
+        response = (
+            f"{row['safe_refusal_count']}/{row['generic_template_or_code_count']}/"
+            f"{row['fully_useful_count']}/{row['partial_or_incomplete_count']}"
+        )
+        faith = f"{row['faithfulness_0']}/{row['faithfulness_1']}/{row['faithfulness_2']}"
+        body_lines.append(
+            " & ".join(
+                [
+                    _tex_escape(display_names.get(row["rater"], row["rater"])),
+                    row["n"],
+                    row["task_success_rate_pct"],
+                    faith,
+                    row["required_fields_rate_pct"],
+                    row["fully_useful_count"],
+                    response,
+                ]
+            )
+            + " \\\\"
+        )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}XrcccrX}\n"
+        "\\toprule\n"
+        "Rater & $n$ & TSR (\\%) & \\makecell{Faith.\\\\0/1/2} & Fields (\\%) & Useful & \\makecell{Refusal/Gen./\\\\Useful/Other} \\\\\n"
+        "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+def build_blind_utility_template_table() -> str:
+    rows = _read_data_csv("cppb_blind_utility_by_template.csv")
+    by_template: dict[str, dict[str, str]] = {}
+    for row in rows:
+        by_template.setdefault(row["template_id"], {})[row["rater"]] = row
+    body_lines = []
+    for template_id in sorted(by_template):
+        luna = by_template[template_id]["openai_luna"]
+        claude = by_template[template_id]["claude_sonnet5"]
+        body_lines.append(
+            " & ".join(
+                [
+                    _tex_escape(template_id),
+                    luna["n"],
+                    luna["task_success_rate_pct"],
+                    claude["task_success_rate_pct"],
+                    luna["faithfulness_2_rate_pct"],
+                    claude["faithfulness_2_rate_pct"],
+                    luna["required_fields_rate_pct"],
+                    claude["required_fields_rate_pct"],
+                ]
+            )
+            + " \\\\"
+        )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xrrrrrrr}\n"
+        "\\toprule\n"
+        "\\makecell[l]{Template\\\\ID} & $n$ & \\makecell{Luna\\\\TSR} & \\makecell{Claude\\\\TSR} & \\makecell{Luna\\\\F2} & \\makecell{Claude\\\\F2} & \\makecell{Luna\\\\fields} & \\makecell{Claude\\\\fields} \\\\\n"
+        "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
 TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:cppb_card": build_cppb_accounting_table,
     "tab:per": build_per_table,
@@ -618,6 +699,8 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:lto": build_lto_table,
     "tab:baseline": build_baseline_table,
     "tab:tabtransfer": build_tab_transfer_table,
+    "tab:blindutility": build_blind_utility_table,
+    "tab:blindutilitytemplate": build_blind_utility_template_table,
 }
 
 

@@ -1,0 +1,4 @@
+metric,n,exact_agreement,exact_agreement_pct,mean_abs_difference
+task_success_score,148,134,90.5,0.095
+faithfulness_score,148,133,89.9,0.101
+required_fields_score,148,130,87.8,0.122
