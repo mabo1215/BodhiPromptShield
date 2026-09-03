@@ -143,3 +143,27 @@ comparator inputs are present.
   a blocked preparation manifest.
 - `paper/main.tex`, `docs/progress.md`, and `docs/ExperimentProgress.tex` are
   updated only after the corresponding artifact and provenance check exists.
+
+## 2026-09-03 execution outcome
+
+The authorized vGPU run used an isolated `revision20260903` output tag and
+completed the three executable pilots without overwriting canonical artifacts:
+
+- RC-01 returned 192/192 outputs for 48 reconstructed text-only prompts across
+  four matched conditions. This is a live execution record, not recovery of the
+  historical CPPB prompts or score-generating run.
+- RC-02 returned 48/48 outputs for the 12-probe, four-variant context-inference
+  panel. Attacker accuracy was 50.0% (raw), 25.0% (placeholder), 8.3%
+  (context abstraction), and 16.7% (access control). This remains exploratory
+  and does not establish semantic privacy.
+- RC-06 returned a 32-document TAB development pilot with Span F1 0.12, PER
+  20.6%, text retention 0.24, and mean latency 5112.5 ms under the named
+  `llama3.2:latest` runtime. It is external-transfer evidence, not CPPB or
+  cross-model closure.
+
+The result archive and runtime manifests were hash-verified after transfer.
+The created Screen/Ollama sessions were stopped and the vGPU instance was
+shut down after collection. E1 same-protocol comparison, the original CPPB
+fresh live rerun/OCR provenance, independent human utility, live mapping
+deployment, and an end-to-end formal guarantee remain blocked by their stated
+prerequisites.
