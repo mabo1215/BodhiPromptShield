@@ -1,16 +1,18 @@
 # 论文进度
 
-最后更新：2026-09-03 10:22 NZST
+最后更新：2026-09-03 12:11 NZST
 
-## 2026-09-03 revision cycle continuation：数值统一、实验准备与本地 smoke test（当前新增）
+## 2026-09-03 revision cycle completion：vGPU 实验回收、论文回填与审稿闭环（当前新增）
 
 - 已统一主文与附录 privacy-judge 表的企业基线和提出方法数值：统一为企业 staged redaction `8.1%`、提出方法 `9.3%`。同步修改了 `paper/main.tex`、`src/experiments/cppb_privacy_judge_baseline.py`、`cppb_privacy_judge_comparison.csv` 和 runtime manifest；表格回填后仍保持该数值。
 - 已在修改代码前把当前 TOPS review 的剩余实验项写入 `docs/Design.md`，分为 RC-01 reconstructed CPPB live text pilot、RC-02 semantic mitigation probe、RC-03 Casper/PrivacyRestore、RC-04 live mapping compromise、RC-05 human utility validation、RC-06 named runtime/TAB pilot，并记录各自的证据边界和阻塞条件。
-- 已新增 `prepare_vgpu3090_revision_cycle.py`、`revision_cycle_gpu_smoke.py` 和 `semantic_mitigation_probe.py`。vGPU 预检清单已生成到 `data/revision_cycle_vgpu3090_manifest.json`：RC-01、RC-02、RC-06 可在授权开卡后运行；近邻系统同协议比较、live mapping 和人工评分按前置条件阻塞。
+- 已使用 vGPU RTX 3090 完成 RC-01、RC-02、RC-06，并为本轮运行使用独立的 `revision20260903` 标签；结果没有覆盖 canonical 工件。Ollama 使用 `llama3.2:latest`（3.2B、Q4_K_M），最终配置为上下文 16,384、并行 16、Flash Attention，确认 29/29 层 offload 到 GPU。
 - 本地 RTX 4050 CUDA smoke test 已通过，使用 CUDA 12.1 / PyTorch 2.5.1，512×512 矩阵校验和为 `2.3073265252774707e+18`，记录在 `data/revision_cycle_gpu_smoke_20260903.json`。该文件只证明执行环境可用，不产生论文结果。
-- 已完成 semantic mitigation probe 的全 12 条 dry-run 和现有 review audit、AI4Privacy propagation、PrivacyLens propagation 的本地复核；未把 dry-run 或 smoke 数据写入论文 canonical 结果。
+- RC-01 完成 48 个 reconstructed text-only prompts × 4 条件，共 192/192 输出，均成功返回；RC-02 完成 12 条 probe × 4 变体，共 48/48，攻击准确率依次为 raw 50.0%、placeholder 25.0%、context abstraction 8.3%、access control 16.7%；RC-06 完成 TAB dev:32，Span-F1 0.12、PER 20.6%、text retention 0.24、平均延迟 5112.5 ms。上述结果均保留了独立 runtime manifest，并在论文中明确标注为有界 pilot。
+- 结果归档已从远端完整拉回，远端与本地 `revision_cycle_results_20260903.tar.gz` 的 SHA-256 均为 `bafc036bf7a0f1eec51d07ddf4b7c37d5f458c18e5b678079cf410ae5070c9ec`；运行日志没有 OOM、traceback 或失败请求。结果回填到 `paper/main.tex` 附录及 TAB 结果段，但没有把 reconstructed pilot 改写成历史 CPPB 分数，也没有把小型 probe 改写成语义隐私保证。
+- vGPU 端本轮创建的 Screen/Ollama 会话已停止；随后已发出关机命令，SSH 复测返回非零且无法建立会话，确认实例已退出以避免继续计费。
 - `paper/build.bat` 已重新构建 `paper/main.pdf`，生成 34 页 PDF；无 fatal error、undefined citation/reference。MiKTeX 仍报告既有 BibTeX 元数据 warning 和少量版式 overfull/underfull warning，但本次修改未引入编译错误。
-- 当前未连接或启动 vGPU 3090；代码、输入检查和运行命令已准备好，等待用户授权开卡后再执行带 `revision20260903` 后缀的实验，避免覆盖 canonical 工件。
+- 当前 vGPU 3090 已完成本轮实验并关机；本地仓库保留结果、日志、runtime manifest 和论文回填。未闭合项仍包括 Casper/PrivacyRestore 同协议比较、原始 CPPB/OCR 的 fresh live rerun、独立人工 utility、live mapping deployment、完整原始 OCR/runtime provenance，以及系统级 LDP 保证。
 
 ## 2026-09-03 修订意见、utility 回填与本机实验审计（当前权威状态）
 
@@ -34,21 +36,22 @@
 | AE 意见 | 当前 `paper/main.tex` 是否已修改 | `revision_suggestions.tex` 是否已记录 | 仍未闭合的证据 |
 |---|---|---|---|
 | 1. Casper/PrivacyRestore 近邻工作与比较 | 已补引用、概念比较表和 novelty boundary；明确没有同协议复现 | 已记录为 E1，明确 direct head-to-head open | 同条件实证比较未完成 |
-| 2. CPPB 规模/过拟合 | 已补 benchmark card、16/8/8 template-disjoint split、审计和历史 score-log 限制 | 已记录为 E2，明确 fresh live rerun open | 缺原始 prompt/OCR 和 frozen downstream stack，未完成 fresh live rerun |
-| 3. deterministic agent、83% 语义残留、SPE/推断攻击 | 已写入 deterministic reference agent、83% semantic residue、50% context-inference，并限制 SPE 解释范围 | 已记录为 E3 | 语义泄露和推断攻击仍未被解决，仅完成测量 |
+| 2. CPPB 规模/过拟合 | 已补 benchmark card、16/8/8 template-disjoint split、审计和历史 score-log 限制；另完成 48 个 reconstructed prompts × 4 条件的独立标记 pilot | 已记录为 E2，明确 fresh live rerun open | 缺原始 prompt/OCR 和 frozen downstream stack，reconstructed pilot 不能替代 fresh CPPB rerun |
+| 3. deterministic agent、83% 语义残留、SPE/推断攻击 | 已写入 deterministic reference agent、83% semantic residue、原始 placeholder 50% context-inference，并新增四变体 exploratory probe；继续限制 SPE 解释范围 | 已记录为 E3 | 语义泄露和推断攻击仍未被解决，probe 只提供固定小面板的有界信号 |
 | 4. enterprise redaction 与 utility 验证 | 已写入 8.1% vs 9.3%、AC/TSR +0.02/+0.02；附录已回填 Luna/Claude pilot 并区分 refusal/completion | 已记录为 E4，A5 已标记完成 | 独立 human/task utility validation 未完成，rubric 仍非独立人工验证 |
-| 5. learned detector、model/OCR/runtime 披露 | 已报告 Span F1 0.53、precision 0.36，并补轻量 detector 配置和 metadata audit | 已记录为 E5 | exact named model/version/digest、完整 OCR/runtime 和 named rerun 记录仍不完整 |
+| 5. learned detector、model/OCR/runtime 披露 | 已报告 Span F1 0.53、precision 0.36，并补轻量 detector 配置和 metadata audit；本轮新增 pilot 已填 named model digest、decoding、GPU、Python 和 Ollama runtime 字段 | 已记录为 E5 | 原始 CPPB cross-model/OCR/runtime 的完整 named rerun 记录仍不完整 |
 | 6. span-level LDP 不能保证整个系统 | 已删除系统级 LDP 保证叙事，明确 no end-to-end formal guarantee 及覆盖边界 | 已记录为 E6 | 若要求真正系统级保证，仍未完成；当前是正确的 scope correction |
 
 ### vGPU 实验覆盖审计
 
 | vGPU 实验记录 | 已完成内容 | 覆盖的修改意见 | 未覆盖内容 |
 |---|---|---|---|
-| `data/cppb_reconstructed_utility_run_log_vgpu3090.csv` | RTX 3090 上 `llama3.2:latest`，48 个 reconstructed text-only prompts × 4 条件 = 192 outputs，含 digest、runtime manifest 和 blind-review surface | 为 W6/A5 提供可分析的 utility pilot；验证 named local runtime surface | 不是 256-prompt fresh CPPB live rerun，不含原始 OCR，也不能证明泛化或 human utility |
-| `src/experiments/tab_ollama_zero_shot_run_log_vgpu3090.csv` | TAB `dev:32` zero-shot pilot，2,037 mentions，含 model digest、CUDA/Linux/Python/Ollama runtime 记录 | 提供一个公开 transfer 的 live model smoke/pilot 和运行记录 | 不是 CPPB downstream rerun，不是 Casper/PrivacyRestore 对比，也不是 named cross-model closure |
-| 其余 vGPU/运行记录 | 未发现 Casper/PrivacyRestore 同协议运行、live mapping deployment、semantic mitigation 或原始 CPPB V4/V8 exact regeneration 记录 | 目前只能支撑 bounded pilot claims | 不能把现有 vGPU 记录升级成 AE 所要求的完整证据 |
+| `data/cppb_reconstructed_utility_run_log_revision20260903.csv` | RTX 3090 上 `llama3.2:latest`，48 个 reconstructed text-only prompts × 4 条件 = 192 outputs，含 digest、runtime manifest 和 blind-review surface | 为 W6/A5 提供可分析的 utility pilot；验证 named local runtime surface | 不是 256-prompt fresh CPPB live rerun，不含原始 OCR，也不能证明泛化或 human utility |
+| `src/experiments/semantic_mitigation_probe_results_revision20260903.csv` | 12 条固定 probe × 4 变体 = 48/48，raw/placeholder/context abstraction/access control 准确率为 50.0/25.0/8.3/16.7% | 为 E3 提供有界的 exploratory mitigation signal | 不是完整语义隐私研究，没有 paired utility、adaptive attacker 或 broad-domain closure |
+| `src/experiments/tab_ollama_zero_shot_run_log_revision20260903.csv` | TAB `dev:32` zero-shot pilot，2,037 mentions，含 model digest、Linux/Python/Ollama runtime、decoding 记录 | 提供一个公开 transfer 的 live model pilot 和运行记录 | 不是 CPPB downstream rerun，不是 Casper/PrivacyRestore 对比，也不是 named cross-model closure |
+| 其余 vGPU/运行记录 | 未发现 Casper/PrivacyRestore 同协议运行、live mapping deployment 或原始 CPPB V4/V8 exact regeneration 记录 | 目前仍只能支撑 bounded pilot claims | 不能把现有 vGPU 记录升级成 AE 所要求的完整证据 |
 
-判断：现有 vGPU 实验覆盖了 reconstructed utility pilot 和一个 TAB live pilot，但没有覆盖全部 AE 所需实验。开启 vGPU 只能加速后续推理；在原始 prompt/OCR、冻结 agent stack、命名 backend、部署 mapping service 或人工 raters 未到位前，开卡不会使这些实验变成可复核证据。
+判断：现有 vGPU 实验覆盖了 reconstructed utility pilot、四变体 semantic probe 和一个 TAB live pilot，但没有覆盖全部 AE 所需实验。原始 prompt/OCR、冻结 agent stack、Casper/PrivacyRestore 实现、部署 mapping service 或人工 raters 未到位的部分，不能用现有 pilot 变成可复核的完整证据。
 
 ### 本机记录和排队状态
 
