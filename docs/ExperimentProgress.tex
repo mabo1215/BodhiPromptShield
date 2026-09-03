@@ -10,7 +10,7 @@
 
 \section*{Revision-cycle experiment progress}
 \noindent
-Last updated: 2026-09-03 12:11 NZST. Percentages describe repository work,
+Last updated: 2026-09-03 13:05 NZST. Percentages describe repository work,
 not a claim that blocked experiments are complete. The recorded AE decision is
 reject; the current TOPS-oriented review is accept with minor revision, and the
 explicit utility caveat is now present in the manuscript. The current paper is
@@ -52,13 +52,15 @@ Local CUDA smoke & Verified CUDA allocation and deterministic 512$\times$512 mat
 vGPU 3090 execution and shutdown & Ran the three authorized revision-cycle pilots on the 48\,GiB RTX 3090, pulled and SHA-256-verified the result archive, stopped only the created sessions, and issued the instance shutdown. & Result archive, three runtime manifests, Ollama/watchdog logs, post-shutdown SSH probe & Done & 100\% \\
 Revision-cycle paper result backfill & Added the named-runtime pilot audit, semantic probe results, and TAB zero-shot pilot metrics to the manuscript with explicit evidence boundaries; canonical CPPB scores remain unchanged. & \texttt{paper/main.tex}; tagged CSV/runtime artifacts & Done (bounded evidence) & 100\% \\
 Post-reconciliation paper QA & Rebuilt the single-file paper after table generation and checked the 34-page output for fatal/undefined-reference failures. & \texttt{paper/main.pdf}; build log & Done (warnings only) & 100\% \\
+vGPU core measurement revalidation & Re-executed the review audit and deterministic AI4Privacy/PrivacyLens propagation measurements on the online RTX 3090; all reported metrics matched the existing records, and the audit runtime manifest now records the Linux/Python vGPU environment. & Core result CSVs and runtime manifests; \texttt{review\_revision\_audit} manifest & Done (metrics unchanged; provenance revalidated) & 100\% \\
 \end{longtable}
 
 \section*{Next-step plan}
 
-No experiment in this table is currently executing. Completed vGPU pilots,
-measured propagation/adversary runs, blind scoring, and manuscript integration
-have been moved to the completed table above. The remaining rows are
+No model experiment in this table is currently executing. The vGPU is online
+and the Ollama service passed a live named-model smoke check for follow-on work.
+Completed vGPU pilots, measured propagation/adversary runs, blind scoring, and
+manuscript integration have been moved to the completed table above. The remaining rows are
 prerequisite-gated or require new human/deployment resources; their percentages
 are completion estimates for the repository task, not success probabilities.
 

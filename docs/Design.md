@@ -167,3 +167,21 @@ shut down after collection. E1 same-protocol comparison, the original CPPB
 fresh live rerun/OCR provenance, independent human utility, live mapping
 deployment, and an end-to-end formal guarantee remain blocked by their stated
 prerequisites.
+
+## 2026-09-03 vGPU revalidation after re-enablement
+
+The vGPU was subsequently re-enabled for follow-on work. Preflight confirmed an
+NVIDIA GeForce RTX 3090 with 48 GiB VRAM, and the persisted
+`llama3.2:latest` model was found with its recorded digest. Ollama was started
+without changing model files, and the live generation smoke test returned the
+expected `LIVE_LLM_SMOKE_OK` response.
+
+The review audit, deterministic AI4Privacy reference-agent propagation
+measurement, and PrivacyLens trajectory measurement were then re-executed on
+the vGPU environment. Their metrics matched the existing records exactly:
+AI4Privacy learned-detector PER 7.4%, PrivacyLens learned-detector PER 1.8%,
+and 83.0% semantic residue. The audit runtime manifest was synchronized back
+to the repository and now records the Linux/Python vGPU environment. This
+revalidation does not create a new CPPB score or close any prerequisite-gated
+item above. No model experiment is currently running; Ollama remains available
+for a separately authorized follow-on run.

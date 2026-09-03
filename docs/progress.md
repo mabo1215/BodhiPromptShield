@@ -303,3 +303,28 @@ Your inference:"""
 
 - 原优先级 #1–#3（CPPB 数据卡、lightweight judge/classifier、扩大 adversarial+mapping 攻击）均已完成，详见“已全部修改”。
 - 本轮无需新增实验；剩余仅为上述长期外部受限项。下一步以 author-response 形式把每条 review 意见对应到已落地的表/段即可，无其它阻塞项。
+
+## 2026-09-03 当前 revision-cycle 核对（最新）
+
+本次核对以当前单文件论文 `paper/main.tex`、`docs/RevisionSuggestions.tex`
+和 `docs/ExperimentProgress.tex` 为准。三项 revision-cycle vGPU pilot 的结果
+已经写回论文附录中的 `tab:revision_execution` 及其结果段落：重建 CPPB
+文本 pilot 为 192/192，四变体 semantic panel 为 48/48，TAB dev:32
+named-runtime pilot 为 32/32。它们都保留了 reconstructed/pilot 的证据边界，
+没有改写历史 CPPB score log。
+
+随后在重新启用的 RTX 3090 上复核了 review audit、AI4Privacy
+reference-agent propagation 和 PrivacyLens trajectory measurement；指标与
+论文当前主结果一致（learned-detector PER 7.4%/1.8%，semantic residue
+83.0%），并将 Linux/Python vGPU runtime 信息写入审计 manifest。
+
+当前论文已处理 W1、W2、W3、W4、W5、W6 的 manuscript-facing 修改；W7
+的 AE traceability 已保留在 review/evidence-boundary 文档中。仍未闭环的
+不是普通 GPU 运行问题，而是：独立人类/任务 utility validation、Casper/
+PrivacyRestore 同协议复现、历史 CPPB 原始端到端重跑、剩余 cross-model/OCR
+完整 provenance、live mapping 服务攻防、较大规模 adaptive semantic
+inference，以及 licensed clinical 数据覆盖。end-to-end LDP/system guarantee
+属于明确的 scope correction，不是当前周期应伪装成“已完成”的实验。
+
+Ollama 当前保持可用，但没有模型实验进程在运行；下一次实际运行应先明确
+要补哪一个仍有前置条件的 evidence slice，再使用独立 output tag。
