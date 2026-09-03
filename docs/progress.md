@@ -16,9 +16,9 @@
 
 ## 2026-09-03 修订意见、utility 回填与本机实验审计（当前权威状态）
 
-本节覆盖 `docs/revision_suggestions.tex`、当前 `paper/` 源码、实验工件和本机运行状态；下方 2026-08-25 内容保留为历史快照。当前论文的主文与附录已经合并在 `paper/main.tex`：文件在附录起始处使用 `\\appendix`，仓库中不存在独立的 `paper/appendix.tex`。当前 `paper/main.pdf` 为单文件 34 页；旧记录中“main + appendix”或独立 `paper/appendix.tex` 的表述不再是当前文件拓扑。
+本节覆盖 `docs/RevisionSuggestions.tex`、当前 `paper/` 源码、实验工件和本机运行状态；下方 2026-08-25 内容保留为历史快照。当前论文的主文与附录已经合并在 `paper/main.tex`：文件在附录起始处使用 `\\appendix`，仓库中不存在独立的 `paper/appendix.tex`。当前 `paper/main.pdf` 为单文件 35 页；旧记录中“main + appendix”或独立 `paper/appendix.tex` 的表述不再是当前文件拓扑。
 
-本次同步后的详细实验完成百分比、预计 NZ 时间和备注见 `docs/experiment_progress.tex` 的 `Next-step plan`；该表已移除本轮已经完成的 vGPU pilot、blind scoring 和 utility manuscript integration。
+本次同步后的详细实验完成百分比、预计 NZ 时间和备注见 `docs/ExperimentProgress.tex` 的 `Next-step plan`；该表已移除本轮已经完成的 vGPU pilot、blind scoring 和 utility manuscript integration。
 
 ### 与 `revision_suggestions.tex` 的逐项核对
 
@@ -56,6 +56,7 @@
 ### 本机记录和排队状态
 
 - `data/cppb_reconstructed_blind_ratings_vgpu3090_completed_openai_luna.csv` 和 `...completed_claude_sonnet5.csv` 各含 236 行、192 个唯一 `review_item_id`；两套评分均覆盖 148 条 pending ID。Luna/Claude 的三项 exact agreement 分别为 task success 90.5%、faithfulness 89.9%、required fields 87.8%。新增 `cppb_blind_utility_summary.csv`、`cppb_blind_utility_by_template.csv` 和 `cppb_blind_utility_agreement.csv`，并由 `analyze_blind_utility_review.py` 可重生成。
+- 新增 `src/experiments/analyze_human_utility_review.py` 作为 human-only 审计入口；对现有 88 条原始评分生成 `data/cppb_human_utility_{summary,agreement,coverage}.csv` 和 `cppb_human_utility_audit.txt`。当前审计确认覆盖 44/192 输出、11 个完整 prompt block、16 个多评分者输出，并发现 47 条拒答式行中 43 条的 task success 为 1；该结果只作为校准标记，不是论文效用结论。
 - 已检查 `src/experiments/*execution_manifest.csv`：TAB、CORD、FUNSD、SROIE 和 PhysioNet public transfer 有 executed 记录；TAB zero-shot semantic baseline 仍为 `pending_external_runtime`；licensed i2b2 仍为 `waiting_for_licensed_data`，clinical pipeline 与 zero-shot baseline 仍为 `pending_external_runtime`。
 - 已检查 named cross-model、CPPB multimodal exact-regeneration 和 external-baseline manifest：它们是 template/protocol，不是已排队的 filled runtime。没有发现待运行的 Python、Ollama、pdflatex/bibtex 实验进程，也没有匹配的 Windows Scheduled Task。
 - `.claude/scheduled_tasks.lock` 当前由 PID 16744 的 `claude` 进程持有；该进程不是上述实验执行器，本次审计未停止或修改它。
@@ -64,7 +65,7 @@
 
 | 未完成意见 | 必需实验/动作 | 本机覆盖情况 | 是否有可运行排队项 |
 |---|---|---|---|
-| 独立 human/task utility | 盲 UI 收集人工评分并计算 agreement | UI 和 rubric 已有，人工评分未收集 | 否 |
+| 独立 human/task utility | 盲 UI 收集人工评分并计算 agreement | 已有 88 条标记为人工评分的行，覆盖 44/192 输出；provenance/independence 未完整记录，且 human-audit script 发现 47 条拒答式输出中 43 条被打成 task_success=1，与 rubric 冲突；148 个输出仍待人工评分 | 是（UI 可运行；需要校准和人工） |
 | E1 residual | Casper/PrivacyRestore 同协议实证比较 | 当前只有 primary citations 和概念比较表，尚无复现实现或同协议运行记录 | 否，资源/实现阻塞 |
 | W1 residual | frozen downstream stack 上的 CPPB fresh template-disjoint live rerun | 只有 reconstructed pilot；原始 prompt/OCR 与 frozen stack 缺失 | 否，当前阻塞 |
 | W2 residual | live deployment mapping service、credential/audit/session-isolation attack | reference capability curve 已完成，live stack 未建立 | 否 |
@@ -73,7 +74,7 @@
 | W4 residual | licensed i2b2 与更多 domain 的 filled transfer | PhysioNet generic↔clinical 已完成；i2b2 等待许可/数据 | 仅 protocol，不可运行 |
 | multimodal provenance residual | 原始 CPPB V4/V8 render/OCR/runtime exact regeneration | public OCR slices 有记录，原始 CPPB exact manifest 未填 | 否，源数据阻塞 |
 
-结论：现有本机实验记录已经覆盖 W1、W2、W3、W4、W5 所需的有界证据，W6/A5 的 external model-based utility pilot 也已回填并编译进论文；独立 human/task utility validation 仍未完成。vGPU 已覆盖 reconstructed CPPB utility pilot 和 TAB dev:32 live pilot，但没有覆盖 fresh CPPB、近邻系统同协议比较、semantic-inference mitigation 或 live deployment compromise。没有遗漏一个“应该已经排队但未记录”的可运行实验；其余开放实验均受原始资产、许可、命名运行时或 live deployment stack 限制，不能用现有 pilot 或历史 score log 代替。
+结论：现有本机实验记录已经覆盖 W1、W2、W3、W4、W5 所需的有界证据，W6/A5 的 external model-based utility pilot 也已回填并编译进论文；仓库另有 88 条部分人工评分记录，但因覆盖、评分者 provenance、独立性和 rubric calibration 存在问题，独立 human/task utility validation 仍未完成。应先保留原始文件、校准 rubric 并重评 88 条 legacy rows，再在现有 UI 中完成 148 个匿名 pending 输出，预先规定 overlap/agreement 分析。vGPU 已覆盖 reconstructed CPPB utility pilot 和 TAB dev:32 live pilot，但没有覆盖 fresh CPPB、近邻系统同协议比较、semantic-inference mitigation 或 live deployment compromise。其余开放实验均受原始资产、许可、命名运行时或 live deployment stack 限制，不能用现有 pilot 或历史 score log 代替。
 
 ## 2026-08-25 新审稿意见（AESuggestion）对应 revision cycle（历史快照）
 

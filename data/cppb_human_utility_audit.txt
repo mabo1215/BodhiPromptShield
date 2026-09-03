@@ -1,0 +1,11 @@
+Ratings file: data\cppb_reconstructed_blind_ratings_vgpu3090.csv
+Review file: data\cppb_reconstructed_blind_review_vgpu3090.csv
+Rated rows: 88
+Unique rated items: 44 / 192 (22.9%)
+Complete prompt blocks: 11
+Multi-rater items: 16
+Refusal-like rows: 47; task_success=1 among them: 43
+Pairwise overlap diagnostics (not a reliability coefficient):
+- task_success_score: 92 pairs, exact agreement 76.1%, MAD 0.239
+- faithfulness_score: 92 pairs, exact agreement 71.7%, MAD 0.283
+- required_fields_score: 92 pairs, exact agreement 92.4%, MAD 0.076

@@ -1,0 +1,2 @@
+source_rows,source_unique_review_items,source_unique_prompt_blocks,rated_rows,rated_unique_review_items,review_item_coverage_pct,rated_prompt_blocks,complete_prompt_blocks,prompt_block_coverage_pct,multi_rater_items,rater_count,unrated_source_items
+192,192,48,88,44,22.9,11,11,22.9,16,5,148

@@ -1,0 +1,4 @@
+metric,overlap_items,pair_comparisons,exact_agreement_pct,mean_abs_difference
+task_success_score,16,92,76.1,0.239
+faithfulness_score,16,92,71.7,0.283
+required_fields_score,16,92,92.4,0.076

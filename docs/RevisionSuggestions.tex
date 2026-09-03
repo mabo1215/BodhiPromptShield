@@ -10,7 +10,7 @@ Manuscript: BodhiPromptShield: Pre-Inference Prompt Mediation for Suppressing
 Surface-Form Privacy Propagation in LLM Agent Pipelines
 
 Review basis: the current single-file `paper/main.tex` and `paper/main.pdf`
-(single-blind acmsmall, 34 pp; the appendix is embedded after `\\appendix`).
+(single-blind acmsmall, 35 pp; the appendix is embedded after `\\appendix`).
 There is no current `paper/appendix.tex` or separate appendix PDF. This review
 supersedes the prior CCS review notes and evaluates the manuscript against the
 ACM TOPS bar for a security/privacy systems contribution.
@@ -64,7 +64,14 @@ clear honest scope, but acceptance still depends on the items below.
     fully useful rows. The paper now reports these results separately from
     privacy protection, distinguishes safe refusal from useful completion, and
     states that this is an external model-based pilot rather than independent
-    human validation or a fresh live CPPB rerun.
+    human validation or a fresh live CPPB rerun. The repository also contains
+    88 pre-existing rows labelled with five rater IDs, covering only 44/192
+    outputs (11 prompt blocks); 16 outputs have multi-rater overlap, while
+    rater identity, recruitment, and independence metadata are not recorded
+    sufficiently to treat these rows as completed independent human evidence.
+    The human-audit script flags 47 refusal-like rows, 43 scored with
+    `task_success=1` even though the rubric requires an uncompleted refusal to
+    receive 0, so the legacy rows require calibration and re-rating.
 
 
 Traceability to the original AE comments
@@ -102,7 +109,9 @@ explicitly bounded rather than experimentally eliminated.
       and no independent validation of the custom rubric. The blind Luna/Claude
       utility review is a separate reconstructed pilot: it does not score raw
       exposure and must be reported separately, with safe refusal distinguished
-      from useful task completion.
+      from useful task completion. The 88-row legacy human subset is incomplete
+      and has a rubric-calibration flag; it cannot yet support an independent
+      task-utility claim.
 
   E5 (detector and reproducibility disclosure -- partially addressed). The
       learned detector's 0.53 Span F1 and 0.36 precision are now reported, but
@@ -191,8 +200,13 @@ W6 (moderate -- RESOLVED for manuscript integration; validation residual open).
    16--17. The paper separates safe refusals, generic template/code responses,
    fully useful completions, and other partial responses, and does not present
    the result as a privacy-detection metric or evidence about the hidden
-   condition/method. The remaining limitation is that the pilot is model-based;
-   an independent human/task validation has not been collected.
+   condition/method. The repository additionally contains 88 pre-existing
+   rows labelled with five rater IDs, but they cover only 44/192 outputs and
+   lack sufficient rater-provenance/independence metadata. The human-audit
+   script flags 47 refusal-like rows, including 43 with task success 1 despite the
+   rubric's refusal rule. They are therefore partial, calibration-flagged,
+   unverified human-rater evidence; complete independent human/task validation
+   remains open, with 148 unique outputs still pending human scoring.
 
 W7 (moderate -- AE traceability). The original AE objections about closest
    prior systems, CPPB overfitting, contextual inference, enterprise utility,
@@ -220,7 +234,10 @@ A5 (done this cycle). The completed Luna/Claude blind utility review is now in
     distributions, rater agreement, response-family coding, and a per-template
     breakdown. The paper states that exact raw-value exposure is checked
     separately and that safe refusal is not equivalent to successful task
-    completion; independent human validation remains open.
+    completion. The 88 pre-existing rater rows are recorded as partial,
+    provenance-unverified, and requiring rubric calibration; independent human
+    validation remains open for the 88 legacy rows plus the 148 pending outputs
+    and the planned overlap analysis.
 
 A6 (done this cycle; residuals remain bounded). The explicit E1--E7 response
     matrix is included above. Same-protocol Casper/PrivacyRestore comparisons

@@ -111,6 +111,138 @@ def load_existing_ratings(path: Path) -> dict[tuple[str, str], dict[str, str]]:
         }
 
 
+def write_ratings(
+    path: Path, ratings: dict[tuple[str, str], dict[str, str]], source_fields: list[str]
+) -> None:
+    fields = rating_fields(source_fields)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer.writeheader()
+        for key in sorted(ratings):
+            writer.writerow({field: ratings[key].get(field, "") for field in fields})
+
+
+def seed_ratings_if_needed(
+    ratings_path: Path,
+    seed_paths: list[Path] | None,
+    source_fields: list[str],
+    review_item_ids: set[str],
+) -> int:
+    """Merge prior ratings into the output without mutating or overwriting them."""
+    existing = load_existing_ratings(ratings_path)
+    if not seed_paths:
+        return 0
+    added = 0
+    for seed_path in seed_paths:
+        if not seed_path.exists():
+            raise FileNotFoundError(f"Seed ratings CSV not found: {seed_path}")
+        if seed_path.resolve() == ratings_path.resolve():
+            raise ValueError("--seed-ratings-csv must be different from --ratings-csv")
+
+        seeded = load_existing_ratings(seed_path)
+        unknown_ids = sorted(
+            {
+                review_item_id
+                for (_, review_item_id) in seeded
+                if review_item_id and review_item_id not in review_item_ids
+            }
+        )
+        if unknown_ids:
+            raise ValueError(
+                "Seed ratings contain review_item_id values absent from the blind review CSV: "
+                f"{unknown_ids[:5]}"
+            )
+        for key, row in seeded.items():
+            # Existing output rows may be human corrections; never overwrite them.
+            if key not in existing:
+                existing[key] = row
+                added += 1
+
+    if added:
+        write_ratings(ratings_path, existing, source_fields)
+    return added
+
+
+def ratings_by_item(ratings_path: Path) -> dict[str, list[dict[str, str]]]:
+    grouped: dict[str, list[dict[str, str]]] = {}
+    for (_, review_item_id), row in load_existing_ratings(ratings_path).items():
+        if review_item_id:
+            grouped.setdefault(review_item_id, []).append(row)
+    return grouped
+
+
+def reference_summary(
+    block: dict[str, Any], reference_rows: dict[str, list[dict[str, str]]]
+) -> list[str]:
+    summaries: list[str] = []
+    for row in block["rows"]:
+        entries: list[str] = []
+        for prior in reference_rows.get(row["review_item_id"], []):
+            rater = prior.get("rater_id") or "unknown"
+            scores = (
+                f"T={prior.get('task_success_score', '')}, "
+                f"F={prior.get('faithfulness_score', '')}, "
+                f"R={prior.get('required_fields_score', '')}"
+            )
+            comment = " ".join((prior.get("comments") or "").split())
+            if len(comment) > 120:
+                comment = f"{comment[:117]}..."
+            entries.append(f"{rater}: {scores}" + (f" — {comment}" if comment else ""))
+        summaries.append("\n".join(entries) if entries else "无已导入评分；请独立评分。")
+    return summaries
+
+
+def prefill_rows(
+    rater_id: str,
+    block: dict[str, Any],
+    ratings_path: Path,
+    prefill_rater_ids: list[str],
+) -> tuple[list[str], list[str], list[str], list[str]]:
+    saved = load_existing_ratings(ratings_path)
+    task_scores: list[str] = []
+    faith_scores: list[str] = []
+    required_scores: list[str] = []
+    comments: list[str] = []
+    for row in block["rows"]:
+        saved_row = saved.get((rater_id, row["review_item_id"]))
+        if saved_row is None:
+            for prefill_rater_id in prefill_rater_ids:
+                saved_row = saved.get((prefill_rater_id, row["review_item_id"]))
+                if saved_row is not None:
+                    break
+        saved_row = saved_row or {}
+        task_scores.append(saved_row.get("task_success_score", ""))
+        faith_scores.append(saved_row.get("faithfulness_score", ""))
+        required_scores.append(saved_row.get("required_fields_score", ""))
+        # Do not copy prior comments into a new human rater's record.
+        comments.append(saved.get((rater_id, row["review_item_id"]), {}).get("comments", ""))
+    return task_scores, faith_scores, required_scores, comments
+
+
+def fully_rated_item_ids(ratings_path: Path) -> set[str]:
+    """Return item IDs with at least one complete score row in the ratings file."""
+    complete: set[str] = set()
+    for (_, review_item_id), row in load_existing_ratings(ratings_path).items():
+        if review_item_id and all((row.get(field) or "").strip() != "" for field in SCORE_FIELDS):
+            complete.add(review_item_id)
+    return complete
+
+
+def filter_complete_blocks(
+    blocks: list[dict[str, Any]], ratings_path: Path, skip_complete_blocks: bool
+) -> tuple[list[dict[str, Any]], int]:
+    if not skip_complete_blocks:
+        return blocks, 0
+    complete_item_ids = fully_rated_item_ids(ratings_path)
+    remaining = [
+        block
+        for block in blocks
+        if not all(row["review_item_id"] in complete_item_ids for row in block["rows"])
+    ]
+    return remaining, len(blocks) - len(remaining)
+
+
 def rating_fields(source_fields: list[str]) -> list[str]:
     removed = set(SCORE_FIELDS) | {"rater_id", "comments", "saved_at_utc"}
     return [field for field in source_fields if field not in removed] + [
@@ -137,31 +269,19 @@ def progress_text(rater_id: str, blocks: list[dict[str, Any]], ratings_path: Pat
     return f"评分者 `{rater_id}`：已保存 {completed}/{len(blocks)} 个 prompt block。"
 
 
-def blank_or_saved(
-    rater_id: str, block: dict[str, Any], ratings_path: Path
-) -> tuple[list[str], list[str], list[str], list[str]]:
-    saved = load_existing_ratings(ratings_path)
-    task_scores: list[str] = []
-    faith_scores: list[str] = []
-    required_scores: list[str] = []
-    comments: list[str] = []
-    for row in block["rows"]:
-        saved_row = saved.get((rater_id, row["review_item_id"]), {})
-        task_scores.append(saved_row.get("task_success_score", ""))
-        faith_scores.append(saved_row.get("faithfulness_score", ""))
-        required_scores.append(saved_row.get("required_fields_score", ""))
-        comments.append(saved_row.get("comments", ""))
-    return task_scores, faith_scores, required_scores, comments
-
-
 def load_block(
-    rater_id: str, selection: str | int | None, blocks: list[dict[str, Any]], ratings_path: Path
+    rater_id: str,
+    selection: str | int | None,
+    blocks: list[dict[str, Any]],
+    ratings_path: Path,
+    reference_rows: dict[str, list[dict[str, str]]],
+    prefill_rater_ids: list[str],
 ) -> list[Any]:
     index = int(selection or 0)
     index = max(0, min(index, len(blocks) - 1))
     block = blocks[index]
-    task_scores, faith_scores, required_scores, comments = blank_or_saved(
-        rater_id.strip(), block, ratings_path
+    task_scores, faith_scores, required_scores, comments = prefill_rows(
+        rater_id.strip(), block, ratings_path, prefill_rater_ids
     )
     return [
         block["prompt_text"],
@@ -169,6 +289,7 @@ def load_block(
         block["task_success_criteria"],
         block["required_output_components"],
         *[row["model_output"] for row in block["rows"]],
+        *reference_summary(block, reference_rows),
         *task_scores,
         *faith_scores,
         *required_scores,
@@ -230,13 +351,7 @@ def save_block(
             )
             existing[(rater_id, row["review_item_id"])] = merged
 
-        fields = rating_fields(source_fields)
-        ratings_path.parent.mkdir(parents=True, exist_ok=True)
-        with ratings_path.open("w", encoding="utf-8", newline="") as handle:
-            writer = csv.DictWriter(handle, fieldnames=fields)
-            writer.writeheader()
-            for key in sorted(existing):
-                writer.writerow({field: existing[key].get(field, "") for field in fields})
+        write_ratings(ratings_path, existing, source_fields)
 
     return (
         f"已保存 {block['prompt_id']} 的 A/B/C/D 四条评分。评分不会写回原始盲评表。",
@@ -244,9 +359,42 @@ def save_block(
     )
 
 
-def build_app(review_path: Path, ratings_path: Path) -> gr.Blocks:
+def build_app(
+    review_path: Path,
+    ratings_path: Path,
+    seed_ratings_paths: list[Path] | None = None,
+    skip_complete_blocks: bool = False,
+    prefill_rater_ids: list[str] | None = None,
+) -> gr.Blocks:
     rows, source_fields = read_review_rows(review_path)
-    blocks = group_rows(rows)
+    all_blocks = group_rows(rows)
+    seeded_count = seed_ratings_if_needed(
+        ratings_path,
+        seed_ratings_paths,
+        source_fields,
+        {row["review_item_id"] for row in rows},
+    )
+    reference_rows = ratings_by_item(ratings_path)
+    prefill_rater_ids = prefill_rater_ids or []
+    available_rater_ids = {
+        row.get("rater_id", "")
+        for item_rows in reference_rows.values()
+        for row in item_rows
+    }
+    unknown_prefill_ids = sorted(set(prefill_rater_ids).difference(available_rater_ids))
+    if unknown_prefill_ids:
+        raise ValueError(
+            "--prefill-rater-id values are absent from the ratings CSV: "
+            f"{unknown_prefill_ids}"
+        )
+    blocks, skipped_count = filter_complete_blocks(
+        all_blocks, ratings_path, skip_complete_blocks
+    )
+    if not blocks:
+        raise ValueError(
+            "No prompt blocks remain after --skip-complete-blocks. "
+            "Remove that flag if you need to re-review existing blocks."
+        )
     choices = [(f"{index + 1:02d} · {block['prompt_id']}", str(index)) for index, block in enumerate(blocks)]
 
     with gr.Blocks(title="CPPB reconstructed blind review") as demo:
@@ -263,6 +411,22 @@ def build_app(review_path: Path, ratings_path: Path) -> gr.Blocks:
 - 敏感值是否暴露不由人工评分；这是自动检查项。评论可写明拒答、遗漏、臆造或格式问题。
 """
         )
+        if seeded_count:
+            gr.Markdown(
+                f"已将 {seeded_count} 条导入评分合并到当前输出文件；"
+                "已有输出记录和所有源文件均保持不变。"
+            )
+        if prefill_rater_ids:
+            gr.Markdown(
+                "当前评分表会优先用 "
+                f"{', '.join(prefill_rater_ids)} 的评分预填；"
+                "请人工检查每个输出后再保存，修改会写入你输入的新评分者 ID。"
+            )
+        if skipped_count:
+            gr.Markdown(
+                f"已隐藏 {skipped_count} 个已有完整评分的 prompt block；"
+                f"当前显示 {len(blocks)} 个待处理 block。"
+            )
         with gr.Row():
             rater_id = gr.Textbox(label="评分者 ID", placeholder="例如 rater_01", scale=1)
             prompt_selector = gr.Dropdown(
@@ -272,6 +436,7 @@ def build_app(review_path: Path, ratings_path: Path) -> gr.Blocks:
                 label="Prompt block",
                 scale=2,
             )
+            load_button = gr.Button("加载/刷新当前 block", scale=0)
             previous_button = gr.Button("上一条", scale=0)
             next_button = gr.Button("下一条", scale=0)
 
@@ -283,6 +448,7 @@ def build_app(review_path: Path, ratings_path: Path) -> gr.Blocks:
 
         gr.Markdown("## 四个匿名输出及评分")
         output_texts: list[gr.Textbox] = []
+        reference_boxes: list[gr.Textbox] = []
         task_radios: list[gr.Radio] = []
         faith_radios: list[gr.Radio] = []
         required_radios: list[gr.Radio] = []
@@ -293,6 +459,13 @@ def build_app(review_path: Path, ratings_path: Path) -> gr.Blocks:
                     gr.Textbox(
                         label=f"Output {code}（只读）",
                         lines=10,
+                        interactive=False,
+                    )
+                )
+                reference_boxes.append(
+                    gr.Textbox(
+                        label="已导入评分参考（只读）",
+                        lines=3,
                         interactive=False,
                     )
                 )
@@ -337,6 +510,7 @@ def build_app(review_path: Path, ratings_path: Path) -> gr.Blocks:
             criteria,
             required_components,
             *output_texts,
+            *reference_boxes,
             *task_radios,
             *faith_radios,
             *required_radios,
@@ -346,10 +520,20 @@ def build_app(review_path: Path, ratings_path: Path) -> gr.Blocks:
         ]
 
         def load_current(rater: str, selection: str | int | None) -> list[Any]:
-            return load_block(rater, selection, blocks, ratings_path)
+            return load_block(
+                rater,
+                selection,
+                blocks,
+                ratings_path,
+                reference_rows,
+                prefill_rater_ids,
+            )
 
         prompt_selector.change(load_current, inputs=[rater_id, prompt_selector], outputs=load_outputs)
         rater_id.change(load_current, inputs=[rater_id, prompt_selector], outputs=load_outputs)
+        rater_id.submit(load_current, inputs=[rater_id, prompt_selector], outputs=load_outputs)
+        load_button.click(load_current, inputs=[rater_id, prompt_selector], outputs=load_outputs)
+        demo.load(load_current, inputs=[rater_id, prompt_selector], outputs=load_outputs)
 
         def shift_selection(selection: str | int | None, delta: int) -> str:
             index = int(selection or 0)
@@ -407,6 +591,30 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--review-csv", type=Path, default=DEFAULT_REVIEW_CSV)
     parser.add_argument("--ratings-csv", type=Path, default=DEFAULT_RATINGS_CSV)
+    parser.add_argument(
+        "--seed-ratings-csv",
+        type=Path,
+        action="append",
+        default=None,
+        help=(
+            "Merge a prior ratings CSV; repeat this option to merge multiple files. "
+            "Seed files are read-only and never modified."
+        ),
+    )
+    parser.add_argument(
+        "--prefill-rater-id",
+        action="append",
+        default=None,
+        help=(
+            "Use ratings from this rater as the initial human-review values when the "
+            "current rater has no saved row; repeat for fallback rater IDs."
+        ),
+    )
+    parser.add_argument(
+        "--skip-complete-blocks",
+        action="store_true",
+        help="Hide prompt blocks whose four items already have complete ratings.",
+    )
     parser.add_argument("--server-name", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=7860)
     parser.add_argument("--share", action="store_true", help="Ask Gradio for a temporary public share URL")
@@ -417,7 +625,13 @@ def main() -> int:
         parser.error("--auth-user and --auth-password must be supplied together")
     if args.server_name not in {"127.0.0.1", "localhost"} and not args.auth_user:
         print("WARNING: non-local bind without Gradio authentication.", flush=True)
-    demo = build_app(args.review_csv.resolve(), args.ratings_csv.resolve())
+    demo = build_app(
+        args.review_csv.resolve(),
+        args.ratings_csv.resolve(),
+        [path.resolve() for path in args.seed_ratings_csv] if args.seed_ratings_csv else None,
+        args.skip_complete_blocks,
+        args.prefill_rater_id,
+    )
     auth = (args.auth_user, args.auth_password) if args.auth_user else None
     demo.launch(
         server_name=args.server_name,
