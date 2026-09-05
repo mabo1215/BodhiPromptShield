@@ -126,16 +126,21 @@ def _untyped(fn: Callable[[str], list[Span]], label: str = "SPAN") -> Callable[[
     return lambda text: [(s, e, label) for s, e in _merge_spans(fn(text))]
 
 
+IBAN_PATTERN = re.compile(r"\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b")
+
+
 def _regex_typed(text: str) -> list[TypedSpan]:
     from ai4privacy_matched_baseline_suite import EMAIL_PATTERN, PHONE_PATTERN
 
     typed: list[TypedSpan] = []
     emails = [(m.start(), m.end()) for m in EMAIL_PATTERN.finditer(text)]
     phones = [(m.start(), m.end()) for m in PHONE_PATTERN.finditer(text)]
+    ibans = [(m.start(), m.end()) for m in IBAN_PATTERN.finditer(text)]
     typed.extend((s, e, "EMAIL") for s, e in emails)
     typed.extend((s, e, "PHONE") for s, e in phones)
+    typed.extend((s, e, "ACCOUNT") for s, e in ibans)
     covered = set()
-    for s, e in emails + phones:
+    for s, e in emails + phones + ibans:
         covered.update(range(s, e))
     for s, e in _merge_spans(_regex_spans(text)):
         if not any(i in covered for i in range(s, e)):
@@ -278,10 +283,11 @@ class LLMSanitizer:
     """
 
     def __init__(self, model: str, ollama_url: str = DEFAULT_OLLAMA_URL, cache_dir: Path = DEFAULT_CACHE_DIR,
-                 num_predict: int = 2048, num_ctx: int = 8192, retries: int = 3) -> None:
+                 num_predict: int = 2048, num_ctx: int = 8192, retries: int = 3,
+                 template_path: Path = LLM_PROMPT_TEMPLATE_PATH) -> None:
         self.model = model
         self.ollama_url = ollama_url
-        self.template = LLM_PROMPT_TEMPLATE_PATH.read_text(encoding="utf-8")
+        self.template = template_path.read_text(encoding="utf-8")
         self.template_hash = hashlib.sha256(self.template.encode("utf-8")).hexdigest()[:12]
         self.base_options = {"temperature": 0, "top_p": 1, "seed": 17}
         self.min_predict, self.min_ctx = num_predict, num_ctx
@@ -387,6 +393,67 @@ def changed_spans(original: str, rewritten: str) -> list[Span]:
     matcher = difflib.SequenceMatcher(a=original, b=rewritten, autojunk=False)
     spans = [(a0, a1) for tag, a0, a1, _, _ in matcher.get_opcodes() if tag != "equal" and a1 > a0]
     return _merge_spans(spans)
+
+
+# ---------------------------------------------------------------------------
+# Released-text renderers shared by the downstream suites.
+# ---------------------------------------------------------------------------
+
+PLACEHOLDER_LABELS = {
+    "PERSON": "PERSON", "ORG": "ORG", "ORGANIZATION": "ORG", "GPE": "LOCATION", "LOC": "LOCATION", "FAC": "LOCATION",
+    "LOCATION": "LOCATION", "ADDRESS": "ADDRESS", "NORP": "GROUP", "DATE": "DATE", "TIME": "DATE", "DATE_TIME": "DATE",
+    "EMAIL": "EMAIL", "EMAIL_ADDRESS": "EMAIL", "PHONE": "PHONE", "PHONE NUMBER": "PHONE", "PHONE_NUMBER": "PHONE",
+    "IBAN_CODE": "ACCOUNT", "BANK ACCOUNT NUMBER": "ACCOUNT", "CREDIT_CARD": "ACCOUNT", "CREDIT CARD NUMBER": "ACCOUNT",
+    "MEDICAL CONDITION": "MEDICAL", "MEDICAL_LICENSE": "MEDICAL",
+}
+
+
+def render_placeholders(text: str, typed_spans: list[TypedSpan]) -> str:
+    """Typed placeholder release: ``<PERSON_1>``-style tokens, numbered per label within the text."""
+    out: list[str] = []
+    cursor = 0
+    counters: dict[str, int] = {}
+    for start, end, label in _dedupe_typed(typed_spans):
+        if start < cursor:
+            continue
+        kind = PLACEHOLDER_LABELS.get(label.upper(), "PROTECTED")
+        counters[kind] = counters.get(kind, 0) + 1
+        out.append(text[cursor:start])
+        out.append(f"<{kind}_{counters[kind]}>")
+        cursor = end
+    out.append(text[cursor:])
+    return "".join(out)
+
+
+def render_symbolic(text: str, spans: list[Span], namespace: str, mapping: dict[str, str]) -> str:
+    """Secure symbolic mapping release: opaque per-session tokens; ``mapping`` accumulates token -> value."""
+    out: list[str] = []
+    cursor = 0
+    for start, end in _merge_spans(spans):
+        if start < cursor:
+            continue
+        value = text[start:end]
+        token = next((k for k, v in mapping.items() if v == value), None)
+        if token is None:
+            token = f"BPSMAP-{namespace}-{len(mapping) + 1}"
+            mapping[token] = value
+        out.append(text[cursor:start])
+        out.append(token)
+        cursor = end
+    out.append(text[cursor:])
+    released = "".join(out)
+    # Internally consistent tokens: repeats of a mapped value that the detector
+    # missed are tokenized too (longest values first so substrings cannot clash).
+    for token, value in sorted(mapping.items(), key=lambda kv: -len(kv[1])):
+        if len(value) >= 4:
+            released = released.replace(value, token)
+    return released
+
+
+def restore_symbolic(text: str, mapping: dict[str, str]) -> str:
+    for token, value in mapping.items():
+        text = text.replace(token, value)
+    return text
 
 
 # ---------------------------------------------------------------------------
