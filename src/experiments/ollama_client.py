@@ -23,6 +23,7 @@ from typing import Any
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 DEFAULT_CACHE_DIR = EXPERIMENTS_DIR / "ollama_cache"
 DEFAULT_BASE_URL = "http://127.0.0.1:11434"
+FIXED_NUM_CTX = 12288  # must equal OLLAMA_CONTEXT_LENGTH on the server
 
 
 class CachedOllamaChat:
@@ -52,8 +53,9 @@ class CachedOllamaChat:
         return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
     def chat(self, messages: list[dict[str, str]], *, temperature: float = 0.0, num_predict: int = 512,
-             num_ctx: int = 8192, seed: int = 17) -> str | None:
-        options = {"temperature": temperature, "top_p": 1, "num_predict": num_predict, "num_ctx": num_ctx, "seed": seed}
+             num_ctx: int = FIXED_NUM_CTX, seed: int = 17) -> str | None:
+        # num_ctx is fixed server-wide: a differing value would force Ollama to reload the model.
+        options = {"temperature": temperature, "top_p": 1, "num_predict": num_predict, "num_ctx": FIXED_NUM_CTX, "seed": seed}
         key = self._key(messages, options)
         if key in self.cache:
             return self.cache[key]

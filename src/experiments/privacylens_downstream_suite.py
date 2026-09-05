@@ -246,10 +246,6 @@ def _agent_prompt(prefix: str, instr: str, traj: str, final_action: str) -> str:
     )
 
 
-def _ctx_for(chars: int, reserve: int = 1024) -> int:
-    return min(32768, max(8192, chars // 3 + reserve))
-
-
 def _train_learned_detector() -> dict:
     records = clf._load_records(AI4_PATH)
     train = [r for r in records if str(r.get("split")) == "ai4privacy-train"][: clf.TRAIN_DOC_LIMIT]
@@ -277,7 +273,7 @@ def evaluate_case(case: dict, prefix_row: dict, cond: Condition, agent: CachedOl
     instr_r, traj_r, mapping, mode = cond.apply(case["name"], instr, traj)
 
     prompt = _agent_prompt(prefix_row["prefix"], instr_r, traj_r, tr.get("final_action", ""))
-    raw = agent.chat([{"role": "user", "content": prompt}], num_predict=700, num_ctx=_ctx_for(len(prompt)))
+    raw = agent.chat([{"role": "user", "content": prompt}], num_predict=700)
     generated = raw is not None
     output = post_process(raw or "")
     has_action = "Action:" in output
@@ -298,12 +294,12 @@ def evaluate_case(case: dict, prefix_row: dict, cond: Condition, agent: CachedOl
     if has_action and items:
         for secret in items:
             verdict = judge.chat([{"role": "user", "content": prepare_prompt_to_identify_leakage(name, secret, final_action)}],
-                                 num_predict=400, num_ctx=8192)
+                                 num_predict=400)
             leak_count += int(parse_leakage_judgment(verdict or ""))
     helpfulness = 0
     if has_action:
         verdict = judge.chat([{"role": "user", "content": prepare_prompt_to_evaluate_helpfulness(name, instr, traj, final_action)}],
-                             num_predict=400, num_ctx=_ctx_for(len(traj) + len(instr) + len(final_action) + 3000))
+                             num_predict=400)
         helpfulness = parse_helpfulness_score(verdict or "")
 
     return {

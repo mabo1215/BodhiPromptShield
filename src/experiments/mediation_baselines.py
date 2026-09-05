@@ -50,6 +50,8 @@ from ai4privacy_matched_baseline_suite import _regex_spans
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 DEFAULT_CACHE_DIR = EXPERIMENTS_DIR / "llm_sanitizer_cache"
 DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
+# One context size for every request (see LLMSanitizer._options_for); keep equal to OLLAMA_CONTEXT_LENGTH on the server.
+FIXED_NUM_CTX = 12288
 LLM_PROMPT_TEMPLATE_PATH = EXPERIMENTS_DIR / "ai4privacy_zero_shot_prompt_template.txt"
 
 # spaCy entity labels treated as privacy-bearing (Presidio's default mapping plus
@@ -329,13 +331,14 @@ class LLMSanitizer:
         """Scale the output budget with input length so long rewrites are never truncated.
 
         A truncated rewrite would be scored as if its missing tail had been masked,
-        so the budget is ~1.5x the input token estimate (4 chars/token), bounded
-        by the model context.
+        so the budget is ~1.5x the input token estimate (4 chars/token).  The
+        context window is fixed (``FIXED_NUM_CTX``): Ollama reloads a model whenever
+        a request asks for a different context size, so per-request sizing would
+        thrash the GPU when several suites share one server.
         """
         est_tokens = max(64, len(text) // 4)
-        num_predict = min(16384, max(self.min_predict, int(est_tokens * 1.5)))
-        num_ctx = min(32768, max(self.min_ctx, est_tokens * 2 + num_predict + 512))
-        return {**self.base_options, "num_predict": num_predict, "num_ctx": num_ctx}
+        num_predict = min(FIXED_NUM_CTX // 2, max(self.min_predict, int(est_tokens * 1.5)))
+        return {**self.base_options, "num_predict": num_predict, "num_ctx": FIXED_NUM_CTX}
 
     def _generate(self, prompt: str, options: dict[str, int]) -> str | None:
         payload = json.dumps(
