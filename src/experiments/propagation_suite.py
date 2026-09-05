@@ -35,7 +35,7 @@ from ai4privacy_matched_baseline_suite import _char_coverage, _load_records, _me
 import ai4privacy_lightweight_classifier_baseline as clf
 from measured_agent_propagation import MARKER, _memory_write, _retrieval_query, _sanitize, _tool_call
 from measured_privacylens_propagation import _gold_spans as _pl_gold_spans
-from mediation_baselines import METHOD_ORDER, Detector, bootstrap_ratio_ci, build_detectors
+from mediation_baselines import METHOD_ORDER, Detector, GenerationFailed, bootstrap_ratio_ci, build_detectors
 
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
@@ -218,7 +218,11 @@ def run(source: str, method_keys: list[str], *, max_docs: int | None, spacy_mode
             if key in done:
                 per_doc.append(done[key])
                 continue
-            counts = measure(doc, det)
+            try:
+                counts = measure(doc, det)
+            except GenerationFailed as exc:
+                print(f"  skip {det.key} {doc['doc_id']}: {exc}")
+                continue
             writer.writerow({"method_key": det.key, "doc_id": doc["doc_id"], **counts})
             handle.flush()
             os.fsync(handle.fileno())

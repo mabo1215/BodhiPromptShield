@@ -245,6 +245,13 @@ def _gliner_typed_factory(model_id: str = GLINER_MODEL_ID) -> tuple[Callable[[st
     from gliner import GLiNER
 
     model = GLiNER.from_pretrained(model_id)
+    try:  # a ~1 GB encoder: on GPU it costs almost nothing, on CPU it starves co-running suites
+        import torch
+
+        if torch.cuda.is_available():
+            model = model.to("cuda")
+    except Exception:  # noqa: BLE001 - CPU fallback is acceptable, just slow
+        pass
 
     def detect(text: str) -> list[TypedSpan]:
         typed: list[TypedSpan] = []
@@ -274,6 +281,10 @@ def _chunks(text: str, size: int) -> list[tuple[int, str]]:
 # ---------------------------------------------------------------------------
 # LLM sanitizer via Ollama with a durable generation cache.
 # ---------------------------------------------------------------------------
+
+
+class GenerationFailed(RuntimeError):
+    """Raised when an LLM call fails after all retries; the caller skips that item."""
 
 
 class LLMSanitizer:
@@ -317,8 +328,10 @@ class LLMSanitizer:
         prompt = self.template.replace("{{NOTE_TEXT}}", text)
         sanitized = self._generate(prompt, self._options_for(text))
         if sanitized is None:
+            # Never fall back to the original text: that would be scored as "no
+            # protection".  Callers skip the document so a rerun retries it.
             self.failures += 1
-            return text
+            raise GenerationFailed(f"{self.model}: generation failed after {self.retries} attempts")
         self.generated += 1
         self.cache[key] = sanitized
         with self.cache_path.open("a", encoding="utf-8") as handle:

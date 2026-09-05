@@ -44,7 +44,7 @@ from ai4privacy_matched_baseline_suite import _merge_spans
 import ai4privacy_lightweight_classifier_baseline as clf
 from measured_privacylens_propagation import _gold_spans as _pl_gold_spans
 from mediation_baselines import (
-    DEFAULT_CACHE_DIR, Detector, LLMSanitizer, bootstrap_ratio_ci, build_detectors, render_placeholders,
+    DEFAULT_CACHE_DIR, Detector, GenerationFailed, LLMSanitizer, bootstrap_ratio_ci, build_detectors, render_placeholders,
     render_symbolic, restore_symbolic, substitute_dummy,
 )
 from ollama_client import CachedOllamaChat
@@ -274,8 +274,10 @@ def evaluate_case(case: dict, prefix_row: dict, cond: Condition, agent: CachedOl
 
     prompt = _agent_prompt(prefix_row["prefix"], instr_r, traj_r, tr.get("final_action", ""))
     raw = agent.chat([{"role": "user", "content": prompt}], num_predict=700)
-    generated = raw is not None
-    output = post_process(raw or "")
+    if raw is None:
+        raise GenerationFailed(f"agent {agent.model} failed on {case['name']}")
+    generated = True
+    output = post_process(raw)
     has_action = "Action:" in output
     action_out = output[output.find("Action:") + len("Action:"):].strip() if has_action else ""
     final_action = restore_symbolic(action_out, mapping) if mode == "late" else action_out
@@ -295,12 +297,16 @@ def evaluate_case(case: dict, prefix_row: dict, cond: Condition, agent: CachedOl
         for secret in items:
             verdict = judge.chat([{"role": "user", "content": prepare_prompt_to_identify_leakage(name, secret, final_action)}],
                                  num_predict=400)
-            leak_count += int(parse_leakage_judgment(verdict or ""))
+            if verdict is None:
+                raise GenerationFailed(f"judge {judge.model} failed on {case['name']}")
+            leak_count += int(parse_leakage_judgment(verdict))
     helpfulness = 0
     if has_action:
         verdict = judge.chat([{"role": "user", "content": prepare_prompt_to_evaluate_helpfulness(name, instr, traj, final_action)}],
                              num_predict=400)
-        helpfulness = parse_helpfulness_score(verdict or "")
+        if verdict is None:
+            raise GenerationFailed(f"judge {judge.model} failed on {case['name']}")
+        helpfulness = parse_helpfulness_score(verdict)
 
     return {
         "condition": cond.spec, "case": case["name"], "agent_model": agent.model, "judge_model": judge.model,
@@ -378,7 +384,11 @@ def main() -> int:
         pending = [c for c in cases if (cond.spec, c["name"]) not in done]
         print(f"[{cond.spec}] {len(cases) - len(pending)} done, {len(pending)} to run")
         for i, case in enumerate(pending, 1):
-            row = evaluate_case(case, prefixes[case["name"]], cond, agent, judge)
+            try:
+                row = evaluate_case(case, prefixes[case["name"]], cond, agent, judge)
+            except GenerationFailed as exc:
+                print(f"  skip {cond.spec} {case['name']}: {exc}")
+                continue
             writer.writerow(row); handle.flush(); os.fsync(handle.fileno())
             if i % 25 == 0:
                 print(f"  {cond.spec}: {i}/{len(pending)}")
