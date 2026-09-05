@@ -283,7 +283,8 @@ class LLMSanitizer:
         self.ollama_url = ollama_url
         self.template = LLM_PROMPT_TEMPLATE_PATH.read_text(encoding="utf-8")
         self.template_hash = hashlib.sha256(self.template.encode("utf-8")).hexdigest()[:12]
-        self.options = {"temperature": 0, "top_p": 1, "num_predict": num_predict, "num_ctx": num_ctx, "seed": 17}
+        self.base_options = {"temperature": 0, "top_p": 1, "seed": 17}
+        self.min_predict, self.min_ctx = num_predict, num_ctx
         self.retries = retries
         cache_dir.mkdir(parents=True, exist_ok=True)
         safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", model)
@@ -306,7 +307,7 @@ class LLMSanitizer:
         if key in self.cache:
             return self.cache[key]
         prompt = self.template.replace("{{NOTE_TEXT}}", text)
-        sanitized = self._generate(prompt)
+        sanitized = self._generate(prompt, self._options_for(text))
         if sanitized is None:
             self.failures += 1
             return text
@@ -318,9 +319,21 @@ class LLMSanitizer:
             os.fsync(handle.fileno())
         return sanitized
 
-    def _generate(self, prompt: str) -> str | None:
+    def _options_for(self, text: str) -> dict[str, int]:
+        """Scale the output budget with input length so long rewrites are never truncated.
+
+        A truncated rewrite would be scored as if its missing tail had been masked,
+        so the budget is ~1.5x the input token estimate (4 chars/token), bounded
+        by the model context.
+        """
+        est_tokens = max(64, len(text) // 4)
+        num_predict = min(16384, max(self.min_predict, int(est_tokens * 1.5)))
+        num_ctx = min(32768, max(self.min_ctx, est_tokens * 2 + num_predict + 512))
+        return {**self.base_options, "num_predict": num_predict, "num_ctx": num_ctx}
+
+    def _generate(self, prompt: str, options: dict[str, int]) -> str | None:
         payload = json.dumps(
-            {"model": self.model, "prompt": prompt, "stream": False, "think": False, "options": self.options,
+            {"model": self.model, "prompt": prompt, "stream": False, "think": False, "options": options,
              "keep_alive": "30m"}
         ).encode("utf-8")
         for attempt in range(self.retries):

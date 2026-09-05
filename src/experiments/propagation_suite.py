@@ -132,27 +132,43 @@ def _measure_ai4privacy(doc: dict, detector: Detector) -> dict[str, int]:
 
 
 def _measure_privacylens(doc: dict, detector: Detector) -> dict[str, int]:
+    """Detect once per stage; the combined-text metrics reuse the per-stage spans with offsets.
+
+    Detecting per stage matches how an agent would mediate each artifact and, for
+    LLM sanitizers, avoids a fourth generation over the concatenated trajectory.
+    """
     name, email = doc["name"], doc["email"]
-    counts = {}
-    for stage, text in (("ret", doc["instr"]), ("mem", doc["traj"]), ("tool", doc["action"])):
+    stages = (("ret", doc["instr"]), ("mem", doc["traj"]), ("tool", doc["action"]))
+    counts: dict[str, int] = {}
+    combined_parts: list[str] = []
+    combined_spans: list[tuple[int, int]] = []
+    offset = 0
+    released_traj = doc["traj"]
+    for stage, text in stages:
+        spans = detector(text)
+        combined_spans.extend((offset + s, offset + e) for s, e in spans)
+        combined_parts.append(text)
+        offset += len(text) + 1  # the joining newline
         gold = _pl_gold_spans(text, name, email)
         if not gold:
             counts[f"{stage}_s"], counts[f"{stage}_t"] = 0, 0
-            continue
-        released = _sanitize(text, detector(text))
-        gold_chars = _char_coverage(gold)
-        counts[f"{stage}_s"] = sum(1 for i in gold_chars if i < len(released) and released[i] != MARKER)
-        counts[f"{stage}_t"] = len(gold_chars)
-    combined = doc["instr"] + "\n" + doc["traj"] + "\n" + doc["action"]
+        else:
+            released = _sanitize(text, spans)
+            gold_chars = _char_coverage(gold)
+            counts[f"{stage}_s"] = sum(1 for i in gold_chars if i < len(released) and released[i] != MARKER)
+            counts[f"{stage}_t"] = len(gold_chars)
+        if stage == "mem":
+            released_traj = _sanitize(text, spans)
+    combined = "\n".join(combined_parts)
     gold = _pl_gold_spans(combined, name, email)
-    released = _sanitize(combined, detector(combined))
+    released = _sanitize(combined, _merge_spans(combined_spans))
     gold_chars = _char_coverage(gold)
     counts["res_chars"] = sum(1 for i in gold_chars if i < len(released) and released[i] != MARKER)
     counts["sens_chars"] = len(gold_chars)
     non = set(range(len(combined))) - gold_chars
     counts["nonsens_chars"] = len(non)
     counts["kept_nonsens"] = sum(1 for i in non if i < len(released) and released[i] == combined[i])
-    counts["sem_s"], counts["sem_t"] = _semantic_residue(_sanitize(doc["traj"], detector(doc["traj"])), doc["items"])
+    counts["sem_s"], counts["sem_t"] = _semantic_residue(released_traj, doc["items"])
     return counts
 
 
