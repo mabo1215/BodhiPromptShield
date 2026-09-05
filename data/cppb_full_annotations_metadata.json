@@ -16,14 +16,15 @@
   "annotation_convention": "Python Unicode code-point character offsets (not UTF-8 byte or token offsets), half-open [start, end); prompt_text[start:end] == sensitive_spans[0].text",
   "text_only_execution": "eligible for a separately frozen reconstructed protocol",
   "ocr_execution": "not eligible until original render package, OCR engine/version, preprocessing, and image assets are supplied",
+  "hash_convention": "sha256 over LF-normalized file bytes",
   "source_manifest": "cppb_prompt_manifest.csv",
-  "source_manifest_sha256": "590e68e8ab18d75616038eef37271c39b695cfe8f577273dcdb21a025aaefc05",
+  "source_manifest_sha256": "5018cb32ace5dc9644fdfb6a1a3224ae8f6c4b91b1340f39169f0e7fa47aa4d7",
   "source_split_manifest": "cppb_split_manifest.csv",
-  "source_split_manifest_sha256": "fa01bda097d6cfa7cb684aafc85b160be990d2b7de8a982f53cce36993c522b4",
+  "source_split_manifest_sha256": "f75fc16fb30ce483f4a8604760f07e43d09f03447af4d7d3811a71dfadf250f4",
   "generator": "build_cppb_full_annotations.py",
-  "generator_sha256": "969808b6c62746dc4937b04aeb602db6b2535bcefc1d70e895b1f6bde47175e7",
+  "generator_sha256": "6e39715e83d16f79a869cdfa684397c710582627ffc4bf669f1330cce14a4f4e",
   "outputs": [
-    "C:/source/BodhiPromptShield/data/cppb_full_annotations.jsonl",
-    "C:/source/BodhiPromptShield/data/cppb_full_annotations.csv"
+    "data/cppb_full_annotations.jsonl",
+    "data/cppb_full_annotations.csv"
   ]
 }

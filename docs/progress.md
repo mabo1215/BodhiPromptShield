@@ -1,6 +1,82 @@
 # 论文进度
 
-最后更新：2026-09-03 12:11 NZST
+## 2026-09-05 独立评审重置与 venue 重选（当前最新）
+
+**2026-09-06 用户决策：D1 = PoPETs 2027 Issue 3（截止 2026-11-30 firm，正文 12 页，双盲）；D2 = CPPB 降入附录；D3 = 先盘点 Ollama/GPU 主机再定模型。** `USAGE.md` 目标行与 `docs/RevisionSuggestions.tex` 已同步为 PoPETs 首选、TAISAP 备选。
+
+PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submission-template-2027.zip`；三节必填且不计页——`ethical considerations`、`open science`、`AI use`；**首页须明确说明与真实隐私应用的相关性**；**曾被任何 venue 拒稿且有评审意见的投稿必须附上先前评审**（即 TOPS AE 六条意见需匿名化后随稿提交，并附逐条回应）；字体须 Type1/TrueType 嵌入；不得操纵版式。
+
+本次按用户指令对当前论文做了独立评审（不使用旧的 `docs/RevisionSuggestions.tex` 作为输入），
+依据为当前单文件 `paper/main.tex`（1211 行，附录内嵌）与 `paper/main.pdf`（35 页，
+2026-09-03 由当前源码构建，0 undefined ref/cite）。评审先按 `USAGE.md` 原目标 ICLR 2027 完成，
+随后用户指示"不一定投 ICLR，投对口、能中的期刊或会议即可"，遂改为 venue 重选。
+为选 venue 读取了投稿历史：论文已被 ACM TOPS 拒稿（TOPS-2026-06-0395，AE 六条意见），
+此前经历过 CCS 一轮；AE 六条意见与本次独立评审结论高度一致。
+
+**Venue 结论（已写入 `USAGE.md` 目标行，用户可覆盖）：**
+- 首选 **ACM TAISAP**（Transactions on AI Security and Privacy）：2025 年新刊、已开放投稿、
+  2026–2029 OA 免费；scope 明确含 AI 部署阶段隐私；论文已是 acmart 格式、systems/threat-model
+  叙事可保留、附录可完整保留、无截止期。需在作者指南页核实页数上限与是否双盲（本次 dl.acm.org 403）。
+- 备选 **PoPETs 2027 Issue 3**（截止 2026-11-30 firm；Issue 4 为 2027-02-28）：正文 12 页
+  （revise 时 13 页），双盲，有 accept/revise/reject 三档且 revise 有 4 个月编辑指导期。
+- 冲刺 USENIX Security '27 Cycle 2（2027-01-26）仅当新实验有明确 head-to-head 胜出时考虑。
+- 不建议 ICLR 2027（贴合度差、9 页、20 天）与 TOPS 重投（刚被拒）。
+- 三条路线的实验完全相同，10 月 31 日按结果定 venue。
+
+# 已全部修改
+
+1. **`build_cppb_full_annotations.py` 重构（src）**：常量提取、模板化统一、`_locate_span` 拆分、
+   CSV 列序守卫；修复两处 provenance 缺陷——metadata 中写入了本机绝对路径（改为仓库相对路径）、
+   sha256 随 CRLF/LF 检出而变（改为 LF 归一化后哈希并新增 `hash_convention` 字段）；CSV 改为
+   LF 行尾。已验证 `cppb_full_annotations.jsonl`/`.csv` 与 HEAD 逐字节一致，256 行 offset
+   round-trip 全部通过，两个下游脚本所需字段完整。数据 schema 未改。
+2. **`docs/RevisionSuggestions.tex` 完全重写**（英文 LaTeX，自包含）：venue 对比表与推荐、
+   总体判断、27 条编号发现（F1–F27，P0/P1/P2/P3 分级）、AE 六条意见→本次行动的追溯表、
+   TAISAP（≤30 页）与 PoPETs（12 页）两套结构预算、行动计划 A1（合规，1–4 天）/
+   A2（实验 E1–E8，1–45 天）/A3（重写，10–55 天）/A4（投稿事务与 10-31 决策点），以及
+   需作者决策的 D1–D3。
+3. **`USAGE.md` 目标 venue 行**由 ICLR 2027 改为 TAISAP（备选 PoPETs 2027 Issue 3）。
+
+评审核心结论（详见该文件）：
+- 现稿再投任何严肃 venue 仍大概率被拒，原因与 TOPS AE 一致：主对比是己方承认的失败
+  （enterprise staged redaction PER 8.1% < proposed 9.3%，utility 仅 +0.02 且 rubric 未验证；
+  附录盲评 TSR 仅 12–13.5%）；CPPB 主表来自不可再生的历史日志且附录传播表自述"非实测"；
+  下游模型仅 llama3/llama3.2-3B-Q4；无 LLM sanitizer、真实 Presidio、Casper 复现等 baseline；
+  所有主表无置信区间；SPE 单调性声明被自家数据反驳；大量修订历史措辞与自我否定叙述；
+  PrivacyLens 论文在 bib 中却从未被引用；三处正文承诺的附录图不存在；"Section~IV" 硬编码。
+- 可行的 accept 路径（AE 原话即规格）："a new evaluation on real agent stacks with strong
+  baselines and realistic privacy attacks"——保留 systems 叙事，把 restoration governance 做成
+  可测机制并与 Casper-style/Presidio/LLM sanitizer 同协议对比（E1、E4），用强模型与
+  task-native utility 重做（E3），把 83% 语义泄露从"限制"变成跨方法的正式发现（E5），
+  全表加 CI（E6），加入带下游效应的自适应攻击（E7）。
+
+3. **A1 模板转换已完成（2026-09-06）**：`paper/main.tex` 已改为 PoPETs 2027 模板（acmart `sigconf,anonymous,review` + `popets.sty`，模板文件已复制到 `paper/`，原稿备份为 `paper/backup_main_pre_popets_20260906.tex`）；删除 TOPS 元数据与 CCS XML、`\shortauthors` 覆盖、两处真实 GitHub 链接与致谢文字；新增 `ethics`/`openscience`/`ai` 三个必填节（AI use 节声明了 LLM 助手参与代码与文本编辑——**请作者确认措辞**）；修正 "Section~IV"、补引 PrivacyLens 与 FUNSD、删除三处不存在的"附录图"表述；算法浮动体改为 `[H]`（原 `[t]` 在双栏下丢失）。构建结果：21 页、0 undefined ref/cite；正文到第 16 页（≈15.5 页，上限 12 页，需删减约 1/4）。
+4. **PRO 6000 无卡模式环境（2026-09-06）**：Ollama 0.33.3 已装（需先 `apt install zstd`）；Ollama registry 的 Cloudflare R2 blob 直连超时，经 `network_turbo` 代理短暂可用后持续 0 MiB/s，**已改用 hf-mirror.com GGUF + `ollama create` 路线**（aria2c 可续传，>100 MB/s；每个模型导入后删除 GGUF 控制峰值磁盘；sha256 记入 `/root/autodl-tmp/ollama/gguf/manifest.csv`）。模型命名 `qwen3:8b-q4km-hf`、`qwen3:32b-q4km-hf`、`llama3.3:70b-q4km-hf`。仓库已 clone 到 `/root/autodl-tmp/BodhiPromptShield`（main@482e2bd）；PrivacyLens `main_data.json`（493 条）已下载；miniconda Python 3.12 已装 presidio、spaCy+en_core_web_lg、torch 2.8.0+cu128、transformers、gliner。本地 WSL 建了 `~/.venvs/bps`（presidio+spaCy）用于 CPU 冒烟测试。
+
+# 未修改或部分修改
+
+- 【进行中】A1 剩余项：删除修订历史措辞（F12）、调和六处数值不一致（F23）、删除自我否定表述（F11）；A3 正文裁剪至 12 页依赖 E1–E7 新结果。
+- 【进行中】A2/E1 代码已完成并通过本地 CPU 冒烟测试（2026-09-06）：新增 `src/experiments/mediation_baselines.py`（方法注册表：真实 Presidio、真实 spaCy NER、Casper-style 规则+NER+dummy 值替换、GLiNER-PII transformer 检测器、Ollama LLM sanitizer 带 fsync 缓存与 diff 取 span；原 "NER-only masking" 如实改标为 capitalization heuristic）与 `src/experiments/propagation_suite.py`（AI4Privacy reference agent + PrivacyLens 两个真实来源、全部方法、文档级 bootstrap 95% CI、逐文档增量写入可断点续跑、runtime manifest）。旧脚本未改动，原表仍可复现。LLM 路径已用本地 `qwen3:0.6b` 验证（生成→diff→缓存→重跑命中缓存）。**PRO 6000 无卡模式 cgroup 内存上限 2 GiB**（`memory.max`），任何模型都无法加载（OOM kill），因此 E1 的 LLM sanitizer 与 GLiNER 行、以及 E3–E5 全部等待开卡；模型导入（纯文件复制）不受影响。
+
+# 遗留问题
+
+需要你提供/决策：
+1. **D1 venue**：确认 TAISAP 首选、PoPETs 2027 Issue 3 备选（推荐）；或改以 PoPETs 为首选
+   （则 11-30 截止与 12 页裁剪成为硬约束）。
+   A: PoPETs（2026-09-06）。已解决。
+2. **D2 CPPB 处置**：本轮降入附录（推荐），期刊路线且时间允许时再用多样化生成值重建并实跑（E8，约 4 GPU 天）。
+   A: 附录（2026-09-06）。已解决。
+3. **D3 模型预算**：E3 utility 实验可用的 ≥70B 开源模型（H800/A800 上）与固定版本的 API 模型是哪些？
+   E3/E5 的 LLM-judge API 花费上限？
+   A:（2026-09-06 主机盘点，密码未记录）
+   - 本机：RTX 3070 8GB；Ollama 仅 `kimi-k2.5:cloud`（Ollama 云端模型，有 digest，可充当具名 API 模型）。
+   - vGPU 3090（westd）：当前**无卡模式**（无 nvidia-smi）；Ollama 已装但服务未启动，模型库仅
+     `llama3.2:latest`（1.9GB）；`autodl-fs/models` 与 `hf-cache` 仅有 Qwen3-VL-8B/4B、EGM-4B、
+     LocateAnything-3B、sam3（全是视觉模型，无 ≥7B 文本模型）；`bodhi-venv` 为 torch 2.8.0+cu128 /
+     transformers 5.16.1，无 vllm；磁盘 autodl-tmp 706G 可用、autodl-fs 490G 可用。
+   - H800 / PRO 6000 / A800：全部关机（connection refused）。4c 3090（10.126.126.1）：本网络不可达（超时）。
+   - 结论：现有主机上没有任何 ≥70B 文本模型；E3 必须开 H800 或 A800（80GB）或 PRO 6000（96GB）之一
+     并拉取模型。**待用户：开哪一台；从评审 D3 建议中选定两个模型；API judge 花费上限。**
 
 ## 2026-09-03 revision cycle completion：vGPU 实验回收、论文回填与审稿闭环（当前新增）
 
