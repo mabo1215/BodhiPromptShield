@@ -188,8 +188,12 @@ def _ci_fields(prefix: str, pairs: list[tuple[float, float]], n_boot: int, scale
 
 
 def run(source: str, method_keys: list[str], *, max_docs: int | None, spacy_model: str, ollama_url: str,
-        n_boot: int, output_tag: str | None) -> Path:
+        n_boot: int, output_tag: str | None, shard: str | None = None) -> Path:
     docs = _load_documents(source, max_docs)
+    if shard:  # "i/n": deterministic interleaved split so shards can run concurrently and be concatenated later
+        i, n = (int(x) for x in shard.split("/"))
+        docs = docs[i::n]
+        output_tag = f"{output_tag + '_' if output_tag else ''}shard{i}of{n}"
     learned = _train_learned_detector() if "learned_lr" in method_keys else None
     detectors = build_detectors(method_keys, learned_weights=learned, spacy_model=spacy_model, ollama_url=ollama_url)
     measure = _measure_ai4privacy if source == "ai4privacy" else _measure_privacylens
@@ -273,10 +277,11 @@ def main() -> int:
     parser.add_argument("--ollama-url", default="http://127.0.0.1:11434/api/generate")
     parser.add_argument("--bootstrap", type=int, default=1000)
     parser.add_argument("--output-tag")
+    parser.add_argument("--shard", help="I/N: run only every N-th document starting at I (outputs get a shard tag)")
     args = parser.parse_args()
     keys = METHOD_ORDER if args.methods == "all" else [k.strip() for k in args.methods.split(",") if k.strip()]
     run(args.source, keys, max_docs=args.max_docs, spacy_model=args.spacy_model, ollama_url=args.ollama_url,
-        n_boot=args.bootstrap, output_tag=args.output_tag)
+        n_boot=args.bootstrap, output_tag=args.output_tag, shard=args.shard)
     return 0
 
 

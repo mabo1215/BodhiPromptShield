@@ -341,6 +341,7 @@ def main() -> int:
     parser.add_argument("--base-url", default="http://127.0.0.1:11434")
     parser.add_argument("--bootstrap", type=int, default=1000)
     parser.add_argument("--output-tag")
+    parser.add_argument("--shard", help="I/N: run only every N-th case starting at I (outputs get a shard tag)")
     args = parser.parse_args()
 
     cases = json.load(open(PL_DATA, encoding="utf-8"))
@@ -348,6 +349,10 @@ def main() -> int:
     if args.max_cases:
         rng = random.Random(args.sample_seed)
         cases = rng.sample(cases, min(args.max_cases, len(cases)))
+    if args.shard:  # "i/n": interleaved split for concurrent shards; rows are concatenated afterwards
+        i, n = (int(x) for x in args.shard.split("/"))
+        cases = cases[i::n]
+        args.output_tag = f"{args.output_tag + '_' if args.output_tag else ''}shard{i}of{n}"
     specs = [c.strip() for c in args.conditions.split(",") if c.strip()]
     needed = sorted({s.split(":", 1)[1] for s in specs if s.split(":")[0] in ("placeholder", "symbolic_late", "symbolic_early")}
                     | ({"casper_style"} if "casper_style" in specs else set()))
