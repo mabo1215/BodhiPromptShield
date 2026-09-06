@@ -53,9 +53,17 @@ PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submis
 3. **A1 模板转换已完成（2026-09-06）**：`paper/main.tex` 已改为 PoPETs 2027 模板（acmart `sigconf,anonymous,review` + `popets.sty`，模板文件已复制到 `paper/`，原稿备份为 `paper/backup_main_pre_popets_20260906.tex`）；删除 TOPS 元数据与 CCS XML、`\shortauthors` 覆盖、两处真实 GitHub 链接与致谢文字；新增 `ethics`/`openscience`/`ai` 三个必填节（AI use 节声明了 LLM 助手参与代码与文本编辑——**请作者确认措辞**）；修正 "Section~IV"、补引 PrivacyLens 与 FUNSD、删除三处不存在的"附录图"表述；算法浮动体改为 `[H]`（原 `[t]` 在双栏下丢失）。构建结果：21 页、0 undefined ref/cite；正文到第 16 页（≈15.5 页，上限 12 页，需删减约 1/4）。
 4. **PRO 6000 无卡模式环境（2026-09-06）**：Ollama 0.33.3 已装（需先 `apt install zstd`）；Ollama registry 的 Cloudflare R2 blob 直连超时，经 `network_turbo` 代理短暂可用后持续 0 MiB/s，**已改用 hf-mirror.com GGUF + `ollama create` 路线**（aria2c 可续传，>100 MB/s；每个模型导入后删除 GGUF 控制峰值磁盘；sha256 记入 `/root/autodl-tmp/ollama/gguf/manifest.csv`）。模型命名 `qwen3:8b-q4km-hf`、`qwen3:32b-q4km-hf`、`llama3.3:70b-q4km-hf`。仓库已 clone 到 `/root/autodl-tmp/BodhiPromptShield`（main@482e2bd）；PrivacyLens `main_data.json`（493 条）已下载；miniconda Python 3.12 已装 presidio、spaCy+en_core_web_lg、torch 2.8.0+cu128、transformers、gliner。本地 WSL 建了 `~/.venvs/bps`（presidio+spaCy）用于 CPU 冒烟测试。
 
+5. **E3/E4/E5 代码已完成并本地冒烟（2026-09-06）**：`privacylens_downstream_suite.py`（用 PrivacyLens 自身代码渲染的 naive agent prompt；条件含 typed placeholder、Casper-style、LLM sanitizer、语义抽象、symbolic late/early restoration；逐条 secret 泄露判定与 0–3 helpfulness 使用其 `evaluate_final_action.py` 原 prompt；judge 用其原版 Mistral-7B-Instruct-v0.2）、`agentdojo_restoration_suite.py`（AgentDojo banking 套件，PromptMediator + 工具边界还原的 RestoringToolsExecutor，none/late/no_restore 三模式，utility 由环境状态判定）、`ollama_client.py`（fsync 缓存）、`privacylens_render_prompts.py`。全部 GPU 实验以 screen 并行方式在 PRO 6000 上运行，10 分钟巡检 Monitor 已启用。
+6. **PRO 6000 开卡运行记录（2026-09-06 06:52 起）**：RTX PRO 6000 Blackwell 96GB；Ollama 0.33.3 以 `OLLAMA_CONTEXT_LENGTH=12288 / NUM_PARALLEL=1 / MAX_LOADED_MODELS=4` 运行（客户端 num_ctx 统一 12288，避免按请求变 ctx 触发模型重载）。首次 70B 导入实际失败（导入脚本把 `| tail` 的返回码当成功并删除了 GGUF），已修 pipefail；孤儿 blob（完整 42.5GB 拷贝）经 `ollama create FROM <blob>` 重新注册。screen：e1_ai4、e1_pl（E1 全部方法含 GLiNER 与 qwen3:8b sanitizer）、e3_q32（PrivacyLens 下游，agent qwen3:32b）、e4_q32（AgentDojo banking）；70B 注册后追加 e3_l70（200 例子集）、e4_l70、e1_l70（70B sanitizer，output-tag l70）。
+
+7. **论文结构重排完成（2026-09-06）**：按 D2 与评审结构计划，把 CPPB 专属内容（基准构造、tab:per/utility/pi_sensitivity/latency、类别分析、split 审计、OCR 子集、运行开销、operating-points 图）整体移入新附录 "Controlled CPPB Operating Surface"（`\label{app:cppb}`）；删除自我否定的 tab:cppb_audit、tab:propagation（"非实测"）、tab:crossmodel 及 Cross-Model 小节、以及将被 E3 取代的盲评附录（tab:blindutility 等）；§5.2 改写为以真实数据源为主的 "Datasets"（AI4Privacy / PrivacyLens / AgentDojo / TAB + CPPB 一句）。同时完成 F12 修订历史措辞清理（29 处）。构建：20 页，**正文止于第 12 页**（PoPETs 上限 12），0 undefined ref/cite。原稿备份 `paper/backup_main_pre_restructure_20260906.tex`。仍待：结果回填后重写 §6（新表：真实来源传播+CI、PrivacyLens 下游 helpfulness/leakage、AgentDojo restoration）、F11 自我否定表述、F23 数值一致性。
+
+8. **F23 数值一致性已修（2026-09-06）**：Regex/NER 在 judge 表 vs per 表的差异标注为"test split 单独计算"；learned detector 跨域协议行标注为"独立训练不完全等于 lightclf 表"；latency 硬件段与 §6.12 措辞不再矛盾；homoglyph 94.1%→43.9% 标注为"exposure 而非 tab:advmeas 的 ASR"；CPPB 第八类别统一为 "context-dependent confidential span"；两套 context-inference 面板标注为"探针集不同、不可直接比较"。
+9. **E7（带下游效应的自适应攻击）已实现**：`adversary_propagation_suite.py`（E7-a，AI4Privacy 200 文档 × 8 攻击 × 5 detector，测量被攻击后 gold span 在 retrieval/memory/tool 三阶段的存活率与 PER，非仅 evasion ASR）已在 PRO 6000 跑完（9000 行文档级记录）；`agentdojo_restoration_suite.py` 扩展 `--with-injections`（AgentDojo important_instructions 攻击，banking injection_task_1/8 试图把 IBAN 外泄）与 `--restore-scope user-directed`（仅当工具调用的收件人类参数指向用户自己 prompt 中提及的实体时才还原 token，抵御"注入指令触发过早/越权 restoration"）；已修一处 AgentDojo 内部 bug（its important_instructions 攻击要求 pipeline.name 含其硬编码模型名列表中的一个，开源本地模型标签不在列表内会抛异常，已加同义回退且不影响实际调用模型）。E7-b 在 e4_q32（AgentDojo 基线）跑完后自动接续。
+
 # 未修改或部分修改
 
-- 【进行中】A1 剩余项：删除修订历史措辞（F12）、调和六处数值不一致（F23）、删除自我否定表述（F11）；A3 正文裁剪至 12 页依赖 E1–E7 新结果。
+- 【进行中】A1/A3 剩余项：F11 自我否定表述清理；§6 结果重写与新表插入依赖 E1–E5/E7 全部跑完（PRO 6000 运行中，08:09 巡检：E1 全部完成、E3 152/~4400 行、E4 13/48 任务、E7-a 已完成、E7-b 排队中）。
 - 【进行中】A2/E1 代码已完成并通过本地 CPU 冒烟测试（2026-09-06）：新增 `src/experiments/mediation_baselines.py`（方法注册表：真实 Presidio、真实 spaCy NER、Casper-style 规则+NER+dummy 值替换、GLiNER-PII transformer 检测器、Ollama LLM sanitizer 带 fsync 缓存与 diff 取 span；原 "NER-only masking" 如实改标为 capitalization heuristic）与 `src/experiments/propagation_suite.py`（AI4Privacy reference agent + PrivacyLens 两个真实来源、全部方法、文档级 bootstrap 95% CI、逐文档增量写入可断点续跑、runtime manifest）。旧脚本未改动，原表仍可复现。LLM 路径已用本地 `qwen3:0.6b` 验证（生成→diff→缓存→重跑命中缓存）。**PRO 6000 无卡模式 cgroup 内存上限 2 GiB**（`memory.max`），任何模型都无法加载（OOM kill），因此 E1 的 LLM sanitizer 与 GLiNER 行、以及 E3–E5 全部等待开卡；模型导入（纯文件复制）不受影响。
 
 # 遗留问题
@@ -68,6 +76,7 @@ PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submis
    A: 附录（2026-09-06）。已解决。
 3. **D3 模型预算**：E3 utility 实验可用的 ≥70B 开源模型（H800/A800 上）与固定版本的 API 模型是哪些？
    E3/E5 的 LLM-judge API 花费上限？
+   → 2026-09-06 进展：用户开启 PRO 6000；开源模型定为 llama3.3:70b（Q4_K_M）+ qwen3:32b，judge 为 Mistral-7B-Instruct-v0.2（与 PrivacyLens 原协议一致），无需 API 花费。**仍待确认：磁盘清理**——`/root/autodl-tmp/ollama/models/blobs/` 下两个无 manifest 引用的孤儿文件（`sha256-3e0039…` 4.4GB，mistral 重复导入；`sha256-4824…-partial` 稀疏文件，R2 中断下载残留）可删除以回收约 5GB，请回复"删除"后执行。
    A:（2026-09-06 主机盘点，密码未记录）
    - 本机：RTX 3070 8GB；Ollama 仅 `kimi-k2.5:cloud`（Ollama 云端模型，有 digest，可充当具名 API 模型）。
    - vGPU 3090（westd）：当前**无卡模式**（无 nvidia-smi）；Ollama 已装但服务未启动，模型库仅
