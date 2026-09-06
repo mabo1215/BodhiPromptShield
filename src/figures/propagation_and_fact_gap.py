@@ -57,6 +57,19 @@ SHORT = {
     "learned_lr": "Ours (learned)",
     "gliner_pii": "Ours (transf.)",
 }
+# Panel (b) is dense in the low-exposure corner, so it uses compact labels;
+# the caption maps them back to the full names used in panel (a).
+SHORT_B = {
+    "no_protection": "None",
+    "regex_only": "Regex",
+    "capitalization_heuristic": "Capital.",
+    "spacy_ner": "spaCy",
+    "presidio": "Presidio",
+    "casper_style": "Casper",
+    "heuristic_mediator": "Ours-H",
+    "learned_lr": "Ours-L",
+    "gliner_pii": "Ours-T",
+}
 PROPOSED_KEYS = {"heuristic_mediator", "learned_lr", "gliner_pii"}
 ORDER = [
     "no_protection",
@@ -75,6 +88,12 @@ def _short(key: str) -> str:
     if key.startswith("llm_sanitizer"):
         return "LLM sanitizer"
     return SHORT.get(key, key)
+
+
+def _short_b(key: str) -> str:
+    if key.startswith("llm_sanitizer"):
+        return "LLM san."
+    return SHORT_B.get(key, key)
 
 
 def _load(path):
@@ -203,22 +222,22 @@ def _panel_b(ax, rows):
     # so no two collide in the crowded low-PER corner.
     # (dx, dy, ha) tuned against the plotted coordinates so no two labels touch.
     offsets = {
-        "no_protection": (-8, 5, "right"),
+        "no_protection": (-7, 4, "right"),
         "regex_only": (6, 2, "left"),
-        "capitalization_heuristic": (-8, -10, "right"),
+        "capitalization_heuristic": (-7, -9, "right"),
         "spacy_ner": (0, 7, "center"),
-        "presidio": (2, -11, "left"),
-        "casper_style": (2, 7, "left"),
+        "presidio": (0, -11, "center"),
+        "casper_style": (-7, 0, "right"),
         "heuristic_mediator": (8, -2, "left"),
-        "learned_lr": (7, -2, "left"),
-        "gliner_pii": (6, 4, "left"),
+        "learned_lr": (8, -3, "left"),
+        "gliner_pii": (6, 3, "left"),
     }
     for key, row in rows:
         per = _point(row["per_percent"])
         frr = _point(row["semantic_residue"])
         dx, dy, ha = offsets.get(key, (-6, -11, "center"))
         ax.annotate(
-            _short(key),
+            _short_b(key),
             (per, frr),
             textcoords="offset points",
             xytext=(dx, dy),
@@ -229,7 +248,7 @@ def _panel_b(ax, rows):
 
     ax.set_xlabel("Residual exact-identifier exposure (PER, %)", fontsize=7, color=TEXT_PRIMARY)
     ax.set_ylabel("Fact Retention Rate (FRR, %)", fontsize=7, color=TEXT_PRIMARY)
-    ax.set_xlim(-4, 112)
+    ax.set_xlim(-13, 112)
     ax.set_ylim(30, 108)
     ax.tick_params(labelsize=6.5, colors=TEXT_SECONDARY, length=0)
     ax.grid(color=GRID, linewidth=0.5, zorder=0)
@@ -247,7 +266,7 @@ def _panel_b(ax, rows):
                    color=BASELINE_COLOR, markeredgecolor=SURFACE, label="Baselines"),
     ]
     ax.legend(handles=handles, frameon=False, fontsize=6.5, loc="center left",
-              bbox_to_anchor=(0.28, 0.22), handlelength=1.0,
+              bbox_to_anchor=(0.42, 0.34), handlelength=1.0,
               labelcolor=TEXT_SECONDARY)
     ax.set_title(
         "(b) Surface-form vs. factual leakage, PrivacyLens trajectories",
