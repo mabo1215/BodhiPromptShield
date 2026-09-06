@@ -51,6 +51,7 @@ from pathlib import Path
 import openai
 from agentdojo.agent_pipeline import AgentPipeline, InitQuery, OpenAILLM, SystemMessage, ToolsExecutionLoop, ToolsExecutor
 from agentdojo.agent_pipeline.agent_pipeline import load_system_message
+from agentdojo.models import MODEL_NAMES
 from agentdojo.agent_pipeline.base_pipeline_element import BasePipelineElement
 from agentdojo.functions_runtime import EmptyEnv, Env, FunctionsRuntime
 from agentdojo.task_suite.load_suites import get_suite
@@ -172,6 +173,15 @@ def build_pipeline(llm: OpenAILLM, detector: Detector | None, mode: str, state: 
     return pipeline
 
 
+def _attack_addressable_name(pipeline_name: str, with_injections: bool) -> str:
+    """AgentDojo's important_instructions attack needs a recognized model-name substring
+    in pipeline.name to phrase its injected message; append a generic fallback for
+    open-weight local tags it does not recognize (does not change which model runs)."""
+    if not with_injections or any(key in pipeline_name for key in MODEL_NAMES):
+        return pipeline_name
+    return f"{pipeline_name} meta-llama/Llama-3-70b-chat-hf"
+
+
 def _train_learned_detector() -> dict:
     records = clf._load_records(AI4_PATH)
     train = [r for r in records if str(r.get("split")) == "ai4privacy-train"][: clf.TRAIN_DOC_LIMIT]
@@ -220,6 +230,7 @@ def run(args: argparse.Namespace) -> None:
                 task = suite.get_user_task_by_id(task_id)
                 state: dict = {"namespace": hashlib.sha256(f"{args.suite}/{task_id}".encode()).hexdigest()[:6], "user_prompt": task.PROMPT}
                 pipeline = build_pipeline(llm, detector, mode, state, args.mediate_tool_outputs, args.restore_scope)
+                pipeline.name = _attack_addressable_name(pipeline.name, args.with_injections)
                 error = ""
                 try:
                     if inj_id is None:
