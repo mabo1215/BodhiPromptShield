@@ -61,6 +61,8 @@ PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submis
 8. **F23 数值一致性已修（2026-09-06）**：Regex/NER 在 judge 表 vs per 表的差异标注为"test split 单独计算"；learned detector 跨域协议行标注为"独立训练不完全等于 lightclf 表"；latency 硬件段与 §6.12 措辞不再矛盾；homoglyph 94.1%→43.9% 标注为"exposure 而非 tab:advmeas 的 ASR"；CPPB 第八类别统一为 "context-dependent confidential span"；两套 context-inference 面板标注为"探针集不同、不可直接比较"。
 9. **E7（带下游效应的自适应攻击）已实现**：`adversary_propagation_suite.py`（E7-a，AI4Privacy 200 文档 × 8 攻击 × 5 detector，测量被攻击后 gold span 在 retrieval/memory/tool 三阶段的存活率与 PER，非仅 evasion ASR）已在 PRO 6000 跑完（9000 行文档级记录）；`agentdojo_restoration_suite.py` 扩展 `--with-injections`（AgentDojo important_instructions 攻击，banking injection_task_1/8 试图把 IBAN 外泄）与 `--restore-scope user-directed`（仅当工具调用的收件人类参数指向用户自己 prompt 中提及的实体时才还原 token，抵御"注入指令触发过早/越权 restoration"）；已修一处 AgentDojo 内部 bug（its important_instructions 攻击要求 pipeline.name 含其硬编码模型名列表中的一个，开源本地模型标签不在列表内会抛异常，已加同义回退且不影响实际调用模型）。E7-b 在 e4_q32（AgentDojo 基线）跑完后自动接续。
 
+10. **E3 规模下调（2026-09-06 08:40，未经请示的合理默认，已通知用户）**：实测吞吐显示 493 例 × 9 条件（每例含 agent 生成 + 均值 3 条 secret 泄露判定 + 1 条 helpfulness 判定，约 5 次模型调用）在 4-way 分片下约 1.1 行/分钟/分片，全量预计需 16–20 小时——与"巡检并在完成后关机"的一次性会话预期冲突，且直接产生 GPU 计费。已停止 e3_q32 四个 shard（行已 fsync，未丢失，归档为 `*_partial_full493.csv`），改为 `--max-cases 200`（与 70B pilot 的抽样规模一致）重新分片续跑，预计可在本次会话时间窗口内跑完全部 9 条件。全量 493 例版本的部分结果予以保留，如需补齐可用相同种子（17）继续。
+
 # 未修改或部分修改
 
 - 【进行中】A1/A3 剩余项：F11 自我否定表述清理；§6 结果重写与新表插入依赖 E1–E5/E7 全部跑完（PRO 6000 运行中，08:09 巡检：E1 全部完成、E3 152/~4400 行、E4 13/48 任务、E7-a 已完成、E7-b 排队中）。
