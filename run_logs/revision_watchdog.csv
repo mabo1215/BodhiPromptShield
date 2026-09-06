@@ -1,3 +1,0 @@
-timestamp,rc01,rc02,rc06,gpu_name,memory_free_mib,memory_used_mib,utilization_gpu
-2026-09-03T07:49:29+08:00,running,running,running,NVIDIA GeForce RTX 3090, 4337 MiB, 44215 MiB, 0 %
-2026-09-03T08:00:01+08:00,running,done,running,NVIDIA GeForce RTX 3090, 17487 MiB, 31065 MiB, 0 %

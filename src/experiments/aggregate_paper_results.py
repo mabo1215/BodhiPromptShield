@@ -1,0 +1,180 @@
+"""Pool sharded experiment records into paper-ready aggregate tables.
+
+Shards are run concurrently and each writes its own summary over its own slice.
+This script recomputes every reported statistic over the pooled population so
+that confidence intervals reflect the full document/case count rather than a
+single shard, and regenerates the AgentDojo injection-baseline summary whose
+in-run computation aborted (its rows file predates a row-schema extension, so
+the stale CSV header cannot be read back by name).
+
+Usage:
+    python aggregate_paper_results.py
+"""
+
+from __future__ import annotations
+
+import csv
+from pathlib import Path
+
+from mediation_baselines import PAPER_LABELS, bootstrap_ratio_ci
+
+EXPERIMENTS_DIR = Path(__file__).resolve().parent
+N_BOOT = 1000
+
+AGENTDOJO_OLD_FIELDS = [
+    "suite", "task", "mode", "detector", "agent_model", "utility", "protected_values",
+    "raw_visible_before_tool", "tokens_emitted_in_tool_args", "restored_in_tool_args",
+    "unrestored_tokens", "raw_in_tool_outputs", "tool_calls", "error",
+]
+AGENTDOJO_NEW_FIELDS = [
+    "suite", "task", "injection_task", "mode", "restore_scope", "detector", "agent_model",
+    "utility", "security", "protected_values", "raw_visible_before_tool",
+    "tokens_emitted_in_tool_args", "restored_in_tool_args", "unrestored_tokens",
+    "refused_unscoped_restorations", "raw_in_tool_outputs", "tool_calls", "error",
+]
+
+
+def _ci(rows: list[dict], num: str, den: str | None, scale: float, digits: int) -> str:
+    pairs = [(float(r[num]), float(r[den]) if den else 1.0) for r in rows]
+    point, lo, hi = bootstrap_ratio_ci(pairs, n_boot=N_BOOT, scale=scale)
+    return f"{point:.{digits}f} [{lo:.{digits}f}, {hi:.{digits}f}]"
+
+
+def _read_shards(pattern: str) -> list[dict]:
+    rows: list[dict] = []
+    for path in sorted(EXPERIMENTS_DIR.glob(pattern)):
+        if "partial" in path.name:
+            continue
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            rows.extend(csv.DictReader(handle))
+    return rows
+
+
+def pool_propagation(source: str) -> Path:
+    """Pool per-document propagation counts across shards and recompute CIs."""
+    docs = _read_shards(f"propagation_suite_{source}_documents_shard*.csv")
+    if not docs:
+        raise SystemExit(f"no document shards found for {source}")
+
+    order: list[str] = []
+    for row in docs:
+        if row["method_key"] not in order:
+            order.append(row["method_key"])
+
+    out = []
+    for key in order:
+        sub = [r for r in docs if r["method_key"] == key]
+        out.append({
+            "method": PAPER_LABELS.get(key, key),
+            "method_key": key,
+            "documents": str(len({r["doc_id"] for r in sub})),
+            "retrieval_spe": _ci(sub, "ret_s", "ret_t", 100.0, 1),
+            "memory_spe": _ci(sub, "mem_s", "mem_t", 100.0, 1),
+            "tool_spe": _ci(sub, "tool_s", "tool_t", 100.0, 1),
+            "per_percent": _ci(sub, "res_chars", "sens_chars", 100.0, 1),
+            "text_retention": _ci(sub, "kept_nonsens", "nonsens_chars", 1.0, 2),
+            "semantic_residue": _ci(sub, "sem_s", "sem_t", 100.0, 1),
+        })
+
+    path = EXPERIMENTS_DIR / f"propagation_suite_{source}_results_pooled.csv"
+    _write(path, out)
+    return path
+
+
+def pool_downstream(agent_model: str = "qwen3_32b-q4km-hf") -> Path:
+    """Pool PrivacyLens downstream cases across shards and recompute CIs."""
+    rows = _read_shards(f"privacylens_downstream_rows_{agent_model}_shard*of*.csv")
+    if not rows:
+        raise SystemExit("no downstream shards found")
+
+    order: list[str] = []
+    for row in rows:
+        if row["condition"] not in order:
+            order.append(row["condition"])
+
+    out = []
+    for cond in order:
+        sub = [r for r in rows if r["condition"] == cond]
+        out.append({
+            "condition": cond,
+            "cases": str(len(sub)),
+            "action_rate": _ci(sub, "has_action", None, 100.0, 1),
+            "leak_rate_percent": _ci(sub, "leak_any", None, 100.0, 1),
+            "secret_leak_percent": _ci(sub, "leak_count", "secret_count", 100.0, 1),
+            "helpfulness_mean": _ci(sub, "helpfulness", None, 1.0, 2),
+            "exact_id_exposure_percent": _ci(sub, "ids_in_final_action", "ids_total", 100.0, 1),
+            "boundary_leak_percent": _ci(sub, "raw_values_visible_before_tool", "protected_values", 100.0, 1),
+            "unrestored_token_rate": _ci(sub, "tokens_in_output", None, 1.0, 2),
+        })
+
+    path = EXPERIMENTS_DIR / f"privacylens_downstream_summary_{agent_model}_pooled.csv"
+    _write(path, out)
+    return path
+
+
+def _read_agentdojo_mixed(path: Path) -> list[dict]:
+    """Read a rows file that mixes pre- and post-schema-extension records.
+
+    The header line is whichever schema existed when the file was created, so
+    rows are dispatched on field count instead of being mapped by that header.
+    """
+    rows: list[dict] = []
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        for fields in csv.reader(handle):
+            if not fields or fields[0] == "suite":
+                continue
+            if len(fields) == len(AGENTDOJO_NEW_FIELDS):
+                rows.append(dict(zip(AGENTDOJO_NEW_FIELDS, fields)))
+            elif len(fields) == len(AGENTDOJO_OLD_FIELDS):
+                row = dict(zip(AGENTDOJO_OLD_FIELDS, fields))
+                row.update({"injection_task": "", "restore_scope": "all", "security": "0",
+                            "refused_unscoped_restorations": "0"})
+                rows.append(row)
+    return rows
+
+
+def rebuild_agentdojo_injection_baseline(agent_model: str = "qwen3_32b-q4km-hf") -> Path:
+    """Regenerate the injected no-protection summary from raw rows."""
+    path = EXPERIMENTS_DIR / f"agentdojo_restoration_rows_banking_{agent_model}.csv"
+    rows = [r for r in _read_agentdojo_mixed(path) if r["mode"] == "none" and r["injection_task"]]
+    if not rows:
+        raise SystemExit("no injected none-mode rows found")
+
+    protected = [r for r in rows if int(r["protected_values"]) > 0]
+    out = [{
+        "mode": "none",
+        "tasks": str(len(rows)),
+        "tasks_with_protected_values": str(len(protected)),
+        "attack_success_percent": _ci(rows, "security", None, 100.0, 1),
+        "utility_percent_all": _ci(rows, "utility", None, 100.0, 1),
+        "utility_percent_protected": _ci(protected, "utility", None, 100.0, 1),
+        "boundary_leak_percent": _ci(protected, "raw_visible_before_tool", "protected_values", 100.0, 1),
+        "restoration_success_percent": _ci(protected, "restored_in_tool_args", "tokens_emitted_in_tool_args", 100.0, 1),
+        "raw_in_tool_outputs_mean": _ci(rows, "raw_in_tool_outputs", None, 1.0, 2),
+    }]
+
+    out_path = EXPERIMENTS_DIR / f"agentdojo_restoration_summary_banking_{agent_model}_inj_none.csv"
+    _write(out_path, out)
+    return out_path
+
+
+def _write(path: Path, rows: list[dict]) -> None:
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(rows)
+    print(f"wrote {path.name} ({len(rows)} rows)")
+    for row in rows:
+        print("  " + " | ".join(f"{k}={v}" for k, v in list(row.items())[:6]))
+
+
+def main() -> int:
+    pool_propagation("ai4privacy")
+    pool_propagation("privacylens")
+    pool_downstream()
+    rebuild_agentdojo_injection_baseline()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
