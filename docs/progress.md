@@ -1,5 +1,66 @@
 # 论文进度
 
+## 2026-09-06 16:50 会话中断前检查点（重启 Claude Code 前记录）
+
+**目的**：用户即将重启 Claude Code 会话。本节记录当前所有正在进行的工作的完整状态，供新会话直接续接，无需重新摸索。
+
+### 立即要做的三件事（新会话打开后）
+
+1. **重新挂载 10 分钟巡检**：本会话的后台 Monitor 会随重启丢失，但 **PRO 6000 上的 screen 会话不受影响，会继续独立运行**。新会话应立即用 SSH 检查 PRO 6000 状态（见下方"如何检查"），并按需重新启动一个 10 分钟巡检 Monitor（本地 git/disk + 远程 screen/GPU/行数/traceback，模式见本会话历史，或直接问用户是否需要）。
+2. **不要重复启动实验**：所有 screen 都是幂等/可续跑的（fsync 逐行写入 + 断点续跑）。如果发现 screen 还在跑，不要 kill 重启；如果发现 screen 已全部退出，说明实验做完了，直接进入"全部完成后"的收尾流程（见下）。
+3. **读本节 + 下面的"仓库当前状态"再动手**，避免重复劳动或用旧假设覆盖已完成的工作。
+
+### PRO 6000 当前状态（2026-09-06 16:50 本地时间 / 主机 CST 12:50 左右，运行中）
+
+登录信息：`C:\source\.env` 的 "PRO 6000" 块（`ssh -p 48305 root@connect.westc.seetacloud.com`）。GPU 已开（有卡模式，RTX PRO 6000 Blackwell 96GB）。
+
+仓库位置：`/root/autodl-tmp/BodhiPromptShield`（HEAD 应为 `b7bb44d` 或更新，用 `source /etc/network_turbo && git pull` 同步）。
+Ollama：`OLLAMA_MODELS=/root/autodl-tmp/ollama/models OLLAMA_HOST=127.0.0.1:11434 OLLAMA_MAX_LOADED_MODELS=4 OLLAMA_NUM_PARALLEL=4 OLLAMA_CONTEXT_LENGTH=12288 OLLAMA_KEEP_ALIVE=2h OLLAMA_FLASH_ATTENTION=1`，已装模型：`qwen3:8b-q4km-hf`、`qwen3:32b-q4km-hf`、`mistral:7b-instruct-v0.2-q4km-hf`（judge，与 PrivacyLens 原协议一致）。**llama3.3:70b 尚未可用**——两次导入失败（无卡模式内存不足 kill；孤儿 blob 校验失败），磁盘仅剩 44G，需要用户批准删除三个孤儿 blob 文件才能重下（见下方"待用户决策"）。
+
+**仍在跑的 screen（5 个，`cd /root/autodl-tmp/BodhiPromptShield/src/experiments` 下 `screen -ls` 查看）**：
+- `e3_q32_0/1/2/3`：E3/E5 PrivacyLens 下游评测（agent=qwen3:32b，judge=mistral-7b，200 例子集，4-way 分片）。9 个条件，目前 4 个 shard 都在第 5 个条件 `placeholder:gliner_pii`（no_protection → placeholder:presidio → casper_style → placeholder:learned_lr → **placeholder:gliner_pii** → llm_sanitizer:qwen3:8b → abstraction:qwen3:8b → symbolic_late:gliner_pii → symbolic_early:gliner_pii）。累计 944 行（截至 16:50），预计还需 1–1.5 小时。
+- `e7b_q32`：AgentDojo banking + important_instructions 注入攻击（injection_task_1/8 试图外泄 IBAN），三段顺序命令：①`--modes none`（当前，task_1/inj_8 附近）②`--modes late --restore-scope all`（output-tag `inj_all`）③`--modes late --restore-scope user-directed`（output-tag `inj_scoped`，即"仅当工具调用收件人指向用户 prompt 中提及的实体才还原"这条防护）。累计 68 行。**曾两次被巡检误判"卡住"，两次直接登录验证后确认健康**（进程在 `do_poll` 等待 Ollama 响应，CPU 时间正常低，属于正常 I/O 等待；后续行确实在增长）——**不要因为某一次巡检看到同一行两次就断定卡死，先用 `stat` 看 mtime、`ps -o etimes,time,stat,wchan` 看进程再下结论**。
+
+**已完成并已退出的 screen（不用管）**：
+- `e1_ai4_0/1/2`（AI4Privacy 传播，全部 10 方法）：3000 行，完成。
+- `e1_pl_0/1/2/3`（PrivacyLens 传播，全部 10 方法）：4930 行，完成。
+- `e7a`（自适应攻击下的传播，8 攻击 × 5 detector × 200 文档）：9000 行，完成。
+- `e4_q32`（AgentDojo banking，none/late/no_restore + 工具输出脱敏变体 mto）：68 行（与 e7b 共用同一个输出文件，见下）。完成。
+
+**如何检查（新会话直接可用的命令模板）**：
+```bash
+PW=$(awk 'tolower($0)=="pro 6000"{getline; getline; print; exit}' /mnt/c/source/.env)
+SSHPASS="$PW" sshpass -e ssh -p 48305 root@connect.westc.seetacloud.com \
+  'cd /root/autodl-tmp/BodhiPromptShield/src/experiments && screen -ls; nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader'
+```
+密码取自 `C:\source\.env`；ssh 走 WSL（`.claude/rules/shell.md`），Bash 工具即可，见本会话历史里反复用过的 `sshpass -e ssh` 模式。
+
+### 待用户决策（未回答，问题保持有效）
+
+1. **磁盘清理批准**：`/root/autodl-tmp/ollama/models/blobs/` 下三个孤儿文件（无 manifest 引用，共约 47.9GB）：
+   - `sha256-32df3bac…`（42.5GB，损坏的 70B 拷贝，校验已失败）
+   - `sha256-4824460d…-partial`（稀疏文件，R2 中断下载残留）
+   - `sha256-3e0039fd…`（4.4GB，Mistral 重复导入副本）
+   回复"删除"后即可腾出空间重下 70B（改用 hf-mirror.com GGUF 直接单份写入，不再走 Ollama registry 的 Cloudflare R2 路线，因为那条路线在此机器上直连超时、走 network_turbo 代理后又降到 0 吞吐）。**不删除的话，本轮论文结果只有 qwen3:32b 一个强开源模型，llama3.3:70b 缺席。**
+
+### 全部实验完成后的收尾流程（自动执行，无需用户再确认）
+
+用户已明确要求："10分钟定时巡检，完成后拉回实验结果同时PRO 6000关机，避免扣费"。当 5 个 screen 全部退出时：
+1. `rsync`/`scp` 拉回所有结果 CSV、`*_runtime_manifest*.csv`、`logs/`、`llm_sanitizer_cache/`、`ollama_cache/` 到本地 `src/experiments/`。
+2. `git add` + commit + push（提交信息按惯例，含 Co-Authored-By 与 Claude-Session 尾注，见 CLAUDE.md/仓库历史）。
+3. **PRO 6000 执行 `shutdown` 关机**，避免继续计费。
+4. 更新本文件（`docs/progress.md`）记录最终结果与行数。
+5. **论文 §6 Results 重写**：把新的真实数据结果（E1/E3/E5/E7 的表格与图，含 bootstrap CI）接入 `paper/main.tex`，替换/补充现有 controlled-CPPB-only 的叙述；关注正文 12 页上限（PoPETs 2027），必要时把新表移入附录并只在正文放核心发现。
+6. **F11**（自我否定表述清理）仍待做——见 `docs/RevisionSuggestions.tex` 的 F11 条目。
+
+### 仓库当前状态速览（截至本检查点）
+
+- **Venue 已定**：PoPETs 2027 Issue 3（截止 2026-11-30 AoE firm，正文 12 页），备选 TAISAP。`USAGE.md` 已同步。
+- **论文模板转换已完成**：`paper/main.tex` 已是 PoPETs 2027 模板（acmart `sigconf,anonymous,review` + `popets.sty`），三个必填节（ethics/openscience/ai）已加，F12（修订历史措辞）与 F23（六处数值不一致）已修复，CPPB 内容已移入附录，正文当前**止于第 12 页**、0 undefined ref/cite。原稿备份：`paper/backup_main_pre_popets_20260906.tex`、`paper/backup_main_pre_restructure_20260906.tex`。
+- **实验代码已完成并推送**（`src/experiments/`）：`mediation_baselines.py`（方法注册表：真实 Presidio/spaCy NER/Casper-style/GLiNER/LLM sanitizer，含 GenerationFailed 语义——模型调用失败时跳过该条目而非静默记为"未保护"）、`propagation_suite.py`（E1，支持 `--shard I/N`）、`privacylens_downstream_suite.py`（E3/E5，PrivacyLens 原版 judge prompt 逐字复现）、`agentdojo_restoration_suite.py`（E4/E7-b，含注入攻击与 `--restore-scope user-directed`）、`adversary_propagation_suite.py`（E7-a）、`ollama_client.py`（带 fsync 缓存的 Ollama 客户端）、`privacylens_render_prompts.py`（用 PrivacyLens 官方代码渲染 prompt，需要 `~/.venvs/pl`，本地已建好，见 PrivacyLens 依赖清单：langchain==0.0.277、pydantic<2、procoder、pandas、tiktoken、rouge_score、tenacity）。
+- **本地环境**：`~/.venvs/bps`（presidio + spaCy + gliner + agentdojo + torch/transformers，用于 CPU 冒烟测试）、`~/.venvs/pl`（PrivacyLens 官方依赖，仅用于渲染 prompt）。
+- **独立评审文件**：`docs/RevisionSuggestions.tex`（自包含英文 LaTeX，已按 PoPETs 重写，含 F1–F27 编号发现、AE 六条意见追溯表、A1–A4 行动计划、D1–D3 决策记录）。已编译为 `docs/RevisionSuggestions.pdf` 并发给用户。
+
 ## 2026-09-05 独立评审重置与 venue 重选（当前最新）
 
 **2026-09-06 用户决策：D1 = PoPETs 2027 Issue 3（截止 2026-11-30 firm，正文 12 页，双盲）；D2 = CPPB 降入附录；D3 = 先盘点 Ollama/GPU 主机再定模型。** `USAGE.md` 目标行与 `docs/RevisionSuggestions.tex` 已同步为 PoPETs 首选、TAISAP 备选。
