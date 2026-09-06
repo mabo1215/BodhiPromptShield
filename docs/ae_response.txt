@@ -1,0 +1,177 @@
+Response to the Prior Review (ACM TOPS, submission TOPS-2026-06-0395)
+====================================================================
+
+This manuscript was previously reviewed by ACM Transactions on Privacy and
+Security and rejected on the Associate Editor's recommendation. Per the PoPETs
+submission policy for papers previously reviewed elsewhere, the Associate
+Editor's comments are attached and answered point by point below.
+
+The AE's closing sentence stated the requirement precisely: "a clear technical
+contribution and a new evaluation on real agent stacks with strong baselines
+and realistic privacy attacks." We treated that as the specification for this
+revision. The evaluation has been rebuilt from scratch on real agent data with
+reproduced comparator systems, and the contribution has been narrowed to the
+two mechanisms the evaluation actually isolates. Three of the AE's comments
+identified claims that did not survive the new measurements; we report those
+outcomes as findings rather than defending the original claims.
+
+
+AE comment 1 - Placeholder substitution, local mapping and later restoration
+already appear in prior work, including PrivacyRestore and Casper. The authors
+do not cite these close systems and do not compare to them. The propagation
+framing alone does not constitute sufficient novelty.
+----------------------------------------------------------------------------
+Both systems are now cited and positioned (Section 3.3, Table 2).
+
+Casper's mechanism - rule and NER detection, dummy-value substitution, and
+local restoration through a client-held mapping - has been reimplemented and
+run head-to-head against our layer under a single protocol, on 300 AI4Privacy
+documents through a reference agent, on 493 PrivacyLens trajectories, and in
+the downstream task-native evaluation. It appears as "Casper-style" in every
+results table, with bootstrap confidence intervals. Installed, version-pinned
+Microsoft Presidio, an 8B LLM sanitizer, a spaCy NER baseline, and a GLiNER
+transformer PII detector are on the same footing. The outcome is source-
+dependent and we report it that way: on AI4Privacy our learned detector reaches
+PER 7.4% [6.3, 8.7] against 46.7% for Casper-style and 52.2% for Presidio; on
+PrivacyLens, Casper-style (1.4%) and our learned detector (1.8%) are
+statistically indistinguishable.
+
+PrivacyRestore is discussed but not reproduced, and we now state the
+architectural reason rather than leaving it implicit: it restores content by
+steering hidden activations inside the serving model, which presupposes
+white-box control of inference. The layer studied here sits in front of a model
+it treats as a black box behind an API - which is the deployment position that
+makes agent-boundary propagation a problem at all. The two designs occupy
+different trust boundaries and cannot be placed on one protocol without
+changing what either is.
+
+We accept the AE's judgment that the propagation framing alone is not a
+contribution. The contribution list has been rewritten around what the new
+experiments isolate: restoration timing as a measured security variable, the
+head-to-head propagation comparison, and the surface-form-to-fact leakage gap.
+The claim that placeholder substitution is novel has been removed.
+
+
+AE comment 2 - CPPB contains 256 prompts from only 32 templates. The authors
+use full-dataset results for the main claims. This design creates a high risk
+of overfitting. Identical development and test scores add to this concern.
+--------------------------------------------------------------------------
+Accepted in full. CPPB no longer carries any main-text claim. All CPPB material
+- the benchmark card, the baseline comparison, category-wise analysis, the
+utility rubric, policy sensitivity, the OCR slice, and latency - has been moved
+to Appendix C and is presented for what it is: a controlled surface with known
+ground truth on which the routing policy and sanitization modes can be varied.
+It is design analysis, not comparative evidence.
+
+Every main-text claim now rests on public external data: AI4Privacy documents,
+PrivacyLens trajectories and tasks, and AgentDojo's banking suite, each with
+its own splits and its own scoring.
+
+
+AE comment 3 - The main propagation experiment uses a deterministic reference
+agent. On real PrivacyLens trajectories, 83% of sensitive facts remain
+semantically exposed. SPE measures literal span survival and misses contextual
+disclosure. The authors' own inference attack still reaches 50% accuracy after
+sanitization.
+------------------------------------------------------------------------------
+This comment identified what has become the paper's third headline finding
+rather than a caveat. The 83% figure was previously a single-configuration
+limitation; it is now measured for all ten methods on all 493 trajectories and
+reported as a cross-method invariant: 83.0-98.8% of sensitive facts survive
+every method that leaves usable text behind (Section 6.2, Figure 2b). The one
+method that lowers it materially does so by destroying 40% of the
+non-sensitive text as well.
+
+We have also corrected an overstatement in how this quantity was described. The
+measure is a content-word overlap criterion, now named Fact Retention Rate and
+described as a lexical lower bound on disclosure rather than as a measure of
+inferability. A direct measure of inferability - a judge over the released
+surface, validated against human annotation - would tighten the bound; we
+state this as the first step of the mitigation study rather than claiming it
+here.
+
+On the deterministic reference agent: it is retained only for the AI4Privacy
+source, where it provides a controlled instrumented pipeline. The PrivacyLens
+results use that benchmark's real trajectories, and the downstream evaluation
+runs a 32B open-weight agent over 200 PrivacyLens tasks scored by the
+benchmark's own judge model with its verbatim judging prompts. AgentDojo tasks
+execute against its real sandboxed tools.
+
+The consequence for our own claims is reported rather than minimized:
+downstream judge-scored leak rates move only 38.0% -> 28.5-37.5% with
+overlapping intervals, i.e. no method significantly reduces what the agent
+actually discloses.
+
+
+AE comment 4 - Enterprise redaction achieves lower exposure than the proposed
+configuration, 8.1% versus 9.3% PER. The proposed method gains only 0.02 in AC
+and TSR. A custom utility rubric without independent validation cannot
+establish a meaningful improvement.
+-----------------------------------------------------------------------------
+Accepted. The AC/TSR rubric has been retired from the main text and is now
+defined and used only on the controlled surface in Appendix C, where its role
+is to rank mediation modes against one another under identical prompts.
+
+Main-text utility is now task-native and external. PrivacyLens supplies its own
+judge model, verbatim judging prompts, and 0-3 helpfulness scale over 200
+public tasks; AgentDojo determines utility and attack success from environment
+state after real tool execution. Both are reproducible without any rubric of
+ours.
+
+The 8.1% vs 9.3% comparison the AE cites was a property of the controlled
+single-boundary surface, which gives no credit for cross-boundary survival or
+restoration timing. Appendix C now says so directly instead of conceding a
+loss. On the real agent measurements, where those boundaries exist, the
+ordering reverses by a factor of six to seven on AI4Privacy.
+
+
+AE comment 5 - The learned detector reaches only 0.53 Span F1 with 0.36
+precision on AI4Privacy. The authors also withhold exact model identities and
+omit parts of the OCR and runtime records. These gaps prevent an assessment of
+deployment value and do not enable reproducibility.
+-----------------------------------------------------------------------------
+The detector roster has been extended rather than defended. A GLiNER PII
+transformer detector and an 8B LLM sanitizer now run in the same protocol, and
+the paper states plainly that the logistic-regression detector is not a
+contribution: it is the cheapest component that makes the propagation-control
+layer measurable, and Table 5 shows stronger detectors slotting into the same
+protocol with different failure profiles.
+
+On identities and records: every run behind the rebuilt Results section writes
+a runtime manifest recording model identifier, quantization, decoding
+parameters, context length, library versions, seeds, and host/GPU. The
+downstream agent is a 32B open-weight instruction model at temperature 0 with
+a fixed 12k context; the judge is PrivacyLens' own 7B judge. Bootstrap
+intervals use 1,000 resamples with a fixed seed. The alias-only cross-model
+table and the unprovenance OCR claims that prompted this comment have been
+removed from the main text along with the rest of the CPPB material.
+
+
+AE comment 6 - The span-level LDP analysis covers only an optional replacement
+step under restrictive assumptions. It gives no guarantee for the evaluated
+system.
+------------------------------------------------------------------------------
+Accepted and acted on before this revision. The span-level LDP proposition has
+been removed. Section 2.4 now states in two sentences that the evaluated
+pipeline is deterministic and offers no end-to-end formal guarantee, and that a
+guarantee would require a different mechanism and a proof covering the complete
+agent state and restoration path. No formal claim is made anywhere in the
+paper.
+
+
+What changed overall
+--------------------
+- Ten methods compared under one protocol on real agent data, with bootstrap
+  confidence intervals on every reported quantity.
+- Downstream evaluation on 200 PrivacyLens tasks with a 32B agent, scored by
+  the benchmark's own judge; AgentDojo banking tasks under prompt injection
+  with real tool execution.
+- Restoration timing isolated as a mechanism: late restoration gives boundary
+  leakage 1.6% [1.1, 2.1] against 51.0% [48.0, 54.0] for early restoration,
+  with disjoint intervals, for 0.11 helpfulness points.
+- Two negative results reported as such: mediation does not defend against
+  prompt injection, and no method significantly reduces downstream judge-scored
+  leakage.
+- CPPB demoted to an appendix ablation surface; the AC/TSR rubric, the
+  alias-only cross-model table, and the disclaimed tables removed from the
+  main text.

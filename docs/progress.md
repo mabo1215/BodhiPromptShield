@@ -1,5 +1,88 @@
 # 论文进度
 
+## 2026-09-07 AE 意见追溯审查 + 论文全面修订（当前最新）
+
+本轮起因是核查 `docs/AESuggestion.txt` 六条 AE 意见是否都已回应。核查结论：
+实验侧 E1/E2/E3/E4/E6/E7 确已完成且带 CI，但**论文文本里残留了三处旧内容，
+会让审稿人误以为工作没做**，另有一处度量措辞超出实现能力。本轮把这些全部改掉。
+
+### 1. §3.3 自相矛盾段（AE 1，最严重）
+
+正文原有一段写着"we do not reimplement Casper or PrivacyRestore... we make no
+head-to-head claim"，而摘要、贡献列表、`tab:measprop`、`tab:downstream` 全都
+在报告 Casper-style 的同协议对比结果。审稿人先读 Related Work 再读 Results，
+会认为论文在 AE 第 1 条上自打嘴巴。已改写为：明确说明 Casper 机制已复现并在
+单一协议下跑通（标 `-style` 因为复现的是机制而非浏览器扩展），PrivacyRestore
+不复现的理由是**架构性的**——它靠服务端 activation steering 还原，前提是白盒
+推理控制，而本层位于黑盒 API 之前，两者处在不同信任边界。对比表 caption 与
+两行系统描述同步更新。
+
+### 2. 附录 C 复述 AE 的反对意见（AE 2、AE 4）
+
+CPPB 降级到附录后，附录里仍原样保留着"企业基线 PER 8.1% 低于我们的 9.3%、
+我们不占优"、"+0.02 不构成有意义改进"、"AC/TSR rubric 未经独立验证"等
+免责段落——等于替审稿人写好了反对意见。已重写为：说明受控单边界表面
+**衡量的是什么、不衡量什么**（不给跨边界存活与还原时机任何credit），并指出
+在真实 agent 测量上该排序反转六到七倍。附录定位改为设计分析而非比较证据。
+
+### 3. 删除审计语言残留
+
+- 删除附录 G "Named-Runtime Pilots and Semantic Probe" 与 `tab:revision_execution`
+  整节：这是内部执行审计表，且把 AE 第 5 条批评过的 3.2B `llama3.2` 运行时又
+  带回论文；其 12 探针面板还是 context-inference 准确率的第二套冲突数据
+  （50/25/8.3/16.7 vs 附录 E 有记录支撑的 100→50），F23(f) 一直没调和，删除即解决。
+- 删除 §4.2 "Implementation Status and Validation Scope"，整节都是证据边界记账。
+
+### 4. FRR 度量措辞与实现对齐（AE 3）
+
+正文原写语义列衡量"whether each marked sensitive fact remains **inferable**
+from the released surface"，但 `propagation_suite.py:_semantic_residue` 实现的是
+**内容词重叠**（事实中长度≥4 的非停用词有一半以上出现在释放文本中即判为保留）。
+这是论文第三条头条发现，审稿人打开 artifact 就会看到，且正落在 AE 第 3 条的火力点上。
+已把度量命名为 Fact Retention Rate，给出明确操作定义，并说明它是披露的
+**下界**而非可推断性度量。§6.2 重写为围绕"下界"性质展开——这反而让论证更强：
+PER 降到 1.8% 而 FRR 仍有 83.0%，且真实披露只会更高，说明差距不可能靠提高
+span 检测精度来弥合。摘要、贡献、表头与 caption、Limitations、Conclusion 同步。
+
+### 5. SPE 单调性错误声明（F18）
+
+删除 `SPE_{k+1} ≤ SPE_k` 的声明——被自家数据反驳（无保护 AI4Privacy 是
+48.7/100.0/74.8）。改为正确解释：三个边界不是级联滤波器，而是同一份中介后
+prompt 的三种不同投影（检索查询是关键词化缩写、memory write 接近全文、
+tool call 是结构化抽取），所以 SPE 按边界定义、不单调；memory write 拷贝
+文本最多，对所有方法都是最高列。
+
+### 6. 新增主文证据图
+
+新增 `src/figures/propagation_and_fact_gap.py`，从已有 pooled 记录生成双栏图：
+(a) 十种方法在三个边界的 SPE 分组柱状图（配合修正后的 SPE 语义，用柱状而非
+曲线）；(b) PER 对 FRR 散点图带 bootstrap 误差棒，直观显示两者横跨整个暴露轴
+却挤在 83–99% 的窄保留带里。调色板经色觉障碍校验；每根柱带直接数值标签。
+
+### 7. 其他
+
+- 补引 PAPILLON、Rescriber、Dou et al.、ConfAIde 四篇（F17），删除未被引用的
+  `dodge2020finetuning`。
+- `fig:workflow` 在 §4.1 补引；`tab:pi_profiles`/`tab:mapping_surface` 连同
+  α/β 损失展开移入新附录 G。全仓检查：0 悬空 label、0 未引用 bib、0 undefined ref。
+- **页数**：插图后正文一度到第 13 页，超 PoPETs 12 页上限。通过压缩 metrics 列表
+  （只定义正文实际报告的六个指标，AC/TSR/UPR 移到使用处即附录 C 定义）、合并
+  引言三段重复段落（同时补上 PoPETs 要求的首页真实场景相关性陈述）、精简对抗
+  实验/Limitations/Conclusion，现正文止于第 12 页，全文 20 页。
+- 双盲检查：正文 1–12 页无任何身份字符串；改掉了一处用作者所在城市举例的措辞；
+  源文件 author block 由 `anonymous` 选项抑制，唯一自引为第三人称，符合投稿要求。
+- 新增 `docs/ae_response.txt`（PoPETs 要求的逐条答复），重写 `docs/cover_letter.txt`
+  （原稿仍写给 ACM TOPS，且仍把 CPPB 列为头条贡献）。
+
+### 8. GPU 现状
+
+本轮全部主机不可达：PRO 6000 / H800 / vGPU 3090 / A800 均 connection refused，
+4c 3090 超时；本机仅 RTX 3070 8GB + `qwen3:0.6b`；原可充当 judge 的
+`kimi-k2.5:cloud` 已于 2026-07-31 上游下线。因此 E5' 与 AgentDojo 扩展两项
+实验**未能执行**，详见下方"未修改或部分修改"。论文文本未对未跑的实验作任何
+承诺——FRR 已如实写成下界度量。
+
+
 ## 2026-09-07 00:50 §6 结果重写 + F11 自我否定清理完成（当前最新）
 
 **提交**：主仓 `d69b722`，`paper` 子模块 `e5097ed`，均已 push。
@@ -176,31 +259,50 @@ PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submis
 
 10. **E3 规模下调（2026-09-06 08:40，未经请示的合理默认，已通知用户）**：实测吞吐显示 493 例 × 9 条件（每例含 agent 生成 + 均值 3 条 secret 泄露判定 + 1 条 helpfulness 判定，约 5 次模型调用）在 4-way 分片下约 1.1 行/分钟/分片，全量预计需 16–20 小时——与"巡检并在完成后关机"的一次性会话预期冲突，且直接产生 GPU 计费。已停止 e3_q32 四个 shard（行已 fsync，未丢失，归档为 `*_partial_full493.csv`），改为 `--max-cases 200`（与 70B pilot 的抽样规模一致）重新分片续跑，预计可在本次会话时间窗口内跑完全部 9 条件。全量 493 例版本的部分结果予以保留，如需补齐可用相同种子（17）继续。
 
+11. **AE 六条意见追溯审查与论文全面修订（2026-09-07）**：见本文件顶部本轮记录。
+    修改内容：§3.3 矛盾段重写、附录 C 重构、附录 G 与 §4.2 整节删除、FRR 度量
+    命名与下界定义、SPE 单调性修正、新增双栏证据图、补四篇引用、两表移入附录、
+    页数压回 12 页、双盲复核、AE 逐条答复与 cover letter 重写。构建：20 页，
+    正文止于第 12 页，0 undefined ref/cite，0 悬空 label，0 未引用 bib。
+
 # 未修改或部分修改
 
-- 【进行中】A1/A3 剩余项：F11 自我否定表述清理；§6 结果重写与新表插入依赖 E1–E5/E7 全部跑完（PRO 6000 运行中，08:09 巡检：E1 全部完成、E3 152/~4400 行、E4 13/48 任务、E7-a 已完成、E7-b 排队中）。
-- 【进行中】A2/E1 代码已完成并通过本地 CPU 冒烟测试（2026-09-06）：新增 `src/experiments/mediation_baselines.py`（方法注册表：真实 Presidio、真实 spaCy NER、Casper-style 规则+NER+dummy 值替换、GLiNER-PII transformer 检测器、Ollama LLM sanitizer 带 fsync 缓存与 diff 取 span；原 "NER-only masking" 如实改标为 capitalization heuristic）与 `src/experiments/propagation_suite.py`（AI4Privacy reference agent + PrivacyLens 两个真实来源、全部方法、文档级 bootstrap 95% CI、逐文档增量写入可断点续跑、runtime manifest）。旧脚本未改动，原表仍可复现。LLM 路径已用本地 `qwen3:0.6b` 验证（生成→diff→缓存→重跑命中缓存）。**PRO 6000 无卡模式 cgroup 内存上限 2 GiB**（`memory.max`），任何模型都无法加载（OOM kill），因此 E1 的 LLM sanitizer 与 GLiNER 行、以及 E3–E5 全部等待开卡；模型导入（纯文件复制）不受影响。
+- 【已阻挡】**E5' 可推断性 judge**：把 FRR 从内容词重叠下界升级为直接的可推断性测量
+  （LLM judge 逐 (method, fact) 对判断"该事实是否仍可从释放文本推断"，分层抽样约 400 对，
+  另 100 对人工标注并报 Cohen's κ）。这是剩余价值最高的实验，能把论文第三条头条发现
+  从下界变成直接测量，正面回答 AE 第 3 条。
+  - 阻挡原因：无可用 GPU 主机（全部 connection refused），且 judge 必须与 32B 下游模型
+    不同家族，本机 `qwen3:0.6b` 太弱、`kimi-k2.5:cloud` 已下线。
+  - 需要你决策：**开哪台主机**（≥24 GiB 即可，不需要 80 GiB；H800/A800/PRO 6000 任一均可）。
+    开机后约一个 GPU 会话可完成。论文当前措辞不依赖此实验，因此不做也能投，只是差距
+    只有下界而无直接值。
+- 【已阻挡】**AgentDojo 统计功效**：现在只跑了 banking 一个套件，注入 32 对、还原模式
+  16 个任务（其中 8 个含受保护值），置信区间宽达 ±25 个百分点（utility 62.5 [37.5, 87.5]）。
+  负面结论（中介不防注入）诚实，但目前更接近"此样本量下测不出"而非"无效应"。
+  - 阻挡原因：同上，无可用主机。
+  - 需要你决策：是否同意补跑 slack / travel / workspace 三个套件。代码无需改动，
+    `agentdojo_restoration_suite.py` 与 `aggregate_paper_results.py` 已支持分片与续跑，
+    约一个 GPU 会话。
+- 【已阻挡】**第二个下游模型（portability）**：所有下游数字都来自单一 32B 模型。
+  - 优先级低于上面两项：论文没有作跨模型声明，因此这是加强而非补漏。若 GPU 时间有限，
+    建议顺序为 E5' > AgentDojo 扩展 > 第二模型。
+- **PrivacyRestore 同协议复现**：不计划执行。论文现已明确论证其为架构性不可比
+  （服务端 activation steering 需白盒推理控制），此为对 AE 第 1 条的正式答复，无需你决策。
+- **人工效用验证**：建议放弃。主文效用已改用 PrivacyLens 自带 judge + AgentDojo 环境状态
+  判定，两者均为外部、任务原生、可复现；遗留的 88 行 CPPB 评分文件已不承载任何主文声明。
+  - 需要你确认：同意正式放弃该项（推荐），还是仍要补人工评分。
 
 # 遗留问题
 
 需要你提供/决策：
-1. **D1 venue**：确认 TAISAP 首选、PoPETs 2027 Issue 3 备选（推荐）；或改以 PoPETs 为首选
-   （则 11-30 截止与 12 页裁剪成为硬约束）。
-   A: PoPETs（2026-09-06）。已解决。
-2. **D2 CPPB 处置**：本轮降入附录（推荐），期刊路线且时间允许时再用多样化生成值重建并实跑（E8，约 4 GPU 天）。
-   A: 附录（2026-09-06）。已解决。
-3. **D3 模型预算**：E3 utility 实验可用的 ≥70B 开源模型（H800/A800 上）与固定版本的 API 模型是哪些？
-   E3/E5 的 LLM-judge API 花费上限？
-   → 2026-09-06 进展：用户开启 PRO 6000；开源模型定为 llama3.3:70b（Q4_K_M）+ qwen3:32b，judge 为 Mistral-7B-Instruct-v0.2（与 PrivacyLens 原协议一致），无需 API 花费。**仍待确认：磁盘清理**——`/root/autodl-tmp/ollama/models/blobs/` 下两个无 manifest 引用的孤儿文件（`sha256-3e0039…` 4.4GB，mistral 重复导入；`sha256-4824…-partial` 稀疏文件，R2 中断下载残留）可删除以回收约 5GB，请回复"删除"后执行。
-   A:（2026-09-06 主机盘点，密码未记录）
-   - 本机：RTX 3070 8GB；Ollama 仅 `kimi-k2.5:cloud`（Ollama 云端模型，有 digest，可充当具名 API 模型）。
-   - vGPU 3090（westd）：当前**无卡模式**（无 nvidia-smi）；Ollama 已装但服务未启动，模型库仅
-     `llama3.2:latest`（1.9GB）；`autodl-fs/models` 与 `hf-cache` 仅有 Qwen3-VL-8B/4B、EGM-4B、
-     LocateAnything-3B、sam3（全是视觉模型，无 ≥7B 文本模型）；`bodhi-venv` 为 torch 2.8.0+cu128 /
-     transformers 5.16.1，无 vllm；磁盘 autodl-tmp 706G 可用、autodl-fs 490G 可用。
-   - H800 / PRO 6000 / A800：全部关机（connection refused）。4c 3090（10.126.126.1）：本网络不可达（超时）。
-   - 结论：现有主机上没有任何 ≥70B 文本模型；E3 必须开 H800 或 A800（80GB）或 PRO 6000（96GB）之一
-     并拉取模型。**待用户：开哪一台；从评审 D3 建议中选定两个模型；API judge 花费上限。**
+1. **开哪台 GPU 主机以完成 E5' 与 AgentDojo 扩展**（≥24 GiB 即可）。这是当前唯一的硬阻塞，
+   两项实验代码均已就绪、可断点续跑，合计约两个 GPU 会话。
+   A:
+2. **是否正式放弃人工效用验证**（推荐放弃，理由见上）。
+   A:
+3. **AI use 声明措辞**是否认可（`paper/main.tex` 的 `ai` 环境，声明 LLM 助手参与代码与
+   文本编辑，实验结果均由已发布脚本产生且作者负责其准确性）。
+   A:
 
 ## 2026-09-03 revision cycle completion：vGPU 实验回收、论文回填与审稿闭环（当前新增）
 
