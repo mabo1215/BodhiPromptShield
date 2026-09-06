@@ -43,12 +43,14 @@ SSHPASS="$PW" sshpass -e ssh -p 48305 root@connect.westc.seetacloud.com \
    - `sha256-3e0039fd…`（4.4GB，Mistral 重复导入副本）
    回复"删除"后即可腾出空间重下 70B（改用 hf-mirror.com GGUF 直接单份写入，不再走 Ollama registry 的 Cloudflare R2 路线，因为那条路线在此机器上直连超时、走 network_turbo 代理后又降到 0 吞吐）。**不删除的话，本轮论文结果只有 qwen3:32b 一个强开源模型，llama3.3:70b 缺席。**
 
-### 全部实验完成后的收尾流程（自动执行，无需用户再确认）
+### 全部实验完成后的收尾流程（自动执行，无需用户再确认——**关机步骤除外，见下方覆盖指令**）
 
-用户已明确要求："10分钟定时巡检，完成后拉回实验结果同时PRO 6000关机，避免扣费"。当 5 个 screen 全部退出时：
+用户原指令（2026-09-06 早些时候）："10分钟定时巡检，完成后拉回实验结果同时PRO 6000关机，避免扣费"。
+
+**2026-09-06 23:2x 用户覆盖指令："PRO 6000 跑完后先别关机"** —— 关机步骤（原步骤 3）现改为**暂停，等待用户明确指示后再执行**；其余步骤（拉回结果、commit/push、更新本文件、§6 重写）仍按原计划自动执行，不受影响。5 个 screen 全部退出时：
 1. `rsync`/`scp` 拉回所有结果 CSV、`*_runtime_manifest*.csv`、`logs/`、`llm_sanitizer_cache/`、`ollama_cache/` 到本地 `src/experiments/`。
 2. `git add` + commit + push（提交信息按惯例，含 Co-Authored-By 与 Claude-Session 尾注，见 CLAUDE.md/仓库历史）。
-3. **PRO 6000 执行 `shutdown` 关机**，避免继续计费。
+3. ~~PRO 6000 执行 `shutdown` 关机~~ **暂缓——用户已明确要求跑完后先别关机；主机继续开着（仍在计费），等待用户后续指示再关机。**
 4. 更新本文件（`docs/progress.md`）记录最终结果与行数。
 5. **论文 §6 Results 重写**：把新的真实数据结果（E1/E3/E5/E7 的表格与图，含 bootstrap CI）接入 `paper/main.tex`，替换/补充现有 controlled-CPPB-only 的叙述；关注正文 12 页上限（PoPETs 2027），必要时把新表移入附录并只在正文放核心发现。
 6. **F11**（自我否定表述清理）仍待做——见 `docs/RevisionSuggestions.tex` 的 F11 条目。

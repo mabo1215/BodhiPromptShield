@@ -1,0 +1,11 @@
+method,method_key,documents,mentions,retrieval_spe,retrieval_spe_lo,retrieval_spe_hi,memory_spe,memory_spe_lo,memory_spe_hi,tool_spe,tool_spe_lo,tool_spe_hi,per_percent,per_lo,per_hi,text_retention,retention_lo,retention_hi,semantic_residue,semantic_lo,semantic_hi
+No protection,no_protection,100,544,50.2,45.2,55.6,100.0,100.0,100.0,73.2,68.3,78.1,100.0,100.0,100.0,1.00,1.00,1.00,0.0,0.0,0.0
+Regex-only,regex_only,100,544,34.2,29.6,39.0,68.0,63.1,72.9,52.9,47.0,58.7,68.4,63.5,73.5,0.98,0.97,0.99,0.0,0.0,0.0
+Capitalization heuristic (formerly NER-only),capitalization_heuristic,100,544,45.6,40.6,51.0,89.9,86.8,93.2,64.2,58.9,69.5,89.1,85.2,92.6,0.79,0.77,0.82,0.0,0.0,0.0
+spaCy NER masking,spacy_ner,100,544,37.7,31.9,43.5,74.8,69.0,80.4,57.0,51.5,62.6,74.9,68.5,80.8,0.97,0.96,0.98,0.0,0.0,0.0
+Microsoft Presidio,presidio,100,544,32.7,27.4,38.2,61.9,56.0,67.7,48.3,42.8,54.3,54.0,48.4,60.1,0.97,0.96,0.98,0.0,0.0,0.0
+"Casper-style (rules + NER, dummy values)",casper_style,100,544,24.8,20.5,29.2,49.3,43.7,55.0,39.0,33.9,44.5,47.9,42.3,54.1,0.95,0.94,0.96,0.0,0.0,0.0
+Proposed (released heuristic detector),heuristic_mediator,100,544,32.4,27.6,37.1,60.3,55.5,65.2,46.5,41.3,51.9,59.1,54.5,64.0,0.68,0.64,0.73,0.0,0.0,0.0
+Proposed (learned detector),learned_lr,100,544,1.1,0.2,2.4,2.0,0.4,4.5,1.1,0.2,2.4,5.3,3.5,7.5,0.81,0.79,0.83,0.0,0.0,0.0
+Proposed (transformer PII detector),gliner_pii,100,544,22.4,18.1,26.8,42.1,36.2,47.8,28.3,22.9,33.8,38.5,32.6,44.8,0.94,0.93,0.95,0.0,0.0,0.0
+LLM sanitizer (qwen3:8b-q4km-hf),llm_sanitizer:qwen3:8b-q4km-hf,100,544,11.6,8.4,14.5,21.7,16.7,27.6,12.9,9.1,17.5,22.3,17.7,27.3,0.95,0.92,0.97,0.0,0.0,0.0

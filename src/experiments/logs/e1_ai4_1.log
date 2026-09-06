@@ -1,0 +1,27 @@
+/root/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:189: UserWarning: The `resume_download` argument is deprecated and ignored in `snapshot_download`. Downloads always resume whenever possible.
+  warnings.warn(
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 1571.78it/s]
+  No protection                                ret= 44.9 mem=100.0 tool= 76.2 PER=100.0 [100.0,100.0] keep=1.00 sem=0.0
+  Regex-only                                   ret= 30.3 mem= 64.9 tool= 51.4 PER= 64.4 [58.4,70.0] keep=0.98 sem=0.0
+  Capitalization heuristic (formerly NER-only) ret= 39.4 mem= 87.2 tool= 64.9 PER= 87.1 [82.7,91.2] keep=0.84 sem=0.0
+  spaCy NER masking                            ret= 33.3 mem= 73.2 tool= 56.7 PER= 75.7 [69.2,82.1] keep=0.97 sem=0.0
+  Microsoft Presidio                           ret= 28.7 mem= 59.3 tool= 44.9 PER= 50.5 [44.4,56.6] keep=0.97 sem=0.0
+  Casper-style (rules + NER, dummy values)     ret= 21.8 mem= 45.7 tool= 36.4 PER= 45.1 [39.9,50.6] keep=0.95 sem=0.0
+  Proposed (released heuristic detector)       ret= 27.5 mem= 55.8 tool= 43.8 PER= 54.0 [47.9,60.1] keep=0.73 sem=0.0
+  Proposed (learned detector)                  ret=  1.7 mem=  3.7 tool=  3.0 PER=  7.5 [5.4,9.8] keep=0.81 sem=0.0
+/root/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:189: UserWarning: The `resume_download` argument is deprecated and ignored in `snapshot_download`. Downloads always resume whenever possible.
+  warnings.warn(
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 1202.67it/s]
+  No protection                                ret= 44.9 mem=100.0 tool= 76.2 PER=100.0 [100.0,100.0] keep=1.00 sem=0.0
+  Regex-only                                   ret= 30.3 mem= 64.9 tool= 51.4 PER= 64.4 [58.4,70.0] keep=0.98 sem=0.0
+  Capitalization heuristic (formerly NER-only) ret= 39.4 mem= 87.2 tool= 64.9 PER= 87.1 [82.7,91.2] keep=0.84 sem=0.0
+  spaCy NER masking                            ret= 33.3 mem= 73.2 tool= 56.7 PER= 75.7 [69.2,82.1] keep=0.97 sem=0.0
+  Microsoft Presidio                           ret= 28.7 mem= 59.3 tool= 44.9 PER= 50.5 [44.4,56.6] keep=0.97 sem=0.0
+  Casper-style (rules + NER, dummy values)     ret= 21.8 mem= 45.7 tool= 36.4 PER= 45.1 [39.9,50.6] keep=0.95 sem=0.0
+  Proposed (released heuristic detector)       ret= 27.5 mem= 55.8 tool= 43.8 PER= 54.0 [47.9,60.1] keep=0.73 sem=0.0
+  Proposed (learned detector)                  ret=  1.7 mem=  3.7 tool=  3.0 PER=  7.5 [5.4,9.8] keep=0.81 sem=0.0
+  Proposed (transformer PII detector)          ret= 17.9 mem= 44.9 tool= 33.6 PER= 38.9 [31.1,46.7] keep=0.93 sem=0.0
+  LLM sanitizer (qwen3:8b-q4km-hf)             ret= 13.3 mem= 20.9 tool= 12.4 PER= 22.6 [16.7,29.0] keep=0.95 sem=0.0
+Results: /root/autodl-tmp/BodhiPromptShield/src/experiments/propagation_suite_ai4privacy_results_shard1of3.csv
+Documents: /root/autodl-tmp/BodhiPromptShield/src/experiments/propagation_suite_ai4privacy_documents_shard1of3.csv
+Manifest: /root/autodl-tmp/BodhiPromptShield/src/experiments/propagation_suite_ai4privacy_runtime_manifest_shard1of3.csv

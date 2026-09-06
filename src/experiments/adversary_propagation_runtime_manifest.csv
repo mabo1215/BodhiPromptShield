@@ -1,0 +1,15 @@
+field,value
+benchmark,"AI4Privacy PII-Masking-300K English test slice, 200 documents"
+attacks,clean; Homoglyph substitution; Zero-width insertion; Intra-token spacing; Case inversion; Leetspeak; Separator injection (ids); Mixed-language fullwidth; Paraphrase (digit spell-out)
+pipeline,"Deterministic reference agent (retrieval=first half, memory=verbatim, tool=structured fields)"
+measurement,PER and SPE of the mutated gold spans after mediation of the mutated document
+bootstrap,"1000 document-level resamples, 95% percentile CI"
+python,3.12.3
+platform,Linux-5.15.0-78-generic-x86_64-with-glibc2.35
+presidio.presidio_analyzer,2.2.364
+presidio.spacy,3.8.16
+presidio.spacy_model,en_core_web_lg
+spacy_ner.spacy,3.8.16
+spacy_ner.spacy_model,en_core_web_lg
+gliner_pii.gliner,0.2.28
+gliner_pii.gliner_model,urchade/gliner_multi_pii-v1

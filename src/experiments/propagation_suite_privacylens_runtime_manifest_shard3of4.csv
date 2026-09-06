@@ -1,0 +1,23 @@
+field,value
+source,privacylens
+documents,123
+methods,no_protection;regex_only;capitalization_heuristic;spacy_ner;presidio;casper_style;heuristic_mediator;learned_lr;gliner_pii;llm_sanitizer:qwen3:8b-q4km-hf
+bootstrap_resamples,1000
+ci,"document-level percentile bootstrap, 95%, seed 17"
+stages,"AI4Privacy: retrieval=first half, memory=verbatim, tool=structured fields; PrivacyLens: retrieval=user_instruction, memory=executable_trajectory, tool=final_action"
+measurement,"exact gold surface survival (SPE), char-coverage PER/retention, content-word semantic residue (PrivacyLens)"
+python,3.12.3
+platform,Linux-5.15.0-78-generic-x86_64-with-glibc2.35
+spacy_ner.spacy,3.8.16
+spacy_ner.spacy_model,en_core_web_lg
+presidio.presidio_analyzer,2.2.364
+presidio.spacy,3.8.16
+presidio.spacy_model,en_core_web_lg
+casper_style.spacy_model,en_core_web_lg
+gliner_pii.gliner,0.2.28
+gliner_pii.gliner_model,urchade/gliner_multi_pii-v1
+llm_sanitizer:qwen3:8b-q4km-hf.model_name,qwen3:8b-q4km-hf
+llm_sanitizer:qwen3:8b-q4km-hf.model_digest,a0a5ad8024dd21401f07634d0c71393b9c9d37aa57a6b594e02b86ab72c450b4
+llm_sanitizer:qwen3:8b-q4km-hf.model_family,qwen3
+llm_sanitizer:qwen3:8b-q4km-hf.model_parameter_size,8.2B
+llm_sanitizer:qwen3:8b-q4km-hf.model_quantization,Q4_K_M

@@ -1,0 +1,59 @@
+/root/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:189: UserWarning: The `resume_download` argument is deprecated and ignored in `snapshot_download`. Downloads always resume whenever possible.
+  warnings.warn(
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 1241.56it/s]
+  clean                        Proposed (released heuristic detector)   PER= 58.5 [54.4,63.2] mem= 59.4 tool= 46.7
+  clean                        Proposed (learned detector)              PER=  8.1 [6.5,9.9] mem=  4.0 tool=  2.9
+  clean                        Microsoft Presidio                       PER= 53.2 [49.0,56.8] mem= 61.0 tool= 47.0
+  clean                        spaCy NER masking                        PER= 75.9 [72.0,79.3] mem= 73.9 tool= 56.9
+  clean                        Proposed (transformer PII detector)      PER= 37.3 [32.9,42.3] mem= 41.6 tool= 29.2
+  Homoglyph substitution       Proposed (released heuristic detector)   PER= 80.4 [77.1,83.4] mem= 75.6 tool= 13.0
+  Homoglyph substitution       Proposed (learned detector)              PER=  8.2 [6.5,10.1] mem=  4.2 tool=  0.3
+  Homoglyph substitution       Microsoft Presidio                       PER= 69.2 [65.5,72.6] mem= 66.9 tool= 15.8
+  Homoglyph substitution       spaCy NER masking                        PER= 78.0 [74.6,81.2] mem= 75.2 tool= 21.7
+  Homoglyph substitution       Proposed (transformer PII detector)      PER= 37.0 [32.0,42.0] mem= 40.0 tool= 12.3
+  Zero-width insertion         Proposed (released heuristic detector)   PER= 91.5 [90.0,93.2] mem= 83.8 tool=  6.2
+  Zero-width insertion         Proposed (learned detector)              PER= 13.8 [11.2,16.5] mem=  4.6 tool=  0.1
+  Zero-width insertion         Microsoft Presidio                       PER= 84.3 [81.7,86.9] mem= 82.8 tool=  9.8
+  Zero-width insertion         spaCy NER masking                        PER= 90.6 [88.2,92.7] mem= 91.7 tool= 15.4
+/root/miniconda3/lib/python3.12/site-packages/gliner/data_processing/processor.py:422: UserWarning: Sentence of length 420 has been truncated to 384
+  batch = [self.preprocess_example(b["tokenized_text"], b[key], class_to_ids) for b in batch_list]
+/root/miniconda3/lib/python3.12/site-packages/gliner/data_processing/processor.py:422: UserWarning: Sentence of length 447 has been truncated to 384
+  batch = [self.preprocess_example(b["tokenized_text"], b[key], class_to_ids) for b in batch_list]
+/root/miniconda3/lib/python3.12/site-packages/gliner/data_processing/processor.py:422: UserWarning: Sentence of length 443 has been truncated to 384
+  batch = [self.preprocess_example(b["tokenized_text"], b[key], class_to_ids) for b in batch_list]
+/root/miniconda3/lib/python3.12/site-packages/gliner/data_processing/processor.py:422: UserWarning: Sentence of length 414 has been truncated to 384
+  batch = [self.preprocess_example(b["tokenized_text"], b[key], class_to_ids) for b in batch_list]
+/root/miniconda3/lib/python3.12/site-packages/gliner/data_processing/processor.py:422: UserWarning: Sentence of length 404 has been truncated to 384
+  batch = [self.preprocess_example(b["tokenized_text"], b[key], class_to_ids) for b in batch_list]
+  Zero-width insertion         Proposed (transformer PII detector)      PER= 90.9 [89.2,92.5] mem= 61.0 tool=  9.8
+  Intra-token spacing          Proposed (released heuristic detector)   PER= 81.9 [78.9,84.4] mem= 70.8 tool=  6.1
+  Intra-token spacing          Proposed (learned detector)              PER= 69.5 [67.1,71.7] mem=  3.3 tool=  0.1
+  Intra-token spacing          Microsoft Presidio                       PER= 88.1 [86.1,89.8] mem= 78.0 tool=  9.9
+  Intra-token spacing          spaCy NER masking                        PER= 93.9 [92.8,95.1] mem= 85.5 tool= 15.4
+  Intra-token spacing          Proposed (transformer PII detector)      PER= 73.0 [69.9,76.1] mem= 62.1 tool=  9.6
+  Case inversion               Proposed (released heuristic detector)   PER= 63.2 [59.1,68.4] mem= 63.8 tool= 18.2
+  Case inversion               Proposed (learned detector)              PER= 19.9 [16.4,23.5] mem= 18.2 tool=  0.4
+  Case inversion               Microsoft Presidio                       PER= 62.9 [58.6,67.2] mem= 71.4 tool= 25.9
+  Case inversion               spaCy NER masking                        PER= 87.2 [84.6,89.7] mem= 86.1 tool= 37.9
+  Case inversion               Proposed (transformer PII detector)      PER= 38.8 [34.0,44.0] mem= 42.8 tool= 16.0
+  Leetspeak                    Proposed (released heuristic detector)   PER= 70.5 [66.9,74.4] mem= 67.4 tool= 55.7
+  Leetspeak                    Proposed (learned detector)              PER=  3.1 [2.6,3.6] mem=  0.6 tool=  0.3
+  Leetspeak                    Microsoft Presidio                       PER= 72.4 [68.3,76.5] mem= 75.3 tool= 61.4
+  Leetspeak                    spaCy NER masking                        PER= 88.7 [86.4,90.8] mem= 86.1 tool= 68.5
+  Leetspeak                    Proposed (transformer PII detector)      PER= 39.6 [34.6,44.9] mem= 43.2 tool= 30.5
+  Separator injection (ids)    Proposed (released heuristic detector)   PER= 62.1 [58.3,66.1] mem= 58.2 tool= 31.0
+  Separator injection (ids)    Proposed (learned detector)              PER= 45.5 [42.7,48.2] mem=  4.0 tool=  2.9
+  Separator injection (ids)    Microsoft Presidio                       PER= 72.4 [69.5,75.5] mem= 63.9 tool= 27.8
+  Separator injection (ids)    spaCy NER masking                        PER= 85.7 [83.3,87.9] mem= 71.4 tool= 30.9
+  Separator injection (ids)    Proposed (transformer PII detector)      PER= 61.3 [56.9,65.4] mem= 53.6 tool= 20.2
+  Mixed-language fullwidth     Proposed (released heuristic detector)   PER= 88.1 [86.1,89.9] mem= 79.9 tool=  0.0
+  Mixed-language fullwidth     Proposed (learned detector)              PER=  9.6 [7.7,11.8] mem=  4.8 tool=  0.0
+  Mixed-language fullwidth     Microsoft Presidio                       PER= 75.4 [71.9,78.5] mem= 74.5 tool=  0.0
+  Mixed-language fullwidth     spaCy NER masking                        PER= 82.8 [79.7,85.7] mem= 80.8 tool=  0.0
+  Mixed-language fullwidth     Proposed (transformer PII detector)      PER= 88.9 [85.8,91.6] mem= 86.5 tool=  0.0
+  Paraphrase (digit spell-out) Proposed (released heuristic detector)   PER= 87.1 [85.1,89.3] mem= 73.5 tool= 31.5
+  Paraphrase (digit spell-out) Proposed (learned detector)              PER= 72.9 [69.4,76.1] mem= 15.6 tool=  3.1
+  Paraphrase (digit spell-out) Microsoft Presidio                       PER= 79.8 [77.4,81.9] mem= 60.0 tool= 27.8
+  Paraphrase (digit spell-out) spaCy NER masking                        PER= 82.7 [80.5,84.6] mem= 62.7 tool= 30.7
+  Paraphrase (digit spell-out) Proposed (transformer PII detector)      PER= 68.2 [62.8,72.9] mem= 55.1 tool= 20.2
+Results: /root/autodl-tmp/BodhiPromptShield/src/experiments/adversary_propagation_results.csv

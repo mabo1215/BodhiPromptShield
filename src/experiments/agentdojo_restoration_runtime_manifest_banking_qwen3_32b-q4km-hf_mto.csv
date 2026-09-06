@@ -1,0 +1,13 @@
+field,value
+benchmark,"AgentDojo v1 suite banking, no injections"
+restore_scope,all
+tasks,user_task_0;user_task_1;user_task_2;user_task_3;user_task_4;user_task_5;user_task_6;user_task_7;user_task_8;user_task_9;user_task_10;user_task_11;user_task_12;user_task_13;user_task_14;user_task_15
+modes,late
+detector,regex_only
+mediate_tool_outputs,True
+agent_model,qwen3:32b-q4km-hf
+llm_backend,"Ollama OpenAI-compatible /v1, native tool calling, temperature 0"
+bootstrap,"1000 task-level resamples, 95% percentile CI"
+python,3.12.3
+platform,Linux-5.15.0-78-generic-x86_64-with-glibc2.35
+agentdojo,0.1.35

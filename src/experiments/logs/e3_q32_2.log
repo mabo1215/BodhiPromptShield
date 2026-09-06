@@ -1,0 +1,52 @@
+/root/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:189: UserWarning: The `resume_download` argument is deprecated and ignored in `snapshot_download`. Downloads always resume whenever possible.
+  warnings.warn(
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 1820.84it/s]
+[no_protection] 0 done, 123 to run
+/root/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:189: UserWarning: The `resume_download` argument is deprecated and ignored in `snapshot_download`. Downloads always resume whenever possible.
+  warnings.warn(
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 1102.60it/s]
+[no_protection] 7 done, 116 to run
+  no_protection: 25/116
+  no_protection: 50/116
+/root/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:189: UserWarning: The `resume_download` argument is deprecated and ignored in `snapshot_download`. Downloads always resume whenever possible.
+  warnings.warn(
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|██████████| 4/4 [00:00<00:00, 1688.02it/s]
+[no_protection] 0 done, 50 to run
+  no_protection: 25/50
+  no_protection: 50/50
+[placeholder:presidio] 0 done, 50 to run
+  placeholder:presidio: 25/50
+  placeholder:presidio: 50/50
+[casper_style] 0 done, 50 to run
+  casper_style: 25/50
+  casper_style: 50/50
+[placeholder:learned_lr] 0 done, 50 to run
+  placeholder:learned_lr: 25/50
+  placeholder:learned_lr: 50/50
+[placeholder:gliner_pii] 0 done, 50 to run
+  placeholder:gliner_pii: 25/50
+  placeholder:gliner_pii: 50/50
+[llm_sanitizer:qwen3:8b-q4km-hf] 0 done, 50 to run
+  llm_sanitizer:qwen3:8b-q4km-hf: 25/50
+  llm_sanitizer:qwen3:8b-q4km-hf: 50/50
+[abstraction:qwen3:8b-q4km-hf] 0 done, 50 to run
+  abstraction:qwen3:8b-q4km-hf: 25/50
+  abstraction:qwen3:8b-q4km-hf: 50/50
+[symbolic_late:gliner_pii] 0 done, 50 to run
+  symbolic_late:gliner_pii: 25/50
+  symbolic_late:gliner_pii: 50/50
+[symbolic_early:gliner_pii] 0 done, 50 to run
+  symbolic_early:gliner_pii: 25/50
+  symbolic_early:gliner_pii: 50/50
+  no_protection                      leak=     32.0 [20.0, 44.0] help= 2.48 [2.24, 2.72] ids=    13.9 [8.8, 20.7] BLR=0.0 [0.0, 0.0]
+  placeholder:presidio               leak=     40.0 [26.0, 54.0] help= 2.04 [1.74, 2.32] ids=      4.6 [0.7, 9.2] BLR=0.0 [0.0, 0.0]
+  casper_style                       leak=     28.0 [16.0, 40.0] help= 1.68 [1.30, 2.04] ids=      1.3 [0.0, 3.1] BLR=0.0 [0.0, 0.0]
+  placeholder:learned_lr             leak=     32.0 [20.0, 44.0] help= 2.26 [1.92, 2.56] ids=      0.7 [0.0, 1.9] BLR=0.0 [0.0, 0.0]
+  placeholder:gliner_pii             leak=     38.0 [26.0, 52.0] help= 2.24 [1.94, 2.52] ids=      2.0 [0.0, 4.8] BLR=0.0 [0.0, 0.0]
+  llm_sanitizer:qwen3:8b-q4km-hf     leak=     46.0 [32.0, 60.0] help= 2.36 [2.06, 2.62] ids=     8.6 [4.0, 13.5] BLR=0.0 [0.0, 0.0]
+  abstraction:qwen3:8b-q4km-hf       leak=     30.0 [18.0, 42.0] help= 2.22 [1.92, 2.52] ids=    10.6 [6.2, 16.0] BLR=0.0 [0.0, 0.0]
+  symbolic_late:gliner_pii           leak=     32.0 [20.0, 46.0] help= 2.26 [1.98, 2.50] ids=    11.9 [7.0, 17.9] BLR=1.0 [0.4, 1.6]
+  symbolic_early:gliner_pii          leak=     30.0 [18.0, 44.0] help= 2.20 [1.88, 2.48] ids=     5.3 [1.3, 10.4] BLR=56.4 [51.4, 61.8]
+Rows: /root/autodl-tmp/BodhiPromptShield/src/experiments/privacylens_downstream_rows_qwen3_32b-q4km-hf_shard2of4.csv
+Summary: /root/autodl-tmp/BodhiPromptShield/src/experiments/privacylens_downstream_summary_qwen3_32b-q4km-hf_shard2of4.csv
+Manifest: /root/autodl-tmp/BodhiPromptShield/src/experiments/privacylens_downstream_runtime_manifest_qwen3_32b-q4km-hf_shard2of4.csv

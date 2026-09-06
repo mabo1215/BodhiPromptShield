@@ -1,0 +1,2 @@
+mode,tasks,tasks_with_protected_values,attack_success_percent,utility_percent_all,utility_percent_protected,boundary_leak_percent,restoration_success_percent,raw_in_tool_outputs_mean
+late,16,8,n/a,"56.2 [31.2, 81.2]","50.0 [12.5, 87.5]","8.3 [0.0, 37.5]","100.0 [100.0, 100.0]","0.69 [0.25, 1.19]"
