@@ -1,5 +1,28 @@
 # 论文进度
 
+## 2026-09-07 00:12 PRO 6000 实验全部跑完，结果已拉回并提交（当前最新）
+
+**5 个 screen 全部正常退出，无新增未诊断错误。** 巡检全过程（10 分钟一次，本会话重新挂载后共 22 轮）未发现真实卡死；两次疑似异常（GPU 显存下降、行数不变）经核实均为良性——分别是 Ollama 因空闲自动卸载 `qwen3:8b-q4km-hf`（后续按条件需要会自动重新加载）、以及巡检脚本本身的 bug（`e7b_lines` 只统计未打 tag 的旧文件，命令推进到 `--output-tag inj_all` 新文件后旧文件行数自然不再增长，已修复巡检脚本本身，不影响实验）。
+
+**实验完成情况**：
+- **E1**（propagation_suite，AI4Privacy 3-way shard + PrivacyLens 4-way shard，全部方法）：本会话确认早前已完成，本次一并拉回并提交。
+- **E3**（privacylens_downstream_suite，qwen3:32b agent + mistral:7b judge，4-way shard，200 例子集 × 9 条件）：**4/4 shard 全部完成**，每 shard 451 行（共 1804 行），9 条件全部跑完（no_protection → placeholder:presidio → casper_style → placeholder:learned_lr → placeholder:gliner_pii → llm_sanitizer:qwen3:8b → abstraction:qwen3:8b → symbolic_late:gliner_pii → symbolic_early:gliner_pii），全部 summary/manifest 已生成，日志零错误。
+- **E7-a**（adversary_propagation_suite，AI4Privacy 200 文档 × 8 攻击 × 5 detector）：本会话确认早前已完成（9000+ 行文档级记录），本次一并拉回并提交。
+- **E7-b**（agentdojo_restoration_suite，AgentDojo banking + important_instructions 注入攻击，三段顺序命令）：**全部完成**：
+  1. `--modes none`（baseline under attack）：32 行数据全部写入成功，**但该阶段自身的 summary 计算因复用了一个 schema 变更前的旧文件表头（缺 `injection_task`/`restore_scope`/`security`/`refused_unscoped_restorations` 列）而抛出 `KeyError: 'security'` 崩溃**——原始逐行数据完整且已 fsync，不受影响；仅该阶段自动生成的 summary CSV 缺失，需要后续用一个小脚本从原始行数据重新计算（原因：该阶段刻意不传 `--output-tag`，与更早的 baseline E4 共用同一个默认文件名，但该默认文件是在 ROW_FIELDS schema 扩展之前写入的）。**待办**：修复 `agentdojo_restoration_suite.py` 的表头迁移逻辑并补算这一份 summary。
+  2. `--modes late --restore-scope all`（`inj_all`）：32 行，summary 正常生成——utility(all)=50.0% [31.2,68.8]，utility(protected)=43.8% [18.8,68.8]，BLR=0.0%，RSR=100.0% [100.0,100.0]。
+  3. `--modes late --restore-scope user-directed`（`inj_scoped`）：32 行，summary 正常生成——utility(all)=50.0% [34.4,65.6]，utility(protected)=50.0% [25.0,75.0]，BLR=8.3% [0.0,21.4]，RSR=85.0% [63.2,100.0]。
+
+**结果已拉回并提交**：`rsync` 拉回 `src/experiments/`（含结果 CSV、日志、`llm_sanitizer_cache/`、`ollama_cache/`，约 130MB），已排除仓库内预先存在的、与本次实验无关的权限位噪音（WSL 挂载导致几乎全仓库文件在 `git status` 下显示为 modified，但 `git diff` 确认零实际内容差异，纯 mode-bit 问题，未处理、未纳入本次提交）。提交 `41f989d`："Pull E1/E3/E7 results from PRO 6000..."，已 push 到 `origin/main`。
+
+**2026-09-06 23:2x 用户指令：PRO 6000 跑完后先别关机。** 已记录并遵守——主机保持开机（仍在计费），关机步骤暂缓，等待用户后续明确指示。详见下方"全部实验完成后的收尾流程"一节的覆盖说明。
+
+**下一步（待做，未开始）**：
+1. 修复 E7-b `none` 阶段的 summary 生成 bug 并补算该份 summary。
+2. **论文 §6 Results 重写**：把 E1/E3/E7 的真实结果（表格+图，含 bootstrap CI，多数已由实验脚本算好）接入 `paper/main.tex`。
+3. F11（自我否定表述清理）。
+4. 等待用户对 PRO 6000 关机的进一步指示。
+
 ## 2026-09-06 16:50 会话中断前检查点（重启 Claude Code 前记录）
 
 **目的**：用户即将重启 Claude Code 会话。本节记录当前所有正在进行的工作的完整状态，供新会话直接续接，无需重新摸索。
