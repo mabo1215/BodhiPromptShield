@@ -1,0 +1,17 @@
+# Normalize text files to LF in the repository. Without this, files checked
+# out on Windows come back as CRLF and every line reads as modified.
+* text=auto
+
+# Windows batch files must keep CRLF to run under cmd.exe.
+*.bat text eol=crlf
+
+# Shell scripts must keep LF regardless of platform.
+*.sh text eol=lf
+
+# Never apply line-ending conversion to these.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.zip binary
+*.gz binary
