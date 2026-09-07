@@ -27,12 +27,13 @@ from __future__ import annotations
 
 import argparse
 import csv
-import json
 import os
 import random
 import re
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
@@ -174,45 +175,62 @@ def run(args: argparse.Namespace) -> None:
         handle.flush()
         os.fsync(handle.fileno())
 
-    total = failures = 0
-    started = time.time()
+    pending: list[tuple[str, dict, int, str]] = []
     for method in method_keys:
         for doc in docs:
             released = surfaces[(method, doc["doc_id"])]
-            truncated = len(released) > args.max_chars
-            shown = released[: args.max_chars]
             for index, fact in enumerate(doc["items"]):
-                key = (method, doc["doc_id"], str(index))
-                if key in done:
+                if (method, doc["doc_id"], str(index)) in done:
                     continue
-                prompt = JUDGE_PROMPT.format(released=shown, fact=fact)
-                t0 = time.time()
-                try:
-                    raw = _chat(args.ollama_url, args.judge_model, prompt, args.timeout)
-                except Exception as exc:  # noqa: BLE001 - record and continue
-                    raw = f"ERROR: {exc}"
-                latency = int((time.time() - t0) * 1000)
-                verdict = _parse_verdict(raw)
-                if verdict is None:
-                    failures += 1
-                writer.writerow({
-                    "method_key": method,
-                    "doc_id": doc["doc_id"],
-                    "fact_index": index,
-                    "fact": fact,
-                    "lexical_retained": int(_lexical_retained(released, fact)),
-                    "judge_inferable": "" if verdict is None else verdict,
-                    "judge_raw": raw.replace("\n", " ")[:400],
-                    "released_chars": len(released),
-                    "truncated": int(truncated),
-                    "latency_ms": latency,
-                })
-                handle.flush()
-                os.fsync(handle.fileno())
-                total += 1
-                if total % 25 == 0:
-                    rate = total / max(1e-9, time.time() - started)
-                    print(f"[judge] {total} done, {rate:.2f}/s, {failures} unparsed", flush=True)
+                pending.append((method, doc, index, fact))
+    print(f"[judge] {len(pending)} judgments to run on {args.workers} workers", flush=True)
+
+    lock = threading.Lock()
+    counters = {"total": 0, "failures": 0}
+    started = time.time()
+
+    def judge_one(item: tuple[str, dict, int, str]) -> None:
+        method, doc, index, fact = item
+        released = surfaces[(method, doc["doc_id"])]
+        truncated = len(released) > args.max_chars
+        prompt = JUDGE_PROMPT.format(released=released[: args.max_chars], fact=fact)
+        t0 = time.time()
+        try:
+            raw = _chat(args.ollama_url, args.judge_model, prompt, args.timeout)
+        except Exception as exc:  # noqa: BLE001 - record and continue
+            raw = f"ERROR: {exc}"
+        latency = int((time.time() - t0) * 1000)
+        verdict = _parse_verdict(raw)
+        row = {
+            "method_key": method,
+            "doc_id": doc["doc_id"],
+            "fact_index": index,
+            "fact": fact,
+            "lexical_retained": int(_lexical_retained(released, fact)),
+            "judge_inferable": "" if verdict is None else verdict,
+            "judge_raw": raw.replace("\n", " ")[:400],
+            "released_chars": len(released),
+            "truncated": int(truncated),
+            "latency_ms": latency,
+        }
+        with lock:
+            writer.writerow(row)
+            handle.flush()
+            os.fsync(handle.fileno())
+            counters["total"] += 1
+            if verdict is None:
+                counters["failures"] += 1
+            if counters["total"] % 50 == 0:
+                rate = counters["total"] / max(1e-9, time.time() - started)
+                remaining = (len(pending) - counters["total"]) / max(1e-9, rate)
+                print(f"[judge] {counters['total']}/{len(pending)} "
+                      f"{rate:.2f}/s eta {remaining/60:.0f}m "
+                      f"{counters['failures']} unparsed", flush=True)
+
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        list(pool.map(judge_one, pending))
+    total, failures = counters["total"], counters["failures"]
+
     handle.close()
     print(f"[judge] finished: {total} new judgments, {failures} unparsed", flush=True)
 
@@ -295,7 +313,8 @@ def _write_manifest(tag: str, args: argparse.Namespace, n_docs: int, judged: int
         "temperature": "0",
         "top_p": "1",
         "seed": str(args.seed),
-        "num_predict": "80",
+        "num_predict": "160",
+        "workers": str(args.workers),
         "max_prompt_chars": str(args.max_chars),
         "methods": args.methods,
         "documents": str(n_docs),
@@ -336,6 +355,8 @@ def main() -> None:
     parser.add_argument("--timeout", type=int, default=300)
     parser.add_argument("--human-n", type=int, default=100)
     parser.add_argument("--seed", type=int, default=17)
+    parser.add_argument("--workers", type=int, default=4,
+                        help="Concurrent judge requests; keep <= OLLAMA_NUM_PARALLEL")
     parser.add_argument("--output-tag", default="")
     run(parser.parse_args())
 
