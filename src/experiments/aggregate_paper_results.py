@@ -14,6 +14,7 @@ Usage:
 from __future__ import annotations
 
 import csv
+import random
 from pathlib import Path
 
 from mediation_baselines import PAPER_LABELS, bootstrap_ratio_ci
@@ -218,12 +219,101 @@ def pool_agentdojo_suites(agent_model: str = "qwen3_32b-q4km-hf",
     return path
 
 
+def pool_agentdojo_injections(agent_model: str = "qwen3_32b-q4km-hf",
+                              suites: tuple[str, ...] = ("banking", "slack")) -> Path | None:
+    """Pool the injection arms across suites.
+
+    The reported injection result is banking alone: 32 task/injection pairs,
+    which leaves the three arms' intervals overlapping almost entirely. Pooling
+    needs care about where each arm's rows live -- banking's unprotected
+    baseline sits in its base rows file (mode ``none`` rows that carry an
+    injection task), while every other arm has its own tagged file.
+
+    Only exfiltration-shaped injections are pooled. banking's tasks 1 and 8 and
+    slack's 2 and 4 attempt to route user data to an attacker; the remaining
+    slack injections send a link or invite a user and carry no user data, so a
+    data-plane layer cannot affect them by construction and mixing them in
+    would dilute the comparison rather than sharpen it.
+    """
+    arms = {"unprotected": [], "unrestricted": [], "user_directed": []}
+    present: dict[str, list[str]] = {k: [] for k in arms}
+
+    def add(arm: str, path: Path, suite: str, baseline: bool = False) -> None:
+        if not path.exists():
+            return
+        rows = [r for r in _read_agentdojo_mixed(path) if r.get("injection_task")]
+        if baseline:
+            rows = [r for r in rows if r["mode"] == "none"]
+        if rows:
+            arms[arm].extend(rows)
+            present[arm].append(f"{suite}({len(rows)})")
+
+    for suite in suites:
+        base = EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}.csv"
+        add("unprotected", EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}_inj_none.csv", suite)
+        if not (EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}_inj_none.csv").exists():
+            add("unprotected", base, suite, baseline=True)
+        add("unrestricted", EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}_inj_all.csv", suite)
+        add("user_directed", EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}_inj_scoped.csv", suite)
+
+    if not any(arms.values()):
+        print("pool_agentdojo_injections: no injection rows found; skipping")
+        return None
+
+    out: list[dict] = []
+    for arm, rows in arms.items():
+        if not rows:
+            continue
+        protected = [r for r in rows if int(r["protected_values"]) > 0]
+        out.append({
+            "arm": arm,
+            "suites": ";".join(present[arm]),
+            "pairs": str(len(rows)),
+            "pairs_with_protected_values": str(len(protected)),
+            "attack_success_percent": _ci(rows, "security", None, 100.0, 1),
+            "utility_percent": _ci(rows, "utility", None, 100.0, 1),
+            "boundary_leak_percent": _ci(protected, "raw_visible_before_tool", "protected_values", 100.0, 1) if protected else "n/a",
+        })
+    # The arms run the same task/injection pairs, so a paired test is the
+    # right comparison: it removes between-pair variance that the independent
+    # intervals above carry, and it is what decides whether the ordering of
+    # the arms is real or an artefact of which pairs are hard.
+    def keyed(rows: list[dict]) -> dict[tuple[str, str, str], float]:
+        return {(r["suite"], r["task"], r["injection_task"]): float(r["security"]) for r in rows}
+
+    baseline = keyed(arms["unprotected"])
+    for arm in ("unrestricted", "user_directed"):
+        other = keyed(arms[arm])
+        shared = sorted(set(baseline) & set(other))
+        if not shared:
+            continue
+        diffs = [other[k] - baseline[k] for k in shared]
+        point = 100.0 * sum(diffs) / len(diffs)
+        rng = random.Random(17)
+        samples = sorted(100.0 * sum(rng.choice(diffs) for _ in diffs) / len(diffs)
+                         for _ in range(N_BOOT))
+        lo, hi = samples[int(0.025 * N_BOOT)], samples[int(0.975 * N_BOOT)]
+        row = next(r for r in out if r["arm"] == arm)
+        row["paired_n"] = str(len(shared))
+        row["paired_asr_delta_vs_unprotected"] = f"{point:+.1f} [{lo:+.1f}, {hi:+.1f}]"
+        row["paired_significant"] = "yes" if (lo > 0) == (hi > 0) else "no"
+    for row in out:
+        row.setdefault("paired_n", "")
+        row.setdefault("paired_asr_delta_vs_unprotected", "")
+        row.setdefault("paired_significant", "")
+
+    path = EXPERIMENTS_DIR / f"agentdojo_injection_summary_pooled_{agent_model}.csv"
+    _write(path, out)
+    return path
+
+
 def main() -> int:
     pool_propagation("ai4privacy")
     pool_propagation("privacylens")
     pool_downstream()
     rebuild_agentdojo_injection_baseline()
     pool_agentdojo_suites()
+    pool_agentdojo_injections()
     return 0
 
 

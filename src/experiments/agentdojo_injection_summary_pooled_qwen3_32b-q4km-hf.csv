@@ -1,0 +1,4 @@
+arm,suites,pairs,pairs_with_protected_values,attack_success_percent,utility_percent,boundary_leak_percent,paired_n,paired_asr_delta_vs_unprotected,paired_significant
+unprotected,banking(32);slack(42),74,20,"74.3 [64.9, 83.8]","62.2 [51.4, 73.0]","100.0 [100.0, 100.0]",,,
+unrestricted,banking(32);slack(42),74,20,"68.9 [59.5, 79.7]","56.8 [45.9, 67.6]","7.1 [0.0, 20.8]",74,"-5.4 [-14.9, +4.1]",no
+user_directed,banking(32);slack(42),74,20,"63.5 [52.7, 74.3]","59.5 [48.6, 70.3]","14.3 [0.0, 28.6]",74,"-10.8 [-23.0, +1.4]",no
