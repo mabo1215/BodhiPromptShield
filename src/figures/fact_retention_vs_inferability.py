@@ -2,16 +2,20 @@
 
 The propagation table reports the Fact Retention Rate, a lexical criterion:
 a sensitive fact counts as retained when at least half of its content words
-survive the released surface. FRR is therefore a lower bound on disclosure --
-it credits a method for deleting a fact's vocabulary even when the surrounding
-text still gives the fact away.
+survive the released surface. This figure shows what that proxy misses, by
+pairing it with the rate a judge model assigns when shown only the released
+surface.
 
-This figure shows how loose that bound is. For each mediation method it draws
-the lexical rate and the rate a judge model assigns when shown only the
-released surface, connected by a line whose length is the bound's slack. The
-control row (no protection) calibrates the judge's ceiling: it cannot reach
-100% because some PrivacyLens facts are not fully spelled out even in the raw
-trajectory.
+The two disagree in both directions, so FRR is not a bound of either kind.
+For methods that leave text intact it overstates disclosure by 8-11 points --
+surviving vocabulary does not always make a fact recoverable. For a method
+that deletes aggressively it understates by tens of points: removing the words
+does not remove the fact.
+
+The dashed line is the unprotected control's judged rate, which is the ceiling
+any method is working against. It sits below 100% because some PrivacyLens
+facts are not fully spelled out even in the raw trajectory. Read against that
+line, no method in the roster moves judged inferability far.
 
 Reads the summary written by ``semantic_inferability_judge``; recomputes
 nothing.
@@ -78,9 +82,18 @@ def plot(summary_path: str, out_path: str) -> None:
     rows.sort(key=lambda r: _point(r["judged_inferable"]) - _point(r["lexical_frr"]))
     y = np.arange(len(rows), dtype=float)
 
-    fig, ax = plt.subplots(figsize=(5.4, 0.42 * len(rows) + 1.25))
+    fig, ax = plt.subplots(figsize=(5.2, 0.34 * len(rows) + 1.05))
     fig.patch.set_facecolor(SURFACE)
     ax.set_facecolor(SURFACE)
+
+    control = next((r for r in rows if r["method_key"] == "no_protection"), None)
+    if control is not None:
+        ceiling = _point(control["judged_inferable"])
+        ax.axvline(ceiling, color=JUDGED_COLOR, linewidth=0.9, linestyle=(0, (4, 3)),
+                   alpha=0.55, zorder=1)
+        ax.annotate(f"unprotected: {ceiling:.0f}%", (ceiling, len(rows) - 0.55),
+                    textcoords="offset points", xytext=(-4, 0), ha="right", va="center",
+                    fontsize=6.5, color=JUDGED_COLOR)
 
     for i, row in enumerate(rows):
         lex, judged = _point(row["lexical_frr"]), _point(row["judged_inferable"])
@@ -115,9 +128,9 @@ def plot(summary_path: str, out_path: str) -> None:
 
     handles = [
         plt.Line2D([], [], marker="o", linestyle="none", markersize=6, color=LEXICAL_COLOR,
-                   markeredgecolor=SURFACE, label="Lexical FRR (lower bound)"),
+                   markeredgecolor=SURFACE, label="Lexical fact retention"),
         plt.Line2D([], [], marker="o", linestyle="none", markersize=6, color=JUDGED_COLOR,
-                   markeredgecolor=SURFACE, label="Judged inferable"),
+                   markeredgecolor=SURFACE, label="Judged inferable by LLM judge"),
     ]
     ax.legend(handles=handles, frameon=False, fontsize=7, loc="lower center",
               bbox_to_anchor=(0.5, 1.0), ncol=2, handlelength=1.0,

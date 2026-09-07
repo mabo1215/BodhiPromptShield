@@ -7,14 +7,15 @@ The three surfaces are different projections of the same mediated prompt, not
 successive filters, so they are drawn as grouped bars rather than as a decay
 curve.
 
-Panel B: the gap between surface-form and factual leakage. The horizontal axis
-is residual exact-identifier exposure (PER) and the vertical axis is the Fact
-Retention Rate (FRR) on PrivacyLens trajectories. Methods spread across the
-horizontal axis while staying high on the vertical one, which is the visual
-statement that the two quantities are close to independent.
+Panel B pairs residual exact-identifier exposure (PER) with the lexical Fact
+Retention Rate on PrivacyLens trajectories. It is retained behind ``--panels
+ab`` for reference but is not the paper figure: fact retention is lexical, and
+the measured comparison against judged inferability lives in
+``fact_retention_vs_inferability``. The default single-panel output is what
+the manuscript includes.
 
-Both panels read the pooled result records written by the propagation suite;
-no number in this figure is recomputed here.
+Reads the pooled result records written by the propagation suite; no number in
+this figure is recomputed here.
 """
 import argparse
 import csv
@@ -277,17 +278,26 @@ def _panel_b(ax, rows):
     )
 
 
-def plot(out_path: str):
+def plot(out_path: str, panels: str = "a"):
     ai4 = _rows_in_order(os.path.join(EXPERIMENTS_DIR, AI4PRIVACY_POOLED))
     plens = _rows_in_order(os.path.join(EXPERIMENTS_DIR, PRIVACYLENS_POOLED))
 
-    fig, axes = plt.subplots(1, 2, figsize=(7.1, 2.15))
-    fig.patch.set_facecolor(SURFACE)
-    for ax in axes:
+    if panels == "a":
+        fig, ax = plt.subplots(1, 1, figsize=(7.1, 2.05))
+        fig.patch.set_facecolor(SURFACE)
         ax.set_facecolor(SURFACE)
-    _panel_a(axes[0], ai4)
-    _panel_b(axes[1], plens)
-    fig.tight_layout(w_pad=2.2)
+        _panel_a(ax, ai4)
+        ax.set_title("Exposure at each agent boundary, AI4Privacy reference agent",
+                     fontsize=7.5, color=TEXT_PRIMARY, pad=6, loc="left")
+        fig.tight_layout()
+    else:
+        fig, axes = plt.subplots(1, 2, figsize=(7.1, 2.15))
+        fig.patch.set_facecolor(SURFACE)
+        for ax in axes:
+            ax.set_facecolor(SURFACE)
+        _panel_a(axes[0], ai4)
+        _panel_b(axes[1], plens)
+        fig.tight_layout(w_pad=2.2)
     fig.savefig(out_path, dpi=400, bbox_inches="tight", facecolor=SURFACE)
     plt.close(fig)
     print(f"wrote {out_path}")
@@ -295,12 +305,14 @@ def plot(out_path: str):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--panels", default="a", choices=["a", "ab"],
+                        help="'a' is the manuscript figure; 'ab' adds the lexical scatter")
     parser.add_argument(
         "--out",
         default=os.path.join(SRC_DIR, os.pardir, "paper", "figs", "propagation_and_fact_gap.pdf"),
     )
     args = parser.parse_args()
-    plot(os.path.abspath(args.out))
+    plot(os.path.abspath(args.out), args.panels)
 
 
 if __name__ == "__main__":
