@@ -235,7 +235,7 @@ def run(args: argparse.Namespace) -> None:
     print(f"[judge] finished: {total} new judgments, {failures} unparsed", flush=True)
 
     _summarize(rows_path, tag, method_keys)
-    _write_human_sheet(rows_path, tag, args.human_n, args.seed)
+    _write_human_sheet(rows_path, tag, args.human_n, args.seed, surfaces, args.max_chars)
     _write_manifest(tag, args, len(docs), total, failures)
 
 
@@ -271,8 +271,14 @@ def _summarize(rows_path: Path, tag: str, method_keys: list[str]) -> None:
     print(f"[summary] wrote {out.name}", flush=True)
 
 
-def _write_human_sheet(rows_path: Path, tag: str, n: int, seed: int) -> None:
-    """Blind annotation sheet plus a separate key, for a Cohen's kappa subset."""
+def _write_human_sheet(rows_path: Path, tag: str, n: int, seed: int,
+                       surfaces: dict, max_chars: int) -> None:
+    """Blind annotation sheet plus a separate key, for a Cohen's kappa subset.
+
+    The annotator has to answer the same question the judge did, so the sheet
+    carries the same released surface the judge saw -- truncated identically.
+    Without it the sheet is unanswerable.
+    """
     with rows_path.open(encoding="utf-8", newline="") as handle:
         rows = [r for r in csv.DictReader(handle) if r["judge_inferable"] != ""]
     if not rows:
@@ -293,9 +299,11 @@ def _write_human_sheet(rows_path: Path, tag: str, n: int, seed: int) -> None:
     key = EXPERIMENTS_DIR / f"semantic_inferability_human_key{tag}.csv"
     with sheet.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["item_id", "fact", "released_excerpt", "human_inferable_YES_or_NO"])
+        writer.writerow(["item_id", "released_text_shown_to_judge", "fact",
+                         "human_inferable_YES_or_NO"])
         for i, row in enumerate(sample):
-            writer.writerow([i, row["fact"], "", ""])
+            released = surfaces.get((row["method_key"], row["doc_id"]), "")
+            writer.writerow([i, released[:max_chars], row["fact"], ""])
     with key.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(["item_id", "method_key", "doc_id", "fact_index", "judge_inferable", "lexical_retained"])
