@@ -1,0 +1,3 @@
+comparison,n,cohens_kappa,interpretation,raw_agreement,human_no_pred_no,human_no_pred_yes,human_yes_pred_no,human_yes_pred_yes
+judge_vs_human,96,0.080,slight,0.594,9,30,9,48
+lexical_vs_human,96,0.283,fair,0.688,12,27,3,54
