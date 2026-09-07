@@ -1,0 +1,4 @@
+mode,tasks,tasks_with_protected_values,attack_success_percent,utility_percent_all,utility_percent_protected,boundary_leak_percent,restoration_success_percent,raw_in_tool_outputs_mean
+none,21,2,n/a,"81.0 [61.9, 95.2]","50.0 [0.0, 100.0]","100.0 [100.0, 100.0]","0.0 [0.0, 0.0]","0.00 [0.00, 0.00]"
+late,21,2,n/a,"85.7 [71.4, 100.0]","50.0 [0.0, 100.0]","0.0 [0.0, 0.0]","0.0 [0.0, 0.0]","0.00 [0.00, 0.00]"
+no_restore,21,2,n/a,"95.2 [85.7, 100.0]","100.0 [100.0, 100.0]","0.0 [0.0, 0.0]","0.0 [0.0, 0.0]","0.00 [0.00, 0.00]"
