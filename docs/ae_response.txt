@@ -11,9 +11,11 @@ contribution and a new evaluation on real agent stacks with strong baselines
 and realistic privacy attacks." We treated that as the specification for this
 revision. The evaluation has been rebuilt from scratch on real agent data with
 reproduced comparator systems, and the contribution has been narrowed to the
-two mechanisms the evaluation actually isolates. Three of the AE's comments
-identified claims that did not survive the new measurements; we report those
-outcomes as findings rather than defending the original claims.
+two mechanisms the evaluation actually isolates. The claims the AE
+questioned were re-measured rather than defended. Two did not survive and are
+reported as negative results. A third reversed direction: the instrument behind
+it turned out not to measure what it was read as measuring, and blind human
+annotation gave the opposite answer.
 
 
 AE comment 1 - Placeholder substitution, local mapping and later restoration
@@ -74,21 +76,49 @@ semantically exposed. SPE measures literal span survival and misses contextual
 disclosure. The authors' own inference attack still reaches 50% accuracy after
 sanitization.
 ------------------------------------------------------------------------------
-This comment identified what has become the paper's third headline finding
-rather than a caveat. The 83% figure was previously a single-configuration
-limitation; it is now measured for all ten methods on all 493 trajectories and
-reported as a cross-method invariant: 83.0-98.8% of sensitive facts survive
-every method that leaves usable text behind (Section 6.2, Figure 2b). The one
-method that lowers it materially does so by destroying 40% of the
-non-sensitive text as well.
+This comment identified what has become the paper's third headline finding,
+and the answer changed direction during the revision.
 
-We have also corrected an overstatement in how this quantity was described. The
-measure is a content-word overlap criterion, now named Fact Retention Rate and
-described as a lexical lower bound on disclosure rather than as a measure of
-inferability. A direct measure of inferability - a judge over the released
-surface, validated against human annotation - would tighten the bound; we
-state this as the first step of the mitigation study rather than claiming it
-here.
+We first did what the comment asks: measure the quantity for all ten methods on
+all 493 trajectories rather than in one configuration. On the content-word
+overlap criterion - now named Fact Retention Rate and described as a lexical
+measure of surviving wording rather than as a measure of inferability -
+83.0-98.8% of facts survive every method that leaves usable text behind. We
+then built the direct measure the comment implies: a judge model, from a
+different family than the downstream agent, shown only the released surface and
+asked whether a reader would still learn the fact (3,459 judgments).
+
+The judge agreed with the lexical criterion, and both were wrong. On a
+stratified 96-item subset, 16 per method, a person answered that same question
+blind - without the judge's verdict, and without knowing which method produced
+any item. The judge reaches Cohen's kappa = 0.080, chance, at 59.4% raw
+agreement, calling a fact inferable in 81.2% of items where the annotator does
+so in 59.4%; the lexical criterion reaches 0.283. Neither can carry a claim
+about inferability, and the paper no longer uses them for one.
+
+The human labels reverse the finding those proxies suggested. Factual
+inferability falls from 100% [100, 100] with no protection to 56.2%
+[31.2, 81.2] under Presidio, 43.8% [18.8, 68.8] under Casper-style, 37.5%
+[18.8, 62.5] under our learned detector and 25.0% [6.2, 50.0] under the
+heuristic, and every difference from the control has a bootstrap interval clear
+of zero. Mediation reduces factual inferability substantially - the opposite of
+what a surface metric or an unvalidated judge reports (Section 6.2).
+
+We report the methodological result alongside the empirical one, because it
+bears on this comment directly: the 83% figure that prompted it came from an
+instrument that does not measure what it was read as measuring, and the judge
+model we built to replace that instrument failed the same check while agreeing
+with it closely enough that neither exposed the other. Only human labels
+separated them. Work measuring semantic leakage with a judge model - ours
+included, until this check - should report agreement against human annotation
+before treating its output as a measurement.
+
+The limit of this result is stated in the paper and we state it here: the human
+labels come from one annotator over 96 items, who is an author. They were blind
+to method and to the judge's verdict and produced a monotone ordering with
+intervals clear of zero, but a single rater gives no human-human reliability
+estimate. A second independent annotator on a larger subset is the next step,
+and until then the size of the effect is indicative rather than settled.
 
 On the deterministic reference agent: it is retained only for the AI4Privacy
 source, where it provides a controlled instrumented pipeline. The PrivacyLens
@@ -100,7 +130,10 @@ execute against its real sandboxed tools.
 The consequence for our own claims is reported rather than minimized:
 downstream judge-scored leak rates move only 38.0% -> 28.5-37.5% with
 overlapping intervals, i.e. no method significantly reduces what the agent
-actually discloses.
+actually discloses under that scoring. We flag that those rates come from
+PrivacyLens' own judge model, which we have not validated against human labels;
+since our own judge failed exactly that check, the same scrutiny applies to
+them.
 
 
 AE comment 4 - Enterprise redaction achieves lower exposure than the proposed
@@ -169,9 +202,14 @@ What changed overall
 - Restoration timing isolated as a mechanism: late restoration gives boundary
   leakage 1.6% [1.1, 2.1] against 51.0% [48.0, 54.0] for early restoration,
   with disjoint intervals, for 0.11 helpfulness points.
-- Two negative results reported as such: mediation does not defend against
-  prompt injection, and no method significantly reduces downstream judge-scored
-  leakage.
+- One negative result reported as such: mediation does not defend against
+  prompt injection, on 74 paired task/injection trials.
+- One measurement result that reversed a prior claim: a lexical criterion and
+  an LLM judge both report that mediation leaves facts intact, both disagree
+  with blind human annotation (Cohen's kappa 0.28 and 0.08), and the human
+  labels show factual inferability falling from 100% to 25-56% across the
+  roster. Downstream judge-scored leakage is statistically unchanged, but it is
+  scored by an unvalidated judge and inherits the same doubt.
 - CPPB demoted to an appendix ablation surface; the AC/TSR rubric, the
   alias-only cross-model table, and the disclaimed tables removed from the
   main text.
