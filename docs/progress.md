@@ -1,6 +1,112 @@
 # 论文进度
 
-## 2026-09-08 vGPU 会话：E5′ 判定、AgentDojo 扩展、人工验证推翻第三条发现（当前最新）
+## 2026-09-08 投稿材料与稿件一致性核查（当前最新）
+
+本轮不跑实验，只做一次全仓一致性核查，起因是核对"下一步该干什么"。发现三处
+上一轮人工验证反转结论后**没有同步**的地方，已全部改掉。
+
+### 1. cover letter 与论文自相矛盾（最严重，已修）
+
+`docs/cover_letter.txt` 与 `docs/ae_response.txt` 停留在 09-07 版本，仍写着
+"没有任何表层方法能实质降低事实披露，83.0–98.8% 的事实在中介后存活"，并把这一条
+称为"论文最有分量的结果"。而 09-08 的人工标注已经把这条**反转**成"从 100% 压到
+25–56%，全部显著"。PoPETs 要求随稿提交先前评审与逐条回应——一份与正文互相打架的
+回应信足以直接葬送投稿。
+
+已改：
+- cover letter：贡献列表 3 条 → 4 条（与正文 `egin{itemize}` 对齐）；
+  "两条负面结果"段整体重写为"一条测量学结果 + 一条负面结果"；新增一段坦述
+  单标注者局限；删掉正文里出现的仓库路径 `docs/ae_response.txt`（改为"attached"）。
+- ae_response：AE 第 3 条回应整节重写——先按意见把 83% 扩到十方法全量，再建判官，
+  再报告判官 κ=0.080 失效、词面 κ=0.283，最后给人工反转后的数值与区间；补上
+  "PrivacyLens 自带 judge 未经验证、同样存疑"的自我披露；开头"三条主张未存活"改为
+  "两条未存活、一条反向"；结尾 What changed overall 同步。
+
+### 2. 正文 Limitations 编号坏了（已修）
+
+`paper/main.tex` §Limitations 写"Three limitations"，实际列了四条，且序号是
+First / Second / **Second** / Third。已改为 Four + First/Second/Third/Fourth。
+重建：20 页，正文止于第 12 页，0 undefined ref/cite。
+
+### 3. USAGE.md 目标 venue 行是旧的（已修）
+
+D1 在 09-06 就已定为 PoPETs 2027 Issue 3，`docs/RevisionSuggestions.tex` 也已同步，
+但 `USAGE.md` 的 `目标会议或期刊：` 一行仍是 ICLR 2027——所有按该行取 venue 的
+后续流程都会走错标准。已改为 PoPETs 2027 Issue 3（2026-11-30 AoE）+ TAISAP 备选。
+
+### 4. 匿名 artifact 包已重建（投稿硬性要求，本轮主要产出）
+
+新增 `src/package_artifact.py`，生成 `submit/BodhiPromptShield_artifact_anonymous.zip`
+（391 个文件、2.0 MB）。原来 `submit/` 里那份是 **2026-06-17 TOPS 时代**的包，
+早于整个 E1–E7 重建，正文 `openscience` 节承诺的补充材料等于是空的。
+
+做法上和旧包的三点不同：
+
+1. **目录结构保持仓库原样**（`src/` + `data/`），不再压平成 `source/`。
+   实验脚本用 `parents[2]` 定位根目录再读 `data/`，旧包压平后这些脚本根本跑不起来。
+   已实测：解压后直接 `python src/experiments/semantic_inferability_agreement.py --tag vgpu3090`
+   跑通，输出 κ=0.080 / 0.283，与论文数字逐位一致。
+2. **排除了 PhysioNet 派生的临床文本**（`physionet_deid_relabeled_export*.jsonl`）。
+   旧包把它打进去了——PhysioNet 是 credentialed 数据，随补充材料公开分发违反使用协议。
+   派生的逐文档指标和 prompt 包装清单不含正文，保留。
+3. **匿名化是构建时强制的**：作者名、`github.com/mabo1215/...`、arXiv 链接、
+   租用 GPU 容器主机名统一改写，改写后再全量扫一遍，只要还剩一个就拒绝出包。
+   打包脚本本身不进包（它字面写着要清除的那些字符串）。运行日志也不进包
+   （里面是 `/root/autodl-tmp/...` 绝对路径），provenance 由 runtime manifest 承担。
+
+**顺带发现的双盲风险**：仓库里存在一篇同名 arXiv 预印本
+（`arXiv:2604.05793`，署三位作者），`build_hf_cppb_dataset.py` 和 HF dataset card
+里都引了它。包里已抹掉，但**预印本本身是公开的**，PoPETs 双盲下审稿人一搜即中。
+这个需要你判断要不要处理（PETS 通常容忍预印本，但你应该知道它在那儿）。
+
+### 5. 第二位标注者的页面已上线
+
+用户已找到第二名标注者，明确要求：**把第一位的标注拷贝一份预填进去，第二位在上面
+确认或调整，形成第二位自己的记录；第二位的任何修改都记进第二位的记录，不动第一位的，
+最后得到两个人各自的标注。**页面按这个要求实现。
+
+交互：每条打开时已经填好第一位的答案，并在事实句下方单独一栏显示"第一位标注者：是/否"。
+同意就按同一个键确认，不同意就按另一个键改掉——两种都算已复核，自动跳下一条。
+表头显示"已复核 N / 96，其中改动 M 条"，进度格里改动过的条目单独标色。
+第一位的记录在页面上是只读的，两份记录存在不同的文件和不同的集合里。
+
+**一处如实记录**：这样第二位是在第一位的答案上起步的，两份标注不再互相独立，
+它们之间的一致率会被"先验提示"抬高，不能当作独立的评分者间信度（inter-rater
+reliability）来报告。脚本输出里已按实际含义命名（primed agreement / 上限），
+并显式打印一行警告，避免日后被误当成独立 κ 写进论文。这一轮真正立得住的是
+**第二位读者对全部 96 条都给了判断，以及他改动了多少条**——后者是先验提示
+制造不出来的。
+
+- `src/experiments/build_annotation_page.py` 双模式（`--mode blind|review`），
+  两轮共用一套页面实现和一套盲态断言（判官答案、method、doc_id 永不进页面，已验证）。
+  第二轮额外用 `reviewed` 标记区分"第二位真的看过并按了键"与"只是预填还没动"，
+  否则一份预填好的表格打开就显示 100% 完成。
+  顺带修了原版一个静默 bug：`db.collection().get()` 返回的是 QuerySnapshot 不是数组，
+  原来的恢复代码 `.forEach` 会抛异常被 catch 吞掉，云端恢复一直没生效（只有 localStorage 在起作用）。
+- `src/experiments/semantic_inferability_agreement.py` 加 `--round2`：输出改动条数、
+  两份记录的 primed 一致率（带警告）、判官与词面指标对第二位标签的 κ，
+  并另外生成 `semantic_inferability_human_by_method_round2_*.csv`——与图表脚本读的
+  格式完全一致，可直接用第二位的标签重绘可推断性图。已用合成数据跑通，
+  其中判官与词面的 bootstrap 区间与第一轮文件逐位一致，说明区间实现对得上。
+- 标注页：https://claude.ai/code/artifact/b2f67c85-bb52-46d6-8dd8-0a81769347fc
+  本地独立副本 `tmp/inferability_round2.html`（无 `window.claude` 时自动退回
+  localStorage + 剪贴板导出，可直接把文件发给对方）。
+
+**注意**：该页声明了 db 能力，因此只有登录同一组织的人能打开。
+如果第二名标注者不在你的组织里，改发本地 HTML 文件，功能完全一样，
+标完点"导出答案 (CSV)"回传即可。
+
+回收后一条命令出全部结果：
+`python src/experiments/semantic_inferability_agreement.py --round2 <导出的csv>`
+
+### 6. 两处需要你处理的状态不一致
+
+- **哪台主机在计费，说法冲突**：`docs/progress.md` 顶部说 vGPU 3090 按指示保持开机；
+  `docs/ExperimentProgress.tex` 说 vGPU 已关、PRO 6000 保持开机。两份文档不可能都对。
+- **`C:\source\.env` 不存在**，因此本轮无法自行 SSH 上去核实。登录规则指向该文件，
+  它要么被移动要么被删除。
+
+## 2026-09-08 vGPU 会话：E5′ 判定、AgentDojo 扩展、人工验证推翻第三条发现
 
 **提交**：主仓 `1eafdb0`，`paper` 子模块 `18b3575`，均已 push。vGPU 3090 **按指示保持开机**（仍在计费）。
 
@@ -374,8 +480,12 @@ PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submis
 # 遗留问题
 
 需要你提供/决策：
-1. **第二名独立标注者**（当前唯一实质缺口，不需要 GPU）。标注页：
-   https://claude.ai/code/artifact/eaa72f7b-f1d3-496d-b8d5-fa24487d623c
+1. **第二名标注者**——你已找到人，页面已就绪（见本文件顶部第 5 节）：
+   https://claude.ai/code/artifact/b2f67c85-bb52-46d6-8dd8-0a81769347fc
+   若对方不在你的 Claude 组织内，改发 `tmp/inferability_round2.html` 这个文件。
+   标完导出 CSV 回传，然后跑
+   `python src/experiments/semantic_inferability_agreement.py --round2 <导出的csv>`。
+   （第一轮的页面：https://claude.ai/code/artifact/eaa72f7b-f1d3-496d-b8d5-fa24487d623c）
    A:
 2. **是否同样抽查 PrivacyLens 自带 judge**（可复用现有流程）。
    A:
@@ -383,7 +493,16 @@ PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submis
    A:
 4. **AI use 声明措辞**是否认可（`paper/main.tex` 的 `ai` 环境）。
    A:
-5. **vGPU 何时关机**——当前按你的指示保持开机，仍在计费。
+5. **哪台主机现在还在计费、何时关机**——`docs/progress.md` 与
+   `docs/ExperimentProgress.tex` 对此说法冲突（前者说 vGPU 3090 开机，后者说
+   vGPU 已关、PRO 6000 开机），本轮无法自行核实，见第 6 条。
+   A:
+6. **同名 arXiv 预印本 `arXiv:2604.05793`（署三位作者）是否处理**——匿名包里已抹掉引用，
+   但预印本本身公开可搜。PoPETs 双盲通常容忍预印本，只是你应该知道它的存在再决定。
+   A:
+7. **`C:\source\.env` 不存在**——登录规则（`.claude/rules/host-login.md`）指向该文件
+   读取各 GPU 主机的 ssh 命令与密码，当前该路径下没有这个文件，因此任何主机核实、
+   开关机、拉结果都做不了。需要你恢复该文件或告知新位置。
    A:
 
 
