@@ -1,13 +1,30 @@
-"""Build the blind annotation page for the inferability judge's kappa subset.
+"""Build the annotation pages for the inferability judge's kappa subset.
 
 ``semantic_inferability_judge`` emits a sheet of (released surface, fact)
 pairs and a separate key holding the judge's verdicts. This renders the sheet
 as a page a person can actually work through: the trajectory on one side, the
 one fact in question on the other, two keys to answer, ninety-six times.
 
-The key file is never read here. The page cannot show the judge's answer
-because it does not contain it, which is what keeps the subset blind and the
-resulting kappa meaningful.
+Two modes, one page implementation.
+
+``blind`` is the first round: the annotator sees only the trajectory and the
+fact. The key file is never read here, and the page cannot show the judge's
+answer because it does not contain it, which is what keeps the subset blind
+and the resulting judge-vs-human kappa meaningful.
+
+``review`` is the second round, run the way the second annotator asked for it:
+each item opens already carrying the first annotator's answer, and the second
+annotator confirms it or changes it. Whatever stands when they are done is the
+second annotator's own record. The first annotator's sheet is read here and
+never written -- the two records are separate files and separate collections,
+and nothing on this page can alter round one.
+
+One consequence belongs next to the numbers rather than in a footnote found
+later: starting from someone else's answer is not the same as answering
+independently, so agreement between the two rounds is primed and reads higher
+than an independent estimate would. The scoring script names it accordingly.
+What this round does establish is a second reader's judgement on every item,
+and an explicit count of the items they changed.
 
 The interface is written in Chinese at the author's request, and each fact
 statement carries a Chinese rendering beneath the English one as a reading
@@ -29,7 +46,10 @@ from pathlib import Path
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 
-PAGE = """<title>可推断性标注</title>
+YES = {"yes", "y", "1", "true"}
+NO = {"no", "n", "0", "false"}
+
+PAGE = """<title>__TITLE__</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap">
 <style>
   :root {
@@ -44,6 +64,12 @@ PAGE = """<title>可推断性标注</title>
     --accent: #2f6f9f;
     --accent-soft: #e4eef6;
     --redact: #a7b1bd;
+    /* Review state is not the accent: it reports what happened to an item,
+       so it stays legible beside the accent without competing with it. */
+    --kept: #3f7d63;
+    --kept-soft: #e6f0ea;
+    --changed: #9a6b2b;
+    --changed-soft: #f6eddf;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -58,6 +84,10 @@ PAGE = """<title>可推断性标注</title>
       --accent: #69abdb;
       --accent-soft: #1d2b36;
       --redact: #5d6874;
+      --kept: #79b795;
+      --kept-soft: #1c2a23;
+      --changed: #cba46a;
+      --changed-soft: #2c2519;
     }
   }
   :root[data-theme="dark"] {
@@ -72,6 +102,10 @@ PAGE = """<title>可推断性标注</title>
     --accent: #69abdb;
     --accent-soft: #1d2b36;
     --redact: #5d6874;
+    --kept: #79b795;
+    --kept-soft: #1c2a23;
+    --changed: #cba46a;
+    --changed-soft: #2c2519;
   }
   * { box-sizing: border-box; }
   body {
@@ -162,10 +196,42 @@ PAGE = """<title>可推断性标注</title>
     margin-bottom: 3px;
   }
   .ask { padding: 0 15px 15px; font-size: 13px; color: var(--muted); }
+
+  /* Round one's answer, carried in as the starting point. A strip of context
+     above the controls rather than a card of its own: it belongs to the item,
+     and on this page it is read-only. */
+  .prior {
+    margin: 0 15px 12px;
+    padding: 10px 12px;
+    border-radius: 5px;
+    border: 1px solid var(--line);
+    background: var(--surface-sunk);
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+  .prior .who { color: var(--muted); }
+  .prior .val { font-weight: 600; }
+  .prior .state {
+    margin-left: auto;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--faint);
+    background: var(--surface);
+  }
+  .prior[data-state="kept"] { border-color: var(--kept); background: var(--kept-soft); }
+  .prior[data-state="kept"] .state { color: var(--kept); border-color: var(--kept); }
+  .prior[data-state="changed"] { border-color: var(--changed); background: var(--changed-soft); }
+  .prior[data-state="changed"] .state { color: var(--changed); border-color: var(--changed); }
+
   .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; padding: 0 15px 15px; }
-  /* Both answers get identical weight on purpose: colouring one of them
-     would nudge the annotator, and the whole point of the subset is an
-     independent judgement. */
+  /* Both answers keep identical weight: the prior answer is already on
+     screen, and colouring one button would push the reader further. */
   .answers button {
     font: inherit;
     font-weight: 500;
@@ -216,6 +282,7 @@ PAGE = """<title>可推断性标注</title>
     background: var(--surface-sunk); border: 1px solid transparent;
   }
   .grid i[data-done="1"] { background: var(--accent); opacity: .55; }
+  .grid i[data-changed="1"] { background: var(--changed); opacity: .85; }
   .grid i[data-cur="1"] { border-color: var(--ink); opacity: 1; }
 
   footer { padding: 0 15px 15px; display: flex; gap: 8px; flex-wrap: wrap; }
@@ -228,13 +295,14 @@ PAGE = """<title>可推断性标注</title>
   footer button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .note { padding: 0 15px 15px; font-size: 12px; color: var(--faint); line-height: 1.45; }
   .status { font-size: 12px; color: var(--muted); padding: 0 15px 14px; min-height: 16px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
 <header>
-  <h1>可推断性标注</h1>
-  <span class="sub">盲标 &middot; 本页不含模型的判定结果</span>
+  <h1>__TITLE__</h1>
+  <span class="sub">__SUBTITLE__</span>
   <span class="spacer"></span>
-  <span class="counts">已标 <b id="done">0</b> / <b id="total">0</b></span>
+  <span class="counts">__COUNTLABEL__ <b id="done">0</b> / <b id="total">0</b><span id="changedCount"></span></span>
 </header>
 <div class="rail"><i id="railfill"></i></div>
 
@@ -249,6 +317,13 @@ PAGE = """<title>可推断性标注</title>
       <h2>敏感事实</h2>
       <div class="fact"><div class="en" id="fact"></div><div class="zh" id="factZh" hidden><span>中文参考</span><em id="factZhText" style="font-style:normal"></em></div></div>
       <div class="ask">仅凭左侧轨迹，读者是否仍能得知这条事实，或以高置信度推断出来？</div>
+
+      <div class="prior" id="prior" hidden>
+        <span class="who">第一位标注者</span>
+        <span class="val" id="priorVal"></span>
+        <span class="state" id="priorState"></span>
+      </div>
+
       <div class="answers">
         <button id="btnYes" aria-pressed="false">是，仍可得知 <kbd>Y</kbd></button>
         <button id="btnNo" aria-pressed="false">否，已无法得知 <kbd>N</kbd></button>
@@ -265,10 +340,10 @@ PAGE = """<title>可推断性标注</title>
       <h2>进度</h2>
       <div class="grid" id="grid"></div>
       <footer>
-        <button id="jump">跳到第一条未标</button>
+        <button id="jump">__JUMPLABEL__</button>
         <button id="export">导出答案 (CSV)</button>
       </footer>
-      <div class="note">作答后自动跳下一条；方向键翻页，实心方块表示已标注。答案即时保存。<br>事实句附中文参考，<strong>以英文为准</strong>——模型判断的就是那句英文。轨迹不翻译：其中的遮蔽块是实验操作本身。</div>
+      <div class="note">__NOTE__</div>
     </section>
   </div>
 </main>
@@ -276,19 +351,51 @@ PAGE = """<title>可推断性标注</title>
 <script>
 const ITEMS = __ITEMS__;
 const ZH = __ZH__;
-const LOCAL = "inferability-annotations-v1";
+const R1 = __R1__;
+const MODE = "__MODE__";
+const REVIEW = MODE === "review";
+const LOCAL = REVIEW ? "inferability-annotations-r2-v1" : "inferability-annotations-v1";
+const COLLECTION = REVIEW ? "round2" : "annotations";
+// answers: this page's annotator. In review mode it opens as a copy of round
+// one, and every confirmation or change belongs to annotator two -- R1 is
+// read-only here and round one's own record lives in a different file.
 let answers = {};
+// reviewed: annotator two has actually looked at this item and pressed a key.
+// Without it a pre-filled sheet would report itself complete before anyone
+// had read a single line.
+let reviewed = {};
 let cur = 0;
 let store = null;
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const label = (v) => (v === 1 ? "\\u662f\\uff0c\\u4ecd\\u53ef\\u5f97\\u77e5"
+  : v === 0 ? "\\u5426\\uff0c\\u5df2\\u65e0\\u6cd5\\u5f97\\u77e5" : "\\u2014");
 
 function loadLocal() {
-  try { return JSON.parse(localStorage.getItem(LOCAL) || "{}"); } catch (e) { return {}; }
+  try {
+    const raw = JSON.parse(localStorage.getItem(LOCAL) || "{}");
+    if (raw && raw.answers) return { answers: raw.answers || {}, reviewed: raw.reviewed || {} };
+    // The first round stored a flat {id: value} map; keep reading it.
+    return { answers: raw || {}, reviewed: {} };
+  } catch (e) { return { answers: {}, reviewed: {} }; }
 }
 function saveLocal() {
-  try { localStorage.setItem(LOCAL, JSON.stringify(answers)); } catch (e) { /* private mode */ }
+  try {
+    localStorage.setItem(LOCAL, JSON.stringify({ answers: answers, reviewed: reviewed }));
+  } catch (e) { /* private mode */ }
+}
+
+// In review mode every item opens carrying round one's answer.
+function seed() {
+  if (!REVIEW) return;
+  ITEMS.forEach((it) => {
+    if (answers[it.id] !== 0 && answers[it.id] !== 1) answers[it.id] = R1[it.id];
+  });
+}
+
+function isDone(id) {
+  return REVIEW ? reviewed[id] === true : (answers[id] === 0 || answers[id] === 1);
 }
 
 function renderItem() {
@@ -301,10 +408,26 @@ function renderItem() {
   const zh = ZH[it.fact];
   $("factZhText").textContent = zh || "";
   $("factZh").hidden = !zh;
-  const a = answers[it.id];
-  $("btnYes").setAttribute("aria-pressed", String(a === 1));
-  $("btnNo").setAttribute("aria-pressed", String(a === 0));
-  $("pos").textContent = "\u7b2c " + (cur + 1) + " \u6761 / \u5171 " + ITEMS.length + " \u6761";
+
+  const mine = answers[it.id];
+  $("btnYes").setAttribute("aria-pressed", String(mine === 1));
+  $("btnNo").setAttribute("aria-pressed", String(mine === 0));
+
+  const prior = $("prior");
+  if (REVIEW) {
+    prior.hidden = false;
+    $("priorVal").textContent = label(R1[it.id]);
+    const done = isDone(it.id);
+    const changed = done && mine !== R1[it.id];
+    prior.dataset.state = !done ? "pending" : changed ? "changed" : "kept";
+    $("priorState").textContent = !done
+      ? "\\u5f85\\u4f60\\u786e\\u8ba4\\u6216\\u4fee\\u6539"
+      : changed ? "\\u4f60\\u5df2\\u6539\\u52a8" : "\\u4f60\\u5df2\\u786e\\u8ba4";
+  } else {
+    prior.hidden = true;
+  }
+
+  $("pos").textContent = "\\u7b2c " + (cur + 1) + " \\u6761 / \\u5171 " + ITEMS.length + " \\u6761";
   $("prev").disabled = cur === 0;
   $("next").disabled = cur === ITEMS.length - 1;
   renderProgress();
@@ -316,40 +439,55 @@ function renderProgress() {
     grid.innerHTML = "";
     ITEMS.forEach((it, i) => {
       const cell = document.createElement("i");
-      cell.title = "\u7b2c " + (i + 1) + " \u6761";
+      cell.title = "\\u7b2c " + (i + 1) + " \\u6761";
       cell.addEventListener("click", () => { cur = i; renderItem(); });
       grid.appendChild(cell);
     });
   }
   let n = 0;
+  let changed = 0;
   ITEMS.forEach((it, i) => {
-    const done = answers[it.id] === 0 || answers[it.id] === 1;
+    const done = isDone(it.id);
     if (done) n++;
+    const differs = REVIEW && done && answers[it.id] !== R1[it.id];
+    if (differs) changed++;
     const cell = grid.children[i];
     cell.dataset.done = done ? "1" : "0";
+    cell.dataset.changed = differs ? "1" : "0";
     cell.dataset.cur = i === cur ? "1" : "0";
   });
   $("done").textContent = n;
   $("total").textContent = ITEMS.length;
+  $("changedCount").textContent = REVIEW
+    ? "\\uff0c\\u5176\\u4e2d\\u6539\\u52a8 " + changed + " \\u6761" : "";
   $("railfill").style.width = (100 * n / ITEMS.length) + "%";
 }
 
+async function persist(it) {
+  if (!store) return;
+  const body = REVIEW
+    ? { item_id: it.id, r1_copy: R1[it.id], r2: answers[it.id],
+        changed: answers[it.id] !== R1[it.id], at: new Date().toISOString() }
+    : { item_id: it.id, human_inferable: answers[it.id], at: new Date().toISOString() };
+  try {
+    await store.doc(COLLECTION + "/" + it.id).set(body);
+    setStatus("\\u5df2\\u4fdd\\u5b58\\u3002");
+  } catch (e) {
+    setStatus("\\u4ec5\\u4fdd\\u5b58\\u5728\\u672c\\u673a \\u2014\\u2014 \\u5171\\u4eab\\u526f\\u672c\\u672a\\u63a5\\u53d7\\u3002");
+  }
+}
+
+// One press settles the item either way: the same value as round one is a
+// confirmation, the other value is a change. Both are annotator two's own
+// record, and neither touches round one.
 async function answer(value) {
   const it = ITEMS[cur];
   answers[it.id] = value;
+  reviewed[it.id] = true;
   saveLocal();
-  renderProgress();
-  if (cur < ITEMS.length - 1) { cur++; renderItem(); } else { renderItem(); }
-  if (store) {
-    try {
-      await store.doc("annotations/" + it.id).set({
-        item_id: it.id, human_inferable: value, at: new Date().toISOString(),
-      });
-      setStatus("\u5df2\u4fdd\u5b58\u3002");
-    } catch (e) {
-      setStatus("\u4ec5\u4fdd\u5b58\u5728\u672c\u673a \u2014\u2014 \u5171\u4eab\u526f\u672c\u672a\u63a5\u53d7\u3002");
-    }
-  }
+  if (cur < ITEMS.length - 1) { cur++; }
+  renderItem();
+  await persist(it);
 }
 
 let statusTimer = null;
@@ -360,10 +498,16 @@ function setStatus(msg) {
 }
 
 function toCsv() {
-  const rows = [["item_id", "human_inferable_YES_or_NO"]];
+  const cell = (v) => (v === 1 ? "YES" : v === 0 ? "NO" : "");
+  const rows = REVIEW
+    ? [["item_id", "annotator1", "annotator2", "changed", "reviewed"]]
+    : [["item_id", "human_inferable_YES_or_NO"]];
   ITEMS.forEach((it) => {
-    const a = answers[it.id];
-    rows.push([it.id, a === 1 ? "YES" : a === 0 ? "NO" : ""]);
+    if (!REVIEW) { rows.push([it.id, cell(answers[it.id])]); return; }
+    const done = isDone(it.id);
+    rows.push([it.id, cell(R1[it.id]), cell(answers[it.id]),
+               done && answers[it.id] !== R1[it.id] ? "YES" : "NO",
+               done ? "YES" : "NO"]);
   });
   return rows.map((r) => r.join(",")).join("\\n") + "\\n";
 }
@@ -373,8 +517,8 @@ $("btnNo").addEventListener("click", () => answer(0));
 $("prev").addEventListener("click", () => { if (cur > 0) { cur--; renderItem(); } });
 $("next").addEventListener("click", () => { if (cur < ITEMS.length - 1) { cur++; renderItem(); } });
 $("jump").addEventListener("click", () => {
-  const i = ITEMS.findIndex((it) => answers[it.id] !== 0 && answers[it.id] !== 1);
-  if (i >= 0) { cur = i; renderItem(); } else { setStatus("\u5df2\u5168\u90e8\u6807\u6ce8\u5b8c\u6210\u3002"); }
+  const i = ITEMS.findIndex((it) => !isDone(it.id));
+  if (i >= 0) { cur = i; renderItem(); } else { setStatus("\\u5df2\\u5168\\u90e8\\u5b8c\\u6210\\u3002"); }
 });
 
 document.addEventListener("keydown", (e) => {
@@ -386,7 +530,10 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === "ArrowRight" && cur < ITEMS.length - 1) { e.preventDefault(); cur++; renderItem(); }
 });
 
-answers = loadLocal();
+const restored = loadLocal();
+answers = restored.answers;
+reviewed = restored.reviewed;
+seed();
 renderItem();
 
 (async () => {
@@ -394,34 +541,83 @@ renderItem();
   if (db) {
     store = db;
     try {
-      const saved = await db.collection("annotations").get();
+      const snap = await db.collection(COLLECTION).get();
       let merged = 0;
-      (saved || []).forEach((d) => {
-        const v = d.human_inferable;
-        if ((v === 0 || v === 1) && answers[d.item_id] === undefined) { answers[d.item_id] = v; merged++; }
+      (snap && snap.docs ? snap.docs : []).forEach((d) => {
+        const body = d.data() || {};
+        const id = body.item_id;
+        if (id === undefined) return;
+        const v = REVIEW ? (body.r2 !== undefined ? body.r2 : body.r2_final) : body.human_inferable;
+        if ((v === 0 || v === 1) && reviewed[id] !== true) {
+          answers[id] = v;
+          if (REVIEW) reviewed[id] = true;
+          merged++;
+        }
       });
-      if (merged) { saveLocal(); setStatus("\u5df2\u6062\u590d " + merged + " \u6761\u4fdd\u5b58\u7684\u7b54\u6848\u3002"); }
+      if (merged) { saveLocal(); setStatus("\\u5df2\\u6062\\u590d " + merged + " \\u6761\\u4fdd\\u5b58\\u7684\\u7b54\\u6848\\u3002"); }
       renderItem();
     } catch (e) { /* first run has no collection yet */ }
   }
   const dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null;
   $("export").addEventListener("click", async () => {
     const csv = toCsv();
+    const name = REVIEW ? "human_annotations_round2.csv" : "human_annotations.csv";
     if (dl) {
-      try { await dl.save({ filename: "human_annotations.csv", data: csv }); return; }
+      try { await dl.save({ filename: name, data: csv }); return; }
       catch (e) { /* declined or unavailable; fall through */ }
     }
     navigator.clipboard.writeText(csv).then(
-      () => setStatus("\u5df2\u590d\u5236 CSV \u5230\u526a\u8d34\u677f\u3002"),
-      () => setStatus("\u6b64\u5904\u65e0\u6cd5\u5bfc\u51fa \u2014\u2014 \u7b54\u6848\u4ecd\u5df2\u4fdd\u5b58\u3002")
+      () => setStatus("\\u5df2\\u590d\\u5236 CSV \\u5230\\u526a\\u8d34\\u677f\\u3002"),
+      () => setStatus("\\u6b64\\u5904\\u65e0\\u6cd5\\u5bfc\\u51fa \\u2014\\u2014 \\u7b54\\u6848\\u4ecd\\u5df2\\u4fdd\\u5b58\\u3002")
     );
   });
 })();
 </script>
 """
 
+BLIND_NOTE = (
+    "作答后自动跳下一条；方向键翻页，实心方块表示已标注。答案即时保存。<br>"
+    "事实句附中文参考，<strong>以英文为准</strong>——模型判断的就是那句英文。"
+    "轨迹不翻译：其中的遮蔽块是实验操作本身。"
+)
 
-def build(sheet: Path, out: Path) -> None:
+REVIEW_NOTE = (
+    "每条都已预填<strong>第一位标注者的答案</strong>作为起点。同意就按同一个键确认，"
+    "不同意就按另一个键改掉——两种都算你已复核，自动跳下一条。<br>"
+    "你的每一次确认或修改都记进<strong>你自己的记录</strong>；"
+    "第一位的记录在本页只读，不会被改动。最终得到两个人各自完整的标注。<br>"
+    "表头显示你已复核多少条、其中改动多少条；进度格里改动过的单独标色。<br>"
+    "事实句附中文参考，<strong>以英文为准</strong>；轨迹不翻译，其中的遮蔽块是实验操作本身。"
+)
+
+MODES = {
+    "blind": {
+        "title": "可推断性标注",
+        "subtitle": "盲标 &middot; 本页不含模型的判定结果",
+        "note": BLIND_NOTE,
+        "count_label": "已标",
+        "jump_label": "跳到第一条未标",
+    },
+    "review": {
+        "title": "可推断性标注 第二位",
+        "subtitle": "在第一位的答案上确认或修改 &middot; 两份记录分开保存 &middot; 本页不含模型的判定结果",
+        "note": REVIEW_NOTE,
+        "count_label": "已复核",
+        "jump_label": "跳到第一条未复核",
+    },
+}
+
+
+def _parse(value: str) -> int | None:
+    token = (value or "").strip().lower()
+    if token in YES:
+        return 1
+    if token in NO:
+        return 0
+    return None
+
+
+def build(sheet: Path, out: Path, mode: str) -> None:
     with sheet.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
     items = [
@@ -433,24 +629,45 @@ def build(sheet: Path, out: Path) -> None:
     verdicts = {"judge_inferable", "lexical_retained", "method_key", "doc_id"}
     leaked = verdicts & set(rows[0])
     assert not leaked, f"sheet carries fields that would unblind the annotator: {sorted(leaked)}"
+
+    round1: dict[str, int] = {}
+    if mode == "review":
+        for row in rows:
+            value = _parse(row.get("human_inferable_YES_or_NO", ""))
+            assert value is not None, (
+                f"item {row['item_id']} has no round-1 answer; the review page "
+                f"starts from a complete first-round sheet")
+            round1[row["item_id"]] = value
+
     zh_path = EXPERIMENTS_DIR / "fact_translations_zh.json"
     zh = {k: v for k, v in json.loads(zh_path.read_text(encoding="utf-8")).items()
           if not k.startswith("_")}
     missing = {i["fact"] for i in items} - set(zh)
     assert not missing, f"{len(missing)} fact statements have no Chinese rendering"
+
+    spec = MODES[mode]
     html = (PAGE.replace("__ITEMS__", json.dumps(items, ensure_ascii=False))
-                .replace("__ZH__", json.dumps(zh, ensure_ascii=False)))
+                .replace("__ZH__", json.dumps(zh, ensure_ascii=False))
+                .replace("__R1__", json.dumps(round1, ensure_ascii=False))
+                .replace("__MODE__", mode)
+                .replace("__TITLE__", spec["title"])
+                .replace("__SUBTITLE__", spec["subtitle"])
+                .replace("__COUNTLABEL__", spec["count_label"])
+                .replace("__JUMPLABEL__", spec["jump_label"])
+                .replace("__NOTE__", spec["note"]))
     out.write_text(html, encoding="utf-8")
-    print(f"wrote {out} ({len(items)} items, {len(html)/1024:.0f}KB)")
+    print(f"wrote {out} ({len(items)} items, mode={mode}, {len(html)/1024:.0f}KB)")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag", default="vgpu3090")
+    parser.add_argument("--mode", choices=sorted(MODES), default="blind")
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
     suffix = f"_{args.tag}" if args.tag else ""
-    build(EXPERIMENTS_DIR / f"semantic_inferability_human_sheet{suffix}.csv", Path(args.out))
+    build(EXPERIMENTS_DIR / f"semantic_inferability_human_sheet{suffix}.csv",
+          Path(args.out), args.mode)
 
 
 if __name__ == "__main__":
