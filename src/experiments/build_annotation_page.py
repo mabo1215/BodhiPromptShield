@@ -9,10 +9,13 @@ The key file is never read here. The page cannot show the judge's answer
 because it does not contain it, which is what keeps the subset blind and the
 resulting kappa meaningful.
 
-The interface is written in Chinese at the author's request. The trajectory
-and the fact are deliberately left in their original English: the annotator
-has to judge the same stimulus the judge saw, and translating it would change
-the input and void the agreement measurement.
+The interface is written in Chinese at the author's request, and each fact
+statement carries a Chinese rendering beneath the English one as a reading
+aid, with the English left authoritative.
+
+The trajectory is never translated. Its redaction blocks are the experimental
+manipulation, and a translation would move them or let a model fill a redacted
+span back in from context, which would silently invalidate the item.
 
 Answers are written to the artifact's own store as they are made, so the work
 survives closing the tab, and can be read back to score agreement.
@@ -139,11 +142,24 @@ PAGE = """<title>可推断性标注</title>
   pre.traj b { color: var(--redact); font-weight: 400; letter-spacing: -0.06em; }
 
   .side { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 14px; }
-  .fact {
-    padding: 15px;
-    font-size: 15.5px;
-    line-height: 1.45;
-    text-wrap: pretty;
+  .fact { padding: 15px 15px 0; }
+  .fact .en { font-size: 15.5px; line-height: 1.45; text-wrap: pretty; }
+  /* The English is what the judge was given, so it leads; the Chinese sits
+     under it as an aid and is typographically subordinate. */
+  .fact .zh {
+    margin-top: 9px;
+    padding-top: 9px;
+    border-top: 1px dashed var(--line);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .fact .zh > span {
+    display: block;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    color: var(--faint);
+    margin-bottom: 3px;
   }
   .ask { padding: 0 15px 15px; font-size: 13px; color: var(--muted); }
   .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; padding: 0 15px 15px; }
@@ -231,7 +247,7 @@ PAGE = """<title>可推断性标注</title>
   <div class="side">
     <section class="panel">
       <h2>敏感事实</h2>
-      <div class="fact" id="fact"></div>
+      <div class="fact"><div class="en" id="fact"></div><div class="zh" id="factZh" hidden><span>中文参考</span><em id="factZhText" style="font-style:normal"></em></div></div>
       <div class="ask">仅凭左侧轨迹，读者是否仍能得知这条事实，或以高置信度推断出来？</div>
       <div class="answers">
         <button id="btnYes" aria-pressed="false">是，仍可得知 <kbd>Y</kbd></button>
@@ -252,13 +268,14 @@ PAGE = """<title>可推断性标注</title>
         <button id="jump">跳到第一条未标</button>
         <button id="export">导出答案 (CSV)</button>
       </footer>
-      <div class="note">作答后自动跳下一条；方向键翻页，实心方块表示已标注。答案即时保存。<br>轨迹与事实保留英文原文：标注者需要判断的必须是模型看过的同一份材料。</div>
+      <div class="note">作答后自动跳下一条；方向键翻页，实心方块表示已标注。答案即时保存。<br>事实句附中文参考，<strong>以英文为准</strong>——模型判断的就是那句英文。轨迹不翻译：其中的遮蔽块是实验操作本身。</div>
     </section>
   </div>
 </main>
 
 <script>
 const ITEMS = __ITEMS__;
+const ZH = __ZH__;
 const LOCAL = "inferability-annotations-v1";
 let answers = {};
 let cur = 0;
@@ -281,6 +298,9 @@ function renderItem() {
   $("traj").innerHTML = esc(it.text).replace(/\\u2588+/g, (m) => "<b>" + m + "</b>");
   $("traj").scrollTop = 0;
   $("fact").textContent = it.fact;
+  const zh = ZH[it.fact];
+  $("factZhText").textContent = zh || "";
+  $("factZh").hidden = !zh;
   const a = answers[it.id];
   $("btnYes").setAttribute("aria-pressed", String(a === 1));
   $("btnNo").setAttribute("aria-pressed", String(a === 0));
@@ -413,7 +433,13 @@ def build(sheet: Path, out: Path) -> None:
     verdicts = {"judge_inferable", "lexical_retained", "method_key", "doc_id"}
     leaked = verdicts & set(rows[0])
     assert not leaked, f"sheet carries fields that would unblind the annotator: {sorted(leaked)}"
-    html = PAGE.replace("__ITEMS__", json.dumps(items, ensure_ascii=False))
+    zh_path = EXPERIMENTS_DIR / "fact_translations_zh.json"
+    zh = {k: v for k, v in json.loads(zh_path.read_text(encoding="utf-8")).items()
+          if not k.startswith("_")}
+    missing = {i["fact"] for i in items} - set(zh)
+    assert not missing, f"{len(missing)} fact statements have no Chinese rendering"
+    html = (PAGE.replace("__ITEMS__", json.dumps(items, ensure_ascii=False))
+                .replace("__ZH__", json.dumps(zh, ensure_ascii=False)))
     out.write_text(html, encoding="utf-8")
     print(f"wrote {out} ({len(items)} items, {len(html)/1024:.0f}KB)")
 
