@@ -113,12 +113,17 @@ separated them. Work measuring semantic leakage with a judge model - ours
 included, until this check - should report agreement against human annotation
 before treating its output as a measurement.
 
-The limit of this result is stated in the paper and we state it here: the human
-labels come from one annotator over 96 items, who is an author. They were blind
-to method and to the judge's verdict and produced a monotone ordering with
-intervals clear of zero, but a single rater gives no human-human reliability
-estimate. A second independent annotator on a larger subset is the next step,
-and until then the size of the effect is indicative rather than settled.
+The limit of this result is stated in the paper and we state it here: the labels
+come from two readers who were not independent of each other, and both are
+authors. The first annotated all 96 items blind to method and to the judge's
+verdict, producing a monotone ordering with intervals clear of zero. The second
+then reviewed those same labels and changed four, every one from inferable to
+not and every one on the three most aggressive methods; against the second
+reader's labels the judge again sits at chance, kappa 0.086. Because that pass
+began from the first reader's answers, the 95.8% agreement between the two is
+primed and is not an inter-rater reliability estimate. We therefore report the
+first reader's labels, which no review has flattered, and treat the size of the
+effect as indicative until an independent second rating exists.
 
 On the deterministic reference agent: it is retained only for the AI4Privacy
 source, where it provides a controlled instrumented pipeline. The PrivacyLens
