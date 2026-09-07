@@ -9,6 +9,11 @@ The key file is never read here. The page cannot show the judge's answer
 because it does not contain it, which is what keeps the subset blind and the
 resulting kappa meaningful.
 
+The interface is written in Chinese at the author's request. The trajectory
+and the fact are deliberately left in their original English: the annotator
+has to judge the same stimulus the judge saw, and translating it would change
+the input and void the agreement measurement.
+
 Answers are written to the artifact's own store as they are made, so the work
 survives closing the tab, and can be read back to score agreement.
 """
@@ -21,8 +26,8 @@ from pathlib import Path
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 
-PAGE = """<title>Inferability Annotation</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+PAGE = """<title>可推断性标注</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap">
 <style>
   :root {
     color-scheme: light;
@@ -70,7 +75,7 @@ PAGE = """<title>Inferability Annotation</title>
     margin: 0;
     background: var(--ground);
     color: var(--ink);
-    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-family: "IBM Plex Sans", "Noto Sans SC", system-ui, -apple-system, "Microsoft YaHei", sans-serif;
     font-size: 15px;
     line-height: 1.5;
   }
@@ -210,44 +215,44 @@ PAGE = """<title>Inferability Annotation</title>
 </style>
 
 <header>
-  <h1>Inferability annotation</h1>
-  <span class="sub">Blind subset &middot; the model's verdict is not in this page</span>
+  <h1>可推断性标注</h1>
+  <span class="sub">盲标 &middot; 本页不含模型的判定结果</span>
   <span class="spacer"></span>
-  <span class="counts"><b id="done">0</b> of <b id="total">0</b> answered</span>
+  <span class="counts">已标 <b id="done">0</b> / <b id="total">0</b></span>
 </header>
 <div class="rail"><i id="railfill"></i></div>
 
 <main>
   <section class="panel">
-    <h2>Released agent trajectory &mdash; what a downstream reader sees</h2>
+    <h2>中介后的 agent 轨迹 &mdash; 下游读者看到的内容</h2>
     <pre class="traj" id="traj"></pre>
   </section>
 
   <div class="side">
     <section class="panel">
-      <h2>Sensitive fact</h2>
+      <h2>敏感事实</h2>
       <div class="fact" id="fact"></div>
-      <div class="ask">Reading <strong>only</strong> the trajectory, would a reader learn this fact, or infer it with high confidence?</div>
+      <div class="ask">仅凭左侧轨迹，读者是否仍能得知这条事实，或以高置信度推断出来？</div>
       <div class="answers">
-        <button id="btnYes" aria-pressed="false">Yes, still knowable <kbd>Y</kbd></button>
-        <button id="btnNo" aria-pressed="false">No, it is gone <kbd>N</kbd></button>
+        <button id="btnYes" aria-pressed="false">是，仍可得知 <kbd>Y</kbd></button>
+        <button id="btnNo" aria-pressed="false">否，已无法得知 <kbd>N</kbd></button>
       </div>
       <div class="nav">
-        <button id="prev">&larr; Prev</button>
-        <button id="next">Next &rarr;</button>
+        <button id="prev">&larr; 上一条</button>
+        <button id="next">下一条 &rarr;</button>
         <span class="pos" id="pos"></span>
       </div>
       <div class="status" id="status"></div>
     </section>
 
     <section class="panel">
-      <h2>Progress</h2>
+      <h2>进度</h2>
       <div class="grid" id="grid"></div>
       <footer>
-        <button id="jump">Go to first unanswered</button>
-        <button id="export">Download answers (CSV)</button>
+        <button id="jump">跳到第一条未标</button>
+        <button id="export">导出答案 (CSV)</button>
       </footer>
-      <div class="note">Answering moves to the next item automatically. Arrow keys navigate; a filled square is answered. Answers save as you make them.</div>
+      <div class="note">作答后自动跳下一条；方向键翻页，实心方块表示已标注。答案即时保存。<br>轨迹与事实保留英文原文：标注者需要判断的必须是模型看过的同一份材料。</div>
     </section>
   </div>
 </main>
@@ -279,7 +284,7 @@ function renderItem() {
   const a = answers[it.id];
   $("btnYes").setAttribute("aria-pressed", String(a === 1));
   $("btnNo").setAttribute("aria-pressed", String(a === 0));
-  $("pos").textContent = "Item " + (cur + 1) + " / " + ITEMS.length;
+  $("pos").textContent = "\u7b2c " + (cur + 1) + " \u6761 / \u5171 " + ITEMS.length + " \u6761";
   $("prev").disabled = cur === 0;
   $("next").disabled = cur === ITEMS.length - 1;
   renderProgress();
@@ -291,7 +296,7 @@ function renderProgress() {
     grid.innerHTML = "";
     ITEMS.forEach((it, i) => {
       const cell = document.createElement("i");
-      cell.title = "Item " + (i + 1);
+      cell.title = "\u7b2c " + (i + 1) + " \u6761";
       cell.addEventListener("click", () => { cur = i; renderItem(); });
       grid.appendChild(cell);
     });
@@ -320,9 +325,9 @@ async function answer(value) {
       await store.doc("annotations/" + it.id).set({
         item_id: it.id, human_inferable: value, at: new Date().toISOString(),
       });
-      setStatus("Saved.");
+      setStatus("\u5df2\u4fdd\u5b58\u3002");
     } catch (e) {
-      setStatus("Saved on this device only \\u2014 the shared copy did not accept it.");
+      setStatus("\u4ec5\u4fdd\u5b58\u5728\u672c\u673a \u2014\u2014 \u5171\u4eab\u526f\u672c\u672a\u63a5\u53d7\u3002");
     }
   }
 }
@@ -349,7 +354,7 @@ $("prev").addEventListener("click", () => { if (cur > 0) { cur--; renderItem(); 
 $("next").addEventListener("click", () => { if (cur < ITEMS.length - 1) { cur++; renderItem(); } });
 $("jump").addEventListener("click", () => {
   const i = ITEMS.findIndex((it) => answers[it.id] !== 0 && answers[it.id] !== 1);
-  if (i >= 0) { cur = i; renderItem(); } else { setStatus("Every item is answered."); }
+  if (i >= 0) { cur = i; renderItem(); } else { setStatus("\u5df2\u5168\u90e8\u6807\u6ce8\u5b8c\u6210\u3002"); }
 });
 
 document.addEventListener("keydown", (e) => {
@@ -375,7 +380,7 @@ renderItem();
         const v = d.human_inferable;
         if ((v === 0 || v === 1) && answers[d.item_id] === undefined) { answers[d.item_id] = v; merged++; }
       });
-      if (merged) { saveLocal(); setStatus("Restored " + merged + " saved answers."); }
+      if (merged) { saveLocal(); setStatus("\u5df2\u6062\u590d " + merged + " \u6761\u4fdd\u5b58\u7684\u7b54\u6848\u3002"); }
       renderItem();
     } catch (e) { /* first run has no collection yet */ }
   }
@@ -387,8 +392,8 @@ renderItem();
       catch (e) { /* declined or unavailable; fall through */ }
     }
     navigator.clipboard.writeText(csv).then(
-      () => setStatus("Copied the CSV to the clipboard."),
-      () => setStatus("Could not export here \\u2014 the answers are still saved.")
+      () => setStatus("\u5df2\u590d\u5236 CSV \u5230\u526a\u8d34\u677f\u3002"),
+      () => setStatus("\u6b64\u5904\u65e0\u6cd5\u5bfc\u51fa \u2014\u2014 \u7b54\u6848\u4ecd\u5df2\u4fdd\u5b58\u3002")
     );
   });
 })();
