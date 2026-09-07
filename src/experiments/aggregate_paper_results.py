@@ -168,11 +168,62 @@ def _write(path: Path, rows: list[dict]) -> None:
         print("  " + " | ".join(f"{k}={v}" for k, v in list(row.items())[:6]))
 
 
+def pool_agentdojo_suites(agent_model: str = "qwen3_32b-q4km-hf",
+                          suites: tuple[str, ...] = ("banking", "slack", "travel", "workspace")) -> Path | None:
+    """Pool the restoration-mode rows across AgentDojo suites.
+
+    The reported result runs only the banking suite: 16 user tasks, 8 of them
+    carrying a protected value, which puts +/-25 points around every utility
+    estimate. Pooling suites is what narrows that, and the statistic has to be
+    recomputed over the combined task population rather than averaged across
+    per-suite summaries, since the suites differ in size.
+
+    Missing suites are skipped, so this is safe to run after any subset.
+    """
+    rows: list[dict] = []
+    present: list[str] = []
+    for suite in suites:
+        path = EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}.csv"
+        if not path.exists():
+            continue
+        suite_rows = [r for r in _read_agentdojo_mixed(path) if not r.get("injection_task")]
+        if not suite_rows:
+            continue
+        rows.extend(suite_rows)
+        present.append(f"{suite}({len({r['task'] for r in suite_rows})} tasks)")
+    if not rows:
+        print("pool_agentdojo_suites: no restoration-mode rows found; skipping")
+        return None
+
+    modes = ["none", "late", "no_restore"]
+    out: list[dict] = []
+    for mode in modes:
+        mode_rows = [r for r in rows if r["mode"] == mode]
+        if not mode_rows:
+            continue
+        protected = [r for r in mode_rows if int(r["protected_values"]) > 0]
+        out.append({
+            "mode": mode,
+            "suites": ";".join(present),
+            "tasks": str(len(mode_rows)),
+            "tasks_with_protected_values": str(len(protected)),
+            "utility_percent_all": _ci(mode_rows, "utility", None, 100.0, 1),
+            "utility_percent_protected": _ci(protected, "utility", None, 100.0, 1) if protected else "n/a",
+            "boundary_leak_percent": _ci(protected, "raw_visible_before_tool", "protected_values", 100.0, 1) if protected else "n/a",
+            "restoration_success_percent": _ci(protected, "restored_in_tool_args", "tokens_emitted_in_tool_args", 100.0, 1) if protected else "n/a",
+            "raw_in_tool_outputs_mean": _ci(mode_rows, "raw_in_tool_outputs", None, 1.0, 2),
+        })
+    path = EXPERIMENTS_DIR / f"agentdojo_restoration_summary_pooled_{agent_model}.csv"
+    _write(path, out)
+    return path
+
+
 def main() -> int:
     pool_propagation("ai4privacy")
     pool_propagation("privacylens")
     pool_downstream()
     rebuild_agentdojo_injection_baseline()
+    pool_agentdojo_suites()
     return 0
 
 
