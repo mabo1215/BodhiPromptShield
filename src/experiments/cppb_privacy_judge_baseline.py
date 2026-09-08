@@ -214,10 +214,11 @@ def run() -> None:
     test_metrics = _evaluate(weights, by_split["test"])
     comparison_rows: list[dict[str, str]] = []
     for setting in COMPARISON_SETTINGS:
-        src = canonical_summary.get(setting) if setting in {
-            "Enterprise staged redaction",
-            "Proposed (utility-constrained)",
-        } else method_summary.get(setting)
+        # Every comparison baseline reads the canonical full-benchmark operating
+        # points.  Sourcing two of them from the per-split reconstruction instead
+        # made this table disagree with the canonical CPPB table by 0.3 PER points
+        # for the same baseline, which reads as a reporting error.
+        src = canonical_summary.get(setting) or method_summary.get(setting)
         if src is None:
             continue
         per_key = "per" if "per" in src else "per_mean"
@@ -250,7 +251,7 @@ def run() -> None:
 
     runtime_rows = [
         {"field": "benchmark", "value": "CPPB (released template-stratified split)"},
-        {"field": "comparison_baseline_scope", "value": "Enterprise/proposed rows use canonical prompt_method_comparison.csv operating points; judge row uses held-out test split."},
+        {"field": "comparison_baseline_scope", "value": "All comparison baselines use canonical prompt_method_comparison.csv operating points over the full 256-prompt benchmark; only the judge row is scored on the held-out test split."},
         {"field": "train_prompts", "value": str(len(by_split["train"]))},
         {"field": "dev_prompts", "value": str(len(by_split["dev"]))},
         {"field": "test_prompts", "value": str(len(by_split["test"]))},

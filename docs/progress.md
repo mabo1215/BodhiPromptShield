@@ -1,6 +1,70 @@
 # 论文进度
 
-## 2026-09-08 第二下游模型跑完 + 配对检验推翻一条既有结论 + 附录拆分（当前最新）
+## 2026-09-09 对照 RevisionSuggestions.tex 全面复核，补上 6 处遗留（当前最新）
+
+把当前 `paper/main.tex` + `paper/appendix.tex` 与 `docs/RevisionSuggestions.tex`
+的 F1–F27、A1、A2(E1–E8)、A3、A4 逐条对照了一遍。绝大多数已在前几轮闭环，
+本轮补上 6 处仍然成立的问题，全部是无需 GPU 的（两台主机现在都是关机状态）。
+
+### 本轮修掉的
+
+1. **F23(a) CPPB 基线数值打架**：`tab:judge` 里 Regex-only 61.6 / 大写启发式 49.0，
+   而同一附录的 canonical 表是 61.3 / 48.7。根因在生成器
+   `cppb_privacy_judge_baseline.py`：enterprise/proposed 两行读 canonical 全量
+   256-prompt 文件，另外两行却读 per-split 重建，一张表里混了两个总体。
+   现在全部比较基线统一读 canonical，只有 judge 行是 held-out split，
+   caption 和 runtime manifest 都写明了。CSV 已重新生成。
+2. **F23(b) 同一检测器两个数**：`tab:lightclf` 是 Span F1 0.53 / PER 7.6%，
+   `tab:crossdom` 是 0.51 / 7.4%。原 caption 只说"是另一次独立训练"，
+   真正原因是评测集不同——AI4Privacy 全量 2,997 篇 vs cross-domain 的 300 篇。
+   caption 改成写明两个篇数，读者可以自己核对，而不只是被告知"有差异"。
+3. **F16(d) 基线错标**：正文早已把 "NER-only masking" 改称 capitalization heuristic
+   （它实现上就是大小写/称谓/地点正则，没有任何 NER），但附录四张表加一段正文
+   还留着旧标签，两个文档自相矛盾。附录已全部改齐，并加一句把它映射到
+   released records 里仍然叫 `NER-only masking` 的字段名，方便查 artifact。
+4. **F26 CPPB OCR 段落**：断言了 Span F1 0.90 / PER 11.3% / AC 0.88，
+   却既没有表、也没有任何 OCR 引擎与版本记录。评审给的两个选项是"补表"或"删段"，
+   provenance 已不可恢复，因此删除。有记录的公开 CORD/FUNSD/SROIE slice 不受影响。
+5. **AE 意见 5 的残留**：附录 TAB 一节里还留着一段 3.2B `llama3.2:latest`
+   "named-runtime pilot"——正是 AE 第 5 条点名批评的弱模型，
+   9 月 7 日那轮就是因为它才删掉了整个 Appendix G。这次一并删除。
+6. **F8 顺带闭环**：昨天把附录拆成独立文档后，`appendix.pdf` 变成每次构建都重新
+   生成的产物，评审说的"还在发布 4 月的陈旧 appendix.pdf"自动不成立，
+   `AGENTS.md` 里对 `paper/appendix.tex` 的描述也重新变成正确的。
+
+### 顺带重新核了一遍已闭环项（因为拆附录动了半篇论文）
+
+两个文档合起来：0 个悬空 label、0 个指不到目标的引用、0 个未被引用的 bib 条目；
+评审点名要补的 8 篇 agent-privacy 文献全部在且被引；无修订史/仓库口吻语句；
+无自我否定的 caption；`tab:crossmodel`、`tab:propagation`、`tab:cppb_audit`、
+blind-utility 两表都已不存在；LDP 叙述已清干净；F23(c)(d)(e)(f) 均已消解。
+
+**双盲重新在两个 PDF 上验证过**（用 pypdf 抽页面文本，不是只看源码）：
+没有任何单位名，唯一出现的作者名是参考文献里第三人称的自引 [17]，PoPETs 允许。
+附录 PDF 是我昨天新造的文档，这次是它第一次被查。
+
+构建：main 14 页（正文仍在第 12 页结束，12 页上限守住）、appendix 8 页，
+两份日志 0 undefined、0 大号 overfull。
+
+### 没做的，以及原因
+
+- **F15 / E3 的 API 模型**：评审要求"一个强开源模型 + 一个注明版本号的 API 模型"。
+  开源那半边已经做了两遍（32B + 70B，都带 digest），API 那半边从未跑过。
+  卡点不是算力（API 不需要本地 GPU），是评审自己的 D3 里那句还没关闭的
+  "API spend ceiling 未定"。**需要你决定**：要么给一个预算上限我去跑，
+  要么在 Limitations 里写明"评测仅限开源权重模型"。
+  我的建议是后者——第二个开源家族已经把可移植性这行填上了。
+- **F19 的人工一致性子集 n=96**，评审写的是 n≥100。差 4 条，需要盲标注者再标。
+- 其余长期项（PrivacyRestore 同协议复现、CPPB 原始端到端重跑、licensed i2b2、
+  live mapping 攻防、语义推断缓解、独立人工效用验证、AgentDojo travel suite）
+  状态未变，全部卡在外部数据/授权/开放研究问题上，已在 `ExperimentProgress.tex`
+  第二张表里逐行记着。
+
+本轮没有新实验：6 项修复都不需要 GPU，唯一重跑的是确定性的 CPU 端
+judge-baseline 生成器。
+
+
+## 2026-09-08 第二下游模型跑完 + 配对检验推翻一条既有结论 + 附录拆分
 
 ### 1. PRO 6000：第二下游模型（可移植性）实验完成
 
