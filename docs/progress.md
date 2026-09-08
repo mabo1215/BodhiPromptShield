@@ -63,6 +63,25 @@ blind-utility 两表都已不存在；LDP 叙述已清干净；F23(c)(d)(e)(f) �
 本轮没有新实验：6 项修复都不需要 GPU，唯一重跑的是确定性的 CPU 端
 judge-baseline 生成器。
 
+### 补充（同日）：F15 按"缩范围"方案关闭
+
+你选了后者，所以不买 API 那次跑，改为在论文里把边界写明。`paper/main.tex`
+Limitations 第四点现在写：所有被评测的模型都是开源权重且本地部署，未测试任何
+托管 API，因此商业端点背后的行为（含其自身的上游过滤）是未知的，可移植性检查
+改由两个开源家族之间完成（指向附录 H）。Future work 里原来那句含糊的
+"wider replication across model families" 换成了明确的 "a hosted-API replication"。
+
+**又一次撞到页数**：正文零余量，加这段后 Conclusion 掉到第 13 页。这次没有删内容，
+而是把 AgentDojo 的 suite-shape 那句（banking 的任务才会把受保护值送进工具参数，
+slack 21 条里只有 2 条，travel 的 agent 根本到不了工具）移到附录里它所解释的
+injection 表旁边——那句在全文只出现一次，删掉是真丢内容。移完正文回到第 12 页。
+
+构建：main 14 页 / appendix 8 页，0 undefined、0 大号 overfull。
+
+`ExperimentProgress.tex` 两张表都记了：完成表新增一行记录这次范围决策，
+next-steps 表里那行从"等预算上限"改为"按范围决策关闭"，处理方式与 LDP 那行一致
+——都是 scope correction，不是待办的声明。重新打开只需要一个预算上限。
+
 
 ## 2026-09-08 第二下游模型跑完 + 配对检验推翻一条既有结论 + 附录拆分
 
