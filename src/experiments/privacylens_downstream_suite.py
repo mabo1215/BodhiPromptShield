@@ -406,6 +406,12 @@ def main() -> int:
     parser.add_argument("--bootstrap", type=int, default=1000)
     parser.add_argument("--output-tag")
     parser.add_argument("--shard", help="I/N: run only every N-th case starting at I (outputs get a shard tag)")
+    # Context size is part of the response-cache key, so replaying a run whose
+    # context differed from today's constants needs that run's value, not the
+    # current one. Runs recorded before per-model sizing used one shared
+    # ceiling for both roles; their manifests name no context at all.
+    parser.add_argument("--agent-num-ctx", type=int, default=AGENT_NUM_CTX)
+    parser.add_argument("--judge-num-ctx", type=int, default=JUDGE_NUM_CTX)
     parser.add_argument("--export-judge-decisions", action="store_true",
                         help="Replay every case from cache and write the judge's per-secret decisions "
                              "and the action it saw, without touching the canonical rows file. Every "
@@ -428,8 +434,8 @@ def main() -> int:
     detectors = {d.key: d for d in build_detectors(needed, learned_weights=learned, spacy_model=args.spacy_model,
                                                      ollama_url=f"{args.base_url}/api/generate")}
     conditions = [Condition(s, detectors, args.base_url, args.spacy_model) for s in specs]
-    agent = CachedOllamaChat(args.agent_model, base_url=args.base_url, num_ctx=AGENT_NUM_CTX)
-    judge = CachedOllamaChat(args.judge_model, base_url=args.base_url, num_ctx=JUDGE_NUM_CTX)
+    agent = CachedOllamaChat(args.agent_model, base_url=args.base_url, num_ctx=args.agent_num_ctx)
+    judge = CachedOllamaChat(args.judge_model, base_url=args.base_url, num_ctx=args.judge_num_ctx)
 
     safe_agent = re.sub(r"[^A-Za-z0-9_.-]+", "_", args.agent_model)
     rows_path = _with_tag(EXPERIMENTS_DIR / f"privacylens_downstream_rows_{safe_agent}.csv", args.output_tag)
@@ -472,8 +478,8 @@ def main() -> int:
     manifest = [{"field": "benchmark", "value": "PrivacyLens (NeurIPS 2024 D&B) main_data.json, naive agent prompt rendered by PrivacyLens code"},
                 {"field": "cases", "value": str(len(cases))}, {"field": "conditions", "value": ";".join(specs)},
                 {"field": "judge_protocol", "value": "PrivacyLens evaluate_final_action.py prompts (judge_leakage per sensitive item; helpfulness 0-3), verbatim"},
-                {"field": "decoding", "value": f"temperature 0, top_p 1, seed 17; agent num_predict 700 num_ctx {AGENT_NUM_CTX}; "
-                                        f"judge num_predict 400 num_ctx {JUDGE_NUM_CTX}"},
+                {"field": "decoding", "value": f"temperature 0, top_p 1, seed 17; agent num_predict 700 num_ctx {args.agent_num_ctx}; "
+                                        f"judge num_predict 400 num_ctx {args.judge_num_ctx}"},
                 {"field": "bootstrap", "value": f"{args.bootstrap} case-level resamples, 95% percentile CI"},
                 {"field": "python", "value": platform.python_version()}, {"field": "platform", "value": platform.platform()}]
     for label, client in (("agent", agent), ("judge", judge)):
