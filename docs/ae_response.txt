@@ -175,12 +175,21 @@ contribution: it is the cheapest component that makes the propagation-control
 layer measurable, and Table 5 shows stronger detectors slotting into the same
 protocol with different failure profiles.
 
-On identities and records: every run behind the rebuilt Results section writes
-a runtime manifest recording model identifier, quantization, decoding
-parameters, context length, library versions, seeds, and host/GPU. The
-downstream agent is a 32B open-weight instruction model at temperature 0 with
-a fixed 12k context; the judge is PrivacyLens' own 7B judge. Bootstrap
-intervals use 1,000 resamples with a fixed seed. The alias-only cross-model
+On identities: this was the part of the comment we had not in fact answered,
+and it is answered now. Every model is named in the paper, in an appendix
+roster giving role, tag, parameter count, quantization, and digest prefix:
+qwen3:32b (32.8B, Q4_K_M) as the downstream agent, PrivacyLens' own
+mistral:7b-instruct-v0.2 (7.2B, Q4_K_M) as its judge, gemma2:27b (27.2B, Q4_0)
+as the inferability judge, deliberately from a third family so that agreement
+cannot come from shared weights, qwen3:8b (8.2B, Q4_K_M) as the LLM sanitizer
+and abstraction model, urchade/gliner_multi_pii-v1 as the transformer detector,
+and en_core_web_lg behind spaCy NER, Presidio, and the Casper-style baseline.
+Nothing was routed to a hosted API.
+
+On records: every run behind the rebuilt Results section writes a runtime
+manifest recording model identifier, digest, quantization, decoding parameters,
+context length, library versions, seeds, and host/GPU. Bootstrap intervals use
+1,000 resamples with a fixed seed. The alias-only cross-model
 table and the unprovenance OCR claims that prompted this comment have been
 removed from the main text along with the rest of the CPPB material.
 
