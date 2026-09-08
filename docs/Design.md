@@ -185,3 +185,60 @@ to the repository and now records the Linux/Python vGPU environment. This
 revalidation does not create a new CPPB score or close any prerequisite-gated
 item above. No model experiment is currently running; Ollama remains available
 for a separately authorized follow-on run.
+
+## 2026-09-09 PRO 6000 run: naming the runtime behind the CPPB appendix tables
+
+The RTX PRO 6000 (96 GiB) was brought up to close the one item the plan listed
+as gated purely on GPU access: the four CPPB appendix tables carry numbers from
+score logs whose generating runtime was never recorded, over prompts that no
+longer exist. The released manifest holds template and prompt stubs, not prompt
+texts, so a backend or digest written beside those numbers would be asserted
+rather than recorded.
+
+### What is being measured
+
+All four tables are re-measured on the reconstructed 256-prompt surface under a
+runtime that is manifested in full:
+
+- exposure (`tab:per`) -- residual direct exposure, gold sensitive spans still
+  literally present in the released prompt, with span-level bootstrap intervals;
+- utility (`tab:utility`) -- answer consistency against the raw-prompt answer,
+  and task success against each template's own stated success criteria, both
+  scored by a named judge model;
+- policy sensitivity (`tab:pi_sensitivity`) -- seven thresholds, each run as an
+  actual operating point;
+- runtime overhead (`tab:latency`) -- mediation wall-clock, CPU only, excluding
+  generation.
+
+Seven mediation methods span the appendix roster: no protection, regex-only,
+the capitalization heuristic, generic de-identification, enterprise staged
+redaction (Presidio), semantic abstraction, and the utility-constrained
+proposed setting at tau = 0.55.
+
+### A correction this run makes
+
+The released threshold-sweep artifact interpolates linearly between three
+profiles, so only three of its six advertised operating points were ever run.
+The appendix describes it as "a genuine sweep rather than a three-point
+sketch," which the artifact does not support. Every threshold here is measured
+by thresholding the learned detector's own token probabilities, so the sweep
+becomes what the text already claims it is.
+
+### Roster and scheduling
+
+The qwen3 32B run covers all seven methods plus the seven-point sweep over all
+256 prompts; the llama3.3 70B run covers the seven headline methods as a
+cross-model check. Both are sharded across concurrent workers so Ollama batches
+requests against a resident model. An initial unsharded launch thrashed: four
+models were wanted against a default of three loaded-model slots, so the 70B
+was evicted and reloaded continuously and both runs stalled. Raising the slot
+count and enabling batching fixed it.
+
+### Judge-decision replay
+
+The blind judge check needs the recorded PrivacyLens decisions replayed out of
+the generation cache. The replay initially regenerated instead of replaying,
+because context size is part of the cache key and the 32B run predates
+per-model context sizing: it used one shared 12,288 ceiling, which its manifest
+does not record. Both contexts are now explicit flags, so each run is replayed
+against the keys it actually wrote. This costs no GPU time.
