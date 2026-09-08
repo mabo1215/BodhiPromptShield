@@ -1,0 +1,25 @@
+field,value
+benchmark,"PrivacyLens (NeurIPS 2024 D&B) main_data.json, naive agent prompt rendered by PrivacyLens code"
+cases,25
+conditions,no_protection;placeholder:presidio;casper_style;placeholder:learned_lr;placeholder:gliner_pii;llm_sanitizer:qwen3:8b-q4km-hf;abstraction:qwen3:8b-q4km-hf;symbolic_late:gliner_pii;symbolic_early:gliner_pii
+judge_protocol,"PrivacyLens evaluate_final_action.py prompts (judge_leakage per sensitive item; helpfulness 0-3), verbatim"
+decoding,"temperature 0, top_p 1, seed 17; agent num_predict 700 num_ctx 7168; judge num_predict 400 num_ctx 10240"
+bootstrap,"1000 case-level resamples, 95% percentile CI"
+python,3.12.3
+platform,Linux-5.15.0-78-generic-x86_64-with-glibc2.35
+agent.model_name,llama3.3:70b-q4km-hf
+agent.model_digest,bb2a7bfed908f43250d36ddecfebd435cbbe83a877e4cf28f8aa3c093fbb257f
+agent.model_family,llama
+agent.model_parameter_size,70.6B
+agent.model_quantization,Q4_K_M
+judge.model_name,mistral:7b-instruct-v0.2-q4km-hf
+judge.model_digest,79c08d3519c6cf4ef7bc2f6bec6e463411c66054c3193befba266874c11da3f4
+judge.model_family,llama
+judge.model_parameter_size,7.2B
+judge.model_quantization,Q4_K_M
+casper_style.spacy_model,en_core_web_lg
+gliner_pii.gliner,0.2.28
+gliner_pii.gliner_model,urchade/gliner_multi_pii-v1
+presidio.presidio_analyzer,2.2.364
+presidio.spacy,3.8.16
+presidio.spacy_model,en_core_web_lg

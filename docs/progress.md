@@ -1,6 +1,73 @@
 # 论文进度
 
-## 2026-09-08 第二位标注者完成复核，结果已回填论文（当前最新）
+## 2026-09-08 第二下游模型跑完 + 配对检验推翻一条既有结论 + 附录拆分（当前最新）
+
+### 1. PRO 6000：第二下游模型（可移植性）实验完成
+
+`ExperimentProgress.tex` 里挂了很久的 "Second downstream model"（0%，等主机开机）
+已跑完。同样 200 个 PrivacyLens case、同样的 judge（mistral 7b）、同样 seed 17，
+把 agent 换成另一个家族的 llama3.3:70b，9 个 condition 八分片并行，
+2026-09-08 18:53 CST（22:53 NZST）结束。
+
+- **1800/1800 行**，每分片 225 行、225 个唯一 `(condition, case)`，全局重复 0，
+  唯一 case 200，八个日志里 traceback/error/timeout/skip 计数全为 0。
+- 已用 `pool_downstream("llama3.3_70b-q4km-hf")` 汇总（注意：
+  `aggregate_paper_results.py` 的 `main()` 默认只 pool 32B 那一臂，必须显式传参）。
+- 25 个文件（8 rows + 8 runtime manifest + 8 summary + 1 pooled）已拉回本地，
+  **25 个 md5 与远端逐一相同**。
+
+**可移植的部分**：无保护 exact-ID 暴露 13.7% → 13.1%，检测器类条件两边都落在
+1.9–4.4%，semantic abstraction 两边都停在接近无保护的水平（12.9% / 12.0%），排序保持。
+
+**不可移植的部分**：中介的效用代价明显更大——learned detector 的 helpfulness
+配对差值在 70B 上是 −1.06，32B 上只有 −0.21；symbolic_late 两边都最稳
+（−0.27 / −0.16），这对论文首选配置是有利的，但必须作为差异写出来，不能抹平成"一致"。
+
+**一个必须写清的边界**：boundary leak 两臂完全相同（late 1.6/1.6，early 51.0/51.0），
+不是巧合——`raw_values_visible_before_tool` 是对已中介的释放文本
+（`instr_r + traj_r`）计数的，完全不经过 agent 输出，按构造就不可能随模型变化。
+论文那条 51.0% → 1.6% 的 restoration-timing 结论**不能**说"在第二个模型上复现"。
+
+### 2. 配对检验：推翻 "judge leak 不被任何方法改变" 这条结论
+
+原结论建立在边际置信区间是否重叠上，而九个 condition 跑的是同一批 200 个 case，
+这种比法把配对信息丢掉了。新增 `src/experiments/downstream_paired_tests.py`：
+按 case 配对，用 McNemar 精确检验 + 配对 bootstrap 差值区间 + 每个模型内部
+8 次比较的 Holm 校正。
+
+- **70B 上，Holm 校正后 8 条里有 6 条与无保护分离**：learned_lr −18.5 点
+  (Holm p<1e−4)、casper_style −15.5 (4e−4)、gliner −15.5 (2e−4)、presidio −10.5
+  (0.015)、symbolic_late −9.5 (0.022)、abstraction −8.0 (0.027)。
+- **32B 上**，casper_style 与 learned_lr 未校正时已是 p=0.009 / 0.022，
+  Holm 后退回 0.075 / 0.156。也就是说原措辞**只在校正之后、且只在那一个模型上**成立。
+
+结论：这是一条**模型相关**的负结果，不是普遍结论，论文不能再无条件陈述。
+`docs/ExperimentProgress.tex` 已相应改写（新增两行完成项，并修正
+semantic-mitigation 行里重复这条声明的措辞）。
+
+### 3. 论文附录从 main.tex 拆出，恢复 paper/appendix.tex
+
+按要求把 `\appendix` 之后的八节（A–H）拆回独立文档。
+
+- 附录 preamble 按**当前** main.tex 重建（PoPETs 2027 / anonymous），
+  没有沿用 git 历史里删掉的那份——那份还是 ACM TOPS，且 Jinsong Wu 单位仍写着
+  University of Chile。
+- 合并期间新产生了 8 条正文→附录、3 条附录→正文的交叉引用，拆开后会全部失效，
+  所以两边都用 `xr` 读对方的 `.aux`。
+  **踩到一个坑**：直接 `\externaldocument{main}` 会让附录里每个 `\section` 报
+  `Missing number, treated as zero`。二分 `.aux` 定位到原因是 acmart 自己写的
+  `\newlabel{tocindent-1}{0pt}` 等标签被对方文档的同名副本覆盖，
+  而 acmart 会把它们当尺寸读回来。`xr-hyper` 无效，用标签前缀解决
+  （正文导入为 `A-`，附录导入为 `M-`），11 条引用相应改写。
+- `paper/build.bat` 改为 main → appendix → main（第二遍 main 才能拿到 appendix.aux），
+  并把 `build\` 加进 `TEXINPUTS` 供 `xr` 找 aux。
+- 构建结果：main 14 页、appendix 7 页，两份日志 0 undefined reference、
+  0 undefined citation、0 Missing number；正文仍在第 12 页结束，12 页限制不受影响。
+- 已逐字节比对 `HEAD:main.tex`：附录正文与被移走的部分完全一致（仅 5 处 `M-` 前缀），
+  保留的正文也完全一致（仅 xr 段落、back-matter 注释改写、8 处 `A-` 前缀）。
+
+
+## 2026-09-08 第二位标注者完成复核，结果已回填论文
 
 第二位标注者把 96 条全部复核完毕。从 artifact 的存储里取回全部 96 条记录，
 逐条比对确认页面携带的第一位答案与第一轮表格完全一致（无一条错位），再计分。
