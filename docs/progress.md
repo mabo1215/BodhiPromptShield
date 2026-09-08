@@ -66,6 +66,25 @@ semantic-mitigation 行里重复这条声明的措辞）。
 - 已逐字节比对 `HEAD:main.tex`：附录正文与被移走的部分完全一致（仅 5 处 `M-` 前缀），
   保留的正文也完全一致（仅 xr 段落、back-matter 注释改写、8 处 `A-` 前缀）。
 
+### 4. 按方案 (a) 改写 §6.3，并关闭 PRO 6000
+
+- `paper/main.tex` §6.3 把"每个中介区间都与无保护区间重叠"换成配对检验：
+  casper −9.5 点、learned_lr −9.0 点（McNemar p=0.009 / 0.022，Holm 后均不显著），
+  并指出第二个 agent 上八条里有六条分离。
+- 顺带核了相邻那句"learned_lr 与 casper 的 leak rate 统计不可区分"——配对检验
+  p=1.000（32B）/ 0.480（70B），结论成立，改为按配对口径陈述。
+- Setup 里"fixed 12k-token context window"是旧值（代码早已是 agent 7,168 /
+  judge 10,240），一并改正。
+- 附录新增 §H "Portability to a Second Downstream Agent"（表 `tab:portability`），
+  给出两个 agent 的完整对照与 Holm p 值，并写明 boundary leak 为何被排除在对照之外。
+  附录模型清单补上 llama3.3:70b（70.6B / Q4_K_M / bb2a7bfe）。
+- **页数是硬约束**：正文原本正好卡在 12 页上限，加字后 Conclusion 掉到第 13 页。
+  因此把跨模型细节移进附录、正文只留一句加指针，并压掉两处因新文字而冗余的表述，
+  最终正文 +188 字符、Conclusion 回到第 12 页。main 14 页 / appendix 8 页，
+  两份日志 0 undefined、0 大号 overfull。
+- 实验已收完、结果已 push，**PRO 6000 已关机**（已确认不可达，停止计费）。
+  scratch 卷上的 ollama / sanitizer 缓存与模型权重是可重建的派生物，未做保留。
+
 
 ## 2026-09-08 第二位标注者完成复核，结果已回填论文
 
