@@ -25,6 +25,11 @@ Metrics (measured, per attack family x detector)
 * attacked_recall : fraction of mutated applicable spans still caught.
 * attack_success_rate (ASR) : fraction of *previously-caught* spans the attack
   pushes to evade = max(0, (caught_clean - caught_attacked) / caught_clean).
+
+ASR is a ratio of sums over spans that are clustered inside documents, so its
+uncertainty is reported as a document-level percentile bootstrap over the same
+(numerator, denominator) pairs, using the shared helper and the fixed seed the
+other propagation tables use.
 """
 from __future__ import annotations
 
@@ -36,6 +41,8 @@ from ai4privacy_matched_baseline_suite import _policy_aware_spans
 
 import ai4privacy_lightweight_classifier_baseline as clf
 
+from mediation_baselines import bootstrap_ratio_ci
+
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 DEFAULT_INPUT_PATH = EXPERIMENTS_DIR / "ai4privacy_pii300k_english_export.jsonl"
@@ -44,6 +51,7 @@ RUNTIME_PATH = EXPERIMENTS_DIR / "measured_adaptive_adversary_runtime_manifest.c
 
 SPLIT = "ai4privacy-test"
 MAX_DOCS = 200
+N_BOOT = 1000
 
 HOMOGLYPH = {
     "a": "а", "e": "е", "i": "і", "o": "о", "p": "р",
@@ -176,6 +184,9 @@ def evaluate(input_path: Path) -> None:
     for det_name, detector in detectors.items():
         for attack_name, mutate, applies in ATTACKS:
             caught_clean = caught_attacked = applicable = 0
+            # (evaded spans, previously-caught spans) per document, for the
+            # document-level bootstrap on ASR.
+            doc_pairs: list[tuple[float, float]] = []
             for record in records:
                 text = str(record.get("text", ""))
                 gold = [
@@ -188,27 +199,36 @@ def evaluate(input_path: Path) -> None:
                     continue
                 # Clean detection.
                 det_clean = detector(text)
+                doc_clean = 0
                 for i in app_idx:
                     if _covered(gold[i], det_clean):
                         caught_clean += 1
+                        doc_clean += 1
                 # Attacked detection.
                 mut_text, new_spans = _build_mutation(text, gold, mutate, applies)
                 det_mut = detector(mut_text)
+                doc_attacked = 0
                 for i in app_idx:
                     applicable += 1
                     if _covered(new_spans[i], det_mut):
                         caught_attacked += 1
+                        doc_attacked += 1
+                doc_pairs.append((float(doc_clean - doc_attacked), float(doc_clean)))
             clean_recall = caught_clean / applicable if applicable else 0.0
             attacked_recall = caught_attacked / applicable if applicable else 0.0
             asr = max(0.0, (caught_clean - caught_attacked) / caught_clean) if caught_clean else 0.0
+            _, asr_lo, asr_hi = bootstrap_ratio_ci(doc_pairs, n_boot=N_BOOT, scale=100.0)
             rows.append(
                 {
                     "detector": det_name,
                     "attack_family": attack_name,
+                    "documents": str(len(doc_pairs)),
                     "applicable_spans": str(applicable),
                     "clean_recall": f"{clean_recall:.2f}",
                     "attacked_recall": f"{attacked_recall:.2f}",
                     "attack_success_rate": f"{100.0 * asr:.1f}",
+                    "attack_success_lo": f"{max(0.0, asr_lo):.1f}",
+                    "attack_success_hi": f"{max(0.0, asr_hi):.1f}",
                 }
             )
 
@@ -218,10 +238,13 @@ def evaluate(input_path: Path) -> None:
             fieldnames=[
                 "detector",
                 "attack_family",
+                "documents",
                 "applicable_spans",
                 "clean_recall",
                 "attacked_recall",
                 "attack_success_rate",
+                "attack_success_lo",
+                "attack_success_hi",
             ],
         )
         writer.writeheader()
@@ -234,6 +257,8 @@ def evaluate(input_path: Path) -> None:
         {"field": "detectors", "value": "Released heuristic policy-aware detector; learned logistic detector"},
         {"field": "attacks", "value": "; ".join(a[0] for a in ATTACKS)},
         {"field": "asr_definition", "value": "Fraction of previously-caught applicable spans pushed to evade by the attack"},
+        {"field": "ci", "value": "document-level percentile bootstrap, 95%, seed 17"},
+        {"field": "bootstrap_resamples", "value": str(N_BOOT)},
         {"field": "llm_in_loop", "value": "None; measurement is exact against the real detector"},
         {"field": "dependencies", "value": "Pure Python standard library + repository detection helpers"},
     ]

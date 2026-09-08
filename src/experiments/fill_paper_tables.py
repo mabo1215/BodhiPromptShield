@@ -13,7 +13,7 @@ This script only updates tables that are directly backed by repository CSVs:
     - tab:crossmodel       <- crossmodel_portability_results.csv
     - tab:lightclf         <- lightweight_classifier_comparison.csv
     - tab:judge            <- cppb_privacy_judge_comparison.csv
-    - tab:measprop         <- measured_agent_propagation_results.csv
+    - tab:measprop         <- propagation_suite_{ai4privacy,privacylens}_results_pooled.csv
     - tab:advmeas          <- measured_adaptive_adversary_results.csv
     - tab:mapadv           <- secure_mapping_adversary_results.csv
     - tab:hardcase         <- hardcase_analysis.csv
@@ -23,6 +23,7 @@ This script only updates tables that are directly backed by repository CSVs:
     - tab:lto              <- leavetemplateout_summary.csv
     - tab:baseline         <- external_baseline_comparison.csv
   - tab:tabtransfer      <- tab_transfer_results.csv
+  - tab:ocrslice         <- {cord,funsd,sroie}_transfer_results.csv
   - tab:blindutility     <- data/cppb_blind_utility_summary.csv
   - tab:blindutilitytemplate <- data/cppb_blind_utility_by_template.csv
 
@@ -85,6 +86,19 @@ def _fmt_float(value: str, digits: int = 1) -> str:
     return f"{float(value):.{digits}f}"
 
 
+# The released records label the capitalization/title/location regular-expression
+# baseline "NER-only masking", which overstates it: it runs no named-entity
+# recognizer. The manuscript reports it under its actual mechanism, so the rename
+# is applied at render time rather than by rewriting released result records.
+BASELINE_DISPLAY_NAMES = {
+    "NER-only masking": "Capitalization heuristic",
+}
+
+
+def _display_method(name: str) -> str:
+    return BASELINE_DISPLAY_NAMES.get(name.strip(), name)
+
+
 def _tex_escape(text: str) -> str:
     return (
         text.replace("\\", "\\textbackslash{}")
@@ -112,7 +126,9 @@ def build_cppb_accounting_table() -> str:
 
 def build_per_table() -> str:
     rows = _read_csv("prompt_method_comparison.csv")
-    body = "\n".join(f"{r['method']} & {_fmt_float(r['per'])} \\\\" for r in rows)
+    body = "\n".join(
+        f"{_display_method(r['method'])} & {_fmt_float(r['per'])} \\\\" for r in rows
+    )
     return (
         "\\begin{tabular}{lc}\n"
         "\\toprule\n"
@@ -127,7 +143,8 @@ def build_per_table() -> str:
 def build_utility_table() -> str:
     rows = _read_csv("prompt_method_comparison.csv")
     body = "\n".join(
-        f"{r['method']} & {float(r['ac']):.2f} & {float(r['tsr']):.2f} \\\\" for r in rows
+        f"{_display_method(r['method'])} & {float(r['ac']):.2f} & {float(r['tsr']):.2f} \\\\"
+        for r in rows
     )
     return (
         "\\begin{tabular}{lcc}\n"
@@ -182,7 +199,8 @@ def build_propagation_table() -> str:
 def build_latency_table() -> str:
     rows = _read_csv("latency_overhead.csv")
     body = "\n".join(
-        f"{r['pipeline']} & {int(float(r['mean_ms']))} & {int(float(r['p95_ms']))} \\\\" for r in rows
+        f"{_display_method(r['pipeline'])} & {int(float(r['mean_ms']))} & {int(float(r['p95_ms']))} \\\\"
+        for r in rows
     )
     return (
         "\\begin{tabular}{lcc}\n"
@@ -285,38 +303,103 @@ def build_lightclf_table() -> str:
     )
 
 
-def _measprop_rows(csv_name: str) -> str:
-    rows = _read_csv(csv_name)
-    return "\n".join(
-        f"{_tex_escape(row['method'])} & {_fmt_float(row['retrieval_spe'])} & "
-        f"{_fmt_float(row['memory_spe'])} & {_fmt_float(row['tool_spe'])} & "
-        f"{_fmt_float(row['per_percent'])} & {float(row['text_retention']):.2f} \\\\"
-        for row in rows
-    )
+MEASPROP_ORDER = [
+    ("no_protection", "No protection"),
+    ("regex_only", "Regex-only"),
+    ("capitalization_heuristic", "Capitalization heuristic"),
+    ("spacy_ner", "spaCy NER masking"),
+    ("presidio", "Microsoft Presidio"),
+    ("casper_style", "Casper-style (rules + NER, dummy values)"),
+    ("llm_sanitizer", "LLM sanitizer (8B)"),
+    ("heuristic_mediator", "Proposed (released heuristic detector)"),
+    ("gliner_pii", "Proposed (transformer PII detector)"),
+    ("learned_lr", "Proposed (learned detector)"),
+]
+
+
+def _ci_point(cell: str) -> str:
+    """Point estimate of a "point [lo, hi]" cell."""
+    return cell.split("[")[0].strip()
+
+
+def _ci_full(cell: str) -> str:
+    """A "point [lo, hi]" cell, dropping a degenerate interval that adds no information."""
+    point, _, rest = cell.partition("[")
+    point = point.strip()
+    if not rest:
+        return point
+    lo, _, hi = rest.rstrip("]").partition(",")
+    if lo.strip() == hi.strip() == point:
+        return point
+    return f"{point} [{rest.strip()}"
+
+
+def _measprop_source(csv_name: str) -> dict[str, dict[str, str]]:
+    by_key: dict[str, dict[str, str]] = {}
+    for row in _read_csv(csv_name):
+        key = row["method_key"].split(":")[0]
+        by_key[key] = row
+    return by_key
 
 
 def build_measprop_table() -> str:
-    header = "Method & Retr. & Mem. & Tool & PER & Ret. " + r"\\" + "\n"
-    ai4 = _measprop_rows("measured_agent_propagation_results.csv")
-    pl = _measprop_rows("measured_privacylens_propagation_results.csv")
+    """Pooled cross-boundary propagation on both real sources, with CIs.
+
+    Reads the pooled records written by aggregate_paper_results.py, so the
+    intervals cover the full document population rather than a single shard.
+    """
+    ai4 = _measprop_source("propagation_suite_ai4privacy_results_pooled.csv")
+    pl = _measprop_source("propagation_suite_privacylens_results_pooled.csv")
+
+    best = {
+        "ai4": min(float(_ci_point(r["per_percent"])) for r in ai4.values()),
+        "pl": min(float(_ci_point(r["per_percent"])) for r in pl.values()),
+    }
+
+    def _per(row: dict[str, str], tag: str) -> str:
+        cell = _ci_full(row["per_percent"])
+        if abs(float(_ci_point(row["per_percent"])) - best[tag]) < 1e-9:
+            return "\\textbf{" + cell + "}"
+        return cell
+
+    body_lines = []
+    for key, label in MEASPROP_ORDER:
+        a, p = ai4[key], pl[key]
+        body_lines.append(
+            " & ".join(
+                [
+                    _tex_escape(label),
+                    _ci_point(a["memory_spe"]),
+                    _per(a, "ai4"),
+                    f"{float(_ci_point(a['text_retention'])):.2f}",
+                    _ci_point(p["memory_spe"]),
+                    _per(p, "pl"),
+                    f"{float(_ci_point(p['text_retention'])):.2f}",
+                    _ci_point(p["semantic_residue"]),
+                ]
+            )
+            + " \\\\"
+        )
+
+    n_ai4 = next(iter(ai4.values()))["documents"]
+    n_pl = next(iter(pl.values()))["documents"]
     return (
-        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccccc}\n"
+        "\\begin{tabular}{lccccccc}\n"
         + "\\toprule\n"
-        + header
+        + "& \\multicolumn{3}{c}{\\emph{AI4Privacy text, reference agent "
+        + f"({n_ai4} docs)}}}} & \\multicolumn{{4}}{{c}}{{\\emph{{PrivacyLens agent trajectories ({n_pl} tasks)}}}} \\\\\n"
+        + "\\cmidrule(lr){2-4}\\cmidrule(lr){5-8}\n"
+        + "Method & Mem.\\ SPE & PER & Ret. & Mem.\\ SPE & PER & Ret. & FRR \\\\\n"
         + "\\midrule\n"
-        + "\\multicolumn{6}{l}{\\emph{AI4Privacy PII text, reference agent (300 docs)}} \\\\\n"
-        + f"{ai4}\n"
-        + "\\midrule\n"
-        + "\\multicolumn{6}{l}{\\emph{PrivacyLens real agent trajectories (493 tasks)}} \\\\\n"
-        + f"{pl}\n"
-        + "\\bottomrule\n"
-        + "\\end{tabularx}"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        + "\\end{tabular}"
     )
 
 
 def build_advmeas_table() -> str:
     rows = _read_csv("measured_adaptive_adversary_results.csv")
-    by_attack: dict[str, dict[str, str]] = {}
+    by_attack: dict[str, dict[str, dict[str, str]]] = {}
     order: list[str] = []
     for row in rows:
         atk = row["attack_family"]
@@ -324,15 +407,23 @@ def build_advmeas_table() -> str:
             by_attack[atk] = {}
             order.append(atk)
         key = "heur" if row["detector"].startswith("Released") else "learn"
-        by_attack[atk][key] = row["attack_success_rate"]
-    header = "Attack family & Heuristic ASR (\\%) & Learned ASR (\\%) " + r"\\" + "\n"
+        by_attack[atk][key] = row
+    def _cell(row: dict[str, str] | None) -> str:
+        if row is None:
+            return "---"
+        return (
+            f"{_fmt_float(row['attack_success_rate'])} "
+            f"[{_fmt_float(row['attack_success_lo'])}, {_fmt_float(row['attack_success_hi'])}]"
+        )
+    header = "Attack family & Spans & Heuristic ASR (\\%) & Learned ASR (\\%) " + r"\\" + "\n"
     body = "\n".join(
-        f"{_tex_escape(atk)} & {_fmt_float(by_attack[atk].get('heur', '0'))} & "
-        f"{_fmt_float(by_attack[atk].get('learn', '0'))} \\\\"
+        f"{_tex_escape(atk)} & "
+        f"{by_attack[atk].get('learn', by_attack[atk].get('heur'))['applicable_spans']} & "
+        f"{_cell(by_attack[atk].get('heur'))} & {_cell(by_attack[atk].get('learn'))} \\\\"
         for atk in order
     )
     return (
-        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcc}\n"
+        "\\begin{tabularx}{\\textwidth}{>{\\raggedright\\arraybackslash}Xrcc}\n"
         + "\\toprule\n"
         + header
         + "\\midrule\n"
@@ -346,7 +437,7 @@ def build_judge_table() -> str:
     rows = _read_csv("cppb_privacy_judge_comparison.csv")
     header = "Method & PER (\\%) & AC & TSR " + r"\\" + "\n"
     body = "\n".join(
-        f"{_tex_escape(row['method'])} & {_fmt_float(row['per_percent'])} & "
+        f"{_tex_escape(_display_method(row['method']))} & {_fmt_float(row['per_percent'])} & "
         f"{float(row['ac']):.2f} & {float(row['tsr']):.2f} \\\\"
         for row in rows
     )
@@ -567,6 +658,71 @@ def build_baseline_table() -> str:
     )
 
 
+OCR_SLICES = (("CORD", "cord"), ("FUNSD", "funsd"), ("SROIE", "sroie"))
+
+OCR_METHOD_LABELS = {
+    "Raw OCR text prompt": "No protection",
+    "OCR + regex masking": "Regex-only",
+    "OCR + generic de-identification": "Generic de-identification",
+    "OCR + Presidio receipt de-identification": "Presidio",
+    "OCR + Presidio form de-identification": "Presidio",
+    "OCR + spaCy receipt de-identification": "spaCy NER",
+    "OCR + spaCy form de-identification": "spaCy NER",
+    "Proposed multimodal mediation": "Proposed mediation",
+}
+
+OCR_METHOD_ORDER = [
+    "No protection",
+    "Regex-only",
+    "Generic de-identification",
+    "Presidio",
+    "spaCy NER",
+    "Proposed mediation",
+]
+
+
+def build_ocrslice_table() -> str:
+    """Public OCR-mediated transfer slices, one column group per benchmark."""
+    per_slice: dict[str, dict[str, dict[str, str]]] = {}
+    for label, prefix in OCR_SLICES:
+        by_method: dict[str, dict[str, str]] = {}
+        for row in _read_csv(f"{prefix}_transfer_results.csv"):
+            by_method[OCR_METHOD_LABELS[row["method"]]] = row
+        per_slice[label] = by_method
+
+    body_lines = []
+    for method in OCR_METHOD_ORDER:
+        cells = [_tex_escape(method)]
+        for label, _ in OCR_SLICES:
+            row = per_slice[label][method]
+            cells += [
+                f"{float(row['ocr_span_f1']):.2f}",
+                _fmt_float(row["multimodal_per"]),
+                f"{float(row['text_retention']):.2f}",
+            ]
+        body_lines.append(" & ".join(cells) + " \\\\")
+
+    group = " & ".join(
+        f"\\multicolumn{{3}}{{c}}{{{label} ({per_slice[label]['No protection']['document_count']} docs, "
+        f"{per_slice[label]['No protection']['mention_count']} spans)}}"
+        for label, _ in OCR_SLICES
+    )
+    sub = " & ".join(["F1 & PER & Ret."] * len(OCR_SLICES))
+    return (
+        "\\begin{tabularx}{\\textwidth}{>{\\raggedright\\arraybackslash}X"
+        + "ccc" * len(OCR_SLICES)
+        + "}\n"
+        + "\\toprule\n"
+        + f"& {group} \\\\\n"
+        + "\\cmidrule(lr){2-4}\\cmidrule(lr){5-7}\\cmidrule(lr){8-10}\n"
+        + f"Method & {sub} \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
 def build_tab_transfer_table() -> str:
     rows = _read_csv("tab_transfer_results.csv")
     display_names = {
@@ -699,6 +855,7 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:lto": build_lto_table,
     "tab:baseline": build_baseline_table,
     "tab:tabtransfer": build_tab_transfer_table,
+    "tab:ocrslice": build_ocrslice_table,
     "tab:blindutility": build_blind_utility_table,
     "tab:blindutilitytemplate": build_blind_utility_template_table,
 }

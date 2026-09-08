@@ -5,5 +5,7 @@ documents,200
 detectors,Released heuristic policy-aware detector; learned logistic detector
 attacks,Homoglyph substitution; Zero-width insertion; Intra-token spacing; Case inversion; Leetspeak; Separator injection (ids); Mixed-language fullwidth; Paraphrase (digit spell-out)
 asr_definition,Fraction of previously-caught applicable spans pushed to evade by the attack
+ci,"document-level percentile bootstrap, 95%, seed 17"
+bootstrap_resamples,1000
 llm_in_loop,None; measurement is exact against the real detector
 dependencies,Pure Python standard library + repository detection helpers
