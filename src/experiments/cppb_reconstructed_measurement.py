@@ -579,6 +579,51 @@ def _write_manifest(path: Path, args: argparse.Namespace, records: list[dict], a
         os.fsync(out.fileno())
 
 
+def summarize_shards(paths: list[Path], n_boot: int) -> int:
+    """Pool shard row files and summarize them as one run.
+
+    Shards partition the prompt surface, so pooling their rows reconstructs
+    exactly the run an unsharded invocation would have produced.  The pooled
+    rows file is written beside the shards with the shard suffix dropped.
+    """
+    rows: list[dict[str, str]] = []
+    for path in paths:
+        if not path.exists():
+            print(f"missing shard: {path}", file=sys.stderr)
+            return 1
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            rows.extend(csv.DictReader(handle))
+    if not rows:
+        print("no rows to summarize", file=sys.stderr)
+        return 1
+
+    seen: set[tuple[str, str, str]] = set()
+    unique: list[dict[str, str]] = []
+    for row in rows:
+        key = (row["method"], row["tau"], row["prompt_id"])
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(row)
+
+    pooled = paths[0].with_name(re.sub(r"_shard\d+of\d+", "", paths[0].name))
+    with pooled.open("w", encoding="utf-8", newline="") as out:
+        writer = csv.DictWriter(out, fieldnames=ROW_FIELDS)
+        writer.writeheader()
+        writer.writerows(unique)
+        out.flush()
+        os.fsync(out.fileno())
+
+    stem = pooled.name.replace("cppb_reconstructed_rows_", "").replace(".csv", "")
+    _summarize(pooled,
+               pooled.with_name(f"cppb_reconstructed_summary_{stem}.csv"),
+               pooled.with_name(f"cppb_reconstructed_policy_sweep_{stem}.csv"),
+               pooled.with_name(f"cppb_reconstructed_latency_{stem}.csv"),
+               n_boot)
+    print(f"[pooled] {len(unique)} rows from {len(paths)} shards -> {pooled.name}")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--agent-model", default=DEFAULT_AGENT)
@@ -595,7 +640,13 @@ def main() -> int:
     parser.add_argument("--shard", help="I/N: run only every N-th prompt (outputs get a shard tag)")
     parser.add_argument("--bootstrap", type=int, default=1000)
     parser.add_argument("--output-tag")
-    return run(parser.parse_args())
+    parser.add_argument("--summarize-from", nargs="+",
+                        help="Summarize existing rows CSVs instead of running: concatenates the shard "
+                             "files, then writes one summary, policy sweep and latency table beside them")
+    args = parser.parse_args()
+    if args.summarize_from:
+        return summarize_shards([Path(p) for p in args.summarize_from], args.bootstrap)
+    return run(args)
 
 
 if __name__ == "__main__":
