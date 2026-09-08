@@ -1,6 +1,39 @@
 # 论文进度
 
-## 2026-09-09（第二轮）对照 RevisionSuggestions.tex 再核，补上 5 处并修掉两个会自我回退的生成缺陷（当前最新）
+## 2026-09-09 PRO 6000 会话：给四张 CPPB 附录表补上可命名的 runtime【进行中】（当前最新）
+
+开 PRO 6000（96 GiB）是为了关掉计划里唯一"只差一台 GPU 主机"的那一项：附录四张 CPPB 表
+（`tab:per`、`tab:utility`、`tab:pi_sensitivity`、`tab:latency`）的数字来自没有记录 runtime
+的旧 score log，而产生它们的 prompt 已经不存在（released manifest 里只有 template/prompt 存根）。
+在这些数字旁边补写 backend 和 digest 等于"声称"而不是"记录"provenance，所以改为在
+`data/cppb_full_annotations.jsonl` 的 256 条重建面上重新测量，并完整登记 runtime。
+
+**新增测量脚本**：七种中介方法（无保护／正则／大小写启发式／通用去标识／企业分级遮蔽（Presidio）／
+语义抽象／utility-constrained）× 256 条，指标为 PER（金标敏感 span 是否仍字面出现，带 span 级
+bootstrap 区间）、AC（同一 prompt 原始答案与中介后答案的任务相关一致性，judge 评分）、
+TSR（是否满足模板自述的成功判据）、以及仅中介环节的 CPU 延迟。行级 flush + fsync，断点续跑。
+
+**顺带发现并修掉的三件事**（都已提交）：
+1. **已发布的阈值 sweep 是插值出来的。** `policy_threshold_sweep.csv` 由三个 profile 线性插值
+   得到六个点，但附录写的是"a genuine sweep rather than a three-point sketch"——文字与产物不符。
+   新脚本对每个 τ 都真跑一遍（阈值作用在 learned detector 自己的 token 概率上），使这句话名副其实。
+2. **LLM sanitizer 的输出预算下限是 2048。** 该下限是为长临床病历设的；CPPB 的 prompt 是单句，
+   于是每次都要求模型为一句话生成 2048 token，四个 shard 同时卡死在语义抽象那一步十分钟。
+   同时构造函数的 `num_ctx` 是死代码，`_options_for` 里硬写 `FIXED_NUM_CTX`。
+3. **judge 决策回放实际在重新生成。** context 是响应缓存 key 的一部分，而 32B 那轮跑在
+   per-model context 之前、用的是共享的 12288（它的 manifest 里根本没记 context），
+   于是用当前常量回放全部 miss——正是这个导出机制要防止的替换。改为两个 context 都可显式指定后，
+   已验证"every call came from the cache"。
+
+**运行过程中的一个教训**：把 70B 和 32B 同时排进来会让 ollama 反复换出 43 GB 的模型，两个 run
+一起停摆；把 GLiNER（判决导出）和 ollama 放在一张卡上争用，则直接把 ollama 卡死（07:20 之后
+没有任何一次 `/api/chat` 完成）。最终排布是：模型槽位数恰好等于所需模型数（32B + judge + sanitizer），
+70B 交叉验证这一轮放弃，判决导出挪到 CPPB 跑完之后。
+
+**待填**：跑完后回填四张表的重建版 CSV（写在旧文件旁边，不覆盖——旧 CSV 是原始运行仅存的痕迹），
+并在附录中把这批数字标注为 reconstructed。
+
+## 2026-09-09（第二轮）对照 RevisionSuggestions.tex 再核，补上 5 处并修掉两个会自我回退的生成缺陷
 
 先核了主机：`C:\work\9\saveway.txt` 里四台 GPU 主机（H800、PRO 6000、vGPU 3090、2c 3080）
 的 SSH 端口全部探测过，**全部拒绝连接**，也就是说 PRO 6000 上既没有在跑的实验、也没有排队的实验。
