@@ -47,7 +47,7 @@ from mediation_baselines import (
     DEFAULT_CACHE_DIR, Detector, GenerationFailed, LLMSanitizer, bootstrap_ratio_ci, build_detectors, render_placeholders,
     render_symbolic, restore_symbolic, substitute_dummy,
 )
-from ollama_client import CachedOllamaChat
+from ollama_client import AGENT_NUM_CTX, JUDGE_NUM_CTX, CachedOllamaChat
 
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
@@ -366,8 +366,8 @@ def main() -> int:
     detectors = {d.key: d for d in build_detectors(needed, learned_weights=learned, spacy_model=args.spacy_model,
                                                      ollama_url=f"{args.base_url}/api/generate")}
     conditions = [Condition(s, detectors, args.base_url, args.spacy_model) for s in specs]
-    agent = CachedOllamaChat(args.agent_model, base_url=args.base_url)
-    judge = CachedOllamaChat(args.judge_model, base_url=args.base_url)
+    agent = CachedOllamaChat(args.agent_model, base_url=args.base_url, num_ctx=AGENT_NUM_CTX)
+    judge = CachedOllamaChat(args.judge_model, base_url=args.base_url, num_ctx=JUDGE_NUM_CTX)
 
     safe_agent = re.sub(r"[^A-Za-z0-9_.-]+", "_", args.agent_model)
     rows_path = _with_tag(EXPERIMENTS_DIR / f"privacylens_downstream_rows_{safe_agent}.csv", args.output_tag)
@@ -405,7 +405,8 @@ def main() -> int:
     manifest = [{"field": "benchmark", "value": "PrivacyLens (NeurIPS 2024 D&B) main_data.json, naive agent prompt rendered by PrivacyLens code"},
                 {"field": "cases", "value": str(len(cases))}, {"field": "conditions", "value": ";".join(specs)},
                 {"field": "judge_protocol", "value": "PrivacyLens evaluate_final_action.py prompts (judge_leakage per sensitive item; helpfulness 0-3), verbatim"},
-                {"field": "decoding", "value": "temperature 0, top_p 1, seed 17; agent num_predict 700; judge num_predict 400"},
+                {"field": "decoding", "value": f"temperature 0, top_p 1, seed 17; agent num_predict 700 num_ctx {AGENT_NUM_CTX}; "
+                                        f"judge num_predict 400 num_ctx {JUDGE_NUM_CTX}"},
                 {"field": "bootstrap", "value": f"{args.bootstrap} case-level resamples, 95% percentile CI"},
                 {"field": "python", "value": platform.python_version()}, {"field": "platform", "value": platform.platform()}]
     for label, client in (("agent", agent), ("judge", judge)):
