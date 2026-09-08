@@ -819,73 +819,6 @@ PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submis
     附录五处语气残留清理。构建：main 14 页（正文止于第 12 页）、appendix 8 页，
     0 undefined/悬空/未引用，双盲干净。
 
-# 未修改或部分修改
-
-以下为 `docs/ExperimentProgress.tex` next-step 表里仍然开着的 8 项，按是否卡在你这边分组。
-每项的完成百分比、预估新西兰时间与备注以那张表为准，这里只记需要你决定的部分。
-
-**等你决策（做与不做都合理，但需要一句话拍板）**
-
-- **PrivacyLens 自带 judge 的人工验证**（55%）：§6.3 的下游泄漏率全部来自那个 7B judge，
-  我们从未验证过它。自家 27B 判官在同一关上是随机水平（κ=0.087），论文已写明这批数字
-  应受同样怀疑——但"写明存疑"和"验证过"不是一回事。
-  - 需要你决定：是否用同一套盲标注流程抽查 $n\ge100$。工具、标注页、κ 脚本都现成，
-    不需要 GPU，纯粹是标注工时（约 3--4 天）。
-  - 若 2026-09-15 前授权，预计 2026-09-24（NZST）完成。
-- **legacy CPPB 的 named-runtime 披露**（85%）：主文所有证据都有 provenance 了，
-  剩下的缺口只在附录四张 CPPB 表的历史分数日志。
-  - 需要你决定：是补齐 backend/digest/decoding，还是在附录写明"这是控制面，
-    其原始运行记录不可恢复"。**建议后者**——补齐所需的资产，正是 CPPB 重跑那行被卡住的同一批。
-  - 选后者的话是一次文本编辑，2026-09-12（NZST）即可完成。
-- **旧的人工效用验证（88 行遗留评分文件）**：主文效用已改用 PrivacyLens 自带 judge +
-  AgentDojo 环境状态判定，两者外部、任务原生、可复现，旧文件不再被任何主文声明依赖。
-  - 需要你确认：正式放弃（推荐）。
-
-**卡在外部资源，不需要你现在决定**
-
-- **PrivacyRestore 同协议复现**（60%）：需要白盒自服务模型 + 约 5 天。论文已给出不复现的
-  架构理由（它在服务端模型内部做激活引导，本层在黑盒端点之前）。在 11-30 之前做它，
-  会和上面的人工验证抢同一份 GPU 预算。
-- **licensed i2b2 临床覆盖**（60%）：等数据使用审批。公开 PhysioNet 路线已跑通并入表。
-- **live-stack mapping table 攻防**（50%）：需要一套真实部署栈、审计路径与凭据模型，
-  不是算力问题。论文把该结论限定在机制层面。
-
-**已被取代或不可恢复，不再计划**
-
-- **CPPB 原始端到端重跑**（0%）：历史原始 prompt 与 OCR 资产不可恢复。CPPB 已降级到附录
-  （决策 D2），不阻塞投稿。
-- **CPPB 多模态/OCR 重生成**（25%）：被本轮的公开文档图像切片取代。评审关心的那个
-  被评测设定现在由有 provenance 的公开基准支撑，而不是由不可复现的内部资产支撑。
-
-**开放研究问题，无法给日期**
-
-- **语义推断的缓解手段**（80%）：问题规模已经测清楚并成为论文的头号发现；
-  缓解本身没有找到。论文在 Conclusion 里把它写成下一个目标，而不是本次投稿的漏洞。
-
-# 遗留问题
-
-需要你提供/决策（本轮已删除两条：主机计费口径冲突——四台主机今天全部探测为离线，
-以及登录文件缺失——凭据在 `C:\work\9\saveway.txt`，`USAGE.md` 里也指向它）：
-
-1. **是否再找一位完全独立的标注者**（从空表开始、不看第一位答案）。第二位的复核已完成
-   并回填，但那是复核不是独立重标，两份记录不独立，给不出评分者间信度。论文已如实写明。
-   再加一位能把这条发现从"指示性"抬到"确定性"；代价是一个人标 96 条，不需要 GPU，
-   工具现成（`--mode blind` 生成空表页）。建议：找得到人就做。
-   A:
-2. **是否抽查 PrivacyLens 自带 judge 的人-人一致性**（可复用现有流程，$n\ge100$）。
-   若授权，预计 2026-09-24（NZST）完成。
-   A:
-3. **legacy CPPB 的 named-runtime 缺口如何收口**：补齐 backend/digest/decoding，
-   还是在附录写明其原始运行记录不可恢复？建议后者，2026-09-12（NZST）可完成。
-   A:
-4. **是否正式放弃旧的人工效用验证**（推荐放弃）。
-   A:
-5. **AI use 声明措辞**是否认可（`paper/main.tex` 的 `ai` 环境）。
-   A:
-6. **同名 arXiv 预印本 `arXiv:2604.05793`（署三位作者）是否处理**——匿名包里已抹掉引用，
-   但预印本本身公开可搜。PoPETs 双盲通常容忍预印本，只是你应该知道它的存在再决定。
-   A:
-
 ## 2026-09-03 revision cycle completion：vGPU 实验回收、论文回填与审稿闭环（当前新增）
 
 - 已统一主文与附录 privacy-judge 表的企业基线和提出方法数值：统一为企业 staged redaction `8.1%`、提出方法 `9.3%`。同步修改了 `paper/main.tex`、`src/experiments/cppb_privacy_judge_baseline.py`、`cppb_privacy_judge_comparison.csv` 和 runtime manifest；表格回填后仍保持该数值。
@@ -1159,36 +1092,6 @@ Your inference:"""
   - **编译验证**：合并后 `paper/main.pdf` 单文件 34 页，0 error、无 undefined/multiply-defined reference。
   - **核查无需修改项**：评审提到的 Proposition 2.2 求和公式异常字符（`Í𝑛` 等）只是从 PDF 复制数学时的提取噪声，`main.tex` 源码本身已是标准 `\left(\sum_{i=1}^{n}\varepsilon_{c_i}\right)$-local differential privacy`，无需改源码；`\documentclass[acmsmall,review]{acmart}` 对 ACM 期刊（TOPS）评审稿是正确格式（review 选项带行号），Vol/No/Article 0 与 DOI nnnnnnn 是所有 ACM 评审稿都带的"未分配"占位符，保留即可；用户确认采用非匿名评审，故保留作者署名与 GitHub artifact 链接。
 
-## 未修改或部分修改
-
-最近核对日期：2026-06-18
-
-原 ACM CCS #541A/#541B 评审以及后续 TOPS 独立评审（`docs/revision_suggestions.tex`）的核心 P0/P1 项均已落地（threat-to-evaluation mapping、SPE surface-form 边界、`R_prop` 降级、secure mapping threat surface + 实测 compromise、CPPB controlled benchmark 口径、TAB precision-drop taxonomy、OCR-mediated scope、family-level cross-model、lightweight classifier/judge、实测传播与实测 adversary）。本节仅保留少数仍属表达/版面层面的部分完成项。
-
-### 部分完成
-
-- ACM TOPS 投稿口径已按用户最终决策定稿并落地：正文压到“恰好 29 页”、附录收敛到“恰好 6 页”，合计 35 页正好满足 TOPS“总计 ≤ 35 页”限制；main 与 appendix 保持两个独立 PDF 分开编译（已确认 ACM 也允许 `\appendix` 合并为单 PDF，本轮仍按用户选择保持分开）。该决策已关闭，详见“已全部修改”。
-- 【已解决】CPPB benchmark 的 appendix 级数据卡已补齐，直接回应 Review #541B “describe the actual 32 templates, how written/selected, how spans injected, quality judged in a separate appendix”。`paper/appendix.tex` 新增 `\subsection*{CPPB Construction and Data Card}`：写明 32 templates × 4 prompt families（来源为公开任务/对话/文档场景而非真实用户记录）、每模板 8 个固定 variant 的 span 注入方式（V1–V4 essential / V5–V8 incidental，V4/V8 为 OCR 切片）、8 类隐私类别的 32/类与 128/128 平衡、span 文本/字符偏移/类别/子集/模态均为 construction-time 标签并经人工核对，以及新增 `tab:app-examples` 展示按模式（placeholder/abstract/symbolic）注入与脱敏的代表性模板示例。附录仍保持恰好 6 页（原有页面有余量），main 29 + appendix 6 = combine 35 页不变，构建 0 undefined ref/citation、0 大号 overfull/float。
-- TAB transfer 已解释 precision drop，并承认相对 Presidio(+NER) 是 privacy-retention trade-off；但它仍位于 Results 后段。若版面允许，可在 Experimental Setup 中更早声明 TAB 是主要 external transfer slice，避免 reviewer 觉得它是最后补丁。当前无须用户决策，可在后续轮次自动处理。
-- 【已解决（W5/优先级#3）】Adversarial robustness 已从 6 类扩到 8 类**实测**攻击（含 paraphrase digit spell-out 与 mixed-language fullwidth），对真实 detector 在真实文本上测 ASR；论文诚实标注 semantic-paraphrase（learned detector 28.2% ASR）为 open residual surface。context-inference 亦有 executed 证据（`tab:contextattack`）。剩余仅为长期项：真实 multi-turn / CoT-elicitation 大规模攻击面。
-- 【已解决（W2）】Secure symbolic mapping 已从 reference sanity check 升级为 capability-graded **实测** compromise 曲线（`tab:mapcompromise`，T0–T5）：单会话 blast radius、master seed 为唯一信任根；剩余仅为长期项：真实部署密钥管理/审计栈上的端到端攻防。
-- Multimodal/VLM 问题已通过标题和正文收紧为 OCR-mediated multimodal inputs，但 public OCR slices 的 exact OCR/runtime/provenance 仍有部分 disclosure gap，不能支撑完整 VLM-loop privacy claim。
-- 【已解决】CPPB 上的稳定 lightweight privacy-judge baseline 已补齐，回应 Review #541B “compare against small LLM-based privacy judges / lightweight classifiers”。仓库新增 `src/experiments/cppb_privacy_judge_baseline.py`：一个 prompt-level logistic-regression 隐私敏感度 judge，仅用 manifest 特征（category/family/subset/modality/source/task），在已发布的 CPPB train split 训练、frozen 后在 held-out dev/test 评估，确定性 SGD（零初始化、固定种子）保证稳定。落盘 `cppb_privacy_judge_results.csv`、`cppb_privacy_judge_comparison.csv`、`cppb_privacy_judge_runtime_manifest.csv`。结果稳定且可泛化（train/dev/test PER 13.8/13.2/12.9%），test 上 PER 12.9% / AC 0.93 / TSR 0.92——优于 regex/NER，接近 proposed，但因缺少 restoration governance，residual exposure 高于 proposed（12.9% vs 9.5%），恰好支撑“贡献在传播控制与延迟恢复而非 detector”这一叙事。`paper/appendix.tex` 新增由 `fill_paper_tables.py` 回填的 `tab:judge` 与解读段落，`paper/main.tex` 的 learned-baseline 小节已加入 judge 结论；为保持附录恰好 6 页，删除了与之高度重复的 `tab:baseline`（CPPB Presidio 对比，已被 judge 表与 AI4Privacy `tab:lightclf` 覆盖）与 `tab:splitheldout`（held-out 泛化已由 judge 表与 `tab:lto` 体现）。main 29 + appendix 6 = combine 35 页不变，0 undefined ref/citation、0 大号 overfull/float。剩余：尚未在临床域训练同类 judge，prompted-LLM judge 仍是 zero-shot pilot（非正式 baseline）。
-
-### 未完成或仍有风险
-
-仅剩以下长期项，全部受外部数据/凭据限制，已在论文 Limitations 诚实标注为 future / camera-ready，不构成 accept 阻塞：
-
-- Named cross-model rerun：exact vendor/model/version 仍未公开（受厂商/匿名约束）；family/size/hosting 已披露。
-- Live-stack 端到端 mapping-table compromise：机制级实测曲线已完成（`tab:mapcompromise`），真实部署密钥/审计栈上的端到端攻防留作 camera-ready。
-- 更广 cross-domain / licensed clinical 覆盖：generic↔clinical 实测已完成（`tab:crossdom`），更多域与 licensed i2b2 rerun 受许可限制。
-- 把 CPPB 推进为成熟 community benchmark：仍缺更完整的 annotation/quality-control 细节与 raw multimodal source assets / licensing packets。
-
-### 当前建议
-
-- 原优先级 #1–#3（CPPB 数据卡、lightweight judge/classifier、扩大 adversarial+mapping 攻击）均已完成，详见“已全部修改”。
-- 本轮无需新增实验；剩余仅为上述长期外部受限项。下一步以 author-response 形式把每条 review 意见对应到已落地的表/段即可，无其它阻塞项。
-
 ## 2026-09-03 当前 revision-cycle 核对（最新）
 
 本次核对以当前单文件论文 `paper/main.tex`、`docs/RevisionSuggestions.tex`
@@ -1213,3 +1116,67 @@ inference，以及 licensed clinical 数据覆盖。end-to-end LDP/system guaran
 
 Ollama 当前保持可用，但没有模型实验进程在运行；下一次实际运行应先明确
 要补哪一个仍有前置条件的 evidence slice，再使用独立 output tag。
+
+# 未修改或部分修改
+
+只列仍然开着、且还值得做的项。已完成的在 `# 已全部修改`；已被取代、资产不可恢复、
+或属于论文已写明的 future work 的项已从本节移除（`docs/ExperimentProgress.tex`
+的 next-step 表仍保留它们的完整记录与百分比，那张表是全量台账，本节只是待办）。
+
+本轮移除的三项及原因：
+- **CPPB 原始端到端重跑**：历史原始 prompt 与 OCR 资产不可恢复，且 CPPB 已按决策 D2
+  降级到附录，不阻塞投稿。
+- **CPPB 多模态/OCR 重生成**：已被 2026-09-09 补回的公开文档图像切片取代，评审关心的
+  那个被评测设定现在由有 provenance 的公开基准支撑。
+- **语义推断的缓解手段**：问题规模已测清楚并成为论文头号发现，缓解本身是开放研究问题，
+  论文在 Conclusion 里写成下一个目标，不是本次投稿的漏洞。
+
+**等你决策（做与不做都合理，但需要一句话拍板）**
+
+- **PrivacyLens 自带 judge 的人工验证**（55%）：§6.3 的下游泄漏率全部来自那个 7B judge，
+  我们从未验证过它。自家 27B 判官在同一关上是随机水平（κ=0.087），论文已写明这批数字
+  应受同样怀疑——但"写明存疑"和"验证过"不是一回事。
+  - 需要你决定：是否用同一套盲标注流程抽查 $n\ge100$。工具、标注页、κ 脚本都现成，
+    不需要 GPU，纯粹是标注工时（约 3--4 天）。
+  - 若 2026-09-15 前授权，预计 2026-09-24（NZST）完成。
+- **legacy CPPB 的 named-runtime 披露**（85%）：主文所有证据都有 provenance 了，
+  剩下的缺口只在附录四张 CPPB 表的历史分数日志。
+  - 需要你决定：是补齐 backend/digest/decoding，还是在附录写明"这是控制面，
+    其原始运行记录不可恢复"。**建议后者**——补齐所需的资产，正是上面已移除的
+    CPPB 重跑那项所缺的同一批。
+  - 选后者的话是一次文本编辑，2026-09-12（NZST）即可完成。
+- **旧的人工效用验证（88 行遗留评分文件）**：主文效用已改用 PrivacyLens 自带 judge +
+  AgentDojo 环境状态判定，两者外部、任务原生、可复现，旧文件不再被任何主文声明依赖。
+  - 需要你确认：正式放弃（推荐）。确认后本项即从本节删除。
+
+**卡在外部资源，不需要你现在决定**
+
+- **PrivacyRestore 同协议复现**（60%）：需要白盒自服务模型 + 约 5 天。论文已给出不复现的
+  架构理由（它在服务端模型内部做激活引导，本层在黑盒端点之前）。在 11-30 之前做它，
+  会和上面的人工验证抢同一份 GPU 预算。
+- **licensed i2b2 临床覆盖**（60%）：等数据使用审批。公开 PhysioNet 路线已跑通并入表。
+- **live-stack mapping table 攻防**（50%）：需要一套真实部署栈、审计路径与凭据模型，
+  不是算力问题。论文把该结论限定在机制层面。
+
+# 遗留问题
+
+需要你提供/决策。答完一条即可就地删掉该条。
+
+1. **是否再找一位完全独立的标注者**（从空表开始、不看第一位答案）。第二位的复核已完成
+   并回填，但那是复核不是独立重标，两份记录不独立，给不出评分者间信度。论文已如实写明。
+   再加一位能把这条发现从"指示性"抬到"确定性"；代价是一个人标 96 条，不需要 GPU，
+   工具现成（`--mode blind` 生成空表页）。建议：找得到人就做。
+   A:
+2. **是否抽查 PrivacyLens 自带 judge 的人-人一致性**（可复用现有流程，$n\ge100$）。
+   若授权，预计 2026-09-24（NZST）完成。
+   A:
+3. **legacy CPPB 的 named-runtime 缺口如何收口**：补齐 backend/digest/decoding，
+   还是在附录写明其原始运行记录不可恢复？建议后者，2026-09-12（NZST）可完成。
+   A:
+4. **是否正式放弃旧的人工效用验证**（推荐放弃）。
+   A:
+5. **AI use 声明措辞**是否认可（`paper/main.tex` 的 `ai` 环境）。
+   A:
+6. **同名 arXiv 预印本 `arXiv:2604.05793`（署三位作者）是否处理**——匿名包里已抹掉引用，
+   但预印本本身公开可搜。PoPETs 双盲通常容忍预印本，只是你应该知道它的存在再决定。
+   A:
