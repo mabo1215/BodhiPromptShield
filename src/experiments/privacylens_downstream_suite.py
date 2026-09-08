@@ -265,7 +265,8 @@ def _with_tag(path: Path, tag: str | None) -> Path:
     return path if not tag else path.with_name(f"{path.stem}_{tag}{path.suffix}")
 
 
-def evaluate_case(case: dict, prefix_row: dict, cond: Condition, agent: CachedOllamaChat, judge: CachedOllamaChat) -> dict[str, object]:
+def evaluate_case(case: dict, prefix_row: dict, cond: Condition, agent: CachedOllamaChat, judge: CachedOllamaChat,
+                  decisions: list[dict[str, object]] | None = None) -> dict[str, object]:
     tr = case["trajectory"]
     name, email = tr.get("user_name", ""), tr.get("user_email", "")
     instr, traj = tr.get("user_instruction", ""), tr.get("executable_trajectory", "")
@@ -294,12 +295,23 @@ def evaluate_case(case: dict, prefix_row: dict, cond: Condition, agent: CachedOl
 
     leak_count = 0
     if has_action and items:
-        for secret in items:
+        for index, secret in enumerate(items):
             verdict = judge.chat([{"role": "user", "content": prepare_prompt_to_identify_leakage(name, secret, final_action)}],
                                  num_predict=400)
             if verdict is None:
                 raise GenerationFailed(f"judge {judge.model} failed on {case['name']}")
-            leak_count += int(parse_leakage_judgment(verdict))
+            leaked = int(parse_leakage_judgment(verdict))
+            leak_count += leaked
+            # The per-item decision is what a human check has to be scored
+            # against. The aggregate row cannot carry it: one row covers a
+            # whole case, and the judge rules on each secret separately.
+            if decisions is not None:
+                decisions.append({
+                    "condition": cond.spec, "case": case["name"], "secret_index": index,
+                    "user_name": name, "secret": secret, "final_action": final_action,
+                    "judge_model": judge.model, "judge_leak": leaked,
+                    "judge_reasoning": verdict.strip(),
+                })
     helpfulness = 0
     if has_action:
         verdict = judge.chat([{"role": "user", "content": prepare_prompt_to_evaluate_helpfulness(name, instr, traj, final_action)}],
@@ -336,6 +348,52 @@ def summarize(rows: list[dict[str, str]], n_boot: int) -> list[dict[str, str]]:
     return out
 
 
+DECISION_FIELDS = ["condition", "case", "secret_index", "user_name", "secret", "final_action",
+                   "judge_model", "judge_leak", "judge_reasoning"]
+
+
+def _export_judge_decisions(cases: list[dict], prefixes: dict, conditions: list, agent: CachedOllamaChat,
+                            judge: CachedOllamaChat, out: Path) -> int:
+    """Replay the recorded run from cache and write the judge's per-secret verdicts.
+
+    The reported leak rates are counts of decisions this function writes out
+    one by one, so a human check scored against this file is scored against
+    the decisions that produced the published numbers rather than against a
+    fresh run that might differ. That identity only holds if nothing here is
+    generated: every prompt must already be in the cache. The function says so
+    loudly when it is not, because a silently regenerated verdict would make
+    the validation measure the wrong thing.
+    """
+    generated_before = agent.generated + judge.generated
+    decisions: list[dict[str, object]] = []
+    for cond in conditions:
+        missed = 0
+        for case in cases:
+            try:
+                evaluate_case(case, prefixes[case["name"]], cond, agent, judge, decisions=decisions)
+            except (GenerationFailed, KeyError) as exc:
+                missed += 1
+                print(f"  skip {cond.spec} {case.get('name')}: {exc}")
+        print(f"[{cond.spec}] replayed {len(cases) - missed}/{len(cases)} cases")
+
+    with out.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=DECISION_FIELDS)
+        writer.writeheader()
+        for row in decisions:
+            writer.writerow(row)
+        handle.flush(); os.fsync(handle.fileno())
+
+    fresh = agent.generated + judge.generated - generated_before
+    print(f"[judge-decisions] wrote {out.name}: {len(decisions)} per-secret decisions, "
+          f"{sum(int(d['judge_leak']) for d in decisions)} judged as leaking")
+    if fresh:
+        print(f"  WARNING: {fresh} calls were generated rather than replayed from cache. This file is "
+              f"therefore NOT a record of the published run's decisions. Re-run where the cache lives.")
+        return 1
+    print("  every call came from the cache: these are the decisions behind the reported leak rates")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--agent-model", required=True)
@@ -348,6 +406,10 @@ def main() -> int:
     parser.add_argument("--bootstrap", type=int, default=1000)
     parser.add_argument("--output-tag")
     parser.add_argument("--shard", help="I/N: run only every N-th case starting at I (outputs get a shard tag)")
+    parser.add_argument("--export-judge-decisions", action="store_true",
+                        help="Replay every case from cache and write the judge's per-secret decisions "
+                             "and the action it saw, without touching the canonical rows file. Every "
+                             "call must already be cached, so this generates nothing and costs no GPU.")
     args = parser.parse_args()
 
     cases = json.load(open(PL_DATA, encoding="utf-8"))
@@ -373,6 +435,11 @@ def main() -> int:
     rows_path = _with_tag(EXPERIMENTS_DIR / f"privacylens_downstream_rows_{safe_agent}.csv", args.output_tag)
     summary_path = _with_tag(EXPERIMENTS_DIR / f"privacylens_downstream_summary_{safe_agent}.csv", args.output_tag)
     manifest_path = _with_tag(EXPERIMENTS_DIR / f"privacylens_downstream_runtime_manifest_{safe_agent}.csv", args.output_tag)
+
+    if args.export_judge_decisions:
+        return _export_judge_decisions(cases, prefixes, conditions, agent, judge,
+                                       _with_tag(EXPERIMENTS_DIR / f"privacylens_judge_decisions_{safe_agent}.csv",
+                                                 args.output_tag))
 
     done = _read_done(rows_path)
     new_file = not rows_path.exists()

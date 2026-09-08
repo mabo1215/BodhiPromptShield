@@ -204,13 +204,113 @@ def run_round2(round2: Path, key: Path, out: Path, by_method: Path) -> None:
     _write_by_method(by_method, [(item, a2) for item, _, a2 in items], key_rows)
 
 
+def run_round3(round3: Path, sheet: Path, round2: Path | None, key: Path,
+               out: Path, by_method: Path) -> None:
+    """Score the third annotator, who worked from a blank sheet.
+
+    This is the round that yields an inter-rater reliability estimate rather
+    than an upper bound. The third reader never saw round one's labels, round
+    two's, or the judge's, so annotator 1 against annotator 3 is two people
+    rating the same items independently and kappa means what it usually means.
+    Round two is still reported against round three where it overlaps, with
+    the caveat it has carried since it was run: round two's own labels were
+    primed by round one, so that pairing inherits the priming even though
+    round three does not.
+    """
+    with round3.open(encoding="utf-8", newline="") as handle:
+        a3 = {r["item_id"]: _parse_human(r["human_inferable_YES_or_NO"])
+              for r in csv.DictReader(handle)}
+    with sheet.open(encoding="utf-8", newline="") as handle:
+        a1 = {r["item_id"]: _parse_human(r["human_inferable_YES_or_NO"])
+              for r in csv.DictReader(handle)}
+    with key.open(encoding="utf-8", newline="") as handle:
+        key_rows = {r["item_id"]: r for r in csv.DictReader(handle)}
+
+    a2: dict[str, int] = {}
+    if round2 is not None and round2.exists():
+        with round2.open(encoding="utf-8", newline="") as handle:
+            for row in csv.DictReader(handle):
+                seen = (row.get("reviewed", "YES") or "YES").strip().upper() != "NO"
+                value = _parse_human(row.get("annotator2", ""))
+                if seen and value is not None:
+                    a2[row["item_id"]] = value
+
+    annotated = [i for i, v in a3.items() if v is not None and i in key_rows]
+    if not annotated:
+        print(f"[agreement] {round3.name} has no completed annotations yet; the "
+              f"third annotator has not answered anything.")
+        return
+
+    pairs_a1 = [i for i in annotated if a1.get(i) is not None]
+    pairs_a2 = [i for i in annotated if i in a2]
+
+    independent = _kappa([(a1[i], a3[i]) for i in pairs_a1])
+    judge = _kappa([(a3[i], int(key_rows[i]["judge_inferable"])) for i in annotated])
+    lex = _kappa([(a3[i], int(key_rows[i]["lexical_retained"])) for i in annotated])
+    primed_pair = _kappa([(a2[i], a3[i]) for i in pairs_a2]) if pairs_a2 else None
+
+    print(f"[agreement] {len(annotated)} annotated round-3 items of {len(a3)}")
+    print(f"  annotator 1 vs annotator 3: kappa {independent[0]:.3f} "
+          f"({_interpret(independent[0])}), raw agreement {independent[1]:.1%}, "
+          f"n={len(pairs_a1)}")
+    print(f"    This one is an inter-rater reliability estimate: neither reader "
+          f"saw the other's labels.")
+    if primed_pair is not None:
+        print(f"  annotator 2 vs annotator 3: kappa {primed_pair[0]:.3f} "
+              f"({_interpret(primed_pair[0])}), raw agreement {primed_pair[1]:.1%}, "
+              f"n={len(pairs_a2)}")
+        print(f"    NOTE: annotator 2's labels were primed by annotator 1, so this "
+              f"pairing inherits that priming; annotator 3's do not.")
+    print(f"  judge   vs annotator 3: kappa {judge[0]:.3f} ({_interpret(judge[0])}), "
+          f"raw agreement {judge[1]:.1%}")
+    print(f"  lexical vs annotator 3: kappa {lex[0]:.3f} ({_interpret(lex[0])}), "
+          f"raw agreement {lex[1]:.1%}")
+    print(f"  confusion [annotator1][annotator3]: {independent[2]}")
+
+    with out.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["comparison", "n", "cohens_kappa", "interpretation", "raw_agreement",
+                         "cell_no_no", "cell_no_yes", "cell_yes_no", "cell_yes_yes", "note"])
+        writer.writerow(["annotator1_vs_annotator3_independent", len(pairs_a1),
+                         f"{independent[0]:.3f}", _interpret(independent[0]),
+                         f"{independent[1]:.3f}", independent[2][0][0], independent[2][0][1],
+                         independent[2][1][0], independent[2][1][1],
+                         "annotator 3 started from a blank sheet and saw neither earlier "
+                         "annotator's labels nor the judge's; this is an inter-rater "
+                         "reliability estimate, not an upper bound"])
+        if primed_pair is not None:
+            writer.writerow(["annotator2_vs_annotator3", len(pairs_a2),
+                             f"{primed_pair[0]:.3f}", _interpret(primed_pair[0]),
+                             f"{primed_pair[1]:.3f}", primed_pair[2][0][0], primed_pair[2][0][1],
+                             primed_pair[2][1][0], primed_pair[2][1][1],
+                             "annotator 2's labels were primed by annotator 1; annotator 3's "
+                             "were not, so this pairing inherits the priming from one side"])
+        for label, (kappa, obs, matrix) in (("judge_vs_annotator3", judge),
+                                            ("lexical_vs_annotator3", lex)):
+            writer.writerow([label, len(annotated), f"{kappa:.3f}", _interpret(kappa),
+                             f"{obs:.3f}", matrix[0][0], matrix[0][1],
+                             matrix[1][0], matrix[1][1], ""])
+    print(f"[agreement] wrote {out.name}")
+
+    _write_by_method(by_method, [(i, a3[i]) for i in annotated], key_rows)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag", default="vgpu3090")
     parser.add_argument("--round2", help="the second annotator's exported CSV")
+    parser.add_argument("--round3", help="the third annotator's exported CSV")
     args = parser.parse_args()
     suffix = f"_{args.tag}" if args.tag else ""
     key = EXPERIMENTS_DIR / f"semantic_inferability_human_key{suffix}.csv"
+    if args.round3:
+        default_r2 = EXPERIMENTS_DIR / f"semantic_inferability_round2_annotations{suffix}.csv"
+        run_round3(Path(args.round3),
+                   EXPERIMENTS_DIR / f"semantic_inferability_human_sheet{suffix}.csv",
+                   Path(args.round2) if args.round2 else default_r2, key,
+                   EXPERIMENTS_DIR / f"semantic_inferability_agreement_round3{suffix}.csv",
+                   EXPERIMENTS_DIR / f"semantic_inferability_human_by_method_round3{suffix}.csv")
+        return
     if args.round2:
         run_round2(Path(args.round2), key,
                    EXPERIMENTS_DIR / f"semantic_inferability_agreement_round2{suffix}.csv",
