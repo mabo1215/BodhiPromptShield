@@ -70,7 +70,11 @@ from ollama_client import CachedOllamaChat
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = EXPERIMENTS_DIR.parents[1]
 ANNOTATIONS_PATH = REPO_ROOT / "data" / "cppb_full_annotations.jsonl"
-ABSTRACTION_TEMPLATE = EXPERIMENTS_DIR / "privacylens_abstraction_prompt_template.txt"
+# The PrivacyLens template instructs the model to preserve tool names and JSON
+# structure and to keep anything the task needs. On agent trajectories that is
+# right; on a one-sentence CPPB request whose whole subject is the protected
+# value, it makes the model paraphrase around the value and keep it verbatim.
+ABSTRACTION_TEMPLATE = EXPERIMENTS_DIR / "cppb_abstraction_prompt_template.txt"
 
 DEFAULT_AGENT = "qwen3:32b-q4km-hf"
 DEFAULT_JUDGE = "mistral:7b-instruct-v0.2-q4km-hf"
