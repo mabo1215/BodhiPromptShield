@@ -296,7 +296,7 @@ class LLMSanitizer:
     """
 
     def __init__(self, model: str, ollama_url: str = DEFAULT_OLLAMA_URL, cache_dir: Path = DEFAULT_CACHE_DIR,
-                 num_predict: int = 2048, num_ctx: int = 8192, retries: int = 3,
+                 num_predict: int = 2048, num_ctx: int = FIXED_NUM_CTX, retries: int = 3,
                  template_path: Path = LLM_PROMPT_TEMPLATE_PATH) -> None:
         self.model = model
         self.ollama_url = ollama_url
@@ -344,14 +344,21 @@ class LLMSanitizer:
         """Scale the output budget with input length so long rewrites are never truncated.
 
         A truncated rewrite would be scored as if its missing tail had been masked,
-        so the budget is ~1.5x the input token estimate (4 chars/token).  The
-        context window is fixed (``FIXED_NUM_CTX``): Ollama reloads a model whenever
-        a request asks for a different context size, so per-request sizing would
-        thrash the GPU when several suites share one server.
+        so the budget is ~1.5x the input token estimate (4 chars/token), floored at
+        ``min_predict``.  That floor is sized for the long clinical notes this was
+        written against; a suite whose inputs are short sentences should lower it,
+        because the floor otherwise asks for a thousand-token rewrite of one line
+        and the model spends the whole budget before emitting a stop token.
+
+        The context window is fixed per instance rather than per request: Ollama
+        reloads a model whenever a request asks for a different context size, so
+        per-request sizing would thrash the GPU when several suites share one
+        server.  It stays a constructor argument so a short-input suite can ask
+        for a small window without forcing every other caller to.
         """
         est_tokens = max(64, len(text) // 4)
-        num_predict = min(FIXED_NUM_CTX // 2, max(self.min_predict, int(est_tokens * 1.5)))
-        return {**self.base_options, "num_predict": num_predict, "num_ctx": FIXED_NUM_CTX}
+        num_predict = min(self.min_ctx // 2, max(self.min_predict, int(est_tokens * 1.5)))
+        return {**self.base_options, "num_predict": num_predict, "num_ctx": self.min_ctx}
 
     def _generate(self, prompt: str, options: dict[str, int]) -> str | None:
         payload = json.dumps(

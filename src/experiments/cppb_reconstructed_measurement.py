@@ -84,6 +84,8 @@ SWEEP_TAUS = [0.30, 0.40, 0.50, 0.55, 0.60, 0.70, 0.80]
 AGENT_NUM_CTX = 2048
 JUDGE_NUM_CTX = 2048
 AGENT_NUM_PREDICT = 320
+SANITIZER_NUM_CTX = 2048
+SANITIZER_NUM_PREDICT = 256
 JUDGE_NUM_PREDICT = 8
 SEED = 17
 
@@ -362,7 +364,11 @@ def run(args: argparse.Namespace) -> int:
     if needs_sanitizer:
         template = ABSTRACTION_TEMPLATE if ABSTRACTION_TEMPLATE.exists() else None
         kwargs = {"template_path": template} if template else {}
-        sanitizer = LLMSanitizer(args.sanitizer_model, ollama_url=f"{base}/api/generate", **kwargs)
+        # CPPB prompts are single sentences, so the sanitizer's default budget --
+        # a floor sized for long clinical notes -- would ask for a 2,048-token
+        # rewrite of one line and spend the whole budget before stopping.
+        sanitizer = LLMSanitizer(args.sanitizer_model, ollama_url=f"{base}/api/generate",
+                                 num_predict=SANITIZER_NUM_PREDICT, num_ctx=SANITIZER_NUM_CTX, **kwargs)
 
     detector_keys = []
     if "regex_only" in roster:
