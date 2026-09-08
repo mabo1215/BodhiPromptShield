@@ -5,13 +5,14 @@ point. The lexical Fact Retention Rate counts whether a fact's content words
 survive. An LLM judge, shown only the released surface, is asked whether a
 reader would still learn the fact. A person, blind both to which method
 produced an item and to the judge's verdict, answers that same question on a
-96-item subset.
+stratified subset of the same judgments.
 
 The two automated measures report a roughly flat line: whatever the method,
 most facts look retained. The human labels descend monotonically from the
 unprotected control to the most aggressive redactor. Against those labels the
-judge scores Cohen's kappa 0.080 and the lexical measure 0.283, so neither
-proxy can carry the claim. The figure exists to show why the paper reports the
+judge scores a kappa at chance and the lexical measure only a little better,
+so neither proxy can carry the claim. Both kappas are read from the agreement
+table rather than written here, so the legend cannot drift from the data. The figure exists to show why the paper reports the
 human numbers and treats the proxies as failed instruments.
 
 Reads the per-method table written by the annotation analysis; recomputes
@@ -60,7 +61,16 @@ def _bounds(cell):
     return (nums[0], nums[1], nums[2]) if len(nums) >= 3 else (nums[0], nums[0], nums[0])
 
 
-def plot(path, out_path):
+def _kappas(path):
+    """Read the two kappas from the agreement table beside the per-method one."""
+    out = {}
+    with open(path, encoding="utf-8", newline="") as handle:
+        for row in csv.DictReader(handle):
+            out[row["comparison"]] = float(row["cohens_kappa"])
+    return out.get("judge_vs_human"), out.get("lexical_vs_human")
+
+
+def plot(path, out_path, judge_k, lex_k):
     with open(path, encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
     rows.sort(key=lambda r: -_point(r["human_inferable"]))
@@ -103,9 +113,11 @@ def plot(path, out_path):
         plt.Line2D([], [], marker="o", linestyle="none", markersize=7, color=HUMAN,
                    markeredgecolor=SURFACE, label="Human (blind), 95% CI"),
         plt.Line2D([], [], marker="s", linestyle="none", markersize=5.4, markerfacecolor="none",
-                   markeredgecolor=JUDGE, markeredgewidth=1.4, label="LLM judge, $\\kappa$=0.08"),
+                   markeredgecolor=JUDGE, markeredgewidth=1.4,
+                   label=f"LLM judge, $\\kappa$={judge_k:.2f}"),
         plt.Line2D([], [], marker="^", linestyle="none", markersize=5.6, markerfacecolor="none",
-                   markeredgecolor=LEXICAL, markeredgewidth=1.4, label="Lexical, $\\kappa$=0.28"),
+                   markeredgecolor=LEXICAL, markeredgewidth=1.4,
+                   label=f"Lexical, $\\kappa$={lex_k:.2f}"),
     ]
     ax.legend(handles=handles, frameon=False, fontsize=6.9, loc="lower center",
               bbox_to_anchor=(0.5, 1.0), ncol=3, handlelength=1.0,
@@ -124,8 +136,10 @@ def main():
         SRC_DIR, os.pardir, "paper", "figs", "fact_retention_vs_inferability.pdf"))
     args = parser.parse_args()
     suffix = f"_{args.tag}" if args.tag else ""
+    judge_k, lex_k = _kappas(os.path.join(
+        EXPERIMENTS_DIR, f"semantic_inferability_agreement{suffix}.csv"))
     plot(os.path.join(EXPERIMENTS_DIR, f"semantic_inferability_human_by_method{suffix}.csv"),
-         os.path.abspath(args.out))
+         os.path.abspath(args.out), judge_k, lex_k)
 
 
 if __name__ == "__main__":

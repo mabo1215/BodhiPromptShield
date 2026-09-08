@@ -1,6 +1,52 @@
 # 论文进度
+## 2026-09-09 人工标注子集补齐至 102，论文数字全面刷新（当前最新）
 
-## 2026-09-09 对照 RevisionSuggestions.tex 全面复核，补上 6 处遗留（当前最新）
+F19 要求 human-agreement 子集 n≥100，原来是 96。**差额是整除造成的，不是设计**：
+sheet 用 `--human-n 100` 生成，但先分层再计数，`100 // 6 = 16`，六个方法共 96。
+
+### 补法与两道校验
+
+补 6 条（每方法 +1）而不是 4 条，这样是 102 且每方法 17 条、仍然均衡；
+补 4 条会变成 17/17/17/17/16/16。新增 `src/experiments/semantic_inferability_human_topup.py`，
+每条新题必须过两关才发出：
+
+1. **抽样重放**：用原 seed 与同样的 rng 消耗顺序重放分层洗牌，96 条全部复现，
+   证明"下一条"确实是原顺序里的下一条。
+2. **文本逐字节重建**：把该方法已标条目的轨迹重新生成，与 sheet 里存的文本比对。
+   不一致就拒绝出题——给标注者看的若不是判官当初看到的文本，κ 就是假的。
+
+`presidio` 和 `casper_style` 需要 spaCy + Presidio，而原 manifest 只记了
+`en_core_web_lg`、没记包版本，本来预期会失败。实测：本机
+spaCy 3.8.16 / Presidio 2.2.364 / en_core_web_lg 3.8.0 / Python 3.12，
+对 32 条 presidio+casper 轨迹**逐字节全部一致**（原运行是 Python 3.10.12）。
+装在 scratchpad 的独立 venv 里，没动系统 Python。
+
+六条由第一位标注者通过同一个 artifact 页面盲标完成（答案存在同一个库里）。
+
+### 刷新后的数字（n=96 → 102）
+
+- judge vs human：κ 0.080 → **0.087**，raw agreement 59.4% → 58.8%；
+  判官判"可推断"81.4%，人工 57.8%
+- lexical vs human：κ 0.283 → **0.250**
+- 每方法人工可推断率：100 / 94.1 / **52.9**(presidio) / **41.2**(casper) /
+  **35.3**(learned) / **23.5**(heuristic)，与对照的差从 −47.1 到 −76.5 点
+- 两个 κ 移动都不到一个百分点，**结论不依赖子集大小**：判官仍在随机水平
+
+论文里所有相关处已刷新：摘要、贡献列表、§5.5、§6.2、图 `fig:inferability`
+（含 alt text）、Limitations、Conclusion。正文仍在第 12 页结束，
+main 14 页 / appendix 8 页，0 undefined、0 大号 overfull。
+
+### 顺带修的两个复现缺口
+
+- 论文引的第一位标注者每方法比率，来自一个**现有代码不会再生成**的文件
+  （agreement 脚本 round2 重构后的遗留）。round1 路径现在走同一个 helper 产出。
+  用原 96 条输入重跑，点估计与 5/6 区间完全一致；`learned_lr` 的 CI 下界
+  18.8 → 12.5，因为 bootstrap 按下标重采样、历史文件方法内行序不同——点估计不受影响。
+- `fig:inferability` 的图例把两个 κ **硬编码**成 0.08 / 0.28，数据变了图不会变。
+  改成从 agreement 表读。
+
+
+## 2026-09-09 对照 RevisionSuggestions.tex 全面复核，补上 6 处遗留
 
 把当前 `paper/main.tex` + `paper/appendix.tex` 与 `docs/RevisionSuggestions.tex`
 的 F1–F27、A1、A2(E1–E8)、A3、A4 逐条对照了一遍。绝大多数已在前几轮闭环，

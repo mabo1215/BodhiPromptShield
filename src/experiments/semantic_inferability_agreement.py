@@ -69,7 +69,24 @@ def _interpret(kappa: float) -> str:
     return "poor (worse than chance)"
 
 
-def run(sheet: Path, key: Path, out: Path) -> None:
+def _write_by_method(path: Path, labelled: list[tuple[str, int]], key_rows: dict[str, dict]) -> None:
+    """Per-method rates in the shape the inferability figure reads."""
+    methods: dict[str, list[tuple[int, str]]] = {}
+    for item, label in labelled:
+        methods.setdefault(key_rows[item]["method_key"], []).append((label, item))
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["method_key", "items", "human_inferable",
+                         "judge_inferable", "lexical_retained"])
+        for method, pairs in methods.items():
+            ids = [i for _, i in pairs]
+            writer.writerow([method, len(pairs), _rate([v for v, _ in pairs]),
+                             _rate([int(key_rows[i]["judge_inferable"]) for i in ids]),
+                             _rate([int(key_rows[i]["lexical_retained"]) for i in ids])])
+    print(f"[agreement] wrote {path.name}")
+
+
+def run(sheet: Path, key: Path, out: Path, by_method: Path) -> None:
     with sheet.open(encoding="utf-8", newline="") as handle:
         human = {r["item_id"]: _parse_human(r["human_inferable_YES_or_NO"])
                  for r in csv.DictReader(handle)}
@@ -102,6 +119,7 @@ def run(sheet: Path, key: Path, out: Path) -> None:
             writer.writerow([label, len(annotated), f"{kappa:.3f}", _interpret(kappa), f"{obs:.3f}",
                              matrix[0][0], matrix[0][1], matrix[1][0], matrix[1][1]])
     print(f"[agreement] wrote {out.name}")
+    _write_by_method(by_method, [(i, human[i]) for i in annotated], key_rows)
 
 
 def _bootstrap_ci(flags: list[int], iterations: int = 10000, seed: int = 17) -> tuple[float, float]:
@@ -182,22 +200,8 @@ def run_round2(round2: Path, key: Path, out: Path, by_method: Path) -> None:
                          f"{changed / len(items):.3f}", "", "", "", "", ""])
     print(f"[agreement] wrote {out.name}")
 
-    # Per-method rates in the same shape the inferability figure reads, so the
-    # figure can be redrawn on the second reader's labels.
-    methods: dict[str, list[tuple[int, str]]] = {}
-    for item, _, a2 in items:
-        methods.setdefault(key_rows[item]["method_key"], []).append((a2, item))
-    with by_method.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.writer(handle)
-        writer.writerow(["method_key", "items", "human_inferable",
-                         "judge_inferable", "lexical_retained"])
-        for method, pairs in methods.items():
-            human = [v for v, _ in pairs]
-            ids = [i for _, i in pairs]
-            writer.writerow([method, len(pairs), _rate(human),
-                             _rate([int(key_rows[i]["judge_inferable"]) for i in ids]),
-                             _rate([int(key_rows[i]["lexical_retained"]) for i in ids])])
-    print(f"[agreement] wrote {by_method.name}")
+    # Redrawn on the second reader's labels.
+    _write_by_method(by_method, [(item, a2) for item, _, a2 in items], key_rows)
 
 
 def main() -> None:
@@ -216,6 +220,7 @@ def main() -> None:
         EXPERIMENTS_DIR / f"semantic_inferability_human_sheet{suffix}.csv",
         key,
         EXPERIMENTS_DIR / f"semantic_inferability_agreement{suffix}.csv",
+        EXPERIMENTS_DIR / f"semantic_inferability_human_by_method{suffix}.csv",
     )
 
 
