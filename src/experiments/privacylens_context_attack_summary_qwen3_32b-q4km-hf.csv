@@ -1,0 +1,5 @@
+condition,questions,cases,attack_accuracy_percent,chance_percent,unparsed
+no_protection,1487,493,"99.3 [98.8, 99.7]",25.0,0
+placeholder:presidio,1487,493,"97.6 [96.5, 98.6]",25.0,0
+casper_style,1485,493,"93.3 [91.5, 94.8]",25.0,0
+placeholder:learned_lr,1487,493,"95.5 [93.8, 96.9]",25.0,0

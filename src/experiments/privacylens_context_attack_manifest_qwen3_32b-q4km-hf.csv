@@ -1,0 +1,18 @@
+field,value
+attack,4-way forced choice: released surface plus one true fact and 3 distractors
+distractor_policy,"drawn from other cases sharing the same PrivacyLens data_type, so the topic is uninformative; full-pool fallback when a type is too thin, recorded per row"
+chance_accuracy_percent,25.0
+attacker_model,qwen3:32b-q4km-hf
+attacker_digest,cdf6a2e00f0eccc3b7ea5c916f6e254cf17ec6008ae4861d5ff1ee7c6818943a
+attacker_family,qwen3
+attacker_parameter_size,32.8B
+attacker_quantization,Q4_K_M
+conditions,no_protection;placeholder:presidio;casper_style;placeholder:learned_lr
+cases,493
+questions_per_condition,1487
+decoding,"temperature 0, top_p 1, seed 17, num_predict 160, num_ctx 8192"
+bootstrap,"1000 case-level resamples, 95% percentile CI"
+python,3.12.3
+platform,Linux-5.15.0-78-generic-x86_64-with-glibc2.35
+host,autodl-container-9ea4k4v8uu-b4b46782
+timestamp,2026-09-09T23:34:58+0800
