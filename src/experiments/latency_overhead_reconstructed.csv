@@ -2,6 +2,6 @@ pipeline,mean_ms,p95_ms
 Raw prompting (no middleware),0.0,0.0
 Regex-only redaction,0.9,0.5
 Capitalization heuristic,0.1,0.2
-Generic de-identification,1.2,0.7
+Generic de-identification,0.7,0.7
 Enterprise staged redaction,192.2,692.9
 Proposed (policy-aware balanced),0.9,0.8

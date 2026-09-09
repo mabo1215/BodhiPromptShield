@@ -1,8 +1,8 @@
 method,prompts,mean_ms,p95_ms
-generic_deid,255,1.2,0.7
 enterprise_staged,256,192.2,692.9
 proposed_utility_constrained,256,0.9,0.8
 no_protection,256,0.0,0.0
 regex_only,256,0.9,0.5
 capitalization_heuristic,256,0.1,0.2
+generic_deid,256,0.7,0.7
 proposed_abstraction,256,4927.2,8606.8

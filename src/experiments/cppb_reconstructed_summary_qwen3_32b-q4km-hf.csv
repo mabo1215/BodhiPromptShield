@@ -1,8 +1,8 @@
-method,prompts,per,per_ci_low,per_ci_high,ac,tsr
-generic_deid,255,0.00,0.00,0.00,0.939,0.937
-enterprise_staged,256,37.50,32.03,43.75,0.975,1.000
-proposed_utility_constrained,256,12.50,8.59,17.19,0.957,1.000
-no_protection,256,100.00,100.00,100.00,1.000,1.000
-regex_only,256,50.00,44.53,56.25,0.996,1.000
-capitalization_heuristic,256,62.50,56.64,67.97,0.988,1.000
-proposed_abstraction,256,27.34,21.88,32.81,0.984,1.000
+method,prompts,ac_n,tsr_n,per,per_ci_low,per_ci_high,ac,tsr
+enterprise_staged,256,256,256,37.50,32.03,43.75,0.975,1.000
+proposed_utility_constrained,256,256,256,12.50,8.59,17.19,0.957,1.000
+no_protection,256,256,256,100.00,100.00,100.00,1.000,1.000
+regex_only,256,256,256,50.00,44.53,56.25,0.996,1.000
+capitalization_heuristic,256,256,256,62.50,56.64,67.97,0.988,1.000
+generic_deid,256,256,255,0.00,0.00,0.00,0.934,0.937
+proposed_abstraction,256,256,256,27.34,21.88,32.81,0.984,1.000
