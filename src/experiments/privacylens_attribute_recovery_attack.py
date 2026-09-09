@@ -41,6 +41,7 @@ from ollama_client import CachedOllamaChat, DEFAULT_NUM_CTX  # noqa: E402
 from privacylens_downstream_suite import Condition, PL_DATA  # noqa: E402
 from mediation_baselines import build_detectors, bootstrap_ratio_ci  # noqa: E402
 from measured_privacylens_propagation import _gold_spans  # noqa: E402
+from downstream_paired_tests import paired_bootstrap_diff  # noqa: E402
 
 ROW_FIELDS = ["condition", "case", "fact_index", "span_kind", "n_options",
               "answer", "correct_option", "chosen_option", "correct",
@@ -153,21 +154,104 @@ def _score(rows_path: Path, out: Path, options: int, n_boot: int) -> None:
     with out.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(["condition", "questions", "cases", "recovery_percent",
-                         "chance_percent", "value_survives_release_percent"])
+                         "chance_percent", "value_survives_release_percent",
+                         "recovery_when_value_absent_percent", "questions_value_absent"])
         for cond in order:
             sub = [r for r in rows if r["condition"] == cond]
             by_case: dict[str, list[tuple[float, float]]] = {}
+            # Questions where the value did not survive the release are the ones
+            # the adversary cannot answer by reading. Accuracy there, against the
+            # 1/k chance line, is the cleanest reading of inference this design
+            # offers: the recovery-minus-survival gap mixes inference with the
+            # guessing a forced choice always allows.
+            absent_by_case: dict[str, list[float]] = {}
             for row in sub:
                 by_case.setdefault(row["case"], []).append((float(row["correct"]),
                                                             float(row["survives_release"])))
+                if row["survives_release"] == "0":
+                    absent_by_case.setdefault(row["case"], []).append(float(row["correct"]))
             acc = [(sum(c for c, _ in v), float(len(v))) for v in by_case.values()]
             sur = [(sum(s for _, s in v), float(len(v))) for v in by_case.values()]
+            absent = [(sum(v), float(len(v))) for v in absent_by_case.values()]
+            n_absent = int(sum(d for _, d in absent))
             p, lo, hi = bootstrap_ratio_ci(acc, n_boot=n_boot, scale=100.0)
             sp, slo, shi = bootstrap_ratio_ci(sur, n_boot=n_boot, scale=100.0)
+            if absent:
+                ap, alo, ahi = bootstrap_ratio_ci(absent, n_boot=n_boot, scale=100.0)
+                absent_cell = f"{ap:.1f} [{alo:.1f}, {ahi:.1f}]"
+            else:
+                ap, absent_cell = float("nan"), ""
             print(f"  {cond:<26} recovery {p:5.1f} [{lo:.1f}, {hi:.1f}]   "
-                  f"value present {sp:5.1f}   chance {100.0 / options:.1f}   n={len(sub)}")
+                  f"value present {sp:5.1f}   when absent {absent_cell or 'n/a':<20} "
+                  f"chance {100.0 / options:.1f}   n={len(sub)}")
             writer.writerow([cond, len(sub), len(by_case), f"{p:.1f} [{lo:.1f}, {hi:.1f}]",
-                             f"{100.0 / options:.1f}", f"{sp:.1f} [{slo:.1f}, {shi:.1f}]"])
+                             f"{100.0 / options:.1f}", f"{sp:.1f} [{slo:.1f}, {shi:.1f}]",
+                             absent_cell, n_absent])
+    print(f"[attack] wrote {out.name}")
+
+
+def _paired(rows_path: Path, out: Path, n_boot: int) -> None:
+    """Differences between conditions, paired on the question they answer.
+
+    Every condition answers the same 1,237 questions, so comparing marginal
+    intervals throws away the pairing and understates what the data can
+    resolve. These are paired over cases: a case contributes to both arms of a
+    comparison or to neither.
+
+    Two kinds of row come out. Against no protection, how much mediation costs
+    the adversary. And within each condition, recovery minus literal survival --
+    the part of the adversary's success that inference supplied rather than text
+    the release simply still contained.
+    """
+    with rows_path.open(encoding="utf-8", newline="") as handle:
+        rows = [r for r in csv.DictReader(handle) if r["chosen_option"]]
+    if not rows:
+        print("[attack] nothing to pair yet")
+        return
+
+    order: list[str] = []
+    for row in rows:
+        if row["condition"] not in order:
+            order.append(row["condition"])
+    keyed = {(r["condition"], r["case"], r["fact_index"]): r for r in rows}
+
+    def series(a: str, b: str, field_a: str, field_b: str):
+        """Per-case (num_a, den_a, num_b, den_b) over questions answered in both."""
+        per_case: dict[str, list[float]] = {}
+        for (cond, case, index), row in keyed.items():
+            if cond != a:
+                continue
+            other = keyed.get((b, case, index))
+            if other is None:
+                continue
+            acc = per_case.setdefault(case, [0.0, 0.0, 0.0, 0.0])
+            acc[0] += float(row[field_a]); acc[1] += 1.0
+            acc[2] += float(other[field_b]); acc[3] += 1.0
+        return [tuple(v) for v in per_case.values()]
+
+    control = order[0]
+    with out.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["comparison", "cases", "questions_paired",
+                         "difference_percentage_points", "excludes_zero"])
+        comparisons = [(cond, control, "correct", "correct") for cond in order[1:]]
+        # The two mediated conditions the manuscript contrasts.
+        if "casper_style" in order and "placeholder:presidio" in order:
+            comparisons.append(("casper_style", "placeholder:presidio", "correct", "correct"))
+        for cond in order:
+            comparisons.append((cond, cond, "correct", "survives_release"))
+
+        for a, b, fa, fb in comparisons:
+            pairs = series(a, b, fa, fb)
+            if not pairs:
+                continue
+            point, lo, hi = paired_bootstrap_diff(pairs, n_boot=n_boot, scale=100.0)
+            name = f"{a} - {b}" if fa == fb else f"{a}: recovery - value present"
+            excludes = "yes" if (lo > 0 and hi > 0) or (lo < 0 and hi < 0) else "no"
+            questions = int(sum(p[1] for p in pairs))
+            print(f"  {name:<52} {point:+6.1f} [{lo:+.1f}, {hi:+.1f}]  n={questions}")
+            writer.writerow([name, len(pairs), questions,
+                             f"{point:+.1f} [{lo:+.1f}, {hi:+.1f}]", excludes])
     print(f"[attack] wrote {out.name}")
 
 
@@ -200,10 +284,12 @@ def main() -> int:
     tag = f"_{args.output_tag}" if args.output_tag else ""
     rows_path = EXPERIMENTS_DIR / f"privacylens_attribute_recovery_rows_{safe}{tag}.csv"
     summary_path = EXPERIMENTS_DIR / f"privacylens_attribute_recovery_summary_{safe}{tag}.csv"
+    paired_path = EXPERIMENTS_DIR / f"privacylens_attribute_recovery_paired_{safe}{tag}.csv"
     manifest_path = EXPERIMENTS_DIR / f"privacylens_attribute_recovery_manifest_{safe}{tag}.csv"
 
     if args.score_only:
         _score(rows_path, summary_path, args.options, args.bootstrap)
+        _paired(rows_path, paired_path, args.bootstrap)
         return 0
 
     specs = [c.strip() for c in args.conditions.split(",") if c.strip()]
@@ -305,6 +391,7 @@ def main() -> int:
     print(f"[attack] wrote {rows_path.name} and {manifest_path.name}")
 
     _score(rows_path, summary_path, args.options, args.bootstrap)
+    _paired(rows_path, paired_path, args.bootstrap)
     return 0
 
 
