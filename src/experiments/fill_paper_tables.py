@@ -3,11 +3,11 @@ Fill code-backed empirical tables in paper/main.tex from CSV files under src/exp
 
 This script only updates tables that are directly backed by repository CSVs:
   - tab:cppb_card        <- cppb_accounting_summary.csv
-  - tab:per              <- prompt_method_comparison.csv
-  - tab:utility          <- prompt_method_comparison.csv
-  - tab:pi_sensitivity   <- policy_sensitivity.csv
+  - tab:per              <- prompt_method_comparison_reconstructed.csv
+  - tab:utility          <- prompt_method_comparison_reconstructed.csv
+  - tab:pi_sensitivity   <- policy_sensitivity_reconstructed.csv
   - tab:propagation      <- agent_pipeline_metrics.csv
-  - tab:latency          <- latency_overhead.csv
+  - tab:latency          <- latency_overhead_reconstructed.csv
     - tab:catwise          <- categorywise_analysis.csv
     - tab:multimodal       <- multimodal_analysis.csv
     - tab:crossmodel       <- crossmodel_portability_results.csv
@@ -125,7 +125,7 @@ def build_cppb_accounting_table() -> str:
 
 
 def build_per_table() -> str:
-    rows = _read_csv("prompt_method_comparison.csv")
+    rows = _read_csv("prompt_method_comparison_reconstructed.csv")
     body = "\n".join(
         f"{_display_method(r['method'])} & {_fmt_float(r['per'])} \\\\" for r in rows
     )
@@ -141,7 +141,7 @@ def build_per_table() -> str:
 
 
 def build_utility_table() -> str:
-    rows = _read_csv("prompt_method_comparison.csv")
+    rows = _read_csv("prompt_method_comparison_reconstructed.csv")
     body = "\n".join(
         f"{_display_method(r['method'])} & {float(r['ac']):.2f} & {float(r['tsr']):.2f} \\\\"
         for r in rows
@@ -159,7 +159,7 @@ def build_utility_table() -> str:
 
 def build_pi_table() -> str:
     tau_map = {"Lenient": "0.70", "Balanced": "0.55", "Strict": "0.40"}
-    rows = _read_csv("policy_sensitivity.csv")
+    rows = _read_csv("policy_sensitivity_reconstructed.csv")
     body_lines = []
     for r in rows:
         profile = r["profile"]
@@ -197,9 +197,9 @@ def build_propagation_table() -> str:
 
 
 def build_latency_table() -> str:
-    rows = _read_csv("latency_overhead.csv")
+    rows = _read_csv("latency_overhead_reconstructed.csv")
     body = "\n".join(
-        f"{_display_method(r['pipeline'])} & {int(float(r['mean_ms']))} & {int(float(r['p95_ms']))} \\\\"
+        f"{_display_method(r['pipeline'])} & {float(r['mean_ms']):.1f} & {float(r['p95_ms']):.1f} \\\\"
         for r in rows
     )
     return (
