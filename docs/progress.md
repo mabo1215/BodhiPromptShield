@@ -1,6 +1,30 @@
 # 论文进度
 
-## 2026-09-09 对照 RevisionSuggestions.tex 全量复核 + 关掉唯一的 P0（当前最新）
+## 2026-09-09 A4.2 artifact 打包 + F3 首页相关性陈述（当前最新）
+
+`RevisionSuggestions.tex` 里剩的两项都做完了，**该文件现在没有未处理项**。
+
+**A4.2 artifact**：`src/package_artifact.py` 早已存在且设计得当（保留可运行的 `src/`+`data/` 树而不是
+摊平、构建时改写身份串并在残留时直接失败、第三方语料只给获取脚本不随包分发、PhysioNet 临床文本整体排除）。
+本轮执行并落到 `submit/BodhiPromptShield_artifact_anonymous.zip`（5.9 MB、531 个文件、543 处身份改写）。
+今天的新记录都在包里（容量消融四个点、第三轮标注、5508 条判定导出、托管抽查）。
+独立复核五类字符串：作者/单位、仓库与预印本 URL、claude.ai artifact 链接、本机绝对路径、
+凭据与主机名——**全部 CLEAN**。注：`submit/` 是 gitignore 的，zip 不入库（它是构建产物）。
+
+**顺带修掉 A4.2 的一个实质缺陷**：`src/requirements.txt` 用的是 `>=` 区间而不是钉死版本，
+而这篇论文的可复现性恰恰系于检测器版本——释放出去的文本是检测器栈的函数，spaCy/Presidio 一变，
+识别到的 span 变、释放文本变、agent 和 judge 被问的东西就变。本轮实测过：
+3.8.14 / 2.2.362 的环境复现不了 3.8.16 / 2.2.364 产出的面。而且它还漏了三个关键依赖——
+`scikit-learn`（learned detector）、`gliner`（transformer detector）、`agentdojo`（注入套件），
+三者都在 run manifest 里有名有姓。已重写：manifest 记录过的版本从 manifest 钉死并标明来源；
+manifest 没记的按"本次打包所处环境"如实报告，不冒充成记录值；spaCy pipeline 单独说明
+（它不是 PyPI 名，且和库本身一样会改变 span）。提交 `f0a...`（见下）。
+
+**F3 首页相关性**：PoPETs 要求第一页明确说明与真实世界隐私应用的相关性。原来只有报销助手那个
+部署例子隐含覆盖，现补一句直白陈述。第一版把结论顶到第 13 页，删掉与前半句重复的从句后回到
+第 12 页。paper `cb8b698`。构建：main 14 页（正文第 12 页收尾）、appendix 9 页、0 undefined reference。
+
+## 2026-09-09 对照 RevisionSuggestions.tex 全量复核 + 关掉唯一的 P0
 
 逐条核了 F1--F27 与 A1--A4。**27 条 finding 没有一条是"没改"**，抽查证据：正文 `Section~IV` 0 处、
 `TOPS` 0 处、无 GitHub URL、自我否定措辞正文仅剩 2 处（都是威胁模型与指标定义里的正当限定）、
