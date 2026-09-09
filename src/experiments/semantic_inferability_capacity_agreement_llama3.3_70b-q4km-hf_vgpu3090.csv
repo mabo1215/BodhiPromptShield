@@ -1,0 +1,4 @@
+judge_model,reference,n,cohens_kappa,interpretation,raw_agreement,judge_yes_rate,reference_yes_rate,cell_no_no,cell_no_yes,cell_yes_no,cell_yes_yes
+llama3.3:70b-q4km-hf,annotator1,102,0.491,moderate,0.735,0.373,0.578,40,3,24,35
+llama3.3:70b-q4km-hf,annotator3,102,0.507,moderate,0.745,0.373,0.569,41,3,23,35
+llama3.3:70b-q4km-hf,recorded_judge_gemma2_27b,102,0.070,slight,0.461,0.373,0.814,14,5,50,33

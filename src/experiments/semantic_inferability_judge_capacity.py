@@ -126,8 +126,16 @@ def _model_card(url: str, model: str) -> dict[str, str]:
     try:
         info = requests.post(f"{url}/api/show", json={"model": model}, timeout=60).json()
         details = info.get("details", {}) or {}
+        # /api/show does not always carry the digest; /api/tags always does, and
+        # a manifest without one names no weights at all.
+        digest = str(info.get("digest", ""))
+        if not digest:
+            for tag in requests.get(f"{url}/api/tags", timeout=60).json().get("models", []):
+                if tag.get("name") == model:
+                    digest = str(tag.get("digest", ""))
+                    break
         return {
-            "judge_digest": str(info.get("digest", ""))[:64],
+            "judge_digest": digest[:64],
             "judge_family": str(details.get("family", "")),
             "judge_parameter_size": str(details.get("parameter_size", "")),
             "judge_quantization": str(details.get("quantization_level", "")),
