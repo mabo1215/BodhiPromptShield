@@ -256,7 +256,8 @@ def _answer(agent: CachedOllamaChat, record: dict[str, Any], prompt_text: str) -
 _AC_CHOICES = {"AGREE": 1.0, "PARTIAL": 0.5, "DISAGREE": 0.0}
 
 
-def _judge_ac(judge: CachedOllamaChat, record: dict[str, Any], raw_answer: str, med_answer: str) -> tuple[float | None, str]:
+def _judge_ac(judge: CachedOllamaChat, record: dict[str, Any], raw_answer: str, med_answer: str,
+              num_predict: int = JUDGE_NUM_PREDICT) -> tuple[float | None, str]:
     """Task-relevant agreement between the raw-prompt and mediated-prompt answers."""
     messages = [
         {"role": "system", "content": "You grade agreement between two answers. Reply with exactly one word."},
@@ -268,14 +269,15 @@ def _judge_ac(judge: CachedOllamaChat, record: dict[str, Any], raw_answer: str, 
             "concrete value still counts as agreement when the role it fills is the same. "
             "Reply with exactly one of: AGREE, PARTIAL, DISAGREE."},
     ]
-    reply = judge.chat(messages, temperature=0.0, num_predict=JUDGE_NUM_PREDICT, seed=SEED)
+    reply = judge.chat(messages, temperature=0.0, num_predict=num_predict, seed=SEED)
     return _parse_choice(reply, _AC_CHOICES)
 
 
 _TSR_CHOICES = {"SUCCESS": 1.0, "FAIL": 0.0}
 
 
-def _judge_tsr(judge: CachedOllamaChat, record: dict[str, Any], answer: str) -> tuple[float | None, str]:
+def _judge_tsr(judge: CachedOllamaChat, record: dict[str, Any], answer: str,
+               num_predict: int = JUDGE_NUM_PREDICT) -> tuple[float | None, str]:
     """Whether the mediated answer satisfies the template's own success criteria."""
     messages = [
         {"role": "system", "content": "You grade task success. Reply with exactly one word."},
@@ -287,7 +289,7 @@ def _judge_tsr(judge: CachedOllamaChat, record: dict[str, Any], answer: str) -> 
             "protected value satisfies the category-level referent requirement. "
             "Reply with exactly one of: SUCCESS, FAIL."},
     ]
-    reply = judge.chat(messages, temperature=0.0, num_predict=JUDGE_NUM_PREDICT, seed=SEED)
+    reply = judge.chat(messages, temperature=0.0, num_predict=num_predict, seed=SEED)
     return _parse_choice(reply, _TSR_CHOICES)
 
 
@@ -468,8 +470,8 @@ def run(args: argparse.Namespace) -> int:
             if released == raw_text:
                 ac, ac_verdict = 1.0, "IDENTICAL"
             else:
-                ac, ac_verdict = _judge_ac(judge, record, raw_answer, med_answer)
-            tsr, tsr_verdict = _judge_tsr(judge, record, med_answer)
+                ac, ac_verdict = _judge_ac(judge, record, raw_answer, med_answer, args.judge_num_predict)
+            tsr, tsr_verdict = _judge_tsr(judge, record, med_answer, args.judge_num_predict)
             # Exposure needs no judge, so a judge that answers unparseably must not
             # also cost the PER measurement: the row is kept with the utility
             # columns blank, and the summary averages them over the rows that
@@ -577,7 +579,7 @@ def _write_manifest(path: Path, args: argparse.Namespace, records: list[dict], a
                                "LLM-based abstraction it necessarily includes that model's generation, "
                                "which is why the latency table reports the rule-based pipelines only"),
         ("decoding", f"temperature 0, top_p 1, seed {SEED}; agent num_predict {AGENT_NUM_PREDICT}, "
-                     f"judge num_predict {JUDGE_NUM_PREDICT}"),
+                     f"judge num_predict {args.judge_num_predict}"),
         ("context", f"agent num_ctx {AGENT_NUM_CTX}, judge num_ctx {JUDGE_NUM_CTX}"),
         ("bootstrap", f"{args.bootstrap} span-level resamples, 95% percentile CI"),
         ("python", platform.python_version()),
@@ -665,6 +667,10 @@ def main() -> int:
                                              "generic_deid,enterprise_staged,proposed_abstraction,"
                                              "proposed_utility_constrained")
     parser.add_argument("--tau", type=float, default=DEFAULT_TAU)
+    parser.add_argument("--judge-num-predict", type=int, default=JUDGE_NUM_PREDICT,
+                        help="Judge output budget. The default is enough for a one-word verdict; raise it "
+                             "for a judge that prefixes its answer, but re-score a whole column when you do, "
+                             "so the column stays under one decoding setting")
     parser.add_argument("--sweep", action="store_true", help="Also measure every policy threshold as a real operating point")
     parser.add_argument("--max-prompts", type=int)
     parser.add_argument("--shard", help="I/N: run only every N-th prompt (outputs get a shard tag)")
