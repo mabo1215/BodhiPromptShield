@@ -1,6 +1,70 @@
 # 论文进度
 
-## 2026-09-10 两个 subagent 并行：F14 找出三篇必须引的 2026 工作，F12 查出 artifact 装不上（当前最新）
+## 2026-09-10 PRO 6000 复开：属性还原攻击已在跑；F11/F13/F16/F18 已就地关闭（当前最新）
+
+**主机状态**：PRO 6000 已开机，卡上**没有别人的活**（0 MiB、无 compute 进程），
+`/root/autodl-tmp` 跨停机存活，上一轮的 D3 原始行文件完好。仓库已同步到 `2520d9e`。
+拉取前先把主机上那三个未跟踪的 D3 产物**移到** `/root/autodl-tmp/pre_pull_20260910/`
+（不是删除，且先逐个 md5 与本地已提交版本比对，三个全部一致）。
+
+**属性还原攻击（F15 / D3）已开跑**。先用 12 个案例做了冒烟，结论就已经和上一版攻击完全不同：
+
+| 条件 | recovery | 值仍字面存在 |
+|---|---|---|
+| 无保护 | 97.7 | 88.6 |
+| placeholder (Presidio) | 68.2 | 61.4 |
+| casper_style | 63.6 | 61.4 |
+| **placeholder (learned)** | **54.5** | **6.8** |
+
+上一版四选一攻击里所有中介条件都挤在 93--99；这一版从 97.7 掉到 54.5，**而且 learned 那一行
+最值得看**：值只在 6.8% 的情况下还字面留在释放文本里，攻击者却答对 54.5%——中间那一大段
+就是**推断**贡献的，正是 D3 要问的东西。全量跑 1,237 题 × 4 条件 = 4,948 次生成，
+约 0.88 行/秒，预计 95 分钟。screen `attrrec`，日志 `/root/autodl-tmp/caplogs/attr_recovery.log`。
+**这次每轮巡检都顺手 rsync 增量**（上一轮的教训）。
+
+**F11（前次评审附件按投稿表单核对）**——能查的都查了，剩下的确实要你的投稿账号。
+用 artifact 那套 forbidden-string 规则（外加作者名/单位/仓库/预印本模式）扫过三份文件：
+`ae_response.txt`、`cover_letter.txt` **CLEAN**；`AESuggestion.txt` 唯一命中是
+"supported by a small, constructed evaluation" 这句里的 `supported by`，误报。
+也就是说**这套附件对作者身份是匿名的**；它确实点名了前一个 venue（ACM TOPS）与稿号，
+但那正是 PoPETs 前次评审政策要求附上的东西，不是泄密。
+
+已核对 2027 年作者指引原文（**2026-09-10 查**，`petsymposium.org/authors-2027.php`）：
+正文上限 12 页，不计 ethical considerations / open science / AI use 三个必需小节、致谢、
+参考文献与明确标注的附录；双盲；"Resubmissions of papers that have been rejected from any
+venue with reviews (be it PoPETs or not) must include the prior reviews in their submission
+to PoPETs"；预印本"不禁止但劝阻在评审期间公开"；Issue 3 截稿 **2026-11-30（firm）**。
+**上传字段核不了**：`submit.petsymposium.org` 需登录，且当前站点是 2027.2、已过截稿；
+Issue 3 的站点开了以后要你用作者账号看一眼字段。
+
+**顺手查出一处真问题并已修**：附上的 AE 信里写的是**旧标题**（"...for **Suppressing**
+Surface-Form..."），而 response 里从头到尾没说标题改过——评审看到会先怀疑"这附的是同一篇吗"。
+`docs/ae_response.txt` 已加一段说明标题为何去掉 "Suppressing"（论文不再声称 propagation
+被压制，只声称它在指定边界上被测量与控制）。**没有改 `AESuggestion.txt`**：那是收到的原件，
+原件不该被编辑。
+
+**F13 caption 残留**——`tab:threat_map` 的 "in the current manuscript" 是写给作者看的，已删。
+按同样口径扫了主文与附录全部 caption，只有附录 `tab:threatsurface` 还有一个 "current"，
+但那句指的是 the current *design*，是对读者说的，保留。
+
+**F16 mapping-table 曲线定性**——`tab:mapcompromise` 原 caption 叫 "Measured ... compromise
+curve"，夹在实测结果之间读起来就是一次部署测量。改为 "Reference-design analysis of ...,
+not a deployment measurement"。
+
+**F18 结论补第一步**——"Closing it requires mediating meaning, not surface form" 后面接上
+具体下一件仪器：在**事实**而不是 span 的层面做中介，用本文放出的人工标注子集来评分。
+
+**这两处都写了两遍**：第一版把 Conclusion 顶到了第 13 页——正文就超了 12 页上限，直接 desk-reject
+的那条。收紧后回到正文第 12 页收尾。构建：main 14 页、appendix 10 页、0 error、0 undefined reference。
+paper `5b59526`。
+
+**F17（图太密）不做，并给出理由**：评审建议把 capitalization heuristic 与 regex-only 挪到
+附录版的图里。但**主文读这张图的那一段正靠这两条**——"the two methods that key on capitalization
+or on free-form model rewriting ... leave the majority of identifiers intact" 就是在说
+capitalization heuristic，regex-only 则是下界参照。图里删掉、正文还在讲，比密一点更糟。
+该项本身是 P3 且措辞是 "consider"，按不做处理并记录理由。
+
+## 2026-09-10 两个 subagent 并行：F14 找出三篇必须引的 2026 工作，F12 查出 artifact 装不上
 
 **F14（相关工作重查）**：三篇 Tier 1，**我逐篇核过 arXiv 才落笔**（标题/作者/日期/摘要都对得上），
 不是照 subagent 的转述写的。

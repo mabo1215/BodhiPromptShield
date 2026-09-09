@@ -6,6 +6,14 @@ Security and rejected on the Associate Editor's recommendation. Per the PoPETs
 submission policy for papers previously reviewed elsewhere, the Associate
 Editor's comments are attached and answered point by point below.
 
+The attached letter names the paper by its title at that time,
+"BodhiPromptShield: Pre-Inference Prompt Mediation for Suppressing
+Surface-Form Privacy Propagation in LLM Agent Pipelines". The word
+"Suppressing" was dropped in this revision because the paper no longer
+claims that propagation is suppressed, only that it is measured and
+controlled at named boundaries. The submission is otherwise the same
+line of work as the one that letter reviewed.
+
 The AE's closing sentence stated the requirement precisely: "a clear technical
 contribution and a new evaluation on real agent stacks with strong baselines
 and realistic privacy attacks." We treated that as the specification for this
