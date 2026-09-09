@@ -1,6 +1,37 @@
 # 论文进度
 
-## 2026-09-09 PRO 6000：judge 容量消融 + 托管模型抽查（当前最新）
+## 2026-09-09 PRO 6000 收尾：判定导出成功、主机已关机（当前最新）
+
+**拿到了 judge 人工抽查真正的输入。** `privacylens_judge_decisions_qwen3_32b-q4km-hf_recorded9.csv`：
+200 例 × 全部 9 个条件 = **5508 条逐敏感项判定**，其中 1039 条判为泄漏。脚本明确输出
+`every call came from the cache`，而且整个导出跑在**死端口**上——任何 miss 会立即失败而不是
+悄悄生成一条新判定。所以这批就是产出论文数字的那批判定本身，不是一次"看起来差不多"的重跑。
+提交 `c7493dc`。
+
+**前两次失败的原因值得写下来，因为我一开始诊断错了。** 现象是导出在现生成而不是重放。
+我先怀疑是 subagent 查出的"released 文本未持久化"或检测器版本漂移——**都不是**。
+真正原因：脚本 CLI 的默认 `--conditions` 是 6 个条件、symbolic 挂 `learned_lr`；而记录那次跑的是
+**9 个条件、symbolic 挂 `gliner_pii`**（见 runtime manifest）。我一直用默认值，那个组合从来没跑过，
+自然没有缓存。缓存、检测器、released 文本三者都没问题。**教训：条件列表要从 run manifest 读，
+不要信 CLI 默认值。**（顺带确认 symbolic 的 namespace 是 `sha256(case_id)[:6]`，确定性，不是随机 nonce。）
+
+**主机已关机。** `shutdown -h now` 已执行，随后用**真实 ssh**（不是之前那个会假阴性的 TCP 探测）
+确认 `Connection refused`。关机前留在主机上的两份备份目录：
+`/root/autodl-tmp/capacity_prectxfix_20260909/`（7 个 num_ctx 修复前的旧产物）与
+`/root/autodl-tmp/prehandoff_20260909/`（27 个 CPPB 分片，本地已提交过同内容）。
+注意 `/root/autodl-tmp` 在 AutoDL 上不保证跨停机存活，下次开机需重新确认。
+
+**放弃的一项，附实测代价**：`dsjudge70b`（用 70B 当 judge 重跑下游 200 例）实测 2 分钟/行，
+1200 行 ≈ **40 GPU 小时**，与"避免扣费"直接冲突，已停。砍到 2 个条件仍需 13 小时；
+用 `--shard` 取同池 1/8 只有 25 例、n 太小。这是补充性稳健检查，不值这个代价。
+
+**两个已知缺陷，待修（本轮未动，因为改动会波及正在写行的 schema）**：
+1. `_export_judge_decisions` 把判定全部累积在内存、**最后一次性写盘**，没有行级 flush 也不支持续跑——
+   违反本仓库"长任务必须可中断可续跑"的铁律，且正撞上"主机随时关机"的场景。
+2. 中介条件真正喂给 agent 的 `released_instruction`/`released_trajectory` 未持久化
+   （见上一条目），修法是给 `evaluate_case` 加列，但 pooling 代码按字段数分派行，需同步改。
+
+## 2026-09-09 PRO 6000：judge 容量消融 + 托管模型抽查
 
 开 PRO 6000（RTX PRO 6000 Blackwell，96 GiB）跑的是冲着一条审稿反驳去的实验：§6.2 主张
 "LLM judge 测不了事实可推断性"，而论文用的 judge 是 gemma2:27b，审稿人第一句话必然是
