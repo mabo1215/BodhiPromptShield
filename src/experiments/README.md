@@ -341,6 +341,10 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 `fill_paper_tables.py` rewrites only the tables it has a record for. It carries
 builders for these labels:
 
+<!-- retired-labels: tab:catwise, tab:multimodal, tab:crossmodel, tab:mapadv,
+     tab:hardcase, tab:multiseed, tab:lto, tab:baseline, tab:tabtransfer,
+     tab:example, tab:tradeoff, tab:app-concept-example, tab:app-regimes -->
+
 - `tab:cppb_card`
 - `tab:per`
 - `tab:utility`

@@ -229,6 +229,67 @@ def verify(dest: Path) -> None:
         raise SystemExit("anonymity check failed:\n  " + "\n  ".join(hits[:40]))
 
 
+# A shipped Markdown file may knowingly name a label the manuscript has
+# retired -- for instance when it lists what a script can write rather than
+# what the paper contains. It declares those on one line so the claim is
+# deliberate and visible in review, rather than the check being loosened for
+# everyone:
+#
+#     <!-- retired-labels: tab:catwise, tab:lto -->
+_RETIRED_DECLARATION = re.compile(r"<!--\s*retired-labels:([^>]*)-->", re.I)
+_LABEL_REFERENCE = re.compile(r"\b((?:tab|fig):[A-Za-z0-9_:-]+)")
+
+
+def _manuscript_labels(root: Path) -> set[str] | None:
+    """Every label the manuscript defines, or None if it is not checked out."""
+    sources = [root / "paper" / "main.tex", root / "paper" / "appendix.tex"]
+    if not all(path.exists() for path in sources):
+        return None
+    labels: set[str] = set()
+    for path in sources:
+        text = path.read_text(encoding="utf-8", errors="surrogateescape")
+        labels.update(re.findall(r"\\label\{((?:tab|fig):[^}]+)\}", text))
+    return labels
+
+
+def verify_documentation(root: Path, dest: Path) -> None:
+    """Fail the build if shipped prose names a table or figure the paper lacks.
+
+    Documentation rots quietly. Three separate files in this package once
+    described tables from an earlier version of the manuscript, and every one
+    of them was found by a person reading rather than by a check. A reviewer
+    who follows a README to a table that does not exist learns something about
+    the artifact that is not true of the science, so this refuses to ship it.
+
+    Only Markdown is checked. Scripts legitimately carry code for labels the
+    manuscript no longer uses -- a builder whose label is absent simply does
+    nothing -- and failing on that would mean deleting working code to satisfy
+    a check.
+    """
+    labels = _manuscript_labels(root)
+    if labels is None:
+        print("[package] manuscript not checked out; skipping documentation check")
+        return
+
+    hits: list[str] = []
+    for path in sorted(dest.rglob("*.md")):
+        text = path.read_text(encoding="utf-8", errors="surrogateescape")
+        declared = set()
+        for block in _RETIRED_DECLARATION.findall(text):
+            declared.update(part.strip() for part in block.replace(",", " ").split())
+        unknown = {ref for ref in _LABEL_REFERENCE.findall(text)} - labels - declared
+        for ref in sorted(unknown):
+            hits.append(f"{path.relative_to(dest).as_posix()}: {ref}")
+    if hits:
+        raise SystemExit(
+            "documentation check failed -- shipped prose names manuscript "
+            "objects that do not exist:\n  " + "\n  ".join(hits[:40]) +
+            "\n\nFix the file, or declare the ones it names on purpose with a "
+            "<!-- retired-labels: ... --> line.")
+    print(f"[package] documentation check: every label named in shipped prose "
+          f"exists in the manuscript ({len(labels)} labels)")
+
+
 def write_manifest(dest: Path, staged: list[Path]) -> Path:
     """List every shipped file with its size and SHA-256."""
     out = dest / "MANIFEST.csv"
@@ -312,6 +373,7 @@ def build(root: Path, out_zip: Path) -> None:
 
         staged, redactions, skipped = stage(root, dest)
         verify(dest)
+        verify_documentation(root, dest)
 
         write_manifest(dest, staged)
         write_readme(dest, staged, skipped)
