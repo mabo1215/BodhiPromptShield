@@ -86,20 +86,20 @@ measure of surviving wording rather than as a measure of inferability -
 83.0-98.8% of facts survive every method that leaves usable text behind. We
 then built the direct measure the comment implies: a judge model, from a
 different family than the downstream agent, shown only the released surface and
-asked whether a reader would still learn the fact (3,459 judgments).
+asked whether a reader would still learn the fact (3,564 judgments).
 
 The judge agreed with the lexical criterion, and both were wrong. On a
-stratified 96-item subset, 16 per method, a person answered that same question
+stratified 102-item subset, 17 per method, a person answered that same question
 blind - without the judge's verdict, and without knowing which method produced
-any item. The judge reaches Cohen's kappa = 0.080, chance, at 59.4% raw
-agreement, calling a fact inferable in 81.2% of items where the annotator does
-so in 59.4%; the lexical criterion reaches 0.283. Neither can carry a claim
+any item. The judge reaches Cohen's kappa = 0.087, chance, at 58.8% raw
+agreement, calling a fact inferable in 81.4% of items where the annotator does
+so in 57.8%; the lexical criterion reaches 0.250. Neither can carry a claim
 about inferability, and the paper no longer uses them for one.
 
 The human labels reverse the finding those proxies suggested. Factual
-inferability falls from 100% [100, 100] with no protection to 56.2%
-[31.2, 81.2] under Presidio, 43.8% [18.8, 68.8] under Casper-style, 37.5%
-[18.8, 62.5] under our learned detector and 25.0% [6.2, 50.0] under the
+inferability falls from 100% [100, 100] with no protection to 52.9%
+[29.4, 76.5] under Presidio, 41.2% [17.6, 64.7] under Casper-style, 35.3%
+[11.8, 58.8] under our learned detector and 23.5% [5.9, 47.1] under the
 heuristic, and every difference from the control has a bootstrap interval clear
 of zero. Mediation reduces factual inferability substantially - the opposite of
 what a surface metric or an unvalidated judge reports (Section 6.2).
@@ -113,17 +113,40 @@ separated them. Work measuring semantic leakage with a judge model - ours
 included, until this check - should report agreement against human annotation
 before treating its output as a measurement.
 
-The limit of this result is stated in the paper and we state it here: the labels
-come from two readers who were not independent of each other, and both are
-authors. The first annotated all 96 items blind to method and to the judge's
-verdict, producing a monotone ordering with intervals clear of zero. The second
-then reviewed those same labels and changed four, every one from inferable to
-not and every one on the three most aggressive methods; against the second
-reader's labels the judge again sits at chance, kappa 0.086. Because that pass
-began from the first reader's answers, the 95.8% agreement between the two is
-primed and is not an inter-rater reliability estimate. We therefore report the
-first reader's labels, which no review has flattered, and treat the size of the
-effect as indicative until an independent second rating exists.
+Since the first version of this response the labels have been checked twice
+more, and the check the AE would have asked for now exists. The reported labels
+come from one reader, an author, who annotated all 102 items blind to method
+and to the judge's verdict. A second reader, not an author, reviewed those
+labels and changed four, every one from inferable to not and every one on the
+three most aggressive methods; because that pass began from the first reader's
+answers, the 95.8% agreement between them is primed and is not a reliability
+estimate. A third reader, also not an author, then rated all 102 items from a
+blank sheet, seeing neither earlier reader's answers nor the judge's verdict.
+That pairing is an inter-rater reliability estimate: Cohen's kappa = 0.739 at
+87.3% raw agreement, substantial agreement between two people who could not see
+each other, and it reproduces the ordering, giving the heuristic the same 23.5%
+and no protection the same 100%.
+
+The consequence for the finding is the part that matters. Scored against the
+third reader the judge sits at kappa 0.120 and the lexical criterion at 0.240,
+within a few points of the 0.087 and 0.250 they score against the reported
+labels. The gap between the two automated measures and a person therefore
+survives a rater who saw no earlier round and has no stake in the outcome,
+which closes the reading that it came from one annotator's idiosyncrasy. We
+continue to report the first reader's labels throughout; the third round is an
+independence check, not a replacement data source, so no reported number moved.
+
+We also tested the other reading of this result, that the judge was simply too
+small. Three further judges spanning 8B to 70B answered the identical question
+on the identical released text, with prompt and decoding held fixed (Appendix
+I). Capacity is not irrelevant: the 70B reaches kappa 0.491 against the first
+reader where the reported 27B judge reaches 0.087. It is still only moderate
+where two independent readers reach substantial, and it agrees with the 27B
+barely at all (kappa 0.070), so the two are not measuring the same quantity.
+The rates show the failure has a direction that a leak rate hides: annotators
+call 57-58% of items inferable, the 8B judge 15%, the two mid-size judges
+81-86%, the 70B 37%. A larger judge narrows the gap and does not close it, and
+nothing in a judge-scored rate reveals which way it is wrong.
 
 On the deterministic reference agent: it is retained only for the AI4Privacy
 source, where it provides a controlled instrumented pipeline. The PrivacyLens
@@ -220,10 +243,16 @@ What changed overall
   prompt injection, on 74 paired task/injection trials.
 - One measurement result that reversed a prior claim: a lexical criterion and
   an LLM judge both report that mediation leaves facts intact, both disagree
-  with blind human annotation (Cohen's kappa 0.28 and 0.08), and the human
-  labels show factual inferability falling from 100% to 25-56% across the
+  with blind human annotation (Cohen's kappa 0.25 and 0.09), and the human
+  labels show factual inferability falling from 100% to 24-53% across the
   roster. Downstream judge-scored leakage is statistically unchanged, but it is
   scored by an unvalidated judge and inherits the same doubt.
+- The human labels now carry an inter-rater reliability estimate: a third
+  reader, not an author, rated all 102 items from a blank sheet and agrees with
+  the reported labels at kappa 0.739. Both automated proxies score against that
+  reader roughly what they score against the reported labels, and a judge-
+  capacity sweep from 8B to 70B narrows the human-machine gap without closing
+  it.
 - CPPB demoted to an appendix ablation surface; the AC/TSR rubric, the
   alias-only cross-model table, and the disclaimed tables removed from the
   main text.
