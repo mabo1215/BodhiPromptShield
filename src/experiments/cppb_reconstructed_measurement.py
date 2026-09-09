@@ -516,7 +516,10 @@ def _summarize(rows_path: Path, summary_path: Path, sweep_path: Path, latency_pa
         tsrs = [float(r["tsr"]) for r in group_rows if r["tsr"] != ""]
         return {
             "prompts": str(len(group_rows)),
-            "scored": str(len(acs)),
+            # Reported separately: a judge can answer one of the two
+            # unparseably, and one count would hide which average is short.
+            "ac_n": str(len(acs)),
+            "tsr_n": str(len(tsrs)),
             "per": f"{per:.2f}", "per_ci_low": f"{lo:.2f}", "per_ci_high": f"{hi:.2f}",
             "ac": f"{statistics.fmean(acs):.3f}" if acs else "",
             "tsr": f"{statistics.fmean(tsrs):.3f}" if tsrs else "",
@@ -527,7 +530,7 @@ def _summarize(rows_path: Path, summary_path: Path, sweep_path: Path, latency_pa
     for row in methods:
         by_method.setdefault(row["method"], []).append(row)
     with summary_path.open("w", encoding="utf-8", newline="") as out:
-        writer = csv.DictWriter(out, fieldnames=["method", "prompts", "scored", "per", "per_ci_low", "per_ci_high", "ac", "tsr"])
+        writer = csv.DictWriter(out, fieldnames=["method", "prompts", "ac_n", "tsr_n", "per", "per_ci_low", "per_ci_high", "ac", "tsr"])
         writer.writeheader()
         for key, group in by_method.items():
             writer.writerow({"method": key, **_emit(group)})
@@ -540,7 +543,7 @@ def _summarize(rows_path: Path, summary_path: Path, sweep_path: Path, latency_pa
         for row in sweep:
             by_tau.setdefault(row["tau"], []).append(row)
         with sweep_path.open("w", encoding="utf-8", newline="") as out:
-            writer = csv.DictWriter(out, fieldnames=["tau", "prompts", "scored", "per", "per_ci_low", "per_ci_high", "ac", "tsr"])
+            writer = csv.DictWriter(out, fieldnames=["tau", "prompts", "ac_n", "tsr_n", "per", "per_ci_low", "per_ci_high", "ac", "tsr"])
             writer.writeheader()
             for tau in sorted(by_tau, key=float):
                 writer.writerow({"tau": tau, **_emit(by_tau[tau])})
