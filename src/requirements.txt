@@ -1,15 +1,52 @@
-numpy>=1.18
-matplotlib>=3.2
-scipy>=1.5
-rapidocr-onnxruntime>=1.4
-datasets>=4.0
-huggingface-hub>=0.24
-presidio-analyzer>=2.2.362
-presidio-anonymizer>=2.2.362
-spacy>=3.8
-# Optional local UI for reconstructed CPPB blind human review.
+# Environment for the artifact.
+#
+# The versions below are pinned rather than bounded, and that is the point of
+# this file rather than a formality. The mediated text a run releases is a
+# function of the detector stack: a different spaCy or Presidio build finds
+# different spans, releases different text, and so changes what the downstream
+# agent and the judge were asked about. During this work a 3.8.14 / 2.2.362
+# environment failed to reproduce surfaces that 3.8.16 / 2.2.364 produced, so
+# a range here would quietly break replay.
+#
+# Section 1 is taken from the run manifests shipped alongside the records: it
+# is what actually produced the reported numbers. Section 2 is everything the
+# manifests do not pin; those versions are reported as the environment the
+# packaging ran under, not as a claim about the recorded runs.
+#
+# Python: the recorded runs used 3.10.12 (GPU hosts) and 3.12.3 (workstation).
+# Both appear in the manifests; nothing here requires one over the other.
+
+# --- 1. Recorded by the run manifests -----------------------------------
+presidio-analyzer==2.2.364
+spacy==3.8.16
+scikit-learn==1.8.0
+gliner==0.2.28
+agentdojo==0.1.35
+rapidocr-onnxruntime==1.2.3
+
+# The spaCy pipeline behind Presidio, spaCy NER, and the Casper-style baseline.
+# Not a PyPI name; install it explicitly, and check the version, because a
+# different model release changes the spans exactly as a different spaCy does:
+#   python -m spacy download en_core_web_lg      # recorded runs used 3.8.0
+#
+# The transformer PII detector loads urchade/gliner_multi_pii-v1 from the
+# Hugging Face hub at first use.
+
+# --- 2. Not pinned by the manifests -------------------------------------
+# Reported as the environment this package was built under. Replay of the
+# recorded numbers does not depend on these: they carry data loading, plotting,
+# and arithmetic, not span detection.
+numpy==2.4.3
+scipy==1.17.1
+matplotlib==3.10.8
+datasets==4.8.4
+huggingface-hub==0.36.2
+presidio-anonymizer==2.2.362
+onnxruntime==1.24.4
+
+# --- 3. Optional ---------------------------------------------------------
+# Local blind-review UI for the reconstructed CPPB surface. Not needed to
+# reproduce any reported number.
 gradio>=5,<6; python_version >= "3.10"
-# Fallback for the repository's older Python 3.9 installation.
 gradio>=4.44,<5; python_version < "3.10"
-# Gradio 4.44 schema compatibility on Python 3.9.
 pydantic>=2,<2.10; python_version < "3.10"
