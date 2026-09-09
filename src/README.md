@@ -124,7 +124,7 @@
 - 主文 Table III `tab:per`
 - 主文 Table V `tab:utility`
 - 主文 Table VIII `tab:pi_sensitivity`
-- 主文 Table XI `tab:propagation`
+- 主文 `tab:measprop`（由 `aggregate_paper_results.py` 从分片记录汇总生成）
 - 主文 Table XII `tab:latency`
 - 主文 `tab:cppb_card`
 - 主文 `prompt_privacy_operating_points.png`

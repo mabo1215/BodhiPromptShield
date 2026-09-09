@@ -64,7 +64,7 @@ python src/experiments/analyze_blind_utility_review.py
 The local scoring interface is started with:
 
 ```text
-C:\Users\295461\AppData\Local\Programs\Python\Python312\python.exe src/experiments/cppb_blind_review_ui.py
+python src/experiments/cppb_blind_review_ui.py
 ```
 
 Open the displayed local URL, enter a rater ID, select a prompt block, score

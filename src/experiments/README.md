@@ -84,7 +84,7 @@
   - Table VIII `tab:pi_sensitivity`
   - Figure `prompt_privacy_operating_points.png`
 - `agent_pipeline_metrics.csv`
-  - Table XI `tab:propagation`
+  - Main-text `tab:measprop` (pooled from the shard records by `aggregate_paper_results.py`)
   - Figure `agent_propagation_curves.png`
   - Figure `agent_pipeline_summary.png`
 - `latency_overhead.csv`
@@ -342,7 +342,7 @@ python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 - `tab:per`
 - `tab:utility`
 - `tab:pi_sensitivity`
-- `tab:propagation`
+- `tab:measprop`
 - `tab:latency`
 - `tab:catwise`
 - `tab:multimodal`

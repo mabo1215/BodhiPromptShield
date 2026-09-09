@@ -29,6 +29,23 @@ Run the lightweight reproducibility check:
 python src/run_all.py
 ```
 
+Regenerate the main-text result tables from the released per-document and
+per-case records. This needs no third-party package at all and is the fastest
+way to check a reported number against its record: it rewrites the pooled
+summaries behind `tab:measprop`, `tab:downstream` and `tab:inject`, and they
+should come back byte-for-byte identical.
+
+```bash
+python src/experiments/aggregate_paper_results.py
+```
+
+The optional blind-review UI has its own file, because installing it alongside
+the pinned stack does not resolve in useful time:
+
+```bash
+pip install -r src/requirements-ui.txt
+```
+
 Build the CPPB manifest and Hugging Face-ready bundle:
 
 ```bash

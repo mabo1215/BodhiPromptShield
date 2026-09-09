@@ -134,6 +134,15 @@ FORBIDDEN = (
     re.compile(r"autodl-container-", re.I),
     re.compile(r"[A-Za-z]:\\+[Ss]ource\\+", re.I),
     re.compile(r"/root/autodl"),
+    # A Windows profile path carries an account name or number, which is an
+    # identifier even when it is a number. The earlier list only caught
+    # C:\source and shipped C:\Users\<account>\AppData in a data README.
+    re.compile(r"[A-Za-z]:\\+Users\\+", re.I),
+    re.compile(r"AppData\\+", re.I),
+    # No generic /home/<user>/ rule: the PrivacyLens benchmark's synthetic
+    # content contains /home/john/ and /home/jane/, and a check that fires on
+    # benchmark data is a check the next person disables. The real account name
+    # is already covered by the mabo1215 pattern above.
 )
 
 
