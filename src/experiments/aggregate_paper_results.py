@@ -104,6 +104,12 @@ def pool_downstream(agent_model: str = "qwen3_32b-q4km-hf") -> Path:
             "secret_leak_percent": _ci(sub, "leak_count", "secret_count", 100.0, 1),
             "helpfulness_mean": _ci(sub, "helpfulness", None, 1.0, 2),
             "exact_id_exposure_percent": _ci(sub, "ids_in_final_action", "ids_total", 100.0, 1),
+            # Same count taken from the action as the agent wrote it, before the
+            # authorized boundary restores anything. Identical to the column
+            # above wherever no restoration runs; where they differ, that one
+            # measures intended disclosure and this one measures what the agent
+            # emitted on its own.
+            "exact_id_exposure_pre_restore_percent": _ci(sub, "ids_in_output", "ids_total", 100.0, 1),
             "boundary_leak_percent": _ci(sub, "raw_values_visible_before_tool", "protected_values", 100.0, 1),
             "unrestored_token_rate": _ci(sub, "tokens_in_output", None, 1.0, 2),
         })
