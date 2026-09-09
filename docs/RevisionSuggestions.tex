@@ -4,10 +4,12 @@
 \usepackage{lmodern}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{tabularx}
 \usepackage{enumitem}
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 \setlist{nosep,leftmargin=*}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcommand{\pz}{\textbf{[P0]}}
 \newcommand{\po}{\textbf{[P1]}}
 \newcommand{\pt}{\textbf{[P2]}}
@@ -16,8 +18,8 @@
 
 \title{Independent Review and Revision Plan\\
 \large BodhiPromptShield: Pre-Inference Prompt Mediation for Surface-Form Privacy Propagation in LLM Agent Pipelines\\
-\normalsize Target venue (authors' decision D1, 6 Sep 2026): PoPETs 2027 Issue 3, deadline 30 Nov 2026 AoE (firm); fallback: ACM TAISAP}
-\author{Independent review reset, 5 September 2026}
+\normalsize Target venue: PoPETs 2027 Issue~3 (Privacy Enhancing Technologies Symposium), deadline 30 November 2026 AoE}
+\author{Independent review, 9 September 2026}
 \date{}
 
 \begin{document}
@@ -25,184 +27,149 @@
 \maketitle
 
 \section*{Review basis}
-This is a fresh review of the manuscript as it stands: the single-file \src{paper/main.tex} (1211 lines; appendix embedded after \verb|\appendix|) and the current \src{paper/main.pdf} (35 pages, \src{acmsmall} journal format, built 3 Sep 2026 from the current source; zero undefined references or citations; three minor overfull boxes). \src{paper/appendix.pdf} is a stale April artifact and was not used. No earlier review notes or completion judgments were consulted for the findings below. After the findings were written, the authors' instruction changed the venue question from ``ICLR 2027'' to ``the best-fitting venue with the highest acceptance probability''; the submission history was then read for venue selection only: the manuscript was rejected by ACM TOPS (submission TOPS-2026-06-0395) on an Associate Editor recommendation with six comments, after an earlier CCS cycle. Those six comments converge on the same defects identified independently here; the AE's closing sentence---``a clear technical contribution and a new evaluation on real agent stacks with strong baselines and realistic privacy attacks''---is the bar every venue below will apply.
+This review was written from the manuscript as it currently stands and from the released records, without consulting any earlier review round or its completion status. The sources read were \src{paper/main.tex} (576 lines) and \src{paper/appendix.tex} (652 lines); the built \src{paper/main.pdf} (14 pages, main body ending on page~12) and \src{paper/appendix.pdf} (9 pages), both compiled from the current source with zero errors and zero undefined references; and, where a reported number could be checked against the artifact, the corresponding record under \src{src/experiments/} and the code that produced it. Main body and appendix are treated as one submission throughout, as the venue will treat them.
 
-\section*{Venue recommendation}
-\begin{center}
-\small
-\begin{tabular}{@{}p{0.19\textwidth}p{0.23\textwidth}p{0.26\textwidth}p{0.24\textwidth}@{}}
-\toprule
-Venue & Fit & Format / deadline (verified 5 Sep 2026) & Assessment \\
-\midrule
-\textbf{ACM TAISAP} (Trans.\ on AI Security and Privacy) & Scope is exactly ``privacy concerns related to AI model \ldots deployment'' and AI-enabled systems; theoretical and applied work welcome & ACM journal, \src{acmart} (already used); no deadline; open access with no charge 2026--2029; new journal opened for submissions in 2025. Confirm the length cap and blinding policy on the author-guidelines page (the ACM norm, as at TOPS, is 35 pages total) & \textbf{Fallback} (authors chose PoPETs on 6 Sep 2026). Least reformatting, keeps the systems/threat-model framing, allows the full appendix, and a young journal has a shorter queue. The AE's six points must still be answered with new evidence. \\
-\addlinespace
-\textbf{PoPETs 2027 Issue 3/4} (PETS) & Privacy engineering and ``machine learning and privacy'' are listed topics; the community values threat models, honest scope, and artifacts & 12 typeset main-body pages (13 on revise), excluding ethics, open-science, AI-use sections, acknowledgements, bibliography, appendices; double-blind; decisions are accept / revise / reject with a four-month editor-guided revision path; rejected papers skip one issue. Issue 3 deadline 30 Nov 2026, Issue 4 deadline 28 Feb 2027 (firm) & \textbf{Selected primary (D1).} Best conference fit; the ``revise'' outcome is a realistic second chance. Requires a $\approx$55\% cut of the body and full anonymization. \\
-\addlinespace
-USENIX Security '27 Cycle 2 & Applied security; agent privacy is topical & Registration 19 Jan 2027, submission 26 Jan 2027 & Stretch target only if E1--E7 (below) yield a clear head-to-head win. \\
-\addlinespace
-ICLR 2027 & Weak: no learning contribution; reviewers would discard the systems material & 9 pages, 25 Sep 2026 & Not recommended. \\
-\addlinespace
-ACM TOPS resubmission & In scope, but just rejected & 35 pages & Not recommended without EiC invitation. \\
-\bottomrule
-\end{tabular}
-\end{center}
-The experimental work is identical for all rows. Decision taken 6 Sep 2026: PoPETs Issue 3 is the target, so the 30 November deadline and the 12-page main body are hard constraints and every ``PoPETs delta'' below is mandatory; the TAISAP notes are retained only as the fallback if E1--E7 slip past Issue 4 (28 Feb 2027). CPPB is demoted to the appendix (D2); no rebuild this cycle.
+Findings that assert a defect were verified against the records rather than inferred from the prose, and each such finding names the check that produced it so a co-author can repeat it. Venue requirements are quoted from the configuration recorded in \src{USAGE.md}; A4.1 asks for a fresh check against the live author instructions before submission, because those are the one class of fact in this document that can change without anything in the repository changing.
 
 \section*{Summary of the submission}
-The paper argues that prompt privacy in LLM agent pipelines should be treated as a propagation-control problem across retrieval, memory, and tool boundaries rather than as one-shot document redaction. It proposes a mediation layer (span detection, policy routing to typed placeholders / semantic abstraction / secure symbolic mapping, late authorized restoration), defines PER and stage-wise SPE, and evaluates on a paper-specific 256-prompt controlled benchmark (CPPB), on AI4Privacy text pushed through a reference agent, on 493 PrivacyLens trajectories, on TAB, and on OCR slices. The best-supported findings are: (i) with a learned detector, exact-identifier survival across boundaries falls to PER 7.4\% (AI4Privacy) and 1.8\% (PrivacyLens); (ii) 83\% of PrivacyLens sensitive facts remain semantically conveyed after mediation; (iii) the released heuristic detector is trivially evaded (zero-width ASR 99.7\%) while the learned detector resists typographic but not paraphrase attacks (28.2\%); (iv) a per-session mapping design confines compromise to one session except under master-seed loss.
+The paper argues that prompt privacy in LLM agent pipelines is a propagation-control problem rather than a document-redaction problem: a sensitive span masked once can still reach retrieval queries, memory writes, tool arguments and logs, and every downstream copy inherits whatever the first write contained. It proposes a mediation layer that detects sensitive spans before release, routes each to a typed placeholder, a semantic abstraction, or a secure symbolic token, and defers restoration of exact values to an authorized execution boundary. The evaluation runs ten mediation methods under one protocol on 300 AI4Privacy documents through a reference agent, 493 PrivacyLens trajectories, a 200-task PrivacyLens downstream evaluation scored by that benchmark's own judge, and AgentDojo banking and slack tasks under prompt injection, with bootstrap intervals throughout. Three results are foregrounded: identifier propagation is controllable; restoration timing dominates the design; and factual disclosure is much harder to measure than identifier disclosure, with two automated proxies failing against blind human annotation.
 
 \section*{Overall assessment}
-\textbf{Format is not the blocker for TAISAP; the merits are.} The manuscript would most likely be rejected again, for four reasons reviewers will state almost verbatim (and the TOPS AE already did):
+\textbf{Recommendation: major revision.} The paper is a substantially stronger submission than its structure suggests, and the work behind it is honest in a way reviewers notice: negative results are reported as negative, a proxy the authors themselves built is reported as having failed, and the human-annotation check that undercuts the automated measures was run and reported rather than buried. Scope fit for PoPETs is good. Formatting compliance is, as far as this review can check, complete.
+
+Three things stand between the current draft and acceptance.
 
 \begin{enumerate}
-\item \textbf{The headline comparison is a loss the paper concedes.} Enterprise staged redaction has lower direct exposure (PER 8.1\% vs 9.3\%), the utility gain is $+0.02/+0.02$ on an in-house rubric, and the appendix blind review (Table~\src{tab:blindutility}) reports task success of 12--13.5\% with 2--9 of 148 outputs judged useful. A reviewer will read 0.92 TSR in the main text and 12\% TSR in the appendix and stop trusting the utility numbers.
-\item \textbf{The controlled benchmark is not reproducible from the release and its central table is not measured.} The main text states the released CPPB manifest contains ``lightweight prompt stubs'' and the score logs are ``historical/generated records rather than a fresh end-to-end model rerun''; the appendix caption of Table~\src{tab:propagation} says ``Numbers are a controlled benchmark surface, not measured system output.'' Unreproducible headline tables are fatal at any of the venues above.
-\item \textbf{The evidence bar is below 2026 norms.} Downstream models are \src{llama3:latest} and a 3.2B Q4 \src{llama3.2}; the learned detector is a 17-feature logistic regression; there is no LLM-based sanitization baseline, no real (installed, version-pinned) Presidio, no Casper or PrivacyRestore re-implementation, no confidence intervals on any headline table, and no task-native utility metric on the real agent benchmarks.
-\item \textbf{The manuscript argues against itself.} Roughly half of the results prose is scope disclaimers, the Limitations section enumerates more than a dozen open gaps, and captions announce that their own numbers are not evidence. Combined with pervasive revision-history language (``the latest review required'', ``the new audit'', ``moved to the companion appendix'', a section titled ``Revision-Cycle Live Pilot'', an artifact filename in the appendix), the paper reads as an internal audit report rather than a research paper.
+\item \textbf{The paper's most distinctive claim is not measured the way the text says it is.} Restoration timing is presented as ``the single largest lever the layer has'', evidenced by boundary leakage falling from 51.0\% to 1.6\%. That quantity is computed from the text the mediation layer released, not from anything the agent did (F1). The conclusion is defensible; the framing is not, and a reviewer who opens the artifact will find this in one function.
+\item \textbf{The evidence for the privacy benefit is uneven across channels, and the paper does not say so in one place.} On exact identifiers the effect is large and holds. On judge-scored secret leakage it does not survive multiple-comparison correction. On factual inferability it is large but rests on a 102-item subset. Each is stated somewhere; a reader assembling ``what does this layer actually buy'' has to do it themselves (F5).
+\item \textbf{Several reported quantities do not match the released records.} One is a plain counting error in the manuscript (F2); one is a coverage gap in the confidence intervals that will read as selective reporting whether or not it is (F3). These are cheap to fix and expensive to be caught on.
 \end{enumerate}
-
-\textbf{What would make it acceptable at a security/privacy venue.} The systems framing is an asset here and should stay. What must change is the contribution and its evidence: (a) the mechanism must be compared head-to-head, under one protocol, against Casper-style sanitization, real Presidio, and an LLM sanitizer, and shown to control something they do not---restoration timing and cross-boundary propagation on \emph{real} agent stacks with strong models; (b) the propagation-aware protocol (PER, SPE, and a semantic-leakage measure) must be applied to real trajectories with uncertainty; (c) the 83\% semantic-conveyance result must be turned from a caveat into a measured finding across all methods, with the abstraction mode evaluated as a mitigation; (d) the writing must state one bounded claim confidently and its limitations once. The AE's phrase---``a new evaluation on real agent stacks with strong baselines and realistic privacy attacks''---is the specification; A2 below implements it.
 
 \section{Findings}
 Priorities: \pz\ blocks submission; \po\ accept-critical; \pt\ materially strengthens; \pth\ camera-ready or optional.
 
-\subsection{Compliance and formatting}
+\subsection*{Evidence and claim calibration}
 \begin{enumerate}[label=F\arabic*.]
-\item \pz\ \textbf{Journal metadata and length.} \src{main.tex} lines 16--24 carry TOPS metadata (\verb|\acmJournal{TOPS}|, volume/number/article placeholders). For TAISAP, swap the journal code and confirm the length cap on the author-guidelines page; at exactly 35 pages the paper has no headroom for the new results, so plan the rewrite for $\le 30$ pages (structure plan below). \emph{PoPETs (measured 6 Sep 2026):} the manuscript has been converted to the PoPETs 2027 template (\src{acmart} \src{sigconf,anonymous,review} + \src{popets.sty}); it initially built at 21 pages with the main body ending on page 16; after the F12 cleanup and the restructure of 6 Sep 2026 (CPPB material to Appendix~B, disclaimed tables and the blind-review section removed, a real-data Datasets subsection) it builds at 20 pages with the main body ending on page 12, i.e.\ within the limit before the new results are added.
-\item \pz\ \textbf{Anonymity.} Author names, affiliations, and e-mails at lines 57--75; \verb|\shortauthors{Ma et al.}|; an \src{acks} block; and the URL \url{https://github.com/mabo1215/BodhiPromptShield} in the abstract (line 78) and the reproducibility paragraph (line 527). Confirm TAISAP's blinding policy; if double-blind, all of these must go and the repository must be mirrored anonymously (\url{anonymous.4open.science} or an anonymized zip). \emph{PoPETs delta:} double-blind is mandatory; any identity leak is a desk rejection.
-\item \pz\ \textbf{Required statements.} PoPETs 2027 mandates three named sections from its template---\emph{ethical considerations}, \emph{open science}, and \emph{AI use}---none counted toward the 12 pages (author instructions, fetched 6 Sep 2026). The ethics section must state that PhysioNet-derived clinical text was used under credentialing and that TAB is public ECHR case text, and that no real user data was collected. The same instructions require that \textbf{the first page clearly state how the work is relevant to real-world privacy applications}; the current abstract and introduction do not do this explicitly. Template: \src{submission-template-2027.zip} from the PoPETs authors page; fonts must be Type1/TrueType, embedded and subset; content confined to the two-column margins.
-\item \pz\ \textbf{Legacy cross-reference.} Line 559: ``as described in Section~IV'' is a hard-coded Roman numeral left from an earlier template; the framework section is Section~4 (\verb|\ref{sec:framework}|).
-\item \po\ \textbf{Bibliography style.} \verb|\bibliographystyle{ACM-Reference-Format}| (line 915) is correct for TAISAP. \emph{PoPETs delta:} switch to the template's style and citation macros.
-\item \po\ \textbf{Promised figures that do not exist.} Line 511 (``A companion appendix figure further visualizes \ldots''), line 701 (``supporting restoration-boundary table and visualization''), and line 733 (``supporting ablation table and trade-off plot'') refer to figures that are not in the PDF. The PDF has exactly two figures (\src{fig:workflow}, \src{fig:operating\_points}); four unused PNGs sit in \src{paper/figs/} (\src{agent\_pipeline\_summary}, \src{agent\_propagation\_curves}, \src{cppb\_benchmark\_composition}, \src{restoration\_ablation\_tradeoffs}). Either include them or delete the sentences.
-\item \po\ \textbf{Dangling labels and uncited references.} Labeled but never referenced: \src{fig:workflow} (the architecture figure is never cited in text), \src{tab:cppb\_audit}, \src{tab:mapping\_surface}, \src{tab:pi\_profiles}, \src{sec:blind\_utility}. Bib entries never cited: \src{shao2024privacylens} (PrivacyLens is a headline data source and its paper is never cited---an attribution failure reviewers will flag), \src{jaume2019funsd} (FUNSD is used in the OCR slices), \src{debenedetti2024agentdojo}.
-\item \pt\ \textbf{Stale build layout.} \src{paper/appendix.pdf}, \src{paper/build/appendix.*}, and \src{paper/AGENTS.md} still describe a separate appendix file; the manuscript is single-file. Stop shipping the stale appendix PDF.
+
+\item \pz\ \textbf{Boundary Leakage Rate measures the release, not the agent, and the paper's headline mechanism claim rests on it.}
+\S6.4 states that moving the restoration point ``changes boundary leakage from 1.6\% [1.1, 2.1] to 51.0\% [48.0, 54.0]---a 32-fold difference on real trajectories'', and the second contribution bullet and the abstract repeat it. In the released code, BLR is
+\begin{quote}\small
+\src{visible\_context = instr\_r + "\textbackslash n" + traj\_r} \\
+\src{raw\_visible = sum(1 for v in mapping.values() if v in visible\_context)}
+\end{quote}
+that is, the number of mapped values that appear in the \emph{released context} divided by the number of protected values. It is a function of what the mediation layer emitted; it does not read the agent's output, its tool arguments, or the environment state, and it cannot vary with the downstream model. The appendix portability comparison already excludes it for exactly this reason, which the main text does not mention. Two consequences: the 32-fold figure is close to a restatement of what early versus late restoration means, with the interval reflecting only how many mapped values each case happens to contain; and ``on real trajectories'' overstates what was measured, because the trajectories supply the values but the agent plays no part.
+
+\emph{Action.} Either (a) re-measure boundary leakage from what the agent actually emitted before the authorized boundary---tool arguments, intermediate actions, and any logged text---which is the quantity the threat model describes and which AgentDojo's real tool execution can supply; or (b) keep the current quantity, rename it so it cannot be read as an agent-behaviour measurement (for example \emph{pre-restoration exposure of the released context}), state in \S6.4 that it is a property of the release rather than an outcome, and move the mechanism claim onto the helpfulness cost, which \emph{is} agent-dependent and \emph{is} measured. Option (a) is a stronger paper; option (b) is honest and costs two days. Do not ship the current wording.
+
+\item \pz\ \textbf{The judgment count in \S5 disagrees with the released records.}
+The metrics subsection reports ``3{,}459 judgments''. \src{semantic\_inferability\_rows\_vgpu3090.csv} holds 3{,}564 rows, exactly 594 per method across six methods, with no duplicate \src{(method\_key, doc\_id, fact\_index)} key and 3{,}563 parsed verdicts. A reviewer who checks the artifact finds a 105-judgment discrepancy in the first number they can check. Fix the manuscript to 3{,}564 (and say that one verdict did not parse, if the parsed count is the one being reported). Sweep the manuscript for any other count stated in prose rather than read from a record.
+
+\item \po\ \textbf{Confidence intervals cover one column of Table~5 and not the other three.}
+PER carries bootstrap intervals; Mem.\ SPE, Ret.\ and FRR are bare point estimates in the same table, on the same resampling units. Nothing in the text explains the asymmetry, and the natural reading is that intervals were computed where they helped. Add document-level intervals to all four columns, or state explicitly why SPE and retention are reported as points. The same applies to the appendix tables that report retention or F1 without intervals.
+
+\item \po\ \textbf{The single most useful number for a deployer---over-redaction---is reported but not confronted.}
+Table~5 shows the released heuristic detector retaining 0.70 and 0.60 of non-sensitive text with FRR 41.8, and the learned detector 0.80 and 0.75 against 0.95/0.91 for Casper-style. That is a large, measured utility cost paid for the exposure reduction the paper leads with, and it appears as one clause (``it buys its lower exposure with measurable over-redaction''). For a venue whose readers deploy these systems, the trade is the result. Give retention a short paragraph of its own in \S6.1, with the intervals from F3, and connect it to the downstream helpfulness numbers so a reader can see whether over-redaction is what costs the 0.21 points.
+
+\item \po\ \textbf{The privacy benefit is channel-dependent and the paper never says that in one place.}
+Exact-identifier exposure falls fourfold to sixfold and holds. Judge-scored leak rate moves 9.0--9.5 points, significant under McNemar but not after Holm. Factual inferability falls from 100\% to 24--53\% on a 102-item subset. Each is reported correctly and separately; the paper never assembles them into the sentence a reviewer is trying to write for it. Add a short paragraph at the end of \S6.3 or in \S6.5 stating, in one place, which channel the layer demonstrably controls, which it does not, and at what evidential strength each rests.
+
+\item \po\ \textbf{Semantic abstraction is a headline mechanism in \S4 and a measured failure in \S6.3.}
+The framework presents three sanitization modes as the routing policy's outputs. The downstream table shows semantic abstraction at 12.9\% exact-identifier exposure against 13.7\% unprotected---no meaningful protection on that channel---while preserving helpfulness. \S6.3 says so, but \S4 still presents the mode as a design equal to the other two. Either state the limitation at the point the mode is introduced, or demote abstraction to a utility-preserving option explicitly labelled as not providing identifier protection.
+
+\item \pt\ \textbf{The 27B judge is retained in the metric roster after being shown not to work.}
+\S5 lists ``judged inferability'' among the seven main-text metrics; \S6.2 then shows it at $\kappa=0.087$ against human labels and states that the paper does not use it for a claim. Listing a discredited instrument alongside six live metrics invites confusion. Move it out of the roster and introduce it in \S6.2 as the instrument under test.
+
+\item \pt\ \textbf{Run-to-run variance is neither reported nor explained away.}
+Every generation runs at temperature~0 with a fixed seed, so run-to-run variation should be nil, and the bootstrap intervals are over documents and tasks rather than over runs. The manuscript never says this. A reviewer asking ``where are the repeated runs?'' should find the answer in the setup: one sentence stating that decoding is deterministic, that the reported intervals are sampling intervals over evaluation units, and that seed variation is therefore not a source of the reported uncertainty.
+
+\item \pt\ \textbf{``Proposed (released heuristic detector)'' names the brittle configuration as the released one.}
+That row has the worst retention in the table, FRR 41.8, and 99.7\% ASR under zero-width insertion; \S6.5 concludes that a deployable configuration must pair the framing with the learned detector. If the released artifact defaults to the heuristic, say so and say why; if it defaults to the learned detector, rename the row. As written the label suggests the shipped default is the configuration the paper tells readers not to deploy.
 \end{enumerate}
 
-\subsection{Contribution, positioning, and narrative}
+\subsection*{Venue compliance, ethics, and artifact}
 \begin{enumerate}[label=F\arabic*.,resume]
-\item \po\ \textbf{Contribution list is not defensible as written.} Of the four bullets in the Introduction, (2) the mediation mechanism is conceded to be prior art in \S3.3 (``This framing does not make the underlying replacement operation new''), and (4) ``making the evidence scope explicit'' is not a contribution. The AE said explicitly that ``the propagation framing alone does not constitute sufficient novelty.'' The defensible contribution set for a security venue is: (1) the propagation-control formulation with a threat-to-evaluation mapping; (2) restoration governance (per-session mapping + boundary-timed restoration) as a \emph{measured} mechanism, compared head-to-head with Casper-style, Presidio, and LLM-sanitizer baselines on real agent stacks; (3) the propagation-aware protocol with PER, SPE, and a semantic-leakage metric, and the findings it produces (identifier propagation is nearly eliminated, semantic conveyance is not, late restoration cuts boundary leakage by a measured factor).
-\item \po\ \textbf{The abstract leads with a loss and no finding.} The current abstract gives eight numbers, two of which are unfavorable, and ends with three sentences of disclaimers. Rewrite to state the threat, the mechanism, the protocol, the three findings, and one sentence of scope.
-\item \po\ \textbf{Self-undermining prose.} Recurrent constructions such as ``we make no \ldots claim'', ``not evidence of'', ``cannot establish'', ``should not be interpreted as'' appear in nearly every results paragraph. State each limitation once, in the Limitations section, and let results paragraphs report what was measured.
-\item \po\ \textbf{Revision-history and repository language must go.} Examples: ``The span-level replacement analysis from an earlier version has been removed'' (\S2.4), ``the latest review required a stricter provenance distinction'' (\S6.8), ``the new metadata audit flags'' (\S6.10), ``The appendix now reports'' (\S6.5, \S6.7), ``is moved to the companion appendix'' (\S6.3), ``The repository now distinguishes'' (\S5.7), appendix section ``Revision-Cycle Live Pilot and Semantic Probe'' and Table~\src{tab:revision\_execution} (``Revision-cycle execution audit''), and the artifact filename \src{review\_revision\_audit.csv} in Appendix~A. None of this is legible to a first-time reader.
-\item \po\ \textbf{Tables whose captions disclaim their own content.} Table~\src{tab:propagation} (``not measured system output''), Table~\src{tab:crossmodel} (``not evidence of cross-model portability''), Table~\src{tab:cppb\_audit} (``not promoted to live held-out evidence''). Delete these tables or replace them with measured results.
-\item \pt\ \textbf{Related work under-covers the agent-privacy literature.} Missing or unengaged: PrivacyLens itself (Shao et al.\ 2024, in the bib but uncited), ConfAIde (Mireshghallah et al.\ 2024, contextual-integrity leakage), AgentDojo (in bib, uncited), PAPILLON / privacy-conscious delegation (Siyan et al.\ 2024), Rescriber (Zhou et al.\ 2025), LLM-based anonymizers and their adversaries (Staab et al.\ 2024), Dou et al.\ 2024 on reducing self-disclosure risk, and transformer PII detectors trained on AI4Privacy. Add 6--10 citations with one sentence each; this also supplies the missing baselines.
+
+\item \pz\ \textbf{The ethical-considerations section does not mention the human annotation.}
+Three people rated the inferability subset: one author and two others. The section covers data provenance, the adversarial probes, and the protective intent of the layer, and says nothing about the human raters---who they were with respect to the authorship, that they saw only released text, whether they consented to have their labels published, and whether any compensation or institutional review applied. For a venue that reads the ethics section as a first-class artifact, an omitted human-subjects-adjacent paragraph is a predictable reviewer question. Add three or four sentences: rater roles and independence, what each rater saw, what was recorded, and the institutional position (including, plainly, if no review was required and why).
+
+\item \po\ \textbf{Prior-review attachment must be checked as a submission bundle, not as a file.}
+The venue requires that a resubmission of a paper rejected elsewhere with reviews include those reviews and a point-by-point response. \src{docs/AESuggestion.txt}, \src{docs/ae\_response.txt} and \src{docs/cover\_letter.txt} exist and are current with the manuscript. What has not been verified is the mechanical part: that the response is anonymized for double-blind review, that it names no venue-identifying detail the submission system would strip, and that it is uploaded in the field the system expects. Verify against the submission form, not against the file.
+
+\item \pt\ \textbf{The artifact is built and anonymized; two properties still need a receipt.}
+\src{submit/BodhiPromptShield\_artifact\_anonymous.zip} contains 531 files, carries no author, repository, preprint, host or absolute-path string under an independent scan, ships pinned versions for every library the run manifests record, and excludes credentialed clinical text and third-party corpora. Two things remain untested: nobody has unpacked it into a clean environment and re-run one table end to end, and \src{en\_core\_web\_lg} is pinned in a comment rather than in a resolvable requirement. Both are one afternoon, and both are what an artifact reviewer does first.
+
+\item \pt\ \textbf{Revision-history residue in a caption.}
+Table~1's caption reads ``Threat-to-evaluation mapping in the current manuscript''. ``In the current manuscript'' is addressed to the authors, not to the reader. Delete the phrase; sweep captions for others of the same kind.
 \end{enumerate}
 
-\subsection{Experimental rigor}
+\subsection*{Positioning and presentation}
 \begin{enumerate}[label=F\arabic*.,resume]
-\item \po\ \textbf{Downstream models are too weak to support utility claims.} \S5.7: ``local Ollama \src{llama3:latest}'' and ``\src{llama3.2:latest} \ldots 3.2B, Q4\_K\_M''. Utility must be measured with at least one strong open model (Llama-3.1-70B-Instruct or Qwen2.5-72B/Qwen3, named with revision) and one API model (named with version string), each at fixed decoding. This also answers AE comment 5 (withheld model identities).
-\item \po\ \textbf{Missing baselines (AE comment 1).} (a) An LLM zero-shot/few-shot sanitizer (``rewrite this prompt removing PII, keep task intent'')---the most obvious 2026 baseline and absent; (b) real Microsoft Presidio, installed and version-pinned, instead of the ``Presidio-class approximation''; (c) a Casper-style re-implementation (rules + NER + dummy values + local restore; a few hundred lines) run under the same protocol; (d) an off-the-shelf transformer PII detector (e.g., a GLiNER-PII checkpoint or the public AI4Privacy-trained token classifier) as the learned detector, replacing or accompanying the 17-feature logistic regression (precision 0.36), which reviewers will call a straw learned baseline. PrivacyRestore (activation steering, server-side) can be discussed rather than reproduced if the architectural reason is stated. In addition, the row labelled ``NER-only masking'' in every table is not a named-entity recognizer: the released code implements it as capitalization, title, and location-context regular expressions. Either relabel it (``capitalization heuristic'') or replace it with a real NER baseline (spaCy \src{en\_core\_web\_lg} entities); reviewers who open the artifact will treat the current label as misreporting.
-\item \po\ \textbf{No uncertainty on any headline number.} Tables~\src{tab:measprop}, \src{tab:per}, \src{tab:utility}, \src{tab:advmeas}, \src{tab:pi\_sensitivity} report point estimates only. Add bootstrap 95\% CIs over documents/trajectories for all exposure metrics and $\geq 3$ seeds or paired bootstrap for utility; report paired differences vs.\ the strongest baseline.
-\item \po\ \textbf{SPE monotonicity claim is contradicted by the paper's own data.} \S4.5 states $\mathrm{SPE}_{k+1}\le\mathrm{SPE}_k$ along retrieval$\to$memory$\to$tool. Table~\src{tab:measprop}: No-protection on AI4Privacy is 48.7 / 100.0 / 74.8; on PrivacyLens every method has Tool $=0.0$ while Retrieval is 0 or 100. Either the surfaces are not sequential in the reference agent (then define SPE per surface, not as a decay), or the Tool column for PrivacyLens has no gold spans (then say so and do not report zeros as suppression). Also explain why NER-only masking is 100/98.9 on PrivacyLens.
-\item \po\ \textbf{Utility metric is not credible (AE comment 4).} AC/TSR are an unvalidated in-house rubric; the appendix blind review gives 12--13.5\% task success and 2--9/148 useful outputs, and per-template TSR ranges from 0\% to 50\%. Replace with task-native metrics on the real benchmarks (PrivacyLens helpfulness judgment; AgentDojo utility / task success with tool calls), an LLM-judge rubric with a reported human-agreement subset ($n\ge 100$, Cohen's $\kappa$), and report both under each mediation method. Retire AC/TSR from the main text.
-\item \po\ \textbf{CPPB cannot carry headline tables (AE comment 2).} Four of the seven main-text tables (\src{tab:per}, \src{tab:utility}, \src{tab:pi\_sensitivity}, \src{tab:latency}) rest on CPPB logs that the paper says cannot be regenerated; the released reconstruction uses a single injected value per category (one person name for all 32 person-name prompts), so a memorized string would score perfectly. Resolutions: (i) rebuild CPPB with diverse generated values (multiple surface forms per category, realistic distractors), run it live with named models, and keep it as a controlled ablation surface; or (ii) demote CPPB to the appendix and promote the real-data results. Resolved 6 Sep 2026 (D2): (ii), demote to the appendix.
-\item \po\ \textbf{Restoration-timing evidence is controlled, not measured.} The paper's most distinctive claim (late restoration: BLR 1.8\% vs 9.7\%, Table~\src{tab:restore}) is on the controlled surface. Measure it on real tool-calling tasks where an exact value is required by a tool (AgentDojo has such tasks; PrivacyLens trajectories include tool actions): report TSR, RSR, and BLR for no / early / late restoration with CIs. This is the mechanism-level contribution the AE asked for.
-\item \po\ \textbf{Semantic leakage should be a result, not a limitation (AE comment 3).} The 83\% ``semantically conveyed'' finding is the most interesting number in the paper and is introduced as a caveat. Measure it for every method (raw, regex, NER, Presidio, LLM-sanitizer, Casper-style, placeholder, abstraction, symbolic) on all 493 PrivacyLens trajectories with an LLM-judge ``is fact $f$ still inferable from the released surface?'' protocol plus a human-checked subset; report the surface-form vs.\ semantic leakage gap as a headline figure, and evaluate the abstraction mode as a mitigation with paired utility. The 12-probe mitigation panel (\S6.6, \S6.13) is too small for the main text.
-\item \pt\ \textbf{Internal numeric inconsistencies.} (a) Regex-only / NER-only PER is 61.3 / 48.7 in Table~\src{tab:per} but 61.6 / 49.0 in Table~\src{tab:judge} for the same CPPB baselines. (b) Learned detector in-domain: F1 0.53, recall 0.95, PER 7.6\% (Table~\src{tab:lightclf}) vs.\ F1 0.51, recall 0.96, PER 7.4\% (Table~\src{tab:crossdom}). (c) \S5.7 gives the latency hardware (Ryzen 7 3700X, 32\,GB, Windows 11) while \S6.12 says ``the current snapshot does not yet bundle the hardware manifest''. (d) Homoglyph: ASR 65.4\% in Table~\src{tab:advmeas} vs.\ ``lowers average homoglyph exposure from 94.1\% to 43.9\%'' in \S6.14, with no reconciliation. (e) The eighth CPPB category is ``Context-dependent confidential spans'' in Table~\src{tab:cppb\_card} but ``image-derived text'' in Appendix~B. (f) Context-inference accuracy is reported three times with different panels (100$\to$50; 50/25/8.3/16.7). Reconcile every pair or remove one member.
-\item \pt\ \textbf{Adversarial evaluation is one-sided.} Table~\src{tab:advmeas} reports evasion of the detector only; also report the downstream effect (does an evaded span then propagate? SPE under attack) and include an adaptive attacker with knowledge of the routing policy (restoration-trigger injection success), which the threat model lists but the results do not measure. This is the ``realistic privacy attacks'' item in the AE's closing sentence.
-\item \pt\ \textbf{Formal-scope paragraph (AE comment 6).} \S2.4 still discusses the removed LDP analysis. Reduce to two sentences stating that the system is deterministic and offers no formal guarantee; do not narrate what was removed.
-\item \pt\ \textbf{OCR slice.} The 64-prompt CPPB OCR subset and the CORD/FUNSD/SROIE runs are asserted (\S6.9) with three numbers and no table. Add a compact appendix table with the OCR engine and version, or remove the paragraph. FUNSD must be cited if used.
-\item \pth\ \textbf{Cross-model portability.} Table~\src{tab:crossmodel} (alias-only backends) should be deleted. If a portability claim is wanted, run the final protocol on the two named models from F15 and report it directly.
+
+\item \po\ \textbf{Related work must be re-checked for 2025--2026 agent-privacy systems before submission.}
+The related-work section engages PrivacyLens, ConfAIde, PAPILLON, Rescriber, Casper, PrivacyRestore, AgentDojo and the LLM-inference-attack line, which is a reasonable spine. This review cannot certify currency: the field moves quarterly and the submission is eleven weeks out. Re-run a targeted search shortly before submission for prompt-sanitization layers, agent-boundary privacy measurement, and judge-validation methodology, and add anything from 2026 that a reviewer would consider closer prior art than Casper.
+
+\item \pt\ \textbf{The threat model names four adversary classes; the results answer three.}
+Honest-but-curious observation, adaptive prompt adversary, and mapping-table adversary are each measured. The context-inference adversary is the one the paper's own strongest result concerns---facts remain inferable---but it is not measured as an adversary: no attacker is instantiated against the released surface. Either add a small inference-attack experiment against the released text, or state in the threat model that this class is characterized by the inferability measurement rather than by an attack.
+
+\item \pt\ \textbf{The mapping-table compromise curve is a reference-design analysis presented among measurements.}
+Table~4 is described as measured against ``the reference per-session mechanism''. It belongs to the design, not to the deployment, and the appendix threat-surface table already scopes it. Label the table as a reference-design analysis in its caption so it is not read as a deployment finding.
+
+\item \pth\ \textbf{One figure carries three panels of information in one width.}
+\src{fig:propagation} is a full-width grouped bar chart across ten methods and three boundaries. It is legible in the PDF but dense. Consider dropping the two methods that no reader will deploy (capitalization heuristic, regex-only) to the appendix version of the figure.
+
+\item \pth\ \textbf{The conclusion promises a direction without naming a first step.}
+``Closing it requires mediating meaning, not surface form'' is the right closing sentence and is currently the whole of the forward look. One additional clause naming the concrete next instrument---for example, mediating at the level of the fact rather than the span, evaluated against the human-labelled subset this paper built---would let a reader see the research programme rather than the aspiration.
 \end{enumerate}
-
-\subsection{Traceability to the TOPS Associate Editor comments}
-\begin{center}
-\small
-\begin{tabular}{@{}p{0.06\textwidth}p{0.42\textwidth}p{0.46\textwidth}@{}}
-\toprule
-AE & Comment (abridged) & Answered by \\
-\midrule
-1 & Casper / PrivacyRestore not cited or compared; propagation framing alone is not novelty & F9, F16(c), E1 (Casper-style + Presidio + LLM sanitizer under one protocol), E4 (restoration governance as measured mechanism) \\
-2 & CPPB: 256 prompts / 32 templates; full-dataset results; identical dev/test & F20, E8 (rebuild with diverse values and live rerun, or demote) \\
-3 & Deterministic reference agent; 83\% semantic exposure; 50\% inference accuracy after sanitization & F18, F22, E5 (semantic-leak gap across methods, abstraction as mitigation), E7 \\
-4 & Enterprise redaction beats proposed on PER; +0.02 utility on an unvalidated rubric & F19, E3 (task-native utility with strong models and CIs), abstract/contribution rewrite (F9--F10) \\
-5 & Detector F1 0.53 / precision 0.36; model identities withheld; OCR/runtime records missing & F15, F16(d), F26, E2, named models throughout; run manifests in the artifact \\
-6 & LDP analysis irrelevant to the evaluated system & F25 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\section{Target paper structure}
-\subsection*{TAISAP (ACM journal, target $\le 30$ pages \src{acmsmall})}
-Keep the current section order. Cuts: merge \S2.1--2.3 and drop the design-objective equation and \S2.4 to two sentences ($-2$ pages); Related Work to 1.5 pages ($-1$); Framework: keep overview figure, three modes, one routing paragraph with Table~\src{tab:pi\_rules}, mapping design with Table~\src{tab:mapcompromise}; move \src{tab:pi\_profiles}, \src{tab:mapping\_surface}, the $\alpha/\beta$ equations, and the algorithm to the appendix ($-3$); Setup: rebuild around real benchmarks, named models, and the E1--E2 baseline roster ($-2$); Results: five measured results (E3, E4, E5, propagation with CIs, adversary with CIs), two new figures (propagation curves on real agents; surface-vs-semantic leakage per method) ($\pm 0$ net after removing disclaimers); delete \src{tab:cppb\_audit}, \src{tab:propagation}, \src{tab:crossmodel}, \src{tab:revision\_execution}, \src{tab:blindutility}, \src{tab:blindutilitytemplate} ($-3$); Limitations to one paragraph. Net: $\approx 35 \to 27$ pages before the new results, $\approx 30$ after.
-
-\subsection*{PoPETs delta (12 typeset main-body pages)}
-\begin{center}
-\begin{tabular}{@{}p{0.6\textwidth}r@{}}
-\toprule
-Section & Pages \\
-\midrule
-Abstract; 1 Introduction with three contributions & 1.3 \\
-2 Problem setting and threat model (4-row threat table) & 1.2 \\
-3 Related work & 0.8 \\
-4 Mediation mechanism (figure; modes; routing paragraph; restoration boundary; mapping design in 6 lines) & 2.0 \\
-5 Evaluation protocol (metrics incl.\ semantic leak; datasets; baselines; models) & 1.7 \\
-6 Results (propagation on real agents; utility with strong models; semantic-leak gap; restoration timing; adversary) & 4.0 \\
-7 Limitations and conclusion & 0.7 \\
-Ethics, Open science, AI use, references, appendix & uncounted \\
-\bottomrule
-\end{tabular}
-\end{center}
 
 \section{Revision actions}
-Owners: \emph{paper} = manuscript edits in \src{paper/}; \emph{src} = code and experiments in \src{src/} with figures to \src{paper/figs/}. Days are calendar days from 5 September. GPU work must start on day 1 and overlap with the paper restructuring; every long-running script writes incrementally and resumes.
+Owners: \emph{paper} = edits under \src{paper/}; \emph{src} = code and records under \src{src/}; \emph{submit} = submission bundle. Days are calendar days from 9 September 2026 against the 30 November deadline.
 
-\subsection*{A1. Compliance and hygiene (paper; days 1--4) \pz}
+\subsection*{A1. Claim calibration (paper + src; days 1--10) \pz}
 \begin{enumerate}[label=A1.\arabic*]
-\item Swap the journal metadata from TOPS to TAISAP; grep for ``TOPS'' and remove every occurrence. Confirm the length cap and blinding policy on the TAISAP author-guidelines page and record both in \src{docs/progress.md}.
-\item If double-blind: remove the author block, \verb|\shortauthors|, and \src{acks}; replace both GitHub URLs with an anonymous mirror; grep for ``Auckland'', ``AUT'', ``Guilin'', author surnames, and e-mail domains.
-\item Add Ethics, Open-science/artifact, and AI-use statements.
-\item Fix ``Section~IV'' (line 559); reference \src{fig:workflow} in \S4.1; cite \src{shao2024privacylens} where PrivacyLens is first used, \src{jaume2019funsd} in the OCR paragraph, and \src{debenedetti2024agentdojo} once AgentDojo is used.
-\item Delete the three sentences promising nonexistent appendix figures (lines 511, 701, 733) or include the corresponding figures.
-\item Remove every revision-history and repository phrase listed in F12, and the filename in Appendix~A; delete the appendix pilot section per the structure plan.
-\item Reconcile all six inconsistencies in F23.
-\item \pz\ PoPETs requires that resubmissions of papers rejected \emph{from any venue with reviews} include those prior reviews in the submission. Attach the TOPS Associate Editor comments (\src{docs/AESuggestion.txt}, anonymized) together with a point-by-point response built from the traceability table above.
+\item Resolve F1. Decide between re-measuring boundary leakage from agent output (preferred; AgentDojo's real tool execution already provides the surface) and renaming the current quantity with an explicit statement of what it is. Whichever is chosen, update the abstract, contribution bullet~2, \S6.4 and the conclusion together so no two places describe it differently.
+\item Correct the judgment count to 3{,}564 (F2) and re-derive every other count in the manuscript from its record rather than from prose.
+\item Add intervals to the remaining columns of Table~5 (F3), regenerating the table from the pooled records rather than editing the \src{.tex}.
+\item Add the over-redaction paragraph (F4) and the one-place channel summary (F5).
 \end{enumerate}
 
-\subsection*{A2. Experiments (src; days 1--45) \po}
-\begin{center}
-\small
-\begin{tabular}{@{}lp{0.30\textwidth}p{0.22\textwidth}p{0.20\textwidth}r@{}}
-\toprule
-ID & Purpose & Data / models & Deliverable & Days \\
-\midrule
-E1 & LLM zero-shot sanitizer baseline; real Presidio (pinned); Casper-style baseline & AI4Privacy test, PrivacyLens 493, TAB; Qwen2.5-7B-Instruct or Llama-3.1-8B for the sanitizer & new rows in propagation and semantic-leak tables & 4 \\
-E2 & Off-the-shelf transformer PII detector as the learned detector & GLiNER-PII or public AI4Privacy token classifier & replaces LR rows; detector table in appendix & 2 \\
-E3 & Utility with strong downstream models under each method & PrivacyLens helpfulness; AgentDojo utility/task success; one $\ge$70B open model + one API model, named & main utility table with CIs & 7 \\
-E4 & Restoration timing on real tool-calling tasks & AgentDojo exact-value tool tasks; PrivacyLens tool actions & main table: TSR/RSR/BLR for none/early/late with CIs & 4 \\
-E5 & Semantic-leak gap across all methods; abstraction as mitigation with paired utility & all 493 PrivacyLens trajectories; LLM-judge + $n{=}100$ human-checked subset with $\kappa$ & headline figure: surface vs.\ semantic leakage per method & 6 \\
-E6 & Bootstrap CIs and paired tests for every retained table; 3 seeds where stochastic & all of the above & CI columns; significance notes & 2 \\
-E7 & Adaptive attacker with downstream effect (SPE under attack; restoration-trigger injection) & AI4Privacy 200-doc slice; PrivacyLens subset & extended adversary table & 3 \\
-E8 & Demote CPPB to the appendix (D2): move \src{tab:per}, \src{tab:utility}, \src{tab:pi\_sensitivity}, \src{tab:latency} and the CPPB card there; delete the disclaimed CPPB tables & CPPB & appendix section & 1 \\
-\bottomrule
-\end{tabular}
-\end{center}
-Record model digests, decoding settings, seeds, and hardware in run manifests; keep all identifiers out of the manuscript prose.
+\subsection*{A2. Ethics, compliance, and artifact (paper + submit; days 1--7) \pz}
+\begin{enumerate}[label=A2.\arabic*]
+\item Write the human-annotation paragraph in the ethical-considerations section (F10).
+\item Unpack the artifact into a clean environment, install from the pinned requirements, and reproduce one main-text table end to end; record what broke and fix it. Pin \src{en\_core\_web\_lg} resolvably (F12).
+\item Verify the prior-review bundle against the submission form, anonymized (F11).
+\item Re-verify the live author instructions for page limit, required sections, blinding, and artifact policy, and record the date checked in \src{docs/progress.md} (A4.1).
+\end{enumerate}
 
-\subsection*{A3. Rewrite (paper; days 10--55) \po}
+\subsection*{A3. Presentation (paper; days 5--20) \po}
 \begin{enumerate}[label=A3.\arabic*]
-\item New abstract and introduction per F9--F10 with the three contributions listed in F9.
-\item Merge \S2 and the threat model; 4-row threat table; two-sentence formal-scope statement.
-\item Compress \S4 to the mechanism description; move routing profiles, mapping-surface table, coefficient equations, and the algorithm to the appendix; keep the compromise curve.
-\item Rebuild \S5 around the real benchmarks, named models, and the E1--E2 baseline roster; define every metric once, including the semantic-leakage metric.
-\item Rebuild \S6 around five measured results (E3, E4, E5, propagation with CIs, adversary with CIs); each paragraph states setup, number, and conclusion---no disclaimers.
-\item One Limitations paragraph (semantic inference remains open; no formal guarantee; benchmarks are synthetic-user or reconstructed; single-language; OCR bounded). One conclusion paragraph.
-\item Appendix: CPPB card, algorithm, routing tables, OCR table with engine version, TAB table, policy sweep, per-category tables, full experimental details.
-\item Build; verify the length cap, zero undefined references, no identity strings if double-blind, every figure and table referenced.
+\item Move judged inferability out of the metric roster into \S6.2 as the instrument under test (F7).
+\item State the abstraction mode's limitation where the mode is introduced (F6).
+\item Add the determinism sentence to the setup (F8); resolve the detector-naming question (F9); delete the caption residue (F13); label the compromise curve as reference-design analysis (F16).
+\item Re-check related work for 2026 systems and add what belongs (F14); decide the context-inference adversary's treatment (F15).
 \end{enumerate}
 
 \subsection*{A4. Submission logistics \pz}
 \begin{enumerate}[label=A4.\arabic*]
-\item Deadline is fixed: PoPETs Issue 3, 30 November 2026 AoE (firm). Checkpoint 31 October: if E1--E7 are not complete, fall back to Issue 4 (28 February 2027) rather than submit thin evidence; a rejected PoPETs paper must skip one issue.
-\item Prepare the artifact (anonymized if required) with pinned environments and the run manifests from A2.
-\item Cover letter: state that the paper was previously reviewed at TOPS and list, per AE comment, the new evidence (use the traceability table above).
+\item Re-verify venue requirements against the live author instructions before building the final PDF. Everything this review says about the 12-page main body, the three required sections, double-blind review, and the prior-review policy comes from the repository's recorded configuration, not from a fetch made today.
+\item Checkpoint 31 October: if A1 is not closed, submit to Issue~4 rather than submit with F1 unresolved. A claim a reviewer can falsify from the artifact is worse than a later submission.
+\item Final build check: main body ends on page~12, the three required sections follow it, zero undefined references, no identity string on any main-body page, every figure and table referenced.
 \end{enumerate}
 
 \section{Decisions required from the authors}
 \begin{enumerate}[label=D\arabic*.]
-\item \textbf{Venue.} \emph{Resolved 6 Sep 2026:} PoPETs 2027 Issue 3 (30 November deadline, 12-page main body); TAISAP is the fallback.
-\item \textbf{CPPB disposition.} \emph{Resolved 6 Sep 2026:} demote to the appendix; no rebuild this cycle.
-\item \textbf{Model budget.} \emph{Host inventory, 6 Sep 2026:} the local workstation has an RTX 3070 (8\,GB) and only the cloud-proxied \src{kimi-k2.5:cloud} in Ollama; vGPU 3090 is reachable but in no-GPU mode, its Ollama store holds only \src{llama3.2:latest} (1.9\,GB), and its shared storage holds vision models only (Qwen3-VL-8B/4B, EGM-4B, LocateAnything-3B, SAM3); H800, PRO 6000, and A800 are powered off; the 4c 3090 is not reachable from this network. \textbf{No $\ge$70B text model exists on any host today.} \emph{Recommended plan (sizes verified on the Ollama library):} power on the H800 or A800 (80\,GB) and pull \src{llama3.3:70b} (43\,GB, Q4\_K\_M) as the strong open downstream model, plus \src{qwen3:32b} (20\,GB) as the second open model for the portability row; both fit one 80\,GB card. Use an already-licensed API model (the OpenAI or Claude account used for the blind ratings, with its exact version string) as the API downstream model, with \src{kimi-k2.5:cloud} (digest-pinned) as fallback. For E5/E3 judging, use a different family from the downstream model (e.g., \src{qwen3:32b} on the 3090 once its GPU is enabled) plus the $n{=}100$ human subset. \src{qwen3:8b} (5.2\,GB) serves as the E1 LLM-sanitizer baseline. Check \src{df -h} and \src{df -i} on the target host before pulling 43\,GB. \emph{Still open:} which host to power on, and the API spend ceiling for judging.
+\item \textbf{Boundary leakage (F1).} Re-measure from agent output, or rename and restate? Re-measuring is roughly three days on hardware that is already provisioned and turns a definitional quantity into a result; renaming is a day of text and leaves the paper's most distinctive claim resting on the helpfulness cost alone. \emph{Recommended: re-measure.} This is the one decision that changes what the paper can claim.
+\item \textbf{Detector default (F9).} Does the released artifact default to the heuristic detector or the learned one? The answer changes a table label and a sentence in \S6.5, and it is the authors' to give.
+\item \textbf{Context-inference adversary (F15).} Instantiate an attack, or scope the class to the inferability measurement? An attack is a stronger paper and roughly a week; scoping is two sentences and defensible given what \S6.2 already reports.
 \end{enumerate}
+
+\section*{What is already strong and should not be disturbed}
+Reviewers respond to different things, so it is worth recording what this draft does well, because revision pressure tends to sand exactly these off.
+
+\begin{itemize}
+\item The negative results are reported as negative. Mediation does not defend against prompt injection; judge-scored leak rates do not separate after correction; the authors' own judge failed its validation. Papers that do this are rarer than they should be, and the paper is more credible for it.
+\item The human-annotation check is the paper's best idea and is executed properly: blind to method and to the judge's verdict, with an independent third rater giving a genuine inter-rater estimate ($\kappa=0.739$), and the judge-capacity sweep ruling out the obvious objection that the judge was merely too small.
+\item Every reported number is backed by a record with a runtime manifest naming model digests, decoding settings and library versions. This is the substrate of the reproducibility claim and it is real.
+\item The scope statements are stated once and not repeated defensively. Earlier drafts of work like this typically argue with themselves in every paragraph; this one does not.
+\end{itemize}
 
 \end{document}

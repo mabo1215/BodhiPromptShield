@@ -1,6 +1,44 @@
 # 论文进度
 
-## 2026-09-09 A4.2 artifact 打包 + F3 首页相关性陈述（当前最新）
+## 2026-09-09 独立评审重置：按 PoPETs 2027 Issue 3 重写 RevisionSuggestions.tex（当前最新）
+
+按你的要求做了一次**完全独立**的评审：不看任何既往评审记录与完成状态，直接读当前的
+`paper/main.tex`（576 行）、`paper/appendix.tex`（652 行）与两份新构建的 PDF（main 14 页、
+正文第 12 页收尾；appendix 9 页；0 error、0 undefined reference），正文与附录当作同一篇稿件评。
+`docs/RevisionSuggestions.tex` 已整体覆盖重写，英文 LaTeX，编译通过：5 页、0 error、0 undefined。
+**18 条 finding（P0--P3）+ 4 组 action + 3 条待你决策。**
+
+评审结论：**major revision**。scope 合适，合规项（12 页、三节必需声明、双盲、前次评审附件）齐全，
+诚实度是加分项（负结果照实报、自建 judge 失败照实报）。挡在接收前的是三件事：
+
+**F1【P0，最重要的一条】BLR 测的是"释放出去的文本"，不是 agent 的行为，而全篇最独特的
+机制主张压在它上面。** §6.4 说"把恢复点后移使 boundary leakage 从 51.0% 降到 1.6%——真实轨迹上
+32 倍差距"，摘要与贡献第 2 条同样表述。但代码里 BLR 是：
+`raw_visible = sum(1 for v in mapping.values() if v in visible_context)`，
+其中 `visible_context = instr_r + traj_r`——**中介层自己释放的上下文**。它不读 agent 的输出、
+不读工具参数、不读环境状态，**不可能随下游模型变化**（附录的可移植性比较正是因此把它排除，
+但正文没说）。后果：32 倍更接近"早恢复 vs 晚恢复"定义的复述，区间只反映每个案例恰好含多少个
+被映射值；"on real trajectories"也高估了实际测到的东西。
+两条出路：(a) 改从 agent 实际发出的内容测（AgentDojo 有真实工具执行，能提供这个面）；
+(b) 保留该量但改名并明说它是释放面的属性，把机制主张移到 helpfulness 代价上（那个确实随 agent 变、
+确实测了）。**建议 (a)**，约三天。
+
+**F2【P0】判定数与记录对不上**：正文写 3,459，记录是 3,564（每方法 594 × 6，无重复键）。
+**已当场修掉**（paper `7668c63`），因为我此前把 AE 回应文件改成了 3,564，不能留下正文与回应互相矛盾。
+
+**F3【P1】`tab:measprop` 只有 PER 一列有置信区间**，Mem. SPE / Ret. / FRR 三列在同一张表、
+同样的重采样单位上却只报点估计，正文没解释——读起来像"哪里有利就报哪里"。
+
+其余较重的：F4 过度遮蔽（保留率 0.70/0.60、FRR 41.8）是部署者最需要的数字却只有一个从句；
+F5 三个通道的证据强度不一（精确标识符稳、judge 泄漏率过不了 Holm、可推断性只有 102 条）
+但全篇没有一处把它们并列说清；F6 语义抽象在 §4 是并列机制、在 §6.3 是实测无效（12.9% vs 无保护 13.7%）；
+**F10【P0】ethical considerations 一个字没提三位人工标注者**（身份独立性、看到什么、是否同意公开标签、
+有无审查/报酬）——这是 PoPETs 审稿人必问的。
+
+三条待决策已写进文件：D1 BLR 怎么办（最关键）、D2 released artifact 默认用哪个检测器、
+D3 context-inference adversary 是补一个攻击还是限定为可推断性测量。
+
+## 2026-09-09 A4.2 artifact 打包 + F3 首页相关性陈述
 
 `RevisionSuggestions.tex` 里剩的两项都做完了，**该文件现在没有未处理项**。
 
