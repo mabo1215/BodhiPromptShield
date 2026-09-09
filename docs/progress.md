@@ -1,6 +1,45 @@
 # 论文进度
 
-## 2026-09-10 D3 攻击结果已取回并写进论文（当前最新）
+## 2026-09-10 两个 subagent 并行：F14 找出三篇必须引的 2026 工作，F12 查出 artifact 装不上（当前最新）
+
+**F14（相关工作重查）**：三篇 Tier 1，**我逐篇核过 arXiv 才落笔**（标题/作者/日期/摘要都对得上），
+不是照 subagent 的转述写的。
+
+| 论文 | 为什么必须引 |
+|---|---|
+| PromptGraph（2607.10709，7 月） | 属性图打分 → 占位符 → 一致性检查后恢复。**机制上最接近本文的一篇。** |
+| PAAC（2605.08646，5 月） | 端侧标 span、云侧在 typed placeholder 上推理、确定性 registry 还原——就是本文三模式里的 placeholder 那支。 |
+| **PrivacyAlign（2606.21710，6 月）** | **已经定量证明 LLM 隐私 judge 与人工标注不一致**——正是本文的方法论主张。不引就是"这不是你的发现"。 |
+
+已改（paper `b758a6c`）：§3.3 写进前两篇并说明区别（**它们都在单次交互内做后处理式恢复，没把恢复时机当变量**）；
+§6.2 承认 PrivacyAlign 是先行证据。属于我们的收窄为那个验证三角：盲标 + 独立第三位 κ=0.739 + 容量消融。
+ref.bib 加三条。页数又超到 13，砍掉 §3.2 那句泛泛的风险综述（model cards/datasheets）和 §3.5 一句填充才回到 12。
+
+Tier 2 里 **InferLink（2603.18382）** 值得记：LLM agent 从零散非标识线索重建真实身份（79.2% vs 基线 56.0%），
+**这正是 F15 那个 context-inference 攻击的可用形式**，比我那个四选一强。若要继续做 D3，照它的设定走。
+
+**F12（artifact 干净环境验证）**：结论是**科学没问题、打包有问题**。
+
+好消息：传播表**在完全不装任何第三方包的情况下**，从随包的分片记录重新汇总出来的 pooled CSV
+与随包版本**逐字节相同**，数字与正文一致。核心是可复现的。
+
+坏消息：**README 让 reviewer 敲的第一条命令跑不完**。`pip install -r src/requirements.txt` 在 gradio 上
+陷入解析器回溯，一个个下 60 MB 的 wheel，15 分钟不收敛——而那个 UI 文件里自己写着"可选、任何数字都不需要它"。
+另外 `transformers` 经 gliner 传入且只有松边界，单独回溯约 25 个版本。
+
+已修（`369e5e0`）：UI 栈拆到 `requirements-ui.txt`；`transformers==4.57.6` 钉死；
+README 补上 `aggregate_paper_results.py`（重建表格、零依赖）；两个内部 README 不再指向
+manuscript 里已不存在的 `tab:propagation` 标签。
+
+**还有一处是我自己的失误**：匿名化检查只禁了 `C:\source`，没禁 `C:\Users\<账号>`，
+于是 `data/README.md` 里一条带 Windows 账号号码的路径一路进了包——而我上一轮还向你报告过
+"local abs path: CLEAN"。路径已删，检查规则已加上 profile / AppData。
+**但没有加通用的 `/home/<user>/` 规则**：PrivacyLens 的合成内容里就有 `/home/john/`、`/home/jane/`，
+一个会被基准数据触发的规则，下一个人一定会把它关掉。
+
+artifact 已重打包并用加宽后的扫描复验：538 个文件、6.3 MB、六类字符串全 CLEAN。
+
+## 2026-09-10 D3 攻击结果已取回并写进论文
 
 **先纠正上一条里我自己的两个判断，都错了。**
 
