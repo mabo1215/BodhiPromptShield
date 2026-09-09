@@ -1,6 +1,52 @@
 # 论文进度
 
-## 2026-09-09 第三位标注者的标签到齐，评分者间信度第一次有了真数（当前最新）
+## 2026-09-09 PRO 6000：judge 容量消融 + 托管模型抽查（当前最新）
+
+开 PRO 6000（RTX PRO 6000 Blackwell，96 GiB）跑的是冲着一条审稿反驳去的实验：§6.2 主张
+"LLM judge 测不了事实可推断性"，而论文用的 judge 是 gemma2:27b，审稿人第一句话必然是
+"换个大的试试"。于是同样 102 条、同样 prompt、同样解码，换不同规模的 judge 重跑。
+新脚本 `semantic_inferability_judge_capacity.py` 的关键设计：**题面直接从标注表读，不重过检测器**——
+否则 spaCy/Presidio 版本一动，被判的东西就悄悄变了。
+
+**结果推翻了我的初步判断。** 小模型段看起来"容量无关"，但 70B 不在那个区间：
+
+| Judge | κ vs 标注者1 | κ vs 标注者3 | 判 YES 比例 |
+|---|---|---|---|
+| qwen3:8b | 0.223 | 0.231 | 14.7% |
+| gemma2:27b（论文现用） | 0.087 | 0.120 | 81.4% |
+| qwen3:32b | 0.137 | 0.173 | 86.3% |
+| llama3.3:70b | **0.491** | **0.507** | 37.3% |
+| 两个人之间 | **0.739** | — | 人判 YES 57.8% |
+
+正确表述是：**容量把 κ 从 0.087 拉到 0.491（近五倍），但 70B 仍只到 moderate，够不着两个独立
+标注者之间的 substantial 0.739。** 这比"judge 一律不行"更难反驳，且方法论建议不变。
+另两点值得写进稿子：70B 与现用 27B 几乎完全不一致（κ=0.070），两者不是在测同一件事；
+YES 比例暴露了失败方向——8B 过保守（14.7%）、27B/32B 过宽松（81–86%）、70B 偏保守（37.3%），
+**方向相反的两种错误在不做人工核对的泄漏率里都看不出来**。产物提交 `de8fe5d`（含 digest 回填）。
+
+**一个把卡浪费掉的配置坑（已修，`b50419b`）**：不指定 num_ctx 时 ollama 按模型**最大** context 分
+KV cache——70B 拿到 131072 × 4 槽 = 要 160 GB，96 GB 装不下，于是 `offloaded 37/81 layers to GPU`，
+一半层跑 CPU，每条判断约 50 秒、GPU 利用率 20%。而这些 prompt 只有约 1500 token。
+钉死 `--num-ctx 4096` 后 `81/81 layers`，利用率 82%。num_ctx 现在写进 manifest；为保证四个 judge
+同配置可比，8B/32B 也一并重跑，旧产物移到 `/root/autodl-tmp/capacity_prectxfix_20260909/` 保留未删。
+
+**托管商用模型抽查（subagent，`ecb9aeb`）**：作者无可用 API key，改由 Claude 经 agent harness 充当
+下游 agent，补 Limitations 里"no hosted API was tested"那条。它**只覆盖 `no_protection` 一个条件**，
+理由是它查出了一个仓库级缺口（见下）。40 例（从记录用的同一 200 例池里按固定种子抽，池子已核对一致），
+exact-id 暴露 12.7%（17/134），落在本地 qwen3-32B 的 13.7% [11.1, 16.4] 和 llama3.3-70B 的
+13.1% [10.4, 16.1] 两个区间内。manifest 如实记录：非原始 API 调用而是 harness 内完成、解码参数
+不可控也未记录、模型版本串无法独立核实（harness 自报 Sonnet 5，无带日期的快照后缀）、未跑 judge
+因此无泄漏率/helpfulness 对比。**结论：只够在 Limitations 里做一两句脚注，不能当作真正的 hosted-API 实验引用。**
+
+**新发现的仓库级缺口（未修，改前需谨慎）**：中介后真正喂给 agent 的 released instruction/trajectory
+**没有被任何一次记录run 持久化**——`privacylens_downstream_suite.py` 的 `ROW_FIELDS` 只存聚合计数，
+而 `ollama_cache/*.jsonl` 以整个请求的 SHA-256 为键、不可逆回明文。因此除 `no_protection`（release
+是恒等函数、可从已入库的 `main_data.json` + `agent_prompts_naive.jsonl` 无损重建）之外，任何中介条件
+今天都无法在不重跑检测器栈的前提下复现其题面。修法是给 `evaluate_case` 增加
+`released_instruction`/`released_trajectory` 列，但**当前有 run 正在按现 schema 写行，且 pooling 代码
+按字段数分派行**，改列会波及它——等 `dsjudge70b` 跑完再动。
+
+## 2026-09-09 第三位标注者的标签到齐，评分者间信度第一次有了真数
 
 第三轮标注做完了，`docs/archived/3rd_annot` 投递进来。这条闭合的是全篇最后一个"只差人力"的项。
 
