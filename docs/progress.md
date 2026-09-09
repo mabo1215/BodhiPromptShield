@@ -58,6 +58,36 @@ not a deployment measurement"。
 的那条。收紧后回到正文第 12 页收尾。构建：main 14 页、appendix 10 页、0 error、0 undefined reference。
 paper `5b59526`。
 
+**等跑的时候顺手查了 artifact，又查出三处——都是 F12 那次没扫干净的同一类问题。**
+
+1. **`src/README.md` 是随包发出去的，而它描述的是一份已经不存在的稿子。** 211 行中文清单，
+   声称代码支撑八张论文里根本没有的表（`tab:catwise`、`tab:multimodal`、`tab:crossmodel`、
+   `tab:hardcase`、`tab:multiseed`、`tab:lto`、`tab:baseline`、`tab:tabtransfer`），
+   把还在的那几张放在早就搬走的"主文 Table III/V/VIII/XII"位置，列的四个图脚本没有一个
+   画的是现在论文里的图。上一轮只修了 `tab:propagation` 一个标签，该修的是整个文件。
+   现已重写为英文（仓库规则本来就要求 `src/` 全英文），并逐条把当前论文对象映射到产出它的脚本。
+   **这张表我是对着 `.tex` 和脚本一条条核的，不是凭印象写的**——因此抓到我自己四个错判：
+   `tab:judge` 是受控基准上的学习型 judge baseline，不是人工一致性那张；`tab:advmeas` 出自
+   `measured_adaptive_adversary.py`；`tab:crossdom` 出自 `cross_domain_detector.py`；
+   mapping 曲线出自 `secure_mapping_compromise.py` 而不是旁边那个 `_adversary_suite`。
+   另有两张表只有记录、生成脚本已不在树里，文件里如实写明，不假装它们能重生成。
+   `src/experiments/README.md` 的中文标题也一并译了；`data/README.md` 里那句中文按钮名加了英文注释——
+   **UI 保持中文**：标注者当时读的就是中文，事后翻译一个已经用过的量具，等于谎报他们看到了什么。
+
+2. **`run_all_figures.py` 画的不是论文里的图。** 它是 artifact README 让 reviewer 敲的第三条命令，
+   自称"生成 manuscript figures"，实际画的是上一版论文的九张图；现在论文的三张里只碰到一张，
+   而且还是顺带的（operating-points 脚本会在 PNG 旁边顺手写 PDF）。读者最先看到的两张
+   （跨边界暴露、surface-form 到 fact 的落差）根本不在里面。已改为画那三张 PDF；旧的九张
+   移到 `--legacy` 后面保留，不删。
+   **顺带拿到一张 artifact 需要的收据**：三张图重新生成后与已提交版本**逐字节相同**，
+   三个文件里唯一的差别是 operating-points PDF 里那串 matplotlib 版本号——本沙箱是 3.10.9，
+   而 `src/requirements.txt` 钉的、也是画出已提交版本的那个是 3.10.8。
+
+3. **`run_all.py` 每跑一次都会改写 `paper/figs` 里的图文件**（内容一样，只有 PDF 里的时间戳变），
+   这次跑完我已 `git checkout` 复原，没有让它混进提交。reviewer 那边没有 git，不受影响。
+
+**这三处都会让 artifact 包过期**：等 D3 跑完、结果进论文之后重打一次包。
+
 **F17（图太密）不做，并给出理由**：评审建议把 capitalization heuristic 与 regex-only 挪到
 附录版的图里。但**主文读这张图的那一段正靠这两条**——"the two methods that key on capitalization
 or on free-form model rewriting ... leave the majority of identifiers intact" 就是在说
@@ -1806,15 +1836,21 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 
 **等标注人力，不等你决策**
 
-- **PrivacyLens 自带 judge 的人工抽查**（70%）：你说"抽查"。整条链路已建好并本地验证：
-  `privacylens_downstream_suite.py --export-judge-decisions` 把已记录的那次运行从生成缓存里
-  重放出来，逐条导出 judge 对每个敏感条目的判定和它当时看到的动作原文——因此抽查比对的是
-  **产出论文数字的那批判定**，不是重跑出来的另一批；抽样按条件和 judge 自己的判定双向分层
-  （否则一个"九成说没泄漏"的 judge 会靠基准率白捡一个高一致率）；标注页有 `judge_check` 模式；
-  κ 脚本已就绪。
-  - 差两步：**一是那次重放必须在有 `ollama_cache/` 的主机上跑**（重放不生成、不耗 GPU，
-    但缓存在主机上；脚本会在有任何一次是现生成而非重放时明确报警）；二是 n≥120 的标注工时。
-  - 缓存导出后我会补敏感条目的中文对照，再发布标注页。
+- **PrivacyLens 自带 judge 的人工抽查**（90%）：**只差标注工时了。** 重放在 09-09 已经跑完
+  （`privacylens_judge_decisions_qwen3_32b-q4km-hf_recorded9.csv`，5508 条逐项判定，
+  脚本确认全部来自缓存），今天把剩下三步做完：
+  - **子集已抽**：120 条 / 5508，按 18 个 (条件 × judge 判定) 层分层。分层是关键——
+    judge 在全体里只有 18.9% 说"泄漏"，不分层的话一个"九成说没泄漏"的 judge 靠基准率就能
+    白捡高一致率；抽出来的子集在 judge 自己的判定上是 50/50，它捡不到。
+    `privacylens_judge_human_sheet.csv`（盲表）与 `privacylens_judge_human_key.csv`
+    （**带 judge 判定，分析用，不能给标注者**）已提交。
+  - **中文对照已补**：108 条敏感项全部有中文，人名/金额/日期/证件号/凭据一律照抄不译——
+    它们正是决定"这个动作有没有泄漏这一条"的东西，译了就换了题。动作原文一个字不译。
+  - **标注页已生成**（120 条齐、无缺译）。**发布成 artifact 被这个会话的权限分类器挡了**，
+    所以先以本地 HTML 文件发给你；功能完全一样（无 `window.claude` 时退回浏览器本地存储 +
+    剪贴板/下载导出）。页面可从已提交的盲表用一条命令原样重建：
+    `python build_annotation_page.py --mode judge_check --tag "" --out <路径>`。
+  - 标完把导出的 CSV 回传，`privacylens_judge_agreement.py` 出整体与逐条件的 κ。
 
 **卡在外部资源，不需要你现在决定**
 
