@@ -98,7 +98,7 @@ def _interpret(kappa: float) -> str:
     return "almost perfect"
 
 
-def _chat(url: str, model: str, prompt: str, timeout: int, num_predict: int) -> str:
+def _chat(url: str, model: str, prompt: str, timeout: int, num_predict: int, num_ctx: int) -> str:
     import requests
 
     response = requests.post(
@@ -108,7 +108,8 @@ def _chat(url: str, model: str, prompt: str, timeout: int, num_predict: int) -> 
             "messages": [{"role": "user", "content": prompt}],
             "stream": False,
             "think": False,
-            "options": {"temperature": 0, "top_p": 1, "seed": 17, "num_predict": num_predict},
+            "options": {"temperature": 0, "top_p": 1, "seed": 17, "num_predict": num_predict,
+                        "num_ctx": num_ctx},
         },
         timeout=timeout,
     )
@@ -214,6 +215,11 @@ def main() -> int:
     parser.add_argument("--tag", default="vgpu3090", help="suffix of the sheet/key/round-3 records")
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--timeout", type=int, default=600)
+    # Left unset, Ollama sizes the KV cache from the model's maximum context: on a
+    # 70B that reserved 160 GB across four slots and pushed half the layers onto
+    # the CPU, which cost roughly fifty seconds a judgment. The prompts here run
+    # about 1,500 tokens, so a small context keeps every layer on the card.
+    parser.add_argument("--num-ctx", type=int, default=4096)
     parser.add_argument("--num-predict", type=int, default=160)
     parser.add_argument("--limit", type=int, default=0, help="smoke test: judge only the first N items")
     parser.add_argument("--score-only", action="store_true")
@@ -253,7 +259,8 @@ def main() -> int:
         prompt = JUDGE_PROMPT.format(released=item["released"], fact=item["fact"])
         t0 = time.time()
         try:
-            raw = _chat(args.ollama_url, args.judge_model, prompt, args.timeout, args.num_predict)
+            raw = _chat(args.ollama_url, args.judge_model, prompt, args.timeout, args.num_predict,
+                        args.num_ctx)
         except Exception as exc:  # noqa: BLE001 - record and continue
             raw = f"ERROR: {exc}"
         verdict = _parse_verdict(raw)
@@ -305,7 +312,8 @@ def main() -> int:
             *card.items(),
             ("prompt", "verbatim from semantic_inferability_judge.py JUDGE_PROMPT"),
             ("surfaces", f"read from {sheet.name}; not regenerated"),
-            ("decoding", f"temperature 0, top_p 1, seed 17, num_predict {args.num_predict}, think false"),
+            ("decoding", f"temperature 0, top_p 1, seed 17, num_predict {args.num_predict}, "
+                         f"num_ctx {args.num_ctx}, think false"),
             ("items", str(len(items))),
             ("judged_this_run", str(counters["done"])),
             ("unparsed_this_run", str(counters["unparsed"])),
