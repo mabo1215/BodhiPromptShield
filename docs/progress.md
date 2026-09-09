@@ -1,6 +1,36 @@
 # 论文进度
 
-## 2026-09-09 PRO 6000 收尾：判定导出成功、主机已关机（当前最新）
+## 2026-09-09 对照 RevisionSuggestions.tex 全量复核 + 关掉唯一的 P0（当前最新）
+
+逐条核了 F1--F27 与 A1--A4。**27 条 finding 没有一条是"没改"**，抽查证据：正文 `Section~IV` 0 处、
+`TOPS` 0 处、无 GitHub URL、自我否定措辞正文仅剩 2 处（都是威胁模型与指标定义里的正当限定）、
+修订史语言正文 0 处、三张自我否定的表（`tab:propagation`/`tab:crossmodel`/`tab:cppb_audit`）均已不存在、
+`shao2024privacylens`/`debenedetti2024agentdojo`/`jaume2019funsd`/ConfAIde/PAPILLON/Rescriber 均已引用、
+F18 的 SPE 单调性自相矛盾已按"按面定义、不是衰减曲线"改写、F25 的 LDP 文字 0 处。
+
+**关掉的 P0（A1.8）**：PoPETs 要求投稿附前次评审与逐条回应，`docs/ae_response.txt` 与
+`docs/cover_letter.txt` 停在 09-08，数字与正文对不上——judge κ 写 0.080（正文 0.087）、
+词重叠 0.283（正文 0.250）、分方法人工比例仍是补齐到 102 条之前的、判定数写 3,459（记录是 3,564）、
+并且写着"两位标注者互不独立且都是作者"——这两点现在都不成立。已全部按正文核对刷新，
+并补进第三位标注者（κ=0.739 / 87.3%，两个代理对其为 0.120 / 0.240）与 judge 容量消融。
+提交 `7aa29db`。
+
+**为使回应有据可引，先把容量消融写进了论文**（paper `31a1870`）：新增附录 I
+"Judge Capacity on the Inferability Question" 与 `tab:judgecap`，§6.2 加一句指向它。
+构建后 main 14 页（正文仍第 12 页收尾）、appendix 9 页、0 undefined reference。
+
+**顺带修掉一处事实错误**（paper `a284c13`）：正文原写"32B agent 与 judge 用 7k/10k context window"，
+但那是 70B 可移植性那轮的值（其 manifest 有记录）；**32B 那轮的 manifest 根本没记 context**，
+它跑在 per-model sizing 之前、两个角色共用 12k。证据是缓存 key 哈希整个 options（含 `num_ctx`），
+用 12288/12288 重放那轮 200 例全部命中、0 次生成；若当初用 7k/10k 则一条都不会命中。
+已把两个数移回真正记录它们的那一轮。
+
+**仍开着的两项（都不是 P0）**：
+1. **A4.2 artifact 打包**：匿名化复现包、固定环境、run manifests 尚未打包，投稿时要交。
+2. **F3 的软性要求**：PoPETs 要求第一页明确说明与真实世界隐私应用的相关性。现在第一页有报销助手
+   这个具体部署例子，实质覆盖；cover letter 里也有专门一段。是否再补一句直白陈述，等你定。
+
+## 2026-09-09 PRO 6000 收尾：判定导出成功、主机已关机
 
 **拿到了 judge 人工抽查真正的输入。** `privacylens_judge_decisions_qwen3_32b-q4km-hf_recorded9.csv`：
 200 例 × 全部 9 个条件 = **5508 条逐敏感项判定**，其中 1039 条判为泄漏。脚本明确输出
