@@ -470,17 +470,22 @@ def run(args: argparse.Namespace) -> int:
             else:
                 ac, ac_verdict = _judge_ac(judge, record, raw_answer, med_answer)
             tsr, tsr_verdict = _judge_tsr(judge, record, med_answer)
+            # Exposure needs no judge, so a judge that answers unparseably must not
+            # also cost the PER measurement: the row is kept with the utility
+            # columns blank, and the summary averages them over the rows that
+            # have them rather than over the whole method.
             if ac is None or tsr is None:
-                print(f"  judge unparsed {key} {pid}: ac={ac_verdict!r} tsr={tsr_verdict!r}", flush=True)
+                print(f"  judge unparsed {key} {pid}: ac={ac_verdict!r} tsr={tsr_verdict!r}"
+                      f" -- keeping the exposure row, blanking utility", flush=True)
                 failures += 1
-                continue
 
             writer.writerow({
                 "method": key, "tau": tau_key, "prompt_id": pid,
                 "template_id": record.get("template_id", ""), "variant_id": record.get("variant_id", ""),
                 "split": record.get("split", ""), "privacy_category": record.get("privacy_category", ""),
                 "gold_spans": len(gold), "surviving_spans": _survival(released, gold),
-                "mediation_ms": f"{mediation_ms:.3f}", "ac": f"{ac:.3f}", "tsr": f"{tsr:.3f}",
+                "mediation_ms": f"{mediation_ms:.3f}",
+                "ac": "" if ac is None else f"{ac:.3f}", "tsr": "" if tsr is None else f"{tsr:.3f}",
                 "ac_verdict": ac_verdict, "tsr_verdict": tsr_verdict,
                 "agent_model": agent.model, "judge_model": judge.model,
             })
@@ -505,12 +510,14 @@ def _summarize(rows_path: Path, summary_path: Path, sweep_path: Path, latency_pa
     def _emit(group_rows: list[dict[str, str]]) -> dict[str, str]:
         pairs = [(float(r["surviving_spans"]), float(r["gold_spans"])) for r in group_rows]
         per, lo, hi = bootstrap_ratio_ci(pairs, n_boot=n_boot, scale=100.0)
-        acs = [float(r["ac"]) for r in group_rows]
-        tsrs = [float(r["tsr"]) for r in group_rows]
+        acs = [float(r["ac"]) for r in group_rows if r["ac"] != ""]
+        tsrs = [float(r["tsr"]) for r in group_rows if r["tsr"] != ""]
         return {
             "prompts": str(len(group_rows)),
+            "scored": str(len(acs)),
             "per": f"{per:.2f}", "per_ci_low": f"{lo:.2f}", "per_ci_high": f"{hi:.2f}",
-            "ac": f"{statistics.fmean(acs):.3f}", "tsr": f"{statistics.fmean(tsrs):.3f}",
+            "ac": f"{statistics.fmean(acs):.3f}" if acs else "",
+            "tsr": f"{statistics.fmean(tsrs):.3f}" if tsrs else "",
         }
 
     methods = [r for r in rows if r["method"] != "policy_sweep"]
@@ -518,7 +525,7 @@ def _summarize(rows_path: Path, summary_path: Path, sweep_path: Path, latency_pa
     for row in methods:
         by_method.setdefault(row["method"], []).append(row)
     with summary_path.open("w", encoding="utf-8", newline="") as out:
-        writer = csv.DictWriter(out, fieldnames=["method", "prompts", "per", "per_ci_low", "per_ci_high", "ac", "tsr"])
+        writer = csv.DictWriter(out, fieldnames=["method", "prompts", "scored", "per", "per_ci_low", "per_ci_high", "ac", "tsr"])
         writer.writeheader()
         for key, group in by_method.items():
             writer.writerow({"method": key, **_emit(group)})
@@ -531,7 +538,7 @@ def _summarize(rows_path: Path, summary_path: Path, sweep_path: Path, latency_pa
         for row in sweep:
             by_tau.setdefault(row["tau"], []).append(row)
         with sweep_path.open("w", encoding="utf-8", newline="") as out:
-            writer = csv.DictWriter(out, fieldnames=["tau", "prompts", "per", "per_ci_low", "per_ci_high", "ac", "tsr"])
+            writer = csv.DictWriter(out, fieldnames=["tau", "prompts", "scored", "per", "per_ci_low", "per_ci_high", "ac", "tsr"])
             writer.writeheader()
             for tau in sorted(by_tau, key=float):
                 writer.writerow({"tau": tau, **_emit(by_tau[tau])})
