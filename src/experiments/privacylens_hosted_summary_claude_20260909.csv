@@ -1,0 +1,2 @@
+condition,cases,action_rate_percent,exact_id_exposure_percent,ids_total_sum,ids_in_final_action_sum,cases_with_gold_ids,cases_with_gold_id_exposed
+no_protection,40,100.0,12.7,134,17,35,15
