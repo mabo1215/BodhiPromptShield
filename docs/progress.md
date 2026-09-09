@@ -1,6 +1,32 @@
 # 论文进度
 
-## 2026-09-09 独立评审重置：按 PoPETs 2027 Issue 3 重写 RevisionSuggestions.tex（当前最新）
+## 2026-09-09 D1 按你选的 (b) 落地：BLR 改名重述，并牵出一个被单一比值掩盖的事实（当前最新）
+
+按 (b) 执行：保留该量、改名、明说它是释放面的属性，把机制主张移到随 agent 变化的列上。
+`BLR` → **`RCE`（Released-Context Exposure）**，全篇统一（正文 §5 定义、表 6 表头与 caption、
+§6.4、摘要、贡献第 2 条、结论，以及附录 `tab:restore` 那张受控面表）。paper `8dd0625`。
+
+**执行中发现的事**（值得单独记）：把三列并排写出来之后，单一比值原先掩盖的一个方向出现了——
+**最终动作里的精确标识符暴露是反过来的**：延后恢复 11.6% [9.4, 14.2]，早恢复只有 4.8% [3.3, 6.6]。
+原因是定义性的而不是失败：延后恢复下，`final_action` 是**经授权边界恢复之后**才被测量的
+（`final_action = restore_symbolic(action_out, mapping) if mode == "late"`），所以那一列数的是
+**预期内的披露**，不是泄漏。judge 泄漏率则完全分不开两者（35.0% vs 32.0%）。
+这三件事现在都写进 §6.4 了，而不是只报那个 32 倍。
+
+**最终留下的主张收窄为**：恢复时机决定授权边界**上游**的每一个读者能看到什么，且在任务效用上几乎免费
+（0.11 分）；它**不改变** agent 在恢复发生之后披露了什么。
+
+**页数代价**：诚实版比一个比值长。为把正文压回第 12 页收尾，压缩了 §6.5 对抗规避（细节本就在附录表里）、
+§6.7 失败模式（四条都是各小节已报过的复述）、Limitations 结尾的重复句，并把 §6.6 Deployment
+Interpretation **整节移到附录**（`A-app:deploy`，正文留一句指针）。最终 main 14 页、正文第 12 页收尾、
+appendix 9 页、0 error、0 undefined reference。
+
+**同步更新**：`docs/ae_response.txt` 与 `docs/cover_letter.txt` 里引用旧表述的两处已改写；
+`docs/RevisionSuggestions.tex` 的 F1 与 F2 已标注 "Resolved 9 September 2026"，
+并注明 **(a) 仍是更强的论文**，下一轮若有时间应做。F2（判定数 3,459→3,564）已在上一提交修掉，
+但它要求的"全稿数字复核 sweep"尚未做。
+
+## 2026-09-09 独立评审重置：按 PoPETs 2027 Issue 3 重写 RevisionSuggestions.tex
 
 按你的要求做了一次**完全独立**的评审：不看任何既往评审记录与完成状态，直接读当前的
 `paper/main.tex`（576 行）、`paper/appendix.tex`（652 行）与两份新构建的 PDF（main 14 页、

@@ -236,9 +236,15 @@ What changed overall
 - Downstream evaluation on 200 PrivacyLens tasks with a 32B agent, scored by
   the benchmark's own judge; AgentDojo banking tasks under prompt injection
   with real tool execution.
-- Restoration timing isolated as a mechanism: late restoration gives boundary
-  leakage 1.6% [1.1, 2.1] against 51.0% [48.0, 54.0] for early restoration,
-  with disjoint intervals, for 0.11 helpfulness points.
+- Restoration timing isolated as a mechanism, and reported as three columns
+  rather than one ratio. Released-context exposure is 1.6% [1.1, 2.1] deferred
+  against 51.0% [48.0, 54.0] early, but that quantity is computed from the text
+  the layer releases and moves by construction with the restoration point, so
+  we no longer present it as a measured security outcome. The agent-dependent
+  columns are less one-sided: deferral costs 0.11 helpfulness points, and exact
+  identifiers in the final action run the other way, 11.6% against 4.8%,
+  because under deferral that column is measured after the authorized boundary
+  has restored the values and so counts intended disclosure.
 - One negative result reported as such: mediation does not defend against
   prompt injection, on 74 paired task/injection trials.
 - One measurement result that reversed a prior claim: a lexical criterion and

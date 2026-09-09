@@ -9,7 +9,7 @@ BodhiPromptShield is a policy-aware pre-inference mediation layer that detects s
 The four contributions are:
 
 1. A propagation-control formulation with a threat-to-evaluation mapping, and a protocol that measures exposure at each agent boundary rather than once at a document boundary.
-2. Restoration timing established as a measured security variable. Holding the detector and mapping fixed and moving only the point at which real values re-enter the pipeline changes boundary leakage from 51.0% [48.0, 54.0] to 1.6% [1.1, 2.1] on real agent trajectories, with disjoint intervals, for 0.11 points of task helpfulness.
+2. Restoration timing established as the design variable the layer actually holds. Holding the detector and mapping fixed and moving only the point at which real values re-enter the pipeline changes released-context exposure from 51.0% [48.0, 54.0] to 1.6% [1.1, 2.1], for 0.11 helpfulness points. We report that quantity as what it is - a property of the text the layer releases, which moves by construction with the restoration point - and report the agent-dependent columns beside it, where the picture is less one-sided.
 3. A head-to-head comparison of ten mediation methods under one protocol on real agent data, with bootstrap confidence intervals on every reported quantity.
 4. A separation of surface-form leakage from factual leakage, with the measure for the second validated against blind human annotation. Both automated proxies fail that check, and the human labels show mediation cutting factual inferability from 100% to 24-53% - a result neither proxy reports.
 
