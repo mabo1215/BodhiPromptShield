@@ -324,11 +324,21 @@ def _percentile(values: list[float], pct: float) -> float:
     return ordered[idx]
 
 
-def _read_done(path: Path) -> set[tuple[str, str, str]]:
-    if not path.exists():
-        return set()
-    with path.open("r", encoding="utf-8", newline="") as handle:
-        return {(r["method"], r["tau"], r["prompt_id"]) for r in csv.DictReader(handle)}
+def _read_done(*paths: Path) -> set[tuple[str, str, str]]:
+    """Keys already measured, pooled over every given rows file.
+
+    Resume normally reads only the file being appended to.  Re-sharding a
+    part-finished run changes the filenames, so the earlier work has to be
+    named explicitly or it is silently repeated: the rows are keyed by
+    (method, tau, prompt), not by which shard happened to produce them.
+    """
+    done: set[tuple[str, str, str]] = set()
+    for path in paths:
+        if not path.exists():
+            continue
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            done |= {(r["method"], r["tau"], r["prompt_id"]) for r in csv.DictReader(handle)}
+    return done
 
 
 def _with_tag(path: Path, tag: str | None) -> Path:
@@ -397,7 +407,7 @@ def run(args: argparse.Namespace) -> int:
     if args.sweep:
         sweep_jobs = [("policy_sweep", t) for t in SWEEP_TAUS]
 
-    done = _read_done(rows_path)
+    done = _read_done(rows_path, *[Path(p) for p in (args.done_from or [])])
     new_file = not rows_path.exists()
     handle = rows_path.open("a", encoding="utf-8", newline="")
     writer = csv.DictWriter(handle, fieldnames=ROW_FIELDS)
@@ -648,6 +658,9 @@ def main() -> int:
     parser.add_argument("--sweep", action="store_true", help="Also measure every policy threshold as a real operating point")
     parser.add_argument("--max-prompts", type=int)
     parser.add_argument("--shard", help="I/N: run only every N-th prompt (outputs get a shard tag)")
+    parser.add_argument("--done-from", nargs="+",
+                        help="Additional rows CSVs whose measured keys count as already done. Use when "
+                             "re-sharding a part-finished run, so the new split resumes rather than repeats")
     parser.add_argument("--bootstrap", type=int, default=1000)
     parser.add_argument("--output-tag")
     parser.add_argument("--summarize-from", nargs="+",
