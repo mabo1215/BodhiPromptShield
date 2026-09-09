@@ -1,0 +1,31 @@
+field,value
+surface,"CPPB reconstructed prompt surface (data/cppb_full_annotations.jsonl); reconstructed from the public stub manifest, not historical raw-prompt recovery"
+prompts,32
+methods,no_protection;regex_only;capitalization_heuristic;generic_deid;enterprise_staged;proposed_utility_constrained
+policy_sweep,0.30;0.40;0.50;0.55;0.60;0.70;0.80
+tau_utility_constrained,0.55
+per_definition,"gold sensitive spans literally present in the released prompt / all gold spans; a lower bound on disclosure, not a measure of inferability"
+ac_definition,"judge-scored task-relevant agreement between the raw-prompt and mediated-prompt answers (AGREE=1, PARTIAL=0.5, DISAGREE=0)"
+tsr_definition,"judge-scored satisfaction of the template's stated success criteria (SUCCESS=1, FAIL=0)"
+latency_definition,"mediation wall-clock per prompt, CPU only, excluding model generation"
+decoding,"temperature 0, top_p 1, seed 17; agent num_predict 320, judge num_predict 8"
+context,"agent num_ctx 2048, judge num_ctx 2048"
+bootstrap,"1000 span-level resamples, 95% percentile CI"
+python,3.12.3
+platform,Linux-5.15.0-78-generic-x86_64-with-glibc2.35
+host,autodl-container-9ea4k4v8uu-b4b46782
+run_started_utc,2026-09-09T00:50:25.730268+00:00
+agent.model_name,qwen3:32b-q4km-hf
+agent.model_digest,cdf6a2e00f0eccc3b7ea5c916f6e254cf17ec6008ae4861d5ff1ee7c6818943a
+agent.model_family,qwen3
+agent.model_parameter_size,32.8B
+agent.model_quantization,Q4_K_M
+judge.model_name,mistral:7b-instruct-v0.2-q4km-hf
+judge.model_digest,79c08d3519c6cf4ef7bc2f6bec6e463411c66054c3193befba266874c11da3f4
+judge.model_family,llama
+judge.model_parameter_size,7.2B
+judge.model_quantization,Q4_K_M
+presidio.presidio_analyzer,2.2.364
+presidio.spacy,3.8.16
+presidio.spacy_model,en_core_web_lg
+scikit_learn,1.8.0
