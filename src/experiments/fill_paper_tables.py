@@ -511,15 +511,13 @@ def build_attrrecovery_table() -> str:
     """
     rows = _read_csv("privacylens_attribute_recovery_summary_qwen3_32b-q4km-hf.csv")
     chance = rows[0]["chance_percent"] if rows else "25.0"
-    header = ("Condition & Value recovered (\\%) & Value present (\\%) & Questions "
-              + r"\\" + "\n")
+    header = ("Condition & Recovered (\\%) & Value present (\\%) & "
+              "Recovered when absent (\\%) " + r"\\" + "\n")
     body = "\n".join(
         f"{_tex_escape(_RECOVERY_CONDITION_LABELS.get(row['condition'], row['condition']))} & "
         f"{_tex_escape(row['recovery_percent'])} & "
         f"{_tex_escape(row['value_survives_release_percent'])} & "
-        # Only the count takes a LaTeX thousands separator; the commas inside an
-        # interval are ordinary punctuation and must be left alone.
-        f"{format(int(row['questions']), ',').replace(',', '{,}')} \\\\"
+        f"{_tex_escape(row['recovery_when_value_absent_percent'])} \\\\"
         for row in rows
     )
     return (
@@ -529,7 +527,7 @@ def build_attrrecovery_table() -> str:
         + "\\midrule\n"
         f"{body}\n"
         + "\\midrule\n"
-        + f"Chance & {_fmt_float(chance)} & --- & --- \\\\\n"
+        + f"Chance & {_fmt_float(chance)} & --- & {_fmt_float(chance)} \\\\\n"
         + "\\bottomrule\n"
         + "\\end{tabular}"
     )
