@@ -1,6 +1,40 @@
 # 论文进度
 
-## 2026-09-09 PRO 6000 会话：给四张 CPPB 附录表补上可命名的 runtime（当前最新）
+## 2026-09-09 第三位标注者的空白标注页入库；但**第三轮标注结果并不存在**（当前最新）
+
+本条是跨主机同步用的：另一台主机在找"第三位标注者的记录"，找不到是对的——记录确实没有。
+
+**已入库的**：`src/experiments/semantic_inferability_round3_page_vgpu3090.html`（commit `659788d`）。
+这是第三位标注者用的**独立轮标注页**（`--mode independent`），102 条全量，页面里
+`MODE = "independent"`、`R1 = {}`——不带任何第一轮答案，自己的 localStorage key
+（`inferability-annotations-r3-v1`）、自己的 collection（`round3`）、自己的导出名
+（`human_annotations_round3.csv`）。它此前只存在于一个 scratch 目录里，所以别的主机拿不到。
+生成器 `src/experiments/build_annotation_page.py` 本来就已入库且支持 `--mode independent`，
+所以另一台主机也可以自己重新生成；直接 pull 这个 HTML 更省事。
+
+**没有的**：第三轮的答案。这一点已经从两侧独立确认——
+- 本机：仓库、`Downloads`、`Desktop`、`Documents`、以及全部 Claude scratch 目录下都没有
+  `human_annotations_round3.csv`，也没有任何 `*round3*` 的结果文件。
+- 另一会话：那个 artifact（"可推断性标注 第三位"）的 `round3` collection 返回 0 条文档；
+  同一 artifact 的 `annotations` 与 `round2` 也是空的。而第一轮（另一个 artifact 的
+  `annotations`）102 条、第二轮（再一个 artifact 的 `round2`）96 条都读得出来，
+  说明存储本身是好的，就是第三轮没写进去过。
+
+页面本身也解释了为什么"文件在"不等于"标注做过"：答案只写进标注者浏览器的 localStorage
+和 artifact 的存储，HTML 文件里不含任何答案。页面 `.html` 与 `.html.bak` 的时间戳同为
+09-09 11:46、两者只差一段 `file://` 下的 CSV 导出兜底代码，看不出有人真的做完过一遍。
+
+**一个必须避开的坑**：那个 scratch 目录里有 `fake_round3.csv`，102 行、`item_id` 0–101、
+YES/NO 齐全，看起来正好是"第三轮结果"该有的样子。**它是冒烟测试用的合成数据**（同目录
+还有 `fake_decisions.csv`、`fake_judge_annotations.csv`，内容是 `Jane Doe` /
+`secret text no_protection 0` 这类占位串）。谁都不要把它当成第三位标注者的标签喂进
+`semantic_inferability_agreement.py`——那会直接产出一个假的 annotator1-vs-annotator3 kappa。
+
+**因此现在的状态**：论文里关于标注者独立性的写法仍然只能是现在这样——第二位是**复核**
+（primed，κ=0.915 是上界不是 IRR），第三位的独立轮**工具已就绪、标注未开始**。在拿到真实的
+`human_annotations_round3.csv` 之前，不要动 Limitations 段落里关于标注者独立性的措辞。
+
+## 2026-09-09 PRO 6000 会话：给四张 CPPB 附录表补上可命名的 runtime
 
 开 PRO 6000（96 GiB）是为了关掉计划里唯一"只差一台 GPU 主机"的那一项：附录四张 CPPB 表
 （`tab:per`、`tab:utility`、`tab:pi_sensitivity`、`tab:latency`）的数字来自没有记录 runtime
@@ -1246,6 +1280,10 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
   - 现在只差一个人：不能是作者，且没看过前两轮。把页面分享给对方即可开始，不需要 GPU。
   - 拿到导出的 CSV 后跑 `semantic_inferability_agreement.py --round3 <csv>`，
     然后据此改写主文 Limitations 那段（目前写的是"给不出信度估计"）。
+  - 2026-09-09 跨主机同步：标注页此前只在 scratch 目录里，现已入库为
+    `src/experiments/semantic_inferability_round3_page_vgpu3090.html`（commit `659788d`），
+    别的主机 pull 即可拿到。**同时确认：`round3` 存储集合是空的，第三轮至今一条标注都没有**
+    （详见本文件顶部当日条目，内含一个必须避开的 `fake_round3.csv` 合成数据坑）。
 - **PrivacyLens 自带 judge 的人工抽查**（70%）：你说"抽查"。整条链路已建好并本地验证：
   `privacylens_downstream_suite.py --export-judge-decisions` 把已记录的那次运行从生成缓存里
   重放出来，逐条导出 judge 对每个敏感条目的判定和它当时看到的动作原文——因此抽查比对的是
@@ -1284,6 +1322,16 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
    - A: 
 2. **同名 arXiv 预印本 `arXiv:2604.05793` 要更新什么**——见下方"预印本需要更新的内容"，
    确认后我可以直接生成用于 arXiv v2 的稿件。
+   - A: 
+3. **第三轮独立标注：页面已就绪，但没有人真的标过——需要你确认由谁来标、什么时候标。**
+   标注页已入库（`src/experiments/semantic_inferability_round3_page_vgpu3090.html`），
+   双击用浏览器打开即可，102 条，只需按 Y/N，做完点导出得到 `human_annotations_round3.csv`。
+   这是全篇唯一一个能把"标注者一致性"从上界（κ=0.915，primed）变成真正 IRR 的环节，
+   也直接决定 Limitations 段落怎么写、预印本 v2 第 4 条"标注者独立性描述"能不能改。
+   拿到 CSV 后我这边跑 `semantic_inferability_agreement.py --round3` 就能出
+   annotator1-vs-annotator3 kappa 和重算的 judge/lexical kappa。
+   - **需要你回答**：这一轮由谁标（第三位标注者是否还能联系上）？大致什么时候能做完？
+     如果赶不上 11-30 投稿，是否接受论文按"仅两位标注者、第二位为复核"定稿？
    - A: 
 
 ## 预印本需要更新的内容（回应你上一条的提问）
