@@ -10,13 +10,13 @@
 
 \section*{Revision-cycle experiment progress}
 \noindent
-Last updated: 2026-09-09 (second review pass against \texttt{docs/RevisionSuggestions.tex}). Percentages describe repository work,
+Last updated: 2026-09-09 (local build audit; third pass against \texttt{docs/RevisionSuggestions.tex}). Percentages describe repository work,
 not a claim that blocked experiments are complete. The recorded AE decision on
 the TOPS submission is reject; the current target venue is PoPETs 2027 Issue~3
 (submission deadline 2026-11-30, 12-page main body, double blind), with TAISAP
 as the fallback. The paper is now two documents in the PoPETs template, \texttt{paper/main.tex}
 (14 pages, main body ending on page~12) and \texttt{paper/appendix.tex}
-(8 pages), compiled separately and cross-referenced through \texttt{xr}. The
+(9 pages), compiled separately and cross-referenced through \texttt{xr}. The
 2026-09-06/07 GPU session on the RTX PRO 6000 host completed the E1/E3/E7
 roster; those rows are recorded below and the Results section has been rebuilt
 around them. A subsequent no-GPU pass audited the manuscript against the six
@@ -31,7 +31,8 @@ appendix tables on the reconstructed 256-prompt surface under a fully
 manifested runtime, which is recorded below; the host was powered off after the
 results were pulled back and checksum-verified, so nothing is queued or
 executing anywhere. The paper builds to \texttt{main} 14 pages with the main body ending
-on page~12 and \texttt{appendix} 8 pages. This table supersedes earlier
+on page~12 and \texttt{appendix} 9 pages, with zero undefined references in
+either document. This table supersedes earlier
 revision-cycle status notes.
 
 \scriptsize
@@ -137,6 +138,7 @@ Appendix register cleanup (F11, F12, F13) & Five passages in the appendix still 
 Host inventory verified & Every host in the credential file was probed on its SSH port before this pass was planned: H800, PRO 6000, vGPU 3090, and 2c 3080 all refuse connections, so no experiment is queued or running anywhere and no GPU work was possible this cycle. This is recorded because the next-step table's estimates depend on it. & TCP probes through WSL & Done & 100\% \\
 Second annotator closed out & The independent second reader's review pass, previously tracked as an open next-step row, is complete and integrated: 96 of 96 items reviewed, four changed, all in the same direction and on the three most aggressive methods, ordering unchanged. The manuscript reports the first reader's labels and describes the second reader as independent. & \texttt{semantic\_inferability\_round2\_*} records; \texttt{paper/main.tex} Limitations & Done & 100\% \\
 AgentDojo suite coverage closed out & Also moved out of the next-step table. Banking and slack are pooled and reported; travel stays abandoned on evidence rather than pending, because its agent emitted zero tool calls across all completed rows and rows without a tool call cannot evidence anything about tool-boundary restoration. The appendix states that suite shape, not suite count, bounds this. & \texttt{agentdojo\_injection\_summary\_pooled\_*}; \texttt{tab:inject} & Done (scope fixed on evidence) & 100\% \\
+Unplaced appendix floats repaired & Three cross-references printed as \texttt{??} in the built PDFs, two of them on pages~6 and~7 of the main body. The cause was not a mis-typed key: the two tables of the last appendix section (policy profiles and mapping threat surface) were declared \texttt{[t]}, were still in the float queue when the bibliography ended the document, and so were never shipped --- their captions never printed and their labels never reached the \texttt{.aux} that the main document reads through \texttt{xr}. Declaring both \texttt{[H]}, as the algorithm two sections later already is, places them where the text introduces them. & \texttt{paper/appendix.tex}; build logs & Done (0 undefined references; appendix 10 to 9 pages) & 100\% \\
 \end{longtable}
 
 \section*{Next-step plan}

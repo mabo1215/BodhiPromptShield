@@ -1,6 +1,27 @@
 # 论文进度
 
-## 2026-09-09 第三位标注者的空白标注页入库；但**第三轮标注结果并不存在**（当前最新）
+## 2026-09-09（第三轮）本地构建复核：附录两张表根本没排进 PDF（当前最新）
+
+没有可用主机，本轮是纯本地构建复核。发现并修掉一处会被审稿人直接看到的缺陷。
+
+**现象**：`paper/main.pdf` 与 `paper/appendix.pdf` 里有三处 `??`。之前几轮把它记成
+"未定义引用 appendix 1、main 2，均为既有"，当成噪声放过了——但它不是引用写错，是
+**附录第 I 节的两张表（`tab:pi_profiles` 策略档位、`tab:mapping_surface` 映射表威胁面）
+压根没有排进 PDF**。两张表都声明为 `[t]`，出现在附录最后一节的开头，浮动队列一直没排掉，
+文档被参考文献跑完就结束了，于是 caption 没有 ship、label 没有进 `.aux`。
+正文第 6、7 页跨文档引用这两张表的两处，以及附录内部的一处，全部打印成 `??`。
+
+**修法**：两张表改为 `[H]`（与两节之后的算法一致），落在正文介绍它们的位置。
+重新构建后：main 14 页（正文仍在第 12 页结束）、appendix 由 10 页变 9 页、
+**0 error、0 undefined reference**（此前 main 2 处、appendix 1 处），
+两张表分别落在附录第 7、8 页；lines 549--583 没有新增 overfull。paper submodule f0b7dea。
+
+**顺带核实**：本地 `paper/build/` 里的 PDF 此前停留在 01:40 那次构建（appendix 8 页），
+比 14:55 的 CPPB 回填提交要旧，也就是说上一轮记的"已构建通过"在本机没有留下对应产物。
+现已重新构建，PDF 与当前源码一致。PoPETs 强制的三节（ethical considerations / open science /
+AI use）确认都在 `main.tex` 里、在第 12 页之后，符合页数要求。
+
+## 2026-09-09 第三位标注者的空白标注页入库；但**第三轮标注结果并不存在**
 
 本条是跨主机同步用的：另一台主机在找"第三位标注者的记录"，找不到是对的——记录确实没有。
 
@@ -1307,20 +1328,7 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 
 需要你提供/决策。答完一条即可就地删掉该条。
 
-1. **legacy CPPB 的 named-runtime：你选了"补齐 backend/digest/decoding"，但按字面做不到，
-   需要你在两条路里再拍一次板。**
-   查证结果：`cppb_prompt_manifest.csv` 里只有 template/prompt 的**描述性 stub**，没有 prompt 原文。
-   也就是说产出 `tab:per`、`tab:utility`、`tab:pi_sensitivity`、`tab:latency` 那四张表的输入已经不存在了。
-   在这些数字旁边写上 backend/digest/decoding，只能是"声称"而不是"记录"——而这份披露本身就是
-   为了防这件事，所以我没有写。
-   - **A（我推荐，也最接近你的原意）**：在**重建的 256 条 CPPB 面**（`data/cppb_full_annotations.jsonl`，
-     有 gold span，明确标注为 reconstructed）上把这四张表**重测一遍**，用完整命名的 runtime，
-     然后用带 provenance 的新数字替换掉旧数字，并写明是重建面。
-     代价：需要开主机——`tab:per` 的 detector 基线要 Presidio + spaCy，`tab:utility` 和
-     `tab:pi_sensitivity` 的效用列要下游模型；`tab:latency` 是纯 CPU，哪里都能测。
-   - **B**：回到原来的备选——在附录写明这四张表是控制面，其原始运行记录不可恢复。一天的文本活。
-   - A: 
-2. **同名 arXiv 预印本 `arXiv:2604.05793` 要更新什么**——见下方"预印本需要更新的内容"，
+1. **同名 arXiv 预印本 `arXiv:2604.05793` 要更新什么**——见下方"预印本需要更新的内容"，
    确认后我可以直接生成用于 arXiv v2 的稿件。
    - A: 
 3. **第三轮独立标注：页面已就绪，但没有人真的标过——需要你确认由谁来标、什么时候标。**
