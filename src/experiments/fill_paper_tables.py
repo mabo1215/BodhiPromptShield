@@ -15,6 +15,7 @@ This script only updates tables that are directly backed by repository CSVs:
     - tab:judge            <- cppb_privacy_judge_comparison.csv
     - tab:measprop         <- propagation_suite_{ai4privacy,privacylens}_results_pooled.csv
     - tab:advmeas          <- measured_adaptive_adversary_results.csv
+    - tab:attrrecovery     <- privacylens_attribute_recovery_summary_*.csv
     - tab:mapadv           <- secure_mapping_adversary_results.csv
     - tab:hardcase         <- hardcase_analysis.csv
   - tab:restore          <- restoration_boundary_analysis.csv
@@ -491,6 +492,49 @@ def build_crossdom_table() -> str:
     )
 
 
+# The condition keys the attack writes are the mediation specs it was run with.
+# The manuscript names the conditions the way the rest of its tables do.
+_RECOVERY_CONDITION_LABELS = {
+    "no_protection": "No protection",
+    "placeholder:presidio": "Typed placeholder (Presidio)",
+    "placeholder:learned_lr": "Typed placeholder (learned)",
+    "casper_style": "Casper-style (dummy values)",
+}
+
+
+def build_attrrecovery_table() -> str:
+    """Value recovery beside literal survival, so the gap between them is visible.
+
+    Recovery is what an adversary can put back; survival is what the release
+    still literally contained. Reporting one without the other invites reading
+    inference into a number that is just text that was never removed.
+    """
+    rows = _read_csv("privacylens_attribute_recovery_summary_qwen3_32b-q4km-hf.csv")
+    chance = rows[0]["chance_percent"] if rows else "25.0"
+    header = ("Condition & Value recovered (\\%) & Value present (\\%) & Questions "
+              + r"\\" + "\n")
+    body = "\n".join(
+        f"{_tex_escape(_RECOVERY_CONDITION_LABELS.get(row['condition'], row['condition']))} & "
+        f"{_tex_escape(row['recovery_percent'])} & "
+        f"{_tex_escape(row['value_survives_release_percent'])} & "
+        # Only the count takes a LaTeX thousands separator; the commas inside an
+        # interval are ordinary punctuation and must be left alone.
+        f"{format(int(row['questions']), ',').replace(',', '{,}')} \\\\"
+        for row in rows
+    )
+    return (
+        "\\begin{tabular}{lccc}\n"
+        + "\\toprule\n"
+        + header
+        + "\\midrule\n"
+        f"{body}\n"
+        + "\\midrule\n"
+        + f"Chance & {_fmt_float(chance)} & --- & --- \\\\\n"
+        + "\\bottomrule\n"
+        + "\\end{tabular}"
+    )
+
+
 def build_mapadv_table() -> str:
     rows = _read_csv("secure_mapping_adversary_results.csv")
     body = "\n".join(
@@ -847,6 +891,7 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:advmeas": build_advmeas_table,
     "tab:mapcompromise": build_mapcompromise_table,
     "tab:crossdom": build_crossdom_table,
+    "tab:attrrecovery": build_attrrecovery_table,
     "tab:mapadv": build_mapadv_table,
     "tab:hardcase": build_hardcase_table,
     "tab:restore": build_restore_table,
