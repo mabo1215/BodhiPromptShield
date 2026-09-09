@@ -25,9 +25,11 @@ agentdojo==0.1.35
 rapidocr-onnxruntime==1.2.3
 
 # The spaCy pipeline behind Presidio, spaCy NER, and the Casper-style baseline.
-# Not a PyPI name; install it explicitly, and check the version, because a
-# different model release changes the spans exactly as a different spaCy does:
-#   python -m spacy download en_core_web_lg      # recorded runs used 3.8.0
+# Pinned by URL rather than left to `spacy download`, because that command
+# resolves to whatever model release is current and a different release moves
+# the spans exactly as a different spaCy version does. The recorded runs used
+# 3.8.0.
+en_core_web_lg @ https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl
 #
 # The transformer PII detector loads urchade/gliner_multi_pii-v1 from the
 # Hugging Face hub at first use.
