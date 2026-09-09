@@ -1,211 +1,111 @@
-# PromptShield 论文配套代码
+# Code and records behind the paper
 
-当前仓库中的 `src/` 只是可复现代码，未完成整篇论文所有实验的完整训练流水线。
+This tree holds the mediation implementation, every experiment that produced a
+number in the manuscript, and the records those numbers were read from. It is
+not a training pipeline: nothing here trains a language model. The heavy runs
+call an OpenAI-compatible local endpoint (`http://127.0.0.1:11434` by default)
+serving the open-weight models named in the run manifests.
 
-## 目录说明
+## Layout
 
-- `experiments/`
-  - `build_cppb_manifest.py`：生成 CPPB 的 template inventory、prompt-level manifest，以及主文 benchmark accounting 表所需的汇总 CSV。
-  - `cppb_accounting_summary.csv`：主文 `tab:cppb_card` 的精确 benchmark accounting，并参与附录 `cppb_benchmark_composition.png` 的汇总说明。
-  - `cppb_template_inventory.csv`：CPPB template 级清单。
-  - `cppb_prompt_manifest.csv`：CPPB prompt 级 manifest。
-  - `cppb_distribution_breakdown.csv`：CPPB 在 subset / family / category / source / modality 维度上的精确计数与占比，并支撑附录 `cppb_benchmark_composition.png`。
-  - `artifact_metadata_notes.md`：补充 CPPB data-card、split 语义、multimodal slice、cross-model portability 与 latency assumptions 的仓库说明。
-  - `cppb_source_licensing_manifest.csv`：CPPB 四类 prompt source 的 source-level provenance / licensing / OCR-count 结构化清单。
-  - `external_resource_acquisition_card.md`：集中说明外部数据集、baseline repo、synthetic clinical route、OCR 引擎、open-weight runtime 和 closed-model 文档的官方获取路径与 access mode。
-  - `external_baseline_runtime_manifest_template.csv`：TAB / i2b2 protocol-only semantic 和 named external baseline 的 runtime/disclosure 模板，现包含 Ollama + Llama3-8B-Instruct 的 public local zero-shot logging surface。
-  - `tab_ollama_zero_shot_baseline.py`：执行本地 Ollama-backed TAB zero-shot pilot，并输出独立的 summary/detail/runtime/run-log 工件而不覆盖已发布的 full TAB heuristic slice。
-  - `tab_ollama_zero_shot_results.csv` / `tab_ollama_zero_shot_document_metrics.csv` / `tab_ollama_zero_shot_runtime_manifest.csv` / `tab_ollama_zero_shot_run_log.csv`：本地 open-weight zero-shot baseline 的已执行 pilot 工件，当前对应 TAB `dev:32` 子集上的可检查 rerun。
-  - `ollama_zero_shot_stability.py`：对 TAB / synthetic i2b2 的本地 Ollama zero-shot pilots 做多次重复运行、保存每次 snapshot，并生成 mean/std/CI stability 汇总。
-  - `tab_ollama_zero_shot_stability_runs.csv` / `tab_ollama_zero_shot_stability_summary.csv`：TAB `dev:32` zero-shot pilot 的三次观测稳定性工件。
-  - `ocr_engine_runtime_manifest_template.csv`：OCR-heavy transfer rerun所需的通用 OCR/version/host/preprocessing 模板。
-  - `latency_host_manifest_template.csv`：latency slice 升级为 portable claim 前所需 host/runtime/scheduling 模板。
-  - `latency_host_manifest.csv`：当前 `latency_overhead.csv` 对应的已填写 host/runtime/scheduling 记录，明确该 prototype latency slice 的实际本地执行环境。
-  - `ocr_transfer_protocol.json`：OCR-heavy public transfer 的 tracking protocol，明确哪些 benchmark 已是 executed public slice、哪些仍处于 acquisition-tracked 状态。
-  - `ocr_transfer_resource_manifest.csv`：CORD / FUNSD / SROIE / DocILE 的 acquisition-aware cache/status manifest，当前已区分 executed 与 scaffold-only benchmark。
-  - `cppb_release_card.md`：集中说明 CPPB release scope、source provenance、annotation examples、external wrapper semantics 与已知缺口。
-  - `ocr_slice_manifest.md`：说明 OCR-mediated slice 当前已知范围与仍缺失的 exact OCR / asset metadata。
-  - `multimodal_provenance_card.md`：集中说明 multimodal slice 的构造来源、rendering boundary 与 OCR-facing provenance 缺口。
-  - `crossmodel_portability_manifest.md`：说明匿名 cross-model portability slice 的证据边界与仍缺失的 backend provenance。
-  - `latency_environment_manifest.md`：说明 latency 表的 prototype interpretation boundary 与仍缺失的 hardware/concurrency metadata。
-  - `external_wrapper_release_card.md`：集中说明 TAB / i2b2 external wrapper 的 protocol invariants、comparator roster、落盘文件与 licensing boundary。
-  - `acquire_external_resources.py`：生成 external dataset / baseline / provenance resource 的 machine-readable acquisition manifest，并可选缓存公开 GitHub 资源；当前也记录 i2b2-Synthea、CORD mirror/license 和 Ollama runtime surface。
-  - `build_cppb_source_manifest.py`：从已发布的 template inventory 与 prompt manifest 生成 source-level CPPB provenance manifest。
-  - `build_hf_cppb_dataset.py`：把 CPPB 的已发布 manifest/split/card 打包成 Hugging Face-ready dataset bundle，并可选直接上传到 `hf.co/datasets/<repo_id>`。
-  - `ocr_external_transfer.py`：基于 acquisition manifest 生成 OCR-heavy public transfer 的 protocol scaffold 与 benchmark availability manifest。
-  - `tab_zero_shot_prompt_template.txt` / `ai4privacy_zero_shot_prompt_template.txt` / `i2b2_zero_shot_prompt_template.txt`：冻结 zero-shot semantic baselines 的固定 prompt surface，并被当前 TAB / AI4Privacy / synthetic i2b2 本地 Ollama pilots 直接复用。
-  - `build_ai4privacy_pii300k_export.py`：把公开 `ai4privacy/pii-masking-300k` English 子集转成统一的 normalized export，并按 deterministic hash surface 划分 `train/dev/test`。
-  - `ai4privacy_pii300k_english_export.jsonl`：公开 AI4Privacy English 子集的 normalized export，当前总计 29908 records。
-  - `ai4privacy_pii300k_english_export_test100.jsonl`：从同一 deterministic split surface 派生的 held-out `ai4privacy-test:100` zero-shot pilot 输入。
-  - `ai4privacy_matched_baseline_suite.py`：在 AI4Privacy English export 上执行七方法 matched baselines，并输出 summary/detail/execution/run-log 工件。
-  - `ai4privacy_transfer_results.csv` / `ai4privacy_transfer_document_metrics.csv` / `ai4privacy_transfer_execution_manifest.csv` / `ai4privacy_transfer_run_log.csv`：AI4Privacy held-out `test` split 的 executed multi-domain comparator-family 工件，当前对应 2997 documents / 19392 mentions。
-  - `ai4privacy_ollama_zero_shot_baseline.py`：执行本地 Ollama-backed AI4Privacy generic zero-shot pilot，并支持用 `--output-tag` 生成独立的 summary/detail/runtime/run-log 工件。
-  - `ai4privacy_ollama_zero_shot_results_test100.csv` / `ai4privacy_ollama_zero_shot_document_metrics_test100.csv` / `ai4privacy_ollama_zero_shot_runtime_manifest_test100.csv` / `ai4privacy_ollama_zero_shot_run_log_test100.csv`：AI4Privacy held-out `test:100` generic local zero-shot pilot 工件，当前记录 Span F1 0.52、PER 26.2\%、text retention 0.92。
-  - `adversarial_robustness_suite.py`：执行 deterministic adversarial probes，而不再只生成静态 appendix 表；当前会同时输出 summary、attack inventory 和 probe-level logs。
-  - `adversarial_robustness_results.csv` / `adversarial_attack_inventory.csv` / `adversarial_probe_logs.csv`：已执行 adversarial probe 工件；当前显示 confusable folding 可将 homoglyph average exposure 从 94.1\% 降到 43.9\%，但 paraphrase、mixed-language 与 restoration-trigger 仍是部分覆盖。
-  - `context_inference_attack_suite.py`：执行本地 Ollama attacker 对 raw / sanitized prompt-history 的四分类属性推断，并输出 summary、prompt logs 与 runtime manifest。
-  - `context_inference_attack_results.csv` / `context_inference_attack_prompt_logs.csv` / `context_inference_attack_runtime_manifest.csv`：已执行 context-inference attack 工件；当前整体 raw accuracy 100.0\%，sanitized 仍为 50.0\%，说明 contextual leakage 仍是明确剩余风险。
-  - `build_i2b2_synthea_synthetic_export.py`：把公开 i2b2-Synthea sample tables 转成 schema-compatible synthetic note export，用于无 licensed notes 时的 public rehearsal。
-  - `i2b2_synthea_synthetic_export.jsonl`：基于公开 Synthea sample 构建的 synthetic i2b2-compatible note export。
-  - `i2b2_synthea_synthetic_export_test128.jsonl`：基于同一公开 Synthea sample 生成的更大 held-out synthetic clinical slice，当前对应 `synthea-test:128`。
-  - `i2b2_synthea_prompt_wrapped_manifest.csv`：synthetic i2b2 export 在统一 wrapper 下的 prompt manifest。
-  - `i2b2_ollama_zero_shot_baseline.py`：执行本地 Ollama-backed synthetic i2b2 zero-shot pilot，并支持用 `--output-tag` 生成不覆盖 canonical pilot 的 tagged summary/detail/runtime/run-log 工件。
-  - `i2b2_ollama_zero_shot_results.csv` / `i2b2_ollama_zero_shot_document_metrics.csv` / `i2b2_ollama_zero_shot_runtime_manifest.csv` / `i2b2_ollama_zero_shot_run_log.csv`：synthetic i2b2-Synthea open-weight zero-shot baseline 的 canonical 已执行 pilot 工件，当前对应 `synthea-dev:32` 子集。
-  - `i2b2_ollama_zero_shot_results_test128.csv` / `i2b2_ollama_zero_shot_document_metrics_test128.csv` / `i2b2_ollama_zero_shot_runtime_manifest_test128.csv` / `i2b2_ollama_zero_shot_run_log_test128.csv`：同一 zero-shot 路径在 `synthea-test:128` held-out slice 上的 tagged larger-scope pilot 工件，并显式记录 model digest/family/parameter size/quantization、OS/Python runtime 与起止时间戳。
-  - `i2b2_ollama_zero_shot_stability_runs.csv` / `i2b2_ollama_zero_shot_stability_summary.csv`：synthetic i2b2 `synthea-dev:32` zero-shot pilot 的三次观测稳定性工件。
-  - `acquire_cord_snapshot.py`：从 Hugging Face mirror 按固定 revision 下载并解包 CORD public snapshot，同时落盘 `cord_snapshot_manifest.json`。
-  - `acquire_funsd_snapshot.py`：从 Hugging Face 按固定 revision 下载并固定 FUNSD public parquet snapshot，同时落盘 `funsd_snapshot_manifest.json`。
-  - `acquire_sroie_snapshot.py`：从 Hugging Face 按固定 revision 下载并固定 SROIE public processed parquet snapshot，同时落盘 `sroie_snapshot_manifest.json`。
-  - `build_cord_transfer_surface.py`：为 CORD 生成 benchmark-specific OCR rerun surface；若未提供完整数据快照，则诚实落盘 preparation-only 状态；当前也为 pinned snapshot 生成 wrapper manifest。
-  - `cord_ocr_transfer_suite.py`：在 pinned public CORD snapshot 上执行 OCR-heavy matched rerun，并输出 result/detail/runtime/run-log 工件；当前 comparator roster 已扩到 Presidio 与 spaCy 两个 named OCR de-id family。
-  - `funsd_ocr_transfer_suite.py`：在 pinned public FUNSD snapshot 上执行 OCR-heavy matched rerun，并输出 result/detail/runtime/run-log 工件；当前 comparator roster 也已补齐 Presidio 与 spaCy 两个 named OCR de-id family。
-  - `sroie_ocr_transfer_suite.py`：在 pinned public SROIE processed snapshot 上执行第三个 OCR-heavy matched rerun，并输出 result/detail/runtime/run-log 工件。
-  - `cord_snapshot_manifest.json`：记录 CORD public snapshot 的 fixed revision、下载 URL、archive SHA-256、解包路径与 split counts。
-  - `funsd_snapshot_manifest.json`：记录 FUNSD public snapshot 的 fixed revision、本地 parquet snapshot root、split counts 与逐文件哈希。
-  - `sroie_snapshot_manifest.json`：记录 SROIE public processed snapshot 的 fixed revision、本地 parquet snapshot root、split counts 与逐文件哈希。
-  - `cord_ocr_runtime_manifest.csv`：已填写的 CORD OCR engine/version/runtime manifest，当前对应 `rapidocr-onnxruntime==1.2.3` 的本地执行面。
-  - `funsd_ocr_runtime_manifest.csv`：已填写的 FUNSD OCR engine/version/runtime manifest，当前也对应 `rapidocr-onnxruntime==1.2.3` 的同一 declared OCR stack。
-  - `sroie_ocr_runtime_manifest.csv`：已填写的 SROIE OCR engine/version/runtime manifest，当前同样对应 `rapidocr-onnxruntime==1.2.3` 的 declared OCR stack。
-  - `cord_transfer_results.csv` / `cord_transfer_document_metrics.csv` / `cord_transfer_execution_manifest.csv` / `cord_transfer_run_log.csv` / `cord_transfer_protocol.json`：CORD `valid:100` OCR-heavy executed public slice 的结果、明细、执行状态、运行记录与协议工件；当前 summary 已同时包含 Presidio 与 spaCy 两个 named comparator。
-  - `cord_transfer_preparation_manifest.csv`：记录 pinned CORD snapshot 的当前执行面，当前状态为 `executed_public_snapshot`。
-  - `cord_prompt_wrapped_manifest.csv`：基于 pinned CORD snapshot 生成的 wrapper-ready manifest，当前对应 `valid:100` executed slice。
-  - `funsd_transfer_results.csv` / `funsd_transfer_document_metrics.csv` / `funsd_transfer_execution_manifest.csv` / `funsd_transfer_run_log.csv` / `funsd_transfer_protocol.json`：FUNSD `test:50` OCR-heavy executed public slice 的结果、明细、执行状态、运行记录与协议工件；当前 summary 已同时包含 Presidio 与 spaCy 两个 named comparator。
-  - `funsd_transfer_preparation_manifest.csv`：记录 pinned FUNSD snapshot 的当前执行面，当前状态为 `executed_public_snapshot`。
-  - `funsd_prompt_wrapped_manifest.csv`：基于 pinned FUNSD snapshot 生成的 wrapper-ready manifest，当前对应 `test:50` executed slice。
-  - `sroie_transfer_results.csv` / `sroie_transfer_document_metrics.csv` / `sroie_transfer_execution_manifest.csv` / `sroie_transfer_run_log.csv` / `sroie_transfer_protocol.json`：SROIE `test:63` OCR-heavy executed public slice 的结果、明细、执行状态、运行记录与协议工件。
-  - `sroie_transfer_preparation_manifest.csv`：记录 pinned SROIE processed snapshot 的当前执行面，当前状态为 `executed_public_snapshot`。
-  - `sroie_prompt_wrapped_manifest.csv`：基于 pinned SROIE processed snapshot 生成的 wrapper-ready manifest，当前对应 `test:63` executed slice。
-  - `prompt_method_comparison.csv`：主文方法级对比结果，用于 Table III（PER）、Table V（AC/TSR）以及主文 operating-points 图。
-  - `policy_sensitivity.csv`：主文 policy sensitivity 结果，用于 Table VIII 和 operating-points 图。
-  - `agent_pipeline_metrics.csv`：主文 multi-step propagation 结果，用于 Table XI、主文 propagation 曲线和附录 deployment 图。
-  - `latency_overhead.csv`：主文 latency 结果，用于 Table XII 和附录 deployment 图。
-  - `categorywise_analysis.csv`：附录 `tab:catwise` 的 category-wise supporting artifact。
-  - `multimodal_analysis.csv`：附录 `tab:multimodal` 的 OCR-mediated supporting artifact。
-  - `crossmodel_analysis.py`：生成附录 `tab:crossmodel` 的 alias-level portability supporting artifact 与 runtime log。
-  - `crossmodel_portability_results.csv`：附录 `tab:crossmodel` 的 portability supporting artifact。
-  - `crossmodel_runtime_log.csv`：cross-model portability slice 的 alias-level runtime log。
-  - `crossmodel_named_rerun_manifest_template.csv`：把 alias-level portability slice 升级为 named rerun 时所需的最小 provenance 字段模板。
-  - `hardcase_analysis.py`：生成附录 `tab:hardcase` 的 deterministic hard-case supporting artifact。
-  - `hardcase_analysis.csv`：附录 `tab:hardcase` 的 hard-case supporting artifact。
-  - `restoration_boundary_analysis.csv`：附录 restoration boundary supporting table 与 supporting figure 的记录文件。
-  - `sanitization_mode_ablation.csv`：附录 sanitization-mode ablation supporting table 与 supporting figure 的记录文件。
-  - `multiseed_evaluation.py`：生成 method / policy operating-point 的多随机种子稳定性记录、汇总 CSV 和 prompt-level logs。
-  - `multiseed_method_summary.csv`：附录 repeated-run stability 表，并为主文 operating-points 图提供误差线。
-  - `multiseed_policy_summary.csv`：policy profile repeated-run stability 汇总，并为主文 operating-points 图提供误差线。
-  - `leavetemplateout_evaluation.py`：生成 CPPB leave-template-out 泛化结果与汇总表。
-  - `leavetemplateout_summary.csv`：附录 held-out-template generalization 表。
-  - `external_baseline_comparison.csv`：附录 Presidio-class external baseline comparison 表。
-  - `presidio_baseline_notes.txt`：附录外部基线配置说明。
-  - `tab_matched_baseline_protocol.json`：TAB text anonymization external transfer 的 matched baseline protocol scaffold。
-  - `tab_prompt_wrapped_manifest.csv`：基于公开 TAB ECHR JSON 生成的首个 prompt-wrapper manifest。
-  - `tab_matched_baseline_suite.py`：运行扩展后的 TAB matched baselines，并生成结果 CSV 与 execution manifest。
-  - `tab_transfer_results.csv`：附录 `tab:tabtransfer` 的扩展 comparator public-transfer 结果表。
-  - `tab_transfer_document_metrics.csv`：TAB 文档级 matched-baseline 指标明细。
-  - `tab_transfer_execution_manifest.csv`：TAB comparator roster 的 execution-status 记录。
-  - `tab_transfer_run_log.csv`：TAB wrapper 当前一次 released rerun 的原始运行记录。
-  - `i2b2_matched_baseline_protocol.json`：i2b2 clinical de-identification external transfer 的 matched baseline protocol scaffold。
-  - `prepare_i2b2_normalized_export.py`：把用户自有的 i2b2 XML/TXT 或 JSON/JSONL 导出规范化为 clinical transfer 所需 schema 的工具。
-  - `i2b2_matched_baseline_suite.py`：在用户提供 licensed normalized export 时运行 i2b2 matched baselines；无数据时只写 execution manifest。
-  - `i2b2_transfer_execution_manifest.csv`：i2b2 comparator roster 的 execution-status 记录。
-  - `i2b2_transfer_run_log.csv`：i2b2 wrapper 当前 waiting/executed 状态的原始运行记录。
-  - `fill_paper_tables.py`：把上述 CSV 回填到 `paper/main.tex` 与 `paper/appendix.tex` 中对应的代码支撑表格。
-- `figures/`
-  - `prompt_privacy_operating_points.py`：生成主文 `prompt_privacy_operating_points.png`。
-  - `agent_propagation_curves.py`：生成主文 `agent_propagation_curves.png`。
-  - `agent_pipeline_summary.py`：生成附录 `agent_pipeline_summary.png`。
-  - `cppb_benchmark_composition.py`：生成附录 `cppb_benchmark_composition.png`。
-  - `restoration_ablation_tradeoffs.py`：生成附录 `restoration_ablation_tradeoffs.png`。
-  - `run_all_figures.py`：统一生成当前论文图以及仓库中保留的旧图文件。
-- `algorithms/`
-  - 当前只保留轻量示例/烟雾测试代码，不应被表述为主文所有实验结果的直接来源。
+- `algorithms/` — the mediation mechanism and its supporting algorithms.
+- `experiments/` — every experiment, baseline, benchmark-construction and
+  analysis script, together with the result records (`*_results.csv`,
+  `*_rows_*.csv`, `*_summary_*.csv`) and the run manifests
+  (`*_runtime_manifest_*.csv`, `*_manifest_*.csv`) that record model digests,
+  quantization, decoding settings, seeds, context length, library versions and
+  hardware. `experiments/README.md` is the file-by-file inventory.
+- `figures/` — the scripts that draw the manuscript figures.
 
-## 当前可由代码直接支撑的论文内容
+Scripts resolve the project root two levels above `experiments/` and read
+`data/` from there, so an unzipped copy runs without path edits.
 
-- 主文 Table III `tab:per`
-- 主文 Table V `tab:utility`
-- 主文 Table VIII `tab:pi_sensitivity`
-- 主文 `tab:measprop`（由 `aggregate_paper_results.py` 从分片记录汇总生成）
-- 主文 Table XII `tab:latency`
-- 主文 `tab:cppb_card`
-- 主文 `prompt_privacy_operating_points.png`
-- 主文 `agent_propagation_curves.png`
-- 附录 `agent_pipeline_summary.png`
-- 附录 `cppb_benchmark_composition.png`
-- 附录 `tab:restore`
-- 附录 `tab:ablation`
-- 附录 `tab:catwise`
-- 附录 `tab:multimodal`
-- 附录 `tab:crossmodel`
-- 附录 `tab:hardcase`
-- 附录 `tab:multiseed`
-- 附录 `tab:lto`
-- 附录 `tab:baseline`
-- 附录 `tab:tabtransfer`
-- 附录 `restoration_ablation_tradeoffs.png`
+## Where each reported number comes from
 
-此外，release-card 与 manifest 类说明文件现在也可直接支撑论文中的 reproducibility / scope 边界表述，但它们不构成新的实验结果表。
+The pooled summaries behind the main results are rebuilt from the shipped
+per-document and per-case records by `experiments/aggregate_paper_results.py`,
+which needs no third-party package and is the fastest way to check a reported
+number against its record.
 
-其余表格目前仍属于：
+| Manuscript object | Produced by |
+| --- | --- |
+| `tab:measprop`, `fig:propagation` — cross-boundary propagation | `measured_privacylens_propagation.py`, `mediation_baselines.py`; pooled by `aggregate_paper_results.py`, drawn by `figures/propagation_and_fact_gap.py` |
+| `tab:propints` — the same table with intervals on every column | `aggregate_paper_results.py` |
+| `tab:downstream` — PrivacyLens downstream leakage and helpfulness | `privacylens_downstream_suite.py` |
+| `tab:inject` — AgentDojo under prompt injection | `agentdojo_restoration_suite.py` |
+| `fig:inferability` — surface form against factual inferability | `figures/fact_retention_vs_inferability.py` |
+| `tab:judge` — lightweight learned privacy-judge baseline on the controlled benchmark | `cppb_privacy_judge_baseline.py` |
+| `tab:judgecap` — judge agreement with human labels across model capacity | `semantic_inferability_judge_capacity.py`; the human labels and the two automated proxies are scored by `semantic_inferability_agreement.py` |
+| `tab:contextattack` — executed attack on the released surface | `privacylens_context_inference_attack.py`, `privacylens_attribute_recovery_attack.py` |
+| `tab:advmeas` — adaptive adversary against the actual detectors | `measured_adaptive_adversary.py` |
+| `tab:mapcompromise` — mapping-table compromise curve | `secure_mapping_compromise.py` |
+| `tab:crossdom` — cross-domain transfer of the learned detector | `cross_domain_detector.py` |
+| `tab:lightclf` — learned-baseline slice on AI4Privacy | `ai4privacy_lightweight_classifier_baseline.py` |
+| TAB external transfer, reported in prose | `tab_matched_baseline_suite.py` |
+| `tab:ocrslice` — OCR-mediated slice | `cord_ocr_transfer_suite.py`, `funsd_ocr_transfer_suite.py`, `sroie_ocr_transfer_suite.py` |
+| `tab:portability` — second downstream model | `privacylens_downstream_suite.py` with a second agent model |
+| `tab:cppb_card` — controlled-benchmark accounting | `build_cppb_manifest.py` |
+| `tab:per`, `tab:utility`, `tab:pi_sensitivity`, `tab:latency` — the controlled-benchmark appendix, re-measured on the reconstructed surface | `cppb_reconstructed_paper_tables.py`; the execution environment behind the latency table is in `latency_host_manifest.csv` |
+| `tab:restore`, `tab:ablation` — restoration-boundary and sanitization-mode ablations | recorded in `restoration_boundary_analysis.csv` and `sanitization_mode_ablation.csv`; no generating script remains in the tree, so they are records rather than reproducible output |
+| `fig:operating_points` — policy operating points | `policy_threshold_sweep.py`, `figures/prompt_privacy_operating_points.py` |
 
-- 概念性或示意性内容，例如 Table I、Table II；
-- 或当前仓库中尚未补齐完整生成脚本的手工整理结果。
+`fill_paper_tables.py` writes the tables it has records for back into the
+manuscript source. It carries builders for labels the manuscript no longer
+uses; a builder with no matching label in the `.tex` does nothing.
 
-## 推荐命令
+`fig:workflow` is a drawn diagram, not a generated one. `tab:threat_map`,
+`tab:pi_rules`, `tab:prior_comparison`, `tab:mapping_surface`, `tab:models` and
+`tab:app-examples` are expository and have no record behind them; they are not
+claimed as reproduced output.
 
-- 生成论文图：
-  - `python src/figures/run_all_figures.py --out-dir paper/figs`
-- 生成 CPPB benchmark accounting 工件：
-  - `python src/experiments/build_cppb_manifest.py`
-- 生成 CPPB source-level provenance 工件：
-  - `python src/experiments/build_cppb_source_manifest.py`
-- 生成 Hugging Face-ready CPPB dataset bundle：
-  - `python src/experiments/build_hf_cppb_dataset.py --clean`
-- 直接上传 CPPB 到 Hugging Face dataset repo：
-  - `python src/experiments/build_hf_cppb_dataset.py --clean --repo-id <your-hf-org-or-username>/CPPB --upload`
-- 生成 category-wise supporting artifact：
-  - `python src/experiments/categorywise_analysis.py`
-- 生成 multimodal supporting artifact：
-  - `python src/experiments/multimodal_analysis.py`
-- 生成 cross-model portability supporting artifact：
-  - `python src/experiments/crossmodel_analysis.py`
-- 生成 hard-case supporting artifact：
-  - `python src/experiments/hardcase_analysis.py`
-- 生成 multi-seed 稳定性工件：
-  - `python src/experiments/multiseed_evaluation.py`
-- 生成 adversarial probe robustness 工件：
-  - `python src/experiments/adversarial_robustness_suite.py`
-- 生成 context-inference attack 工件：
-  - `python src/experiments/context_inference_attack_suite.py`
-- 生成 leave-template-out 泛化工件：
-  - `python src/experiments/leavetemplateout_evaluation.py`
-- 生成 external baseline comparison 工件：
-  - `python src/experiments/external_baseline_suite.py`
-- 生成 TAB / i2b2 external transfer protocol scaffold：
-  - `python src/experiments/tab_external_transfer.py src/experiments/external_data/tab`
-  - `python src/experiments/tab_matched_baseline_suite.py`
-  - `python src/experiments/prepare_i2b2_normalized_export.py --template-only --output src/experiments/i2b2_normalized_export_template.jsonl`
-  - `python src/experiments/i2b2_external_transfer.py`
-  - `python src/experiments/i2b2_matched_baseline_suite.py <normalized_i2b2_export.jsonl>`
-- 生成 external dataset / baseline acquisition manifest：
-  - `python src/experiments/acquire_external_resources.py`
-- 生成 AI4Privacy English export 并运行 matched baselines：
-  - `python src/experiments/build_ai4privacy_pii300k_export.py`
-  - `python src/experiments/ai4privacy_matched_baseline_suite.py`
-- 运行 AI4Privacy held-out local zero-shot pilot：
-  - `python src/experiments/build_ai4privacy_pii300k_export.py --split ai4privacy-test --max-records 100 --output src/experiments/ai4privacy_pii300k_english_export_test100.jsonl`
-  - `python src/experiments/ai4privacy_ollama_zero_shot_baseline.py --input src/experiments/ai4privacy_pii300k_english_export_test100.jsonl --model llama3:latest --output-tag test100`
-- 生成 OCR-heavy transfer scaffold：
-  - `python src/experiments/ocr_external_transfer.py`
-- 固定并执行 CORD OCR-heavy public slice：
-  - `python src/experiments/acquire_cord_snapshot.py`
-  - `python src/experiments/cord_ocr_transfer_suite.py --dataset-root src/experiments/external_data/resource_cache/cord_dataset/hf_snapshot/4f51527df44a7f7f915bee494f1129915118d0e1/extracted/CORD --split valid`
-- 用 CSV 回填主文中已代码支撑的表格：
-  - `python src/experiments/fill_paper_tables.py --paper paper/main.tex`
-- 用 CSV 回填附录中已代码支撑的表格：
-  - `python src/experiments/fill_paper_tables.py --paper paper/appendix.tex`
-- 运行仓库内轻量代码检查：
-  - `python src/run_all.py`
+## Commands
 
-## 依赖
+Rebuild the pooled summaries behind the main tables (no dependencies):
 
-见 `src/requirements.txt`。当前图形脚本依赖 `numpy`、`matplotlib`；OCR-heavy CORD rerun 另外使用 `rapidocr-onnxruntime`。
+```bash
+python src/experiments/aggregate_paper_results.py
+```
+
+Lightweight repository check, and the manuscript figures:
+
+```bash
+python src/run_all.py
+python src/figures/run_all_figures.py --out-dir paper/figs
+```
+
+Fetch the public corpora the transfer slices need:
+
+```bash
+python src/experiments/acquire_external_resources.py
+```
+
+Rebuild the controlled benchmark surface and its Hugging Face bundle:
+
+```bash
+python src/experiments/build_cppb_manifest.py
+python src/experiments/build_cppb_source_manifest.py
+python src/experiments/build_hf_cppb_dataset.py --clean
+```
+
+Re-run a model-serving experiment (needs the local endpoint and the model named
+in that experiment's run manifest — read the conditions off the manifest rather
+than off the CLI defaults, which are not what every recorded run used):
+
+```bash
+python src/experiments/privacylens_downstream_suite.py --agent-model <model>
+python src/experiments/privacylens_attribute_recovery_attack.py --attacker-model <model>
+```
+
+Write records back into the manuscript source:
+
+```bash
+python src/experiments/fill_paper_tables.py --paper paper/main.tex
+python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
+```
+
+## Dependencies
+
+`src/requirements.txt`. The optional blind-review interface is in
+`src/requirements-ui.txt` and is needed for no reported number; installing it
+alongside the pinned stack does not resolve in useful time, which is why it is
+a separate file.

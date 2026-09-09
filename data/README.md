@@ -68,7 +68,10 @@ python src/experiments/cppb_blind_review_ui.py
 ```
 
 Open the displayed local URL, enter a rater ID, select a prompt block, score
-all four anonymous outputs, add optional comments, and click **保存当前
-prompt 的四条评分**. Ratings are written to
+all four anonymous outputs, add optional comments, and click the save button,
+labelled **保存当前 prompt 的四条评分** ("save the four ratings for this
+prompt"). The interface is in Chinese because the raters were; it is reproduced
+here as they saw it rather than retranslated after the fact, since the wording a
+rater read is part of the instrument. Ratings are written to
 `cppb_reconstructed_blind_ratings_vgpu3090.csv`; this file contains only the
 blind condition codes and rater scores, not the analyst method key.
