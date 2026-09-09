@@ -63,6 +63,12 @@ ROW_FIELDS = [
     "condition", "case", "agent_model", "judge_model", "generated", "has_action", "leak_any", "leak_count",
     "secret_count", "helpfulness", "ids_total", "ids_in_output", "ids_in_final_action", "tokens_in_output",
     "protected_values", "raw_values_visible_before_tool",
+    # The text a mediated condition actually released to the agent. Without it
+    # a recorded run can only be replayed by re-deriving the surfaces from a
+    # live detector stack, and a detector version bump then changes what is
+    # being compared without changing anything visible. These two columns cost
+    # size and buy the ability to check a released surface years later.
+    "released_instruction", "released_trajectory",
 ]
 
 
@@ -326,6 +332,7 @@ def evaluate_case(case: dict, prefix_row: dict, cond: Condition, agent: CachedOl
         "secret_count": len(items), "helpfulness": helpfulness, "ids_total": ids_total, "ids_in_output": ids_in_output,
         "ids_in_final_action": ids_in_final, "tokens_in_output": tokens_in_output, "protected_values": len(mapping),
         "raw_values_visible_before_tool": raw_visible,
+        "released_instruction": instr_r, "released_trajectory": traj_r,
     }
 
 
@@ -360,36 +367,74 @@ def _export_judge_decisions(cases: list[dict], prefixes: dict, conditions: list,
     one by one, so a human check scored against this file is scored against
     the decisions that produced the published numbers rather than against a
     fresh run that might differ. That identity only holds if nothing here is
-    generated: every prompt must already be in the cache. The function says so
-    loudly when it is not, because a silently regenerated verdict would make
-    the validation measure the wrong thing.
+    generated: every prompt must already be in the cache. So the run stops at
+    the first generated call rather than finishing and warning afterwards -- a
+    file mixing replayed and regenerated verdicts is worse than no file, since
+    nothing in it says which rows are which.
+
+    Rows are appended and fsynced per case and a rerun skips the pairs already
+    exported, because this runs on hosts that get shut down to stop billing and
+    the detector setup alone costs several minutes.
+
+    Pass the condition list from the run's own manifest, not the CLI default:
+    the default names six conditions and attaches learned_lr to the symbolic
+    ones, while the recorded run used nine with gliner_pii, and a combination
+    that was never run has no cache to replay from.
     """
     generated_before = agent.generated + judge.generated
-    decisions: list[dict[str, object]] = []
-    for cond in conditions:
-        missed = 0
-        for case in cases:
-            try:
-                evaluate_case(case, prefixes[case["name"]], cond, agent, judge, decisions=decisions)
-            except (GenerationFailed, KeyError) as exc:
-                missed += 1
-                print(f"  skip {cond.spec} {case.get('name')}: {exc}")
-        print(f"[{cond.spec}] replayed {len(cases) - missed}/{len(cases)} cases")
 
-    with out.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=DECISION_FIELDS)
-        writer.writeheader()
-        for row in decisions:
-            writer.writerow(row)
-        handle.flush(); os.fsync(handle.fileno())
+    # Resume rather than repeat: this runs on hosts that get shut down to stop
+    # billing, and the detector setup alone costs several minutes.
+    done: set[tuple[str, str]] = set()
+    if out.exists():
+        with out.open(encoding="utf-8", newline="") as handle:
+            done = {(r["condition"], r["case"]) for r in csv.DictReader(handle)}
+        print(f"[judge-decisions] resuming: {len(done)} case/condition pairs already exported")
 
-    fresh = agent.generated + judge.generated - generated_before
-    print(f"[judge-decisions] wrote {out.name}: {len(decisions)} per-secret decisions, "
-          f"{sum(int(d['judge_leak']) for d in decisions)} judged as leaking")
-    if fresh:
-        print(f"  WARNING: {fresh} calls were generated rather than replayed from cache. This file is "
-              f"therefore NOT a record of the published run's decisions. Re-run where the cache lives.")
-        return 1
+    handle = out.open("a", encoding="utf-8", newline="")
+    writer = csv.DictWriter(handle, fieldnames=DECISION_FIELDS)
+    if not done:
+        writer.writeheader(); handle.flush()
+
+    written = leaking = 0
+    try:
+        for cond in conditions:
+            missed = skipped = 0
+            for case in cases:
+                if (cond.spec, case["name"]) in done:
+                    skipped += 1
+                    continue
+                batch: list[dict[str, object]] = []
+                try:
+                    evaluate_case(case, prefixes[case["name"]], cond, agent, judge, decisions=batch)
+                except (GenerationFailed, KeyError) as exc:
+                    missed += 1
+                    print(f"  skip {cond.spec} {case.get('name')}: {exc}")
+                    continue
+                # Stop at the first fresh call instead of finishing and warning
+                # afterwards. A generated verdict is not the one that produced
+                # the published rate, and a file that mixes the two is worse
+                # than no file: every row here is replayed, or the run stops.
+                if agent.generated + judge.generated > generated_before:
+                    handle.flush(); os.fsync(handle.fileno()); handle.close()
+                    print(f"  ABORTED at {cond.spec} {case['name']}: a call was generated rather than "
+                          f"replayed from cache, so it is not the decision behind the reported rate. "
+                          f"{written} replayed rows are kept and a rerun resumes after them. Check that "
+                          f"--conditions matches the run manifest and that the cache is present.")
+                    return 1
+                for row in batch:
+                    writer.writerow(row)
+                    written += 1
+                    leaking += int(row["judge_leak"])
+                handle.flush(); os.fsync(handle.fileno())
+            print(f"[{cond.spec}] replayed {len(cases) - missed - skipped}/{len(cases)} cases"
+                  + (f" ({skipped} already exported)" if skipped else ""))
+    finally:
+        if not handle.closed:
+            handle.close()
+
+    print(f"[judge-decisions] wrote {out.name}: {written} new per-secret decisions, "
+          f"{leaking} of them judged as leaking")
     print("  every call came from the cache: these are the decisions behind the reported leak rates")
     return 0
 
@@ -449,6 +494,15 @@ def main() -> int:
 
     done = _read_done(rows_path)
     new_file = not rows_path.exists()
+    if not new_file:
+        with rows_path.open(encoding="utf-8", newline="") as probe:
+            header = next(csv.reader(probe), [])
+        if header != ROW_FIELDS:
+            print(f"[error] {rows_path.name} was written with a different schema "
+                  f"({len(header)} columns, this build writes {len(ROW_FIELDS)}). Appending would "
+                  f"misalign every new row. Re-run with a new --output-tag, or finish the run with "
+                  f"the build that started it.")
+            return 1
     handle = rows_path.open("a", encoding="utf-8", newline="")
     writer = csv.DictWriter(handle, fieldnames=ROW_FIELDS)
     if new_file:
