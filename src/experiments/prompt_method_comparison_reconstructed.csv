@@ -1,0 +1,8 @@
+method,per,ac,tsr,per_ci_low,per_ci_high,prompts
+No protection,100.00,1.000,1.000,100.00,100.00,256
+Regex-only,50.00,0.996,1.000,44.53,56.25,256
+Capitalization heuristic,62.50,0.988,1.000,56.64,67.97,256
+Generic de-identification,0.00,0.939,0.937,0.00,0.00,255
+Enterprise staged redaction,37.50,0.975,1.000,32.03,43.75,256
+Proposed (semantic abstraction),27.34,0.984,1.000,21.88,32.81,256
+Proposed (utility-constrained),12.50,0.957,1.000,8.59,17.19,256
