@@ -1,0 +1,5 @@
+comparison,n,cohens_kappa,interpretation,raw_agreement,cell_no_no,cell_no_yes,cell_yes_no,cell_yes_yes,note
+annotator1_vs_annotator3_independent,102,0.739,substantial,0.873,37,6,7,52,"annotator 3 started from a blank sheet and saw neither earlier annotator's labels nor the judge's; this is an inter-rater reliability estimate, not an upper bound"
+annotator2_vs_annotator3,96,0.746,substantial,0.875,36,7,5,48,"annotator 2's labels were primed by annotator 1; annotator 3's were not, so this pairing inherits the priming from one side"
+judge_vs_annotator3,102,0.120,slight,0.598,11,33,8,50,
+lexical_vs_annotator3,102,0.240,fair,0.657,12,32,3,55,
