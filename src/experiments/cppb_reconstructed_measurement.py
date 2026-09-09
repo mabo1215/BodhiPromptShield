@@ -565,7 +565,10 @@ def _write_manifest(path: Path, args: argparse.Namespace, records: list[dict], a
         ("ac_definition", "judge-scored task-relevant agreement between the raw-prompt and mediated-prompt "
                           "answers (AGREE=1, PARTIAL=0.5, DISAGREE=0)"),
         ("tsr_definition", "judge-scored satisfaction of the template's stated success criteria (SUCCESS=1, FAIL=0)"),
-        ("latency_definition", "mediation wall-clock per prompt, CPU only, excluding model generation"),
+        ("latency_definition", "wall-clock of the mediation step per prompt, excluding the downstream "
+                               "answer and the judge. For the rule-based methods this is CPU only; for "
+                               "LLM-based abstraction it necessarily includes that model's generation, "
+                               "which is why the latency table reports the rule-based pipelines only"),
         ("decoding", f"temperature 0, top_p 1, seed {SEED}; agent num_predict {AGENT_NUM_PREDICT}, "
                      f"judge num_predict {JUDGE_NUM_PREDICT}"),
         ("context", f"agent num_ctx {AGENT_NUM_CTX}, judge num_ctx {JUDGE_NUM_CTX}"),
