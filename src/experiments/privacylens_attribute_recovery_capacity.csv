@@ -3,4 +3,7 @@ Qwen3 32B - Qwen3 8B,no_protection,103,"+1.0 [-6.9, +9.0]",no
 Qwen3 32B - Qwen3 8B,placeholder:presidio,662,"+1.5 [-2.1, +5.5]",no
 Qwen3 32B - Qwen3 8B,casper_style,687,"+1.0 [-3.1, +4.8]",no
 Qwen3 32B - Qwen3 8B,placeholder:learned_lr,1048,"+2.3 [-1.2, +5.5]",no
-Llama 3.3 70B - Qwen3 32B,no_protection,15,"+6.7 [+0.0, +17.6]",no
+Llama 3.3 70B - Qwen3 32B,no_protection,102,"-4.9 [-11.2, +0.0]",no
+Llama 3.3 70B - Qwen3 32B,placeholder:presidio,656,"-2.9 [-6.7, +0.6]",no
+Llama 3.3 70B - Qwen3 32B,casper_style,672,"-11.5 [-15.8, -7.5]",yes
+Llama 3.3 70B - Qwen3 32B,placeholder:learned_lr,47,"-6.4 [-19.6, +6.4]",no
