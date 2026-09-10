@@ -2220,6 +2220,48 @@ PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submis
     版权盒自身的 3.85pt 与附录一行 1.02pt（约 0.36mm，肉眼不可见）。
     注意 `submit/` 里的预印本是改前源码构建的，如需发布应重建。
 
+15. **第四轮独立评审（2026-09-11，PoPETs 2027 Issue 3）**：`docs/RevisionSuggestions.tex` 已整份重写，
+    不沿用任何上一轮的判断。本轮做了三件此前没做过的核查：(a) **指标定义对照实现代码**——
+    §4.4 把 PER 定义成 span 集合之比，主文所有 PER 实际是**字符覆盖率**
+    （`propagation_suite.py:237` 的 `res_chars/sens_chars`），而附录 CPPB 又是第三种算法
+    （span 字面存在）；Table 3 的 "Mem. SPE" 一列在 AI4Privacy 上按 span 数、在 PrivacyLens 上按字符数，
+    这正好解释了 Presidio 那行 SPE 60.1 > PER 52.2、learned 那行 3.4 < 7.4 这两个看似违反
+    §4.4 "包含性" 论证的反常；(b) **参考文献抽验 9/50**——Casper 被著录成 ACM CCS Workshops 2024，
+    实际是 arXiv:2408.07004 / IEEE CSCloud 2025，第四作者姓名也缺了一节；Rescriber 四位作者错了两位。
+    三篇 2026 年的 arXiv（PromptGraph 2607.10709、PAAC 2605.08646、PrivacyAlign 2606.21710）
+    以及 PrivacyLens、AgentDojo、PrivacyRestore、PAPILLON 逐字核对**无误**；(c) **抓取 venue 现行要求**
+    （petsymposium.org/authors-2027.php 与 cfp27.php，2026-09-11）——**附录必须在同一个投稿 PDF 内**，
+    且 "PC members are not required to read the appendices"，而现在附录是独立编译的第二份文档，
+    §6.5 的两张表（对抗规避、prompt injection）在正文里一张都没有。
+    另有 9 条抽查过的数字（downstream/propagation/injection/attribute recovery/judge agreement）
+    与记录**逐位相符**。评审文件给出 F1--F16、V1--V2、A1--A6 与 D1--D4，构建 9 页、0 error、0 overfull。
+
+16. **A1/A2/A3 已执行（2026-09-11，紧接第四轮评审）**：
+    - **A1 参考文献全量核对**：50 条逐条对照权威源，**查出 9 处实质错误 + 3 处格式错误**（抽验时的 2 处只是冰山一角）。
+      实质错误：Casper 著录成 ACM CCS Workshops 2024（实为 IEEE CSCloud 2025，arXiv:2408.07004，第四作者姓名截断）；
+      `carlini2023diffusion` 标题对、**作者列表是另一篇论文的**（Membership Inference From First Principles）；
+      `mialon2023augmented` **七位作者查无此人**且期刊错（TMLR 2023 而非 TACL 12:531--550/2024）；
+      Rescriber 两个姓氏错；SROIE 把第三方 GitHub 镜像的贡献者当成数据集作者（应为 Huang 等，ICDAR 2019, 1516--1520）；
+      Staab 等（ICLR 2024 而非 IEEE S&P）；El Emam 四位作者只写了两位且名字错；Meystre 年份卷号错（2008;17(1)）；
+      Perez & Ribeiro 的 workshop 错（ML Safety Workshop）。格式错误：两处 `and others` 加在作者已列全的条目上、
+      两处 umlaut 缺反斜杠（会印出多余引号）、两处条目类型错。
+      **72 条 BibTeX completeness warning 故意没消**——补 publisher/address/pages 就得凭记忆写没核实过的元数据，
+      那正是这次核对要防的事。§AI Use 已加一句说明文献是逐条对照权威源核过的（F5 关闭）。
+    - **A2 合并成单个投稿 PDF**：`appendix.tex` 不再是独立文档，由 `main.tex` 在参考文献之后 `\input` 进来；
+      `xr` 包与 `A-`/`M-` 两套标签前缀全部去掉，`build.bat` 从"main→appendix→main"三趟变成单目标。
+      成品 **24 页：正文 1--12、三个必填节与参考文献在 13、附录从 14 页起且明确标注**，0 undefined、0 error、
+      双盲扫描干净。AgentDojo 注入表（现 Table 6）已挪进 §6.5 正文，正文那段不再重复表里的数字。
+      **腾版面的代价记在这里以便回退**：§4.6+§4.7 合并成一段（agent 的集合记号后文从未再用，runtime 那段被附录的
+      实测延迟表取代）、§4.4 末尾与 §2.4 重复的 DP 句删除、两句 filler 与一个再未使用的行间公式内联、
+      §2.2 信任假设段压缩、§6.6 不再复述附录 I 的开场句、结论少了约四行复述。
+      **正文现在正好卡在第 12 页末尾，没有余量了。**
+    - **A3 指标定义对齐**：§4.4 的 PER 改成实现真正在算的字符覆盖率，CPPB 的 span 级变体单独命名
+      （已先核实 CPPB 每条 prompt 恰好一个注入 span 才敢这么写）；SPE 段与 Table 4 caption 逐列标注单位
+      （文档源按整 span、轨迹源按字符）；包含性那句改成数据支持的说法；FRR 措辞对齐实现（含短事实的下取整地板）；
+      §6.5 标明 8.1% 与 7.4% 是 200/300 文档两个切片。**没有任何数字被改动。**
+    - 仍未做：A4（标注扩样，等 D1）、A5（附录里 routing 降级残留与 profile caption 自相矛盾）、F12--F16、V1/V2。
+    - `paper/appendix.pdf` 是旧的两文档构建留下的，已经无法再生成，**建议删掉以免误投**（未删，删文件要你点头）。
+
 ## 2026-09-03 revision cycle completion：vGPU 实验回收、论文回填与审稿闭环（当前新增）
 
 - 已统一主文与附录 privacy-judge 表的企业基线和提出方法数值：统一为企业 staged redaction `8.1%`、提出方法 `9.3%`。同步修改了 `paper/main.tex`、`src/experiments/cppb_privacy_judge_baseline.py`、`cppb_privacy_judge_comparison.csv` 和 runtime manifest；表格回填后仍保持该数值。
@@ -2564,6 +2606,16 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 2026-09-09：`# 遗留问题` 的六条已全部答复，本节按答复重排。放弃与认可两条已闭合并
 移入 `# 已全部修改`；另外三条从"等你拍板"变成"工具已就绪、等人力或等主机"。
 
+**第四轮评审开出的新待办（2026-09-11，细节见 `docs/RevisionSuggestions.tex`）**
+
+A1（文献核对）、A2（合并单 PDF + 挪表）、A3（指标定义对齐）已于 2026-09-11 完成，见 `# 已全部修改` 第 16 条。
+
+- **A4 可推断性标注扩样**（P1，2--35 天）：现在每方法 17 条、区间宽达 47 个点。工具与两位
+  非作者读者都已就位，成本是人力不是算力——见 D1。
+- **A5 附录里 routing 机制降级的残留**（P2，半天）：附录 A 的 $\Pi_\pi$ 记号、D.2 "isolates the
+  routing policy"、D.3 用类别梯度去论证 $\Pi_\pi$ 的权重，以及 `tab:pi_profiles` 说
+  "No result is produced under a named profile" 与 `tab:pi_sensitivity`/`tab:latency` 自相矛盾。
+
 **卡在外部资源，不需要你现在决定**
 
 - **PrivacyRestore 同协议复现**（60%）：需要白盒自服务模型 + 约 5 天。论文已给出不复现的
@@ -2577,4 +2629,15 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 
 需要你提供/决策。答完一条即可就地删掉该条。
 
-（本节当前无未决问题。预印本一条已于 2026-09-11 答复并执行，见顶部条目。）
+**2026-09-11 第四轮评审的四条决策（D1--D4，原文在 `docs/RevisionSuggestions.tex`）**
+
+1. **标注扩样做不做？** 每方法 17 条 → 40 条（合计 240），用已有的空白表模式，留 60 条重叠再算一次
+   评分者间信度。建议：做，并且一周内定，标注窗口才能提前关。退路是把该结论改成序数表述
+   （"单调下降"），可以接受但明显更弱。
+   A:
+2. **预印本发不发？** 建议**通知前不发**：venue 明确 discourage，评审期发布对论文没有增益，
+   同题公开版还会削弱双盲。
+   A:
+
+（原 D2「正文放哪张表」与 D4「PER 定义怎么改」已按建议默认执行——注入表进正文、PER 按实现改定义。
+两者都可回退：前者移动一个浮动体，后者改回 §4.4 的措辞。不同意就在这里说一声。）
