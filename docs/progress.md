@@ -1,6 +1,132 @@
 # 论文进度
 
-## 2026-09-11（第四轮）D1/D2 已执行：$\Pi_\pi$ 降级、Algorithm 1 收缩，正文腾出约 20 行（当前最新）
+## 2026-09-11（第六轮）D1 落地 + 预印本已生成到 submit/（当前最新）
+
+按你的答复：**D1 照建议改、D2 附录形式暂无信息保持开着、D3 预印本由我生成一版**。
+`docs/progress.md` 里第 4 条"需要检查是否有前后矛盾"也查了。
+
+### A1/A2 五处全部改完（正文仍止于 p12，0 error / 0 undefined reference）
+
+| | 改动 |
+|---|---|
+| **D1 摘要** | 保留 "policy-aware"，删掉 "routes them to"，改成 "replaces each with a typed placeholder, a semantic abstraction, or a secure symbolic token **under a configured policy**" |
+| **F2 图注** | Figure 1 的 caption 和 `\Description`（无障碍文本）都从 "applies policy-aware sanitization" 改为 "applies the configured sanitization policy" |
+| **F3 §2.1** | 补上范围句：本文固定 $\pi$、以 $\rho$ 为变量，联合优化两者是该形式化提出的开放问题而非本文结果 |
+| **F4 §6.3** | 段尾 channel summary 补上限定："does not survive correction **on the 32B agent, though six of eight conditions do on the 70B**" |
+| **F5** | 正文和附录两处 "ninefold" → "more than eightfold"（8.2B→70.6B 实为 8.61 倍） |
+
+### 你要求的第 4 条检查：**没有前后矛盾**
+
+- **作者块**：`main.tex` 与 `appendix.tex` 逐字一致——同三位作者、同顺序、同单位、同邮箱。
+- **标注者独立性**：三处描述（§6.2、Limitations、伦理小节）与记录**完全吻合**——
+  第二位是**复核/被引导**（记录注："reviewed annotator 1's labels rather than rating independently;
+  upper bound, not an inter-rater reliability estimate"），第三位是**空白表/独立**
+  （记录注："started from a blank sheet…this is an inter-rater reliability estimate"）。稿子没有把第二位说成独立重标。
+- **数字**：本轮未发现与记录不符者。
+
+### 预印本已生成：`submit/BodhiPromptShield_preprint.pdf`
+
+**25 页，正文 1–14、附录 15–25，连续页码**，源码与构建脚本在 `submit/preprint/`。
+科学内容、每个数字、每一节都与投稿版**完全相同**，只改了四处：
+
+1. **去匿名**：`[sigconf,anonymous,review]` → `[sigconf,nonacm]`，作者姓名/单位/邮箱正常显示。
+2. **不再声称 venue**——**这条最重要**。投稿版首页印着
+   "Proceedings on Privacy Enhancing Technologies 2027(3), 1–14 © 2027"、页眉也有同样字样。
+   **挂在一篇尚未被任何地方录用的预印本上，这是虚假的发表声称。**
+   已用 `\setcopyright{none}` + `nonacm` 去掉；volume/number/DOI 宏保留中性值，
+   因为 acmart 缺了它们直接编译失败。
+3. **加了预印本声明**（标题下）："Preprint. This paper is under submission; it has not been peer
+   reviewed and no venue is asserted."
+4. **删掉致谢占位符**：投稿版是 `\begin{acks}Removed for anonymous review.\end{acks}`，
+   这是匿名产物，署名版上是错的。**我删掉而不是编造**——真实致谢不在仓库里。
+
+**发之前你需要定两件事**（已写进 `submit/preprint/README.md`）：
+
+- **致谢**：现在是"没有"而不是"空的"。有资助或该致谢的人，发之前补上。
+- **Open Science 小节**仍写着 "provided as anonymized supplementary material and will be released
+  publicly under an open license **upon acceptance**"。这在投稿版是准确的，在预印本上别扭：
+  预印本读者没有 artifact 链接，"upon acceptance" 也无限期。建议在预印本版指向一个仓库或存档 URL。
+  **我没有擅自改**——这是实质性的可获取性承诺，不是格式产物。
+
+**时间点**：PoPETs 原话是 "we discourage authors from publicly posting pre-prints of their
+submissions while under review"——劝阻但不禁止。**11-30 投稿之前发是合规的**；
+评审期间推更新才是指引劝阻的动作。发完就别动，等结果。
+
+### 注意：`submit/` 在 .gitignore 里
+
+预印本 PDF 和源码**不会进版本库**（和 artifact zip 一样的处置）。文件在本地
+`submit/BodhiPromptShield_preprint.pdf` 和 `submit/preprint/`。
+
+### 还开着
+
+**V1** 附录形式（你说现在没信息，保持开着，需登录投稿系统看）。
+
+## 2026-09-11（第五轮）第三次独立评审重置：降级只做了一半，摘要还在承诺被删掉的机制
+
+`docs/RevisionSuggestions.tex` 已**全文覆盖重写**（英文 LaTeX，363 行，构建 5 页、0 error、
+0 undefined reference）。**这是历轮最短的一份行动清单——剩下的活是几小时，不是几周。**
+
+### 这轮第一次做了一件从没做过的事：核实引用
+
+支撑 §3.3「机制不是我们的」这个让步的三篇 2026 工作，**逐条上 arXiv 核对**：
+
+| bib key | arXiv | 标题 / 作者 | 结论 |
+|---|---|---|---|
+| `gu2026promptgraph` | 2607.10709 | PromptGraph…，Gu/Wan/Hu/Wang/Gu，2026-07-12 | **完全吻合** |
+| `yuan2026paac` | 2605.08646 | PAAC…，Yuan/Fang/Wang/Brinton，2026-05-09 | **完全吻合** |
+| `tamber2026privacyalign` | 2606.21710 | PrivacyAlign…，Tamber/Puri/Brunet/Taslakian/Lin/Gella，2026-06-19 | **完全吻合** |
+
+标题和**完整作者名单**都对得上，ID 都能解析。伪造引用是那种"直接终结投稿而不是修订"的问题，
+之前没有任何一轮查过。文献覆盖分从 82 提到 88。
+
+### 但降级只做了一半
+
+上一轮把 $\Pi_\pi$ 从"机制"降级为"设计"，**做得干净——只是只做在了 §4.5**。
+三处仍在描述被删掉的那个系统：
+
+1. **【P0】摘要**：仍写着 "a policy-aware mediation layer that … **routes them to** typed
+   placeholders, semantic abstraction, or secure symbolic mapping"。
+   而 §4.5 明写 "Every condition in this paper applies one mode uniformly … not a selector"。
+   **摘要是审稿人读的第一句，§4.5 是第四十句**——先信了再看到免责声明，比一开始就没声称更糟，
+   会读成"被逼出来的让步"而不是"主动交代"。
+2. **【P1】Figure 1 的 caption 和 `\Description`**（无障碍文本，也是投稿的一部分）
+   都还写着 "applies policy-aware sanitization"。
+3. **【P1】§2.1 的中心问题**仍是 "choose $(\pi,\rho)$"，§2.3 的目标函数也对 $\pi,\rho,T_\pi$ 取 min。
+   降级之后 **$\pi$ 是每个条件固定的配置、从不作为结果变化**，真正被评测的只有 $\rho$。
+   问题陈述承诺两个变量，结果交付一个，而 §2 从没说过这件事。
+
+### 【P1】§6.3 现在一段之内自相矛盾——**这是我上一轮自己造成的**
+
+同一段里：前面刚加的 F8 句子说 "That negative is **agent-specific** rather than general…
+六/八个条件在 70B 上过了 Holm"，可这段**结尾的 channel summary 还写着**
+"judge-scored leakage moves nine points and **does not survive correction**"。
+两句相隔八行、不可能同时成立。summary 那句早于 qualification，我加 F8 时没同步更新它。
+
+### 【P3】"ninefold" 实际是 8.6 倍
+
+模型清单写着 8.2B 和 70.6B，比值 **8.61**。正文和附录两处都写 "ninefold"。
+**而且正文那处是我上一轮做 F7 时搬过去的**——把一个既有的小夸大传导进了正文。
+改成 "more than eightfold" 即可，主张一样强且完全属实。
+
+### 评分：总体 78（上轮 77）
+
+文献 88(+6)、可复现性 88(+6)、方法严谨性 82(+2)；**写作 74(−4)——降下来的**，
+就因为上面这三处未传导 + §6.3 自相矛盾。
+
+### 需要你决策
+
+**D1** 摘要那句怎么改（**建议**：保留 "policy-aware"，删掉 "routes them to"，
+说成 configured replacement）——机械改动，但那是你们对自己系统的定性，我不擅自定。
+**D2** 附录形式（三轮未决，需登录）。**D3** 预印本（三轮未答）。
+
+**A2 两项完全不需要决策**（§6.3 那处矛盾 + ninefold），说一声我立刻做。
+
+### 本轮不再设 Issue 4 检查点
+
+前两轮设了，因为有能葬送投稿的活缺陷。**现在没有了**：A1/A2 都是文字编辑不是实验，
+V1/V2 一天内可答。**Issue 3 够得着。**
+
+## 2026-09-11（第四轮）D1/D2 已执行：$\Pi_\pi$ 降级、Algorithm 1 收缩，正文腾出约 20 行
 
 按你的答复 **D1 降级、D2 收缩**，两条一致地做完了，并顺手关掉不需要决策的 P1/P2。
 
@@ -2437,45 +2563,4 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 
 需要你提供/决策。答完一条即可就地删掉该条。
 
-1. **同名 arXiv 预印本 `arXiv:2604.05793` 要更新什么**——见下方"预印本需要更新的内容"，
-   确认后我可以直接生成用于 arXiv v2 的稿件。
-   - A: 
-## 预印本需要更新的内容（回应你上一条的提问）
-
-先说结论：**不用撤，但更新要赶在投稿之前，不要在评审期间更新。** PoPETs 2027 的作者指引原话是
-"While not expressly forbidden, we discourage authors from publicly posting pre-prints of their
-submissions while under review"——不禁止，但明确不建议在评审期间公开挂预印本，理由就是
-审稿人可能搜到从而产生偏见。这篇预印本已经挂在那里了，撤不撤都改变不了它可被搜到，
-所以合规上没问题；但**"评审期间推 v2"会主动把它顶上去**，这正是指引劝阻的动作。
-投稿的 PDF 那一侧是干净的：已是 `anonymous`，也没有引用这篇预印本。
-
-因此时间点建议：要发 v2 就赶在 11-30 投稿之前发；投出去之后到出结果之前，最好不要动它。
-
-但从内容看，那个版本和现在的稿子差得已经比较远了，而且**差的方向不利于你**——预印本里有几处
-现在已知是错的或已被推翻的说法，任何人搜到它都会先看到旧结论。按重要性排：
-
-1. **第三个主结论已经反过来了。** 预印本时代的说法是"中介手段几乎不改变事实层面的泄漏"，
-   依据是词重叠指标和 LLM judge。人工盲标推翻了这一条：可推断性从无保护的 100% 降到最激进
-   detector 的 24%，而那两个自动指标都没看出这个变化（κ=0.25 和 0.09，后者等于随机）。
-   现在论文的第三个卖点是"语义泄漏指标在被人工验证之前不可信"，和预印本写的正好相反。
-2. **主证据面换了。** 预印本以自建的 CPPB 为核心证据；现在 CPPB 已降级为附录里的"受控操作面"，
-   主文证据换成真实数据：AI4Privacy 300 篇、PrivacyLens 493 条真实 agent 轨迹 + 200 个任务
-   （由该基准自带的 judge 评分）、AgentDojo 的 banking/slack（真实工具执行 + 注入）。
-   对应的头条数字也换了：PER 7.4% / 1.8%，最终动作里的精确标识符从 13.7% 降到 2.1--3.1%。
-3. **多了两个预印本完全没有的结论**：一是恢复时机是主要设计变量（延后到执行边界，
-   边界泄漏 51.0% → 1.6%，只损失 0.11 分 helpfulness）；二是语义改写类逃逸能打穿
-   排版类逃逸打不穿的 detector（learned detector 上 paraphrase ASR 28.2%）。
-4. **几处事实性更正**（这几条是"必须改"，不是"最好改"）：作者单位、标注者的独立性描述
-   （第二位是复核不是独立重标）、以及若干在后续核对中被改掉的数字。
-5. **署名与致谢**：预印本署三位作者；确认现在的作者名单和顺序与之一致，不一致要一并改。
-
-建议做法：这一轮（第三位标注者 + judge 抽查）落地后、11-30 投稿之前，一次性发 v2；
-不要现在发一版两周后再发一版，更不要等投出去之后再发。如果这两项赶不上，
-那就只带上面第 1、2、4 条（结论反转、证据面更换、事实性更正）发一版——
-把已知是错的说法留在公开版本上，比版本旧本身更伤。
-**要发的时候告诉我，我按当时的 `paper/main.tex` 生成一版非匿名的 v2 稿。**
-
-注：PoPETs 2027 正文上限是 12 页（不含 ethical considerations / open science / AI use
-三个必需小节、致谢、参考文献与明确标注的附录），超出直接 desk-reject。当前 `paper/main.pdf`
-正文正好在第 12 页结束，三个必需小节从第 13 页开始，符合要求；预印本 v2 不受这条约束，
-但如果你想让 v2 和投稿版保持一致，就按现在这个结构出。
+（本节当前无未决问题。预印本一条已于 2026-09-11 答复并执行，见顶部条目。）
