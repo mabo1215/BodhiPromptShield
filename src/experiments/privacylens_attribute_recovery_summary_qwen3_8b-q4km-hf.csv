@@ -1,0 +1,5 @@
+condition,questions,cases,recovery_percent,chance_percent,value_survives_release_percent,recovery_when_value_absent_percent,questions_value_absent
+no_protection,1237,466,"96.9 [96.0, 97.9]",25.0,"91.7 [89.2, 93.7]","81.6 [73.1, 88.9]",103
+placeholder:presidio,1237,466,"78.3 [75.8, 80.9]",25.0,"46.4 [41.6, 50.9]","65.2 [61.4, 69.1]",663
+casper_style,1237,466,"74.7 [72.0, 77.4]",25.0,"44.5 [39.9, 48.9]","58.7 [55.1, 62.6]",687
+placeholder:learned_lr,1236,466,"62.7 [59.7, 65.9]",25.0,"15.2 [12.2, 18.1]","61.7 [58.5, 65.2]",1048

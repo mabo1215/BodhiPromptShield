@@ -1,0 +1,19 @@
+field,value
+attack,"4-way attribute recovery: the case's own fact with its most sensitive value blanked, filled from 4 candidates"
+distractor_policy,"same-kind values from other cases (identifier with identifiers, amount with amounts, entity with entities), so neither the case nor the answer type is informative"
+chance_accuracy_percent,25.0
+facts_dropped,250
+attacker_model,qwen3:8b-q4km-hf
+attacker_digest,a0a5ad8024dd21401f07634d0c71393b9c9d37aa57a6b594e02b86ab72c450b4
+attacker_family,qwen3
+attacker_parameter_size,8.2B
+attacker_quantization,Q4_K_M
+conditions,no_protection;placeholder:presidio;casper_style;placeholder:learned_lr
+cases,493
+questions_per_condition,1237
+decoding,"temperature 0, top_p 1, seed 17, num_predict 160, num_ctx 8192"
+bootstrap,"1000 case-level resamples, 95% percentile CI"
+python,3.12.3
+platform,Linux-5.15.0-78-generic-x86_64-with-glibc2.35
+host,autodl-container-9ea4k4v8uu-b4b46782
+timestamp,2026-09-10T08:53:06+0800
