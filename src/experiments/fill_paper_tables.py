@@ -16,6 +16,7 @@ This script only updates tables that are directly backed by repository CSVs:
     - tab:measprop         <- propagation_suite_{ai4privacy,privacylens}_results_pooled.csv
     - tab:advmeas          <- measured_adaptive_adversary_results.csv
     - tab:attrrecovery     <- privacylens_attribute_recovery_summary_*.csv
+    - tab:attrcap          <- privacylens_attribute_recovery_summary_*.csv (all attackers)
     - tab:mapadv           <- secure_mapping_adversary_results.csv
     - tab:hardcase         <- hardcase_analysis.csv
   - tab:restore          <- restoration_boundary_analysis.csv
@@ -533,6 +534,57 @@ def build_attrrecovery_table() -> str:
     )
 
 
+# The attacker-capacity sweep, in the order a reader should see it. Each entry
+# is (record tag, label); a model whose record is not present is skipped rather
+# than shown as a gap, so the table renders whatever has finished.
+_ATTACKER_CAPACITY = (
+    ("qwen3_8b-q4km-hf", "Qwen3 8B"),
+    ("qwen3_32b-q4km-hf", "Qwen3 32B (reported)"),
+    ("llama3.3_70b-q4km-hf", "Llama 3.3 70B"),
+)
+
+
+def build_attrcap_table() -> str:
+    """Recovery against attacker capacity, on the conditions that carry the claim.
+
+    The paper's own judge-capacity result is why this exists: capacity moved
+    judge agreement nearly fivefold, so a single-attacker attack number invites
+    the same objection. The column shown is recovery on the questions whose
+    value the detector removed, because that is the one the finding rests on.
+    """
+    wanted = ("no_protection", "placeholder:presidio", "casper_style", "placeholder:learned_lr")
+    short = {"no_protection": "None", "placeholder:presidio": "Presidio",
+             "casper_style": "Casper", "placeholder:learned_lr": "Learned"}
+    body_rows = []
+    for tag, label in _ATTACKER_CAPACITY:
+        try:
+            rows = _read_csv(f"privacylens_attribute_recovery_summary_{tag}.csv")
+        except FileNotFoundError:
+            continue
+        by_cond = {r["condition"]: r for r in rows}
+        cells = []
+        for cond in wanted:
+            row = by_cond.get(cond)
+            cells.append(_tex_escape(row["recovery_when_value_absent_percent"]) if row else "---")
+        body_rows.append(f"{_tex_escape(label)} & " + " & ".join(cells) + " \\\\")
+    if not body_rows:
+        raise FileNotFoundError("no attacker-capacity summaries found")
+    header = ("Attacker & " + " & ".join(short[c] for c in wanted) + " " + r"\\" + "\n")
+    return (
+        "\\begin{tabular}{lcccc}\n"
+        + "\\toprule\n"
+        + "& \\multicolumn{4}{c}{Recovered when value absent (\\%)} \\\\\n"
+        + "\\cmidrule(lr){2-5}\n"
+        + header
+        + "\\midrule\n"
+        + "\n".join(body_rows) + "\n"
+        + "\\midrule\n"
+        + "Chance & 25.0 & 25.0 & 25.0 & 25.0 \\\\\n"
+        + "\\bottomrule\n"
+        + "\\end{tabular}"
+    )
+
+
 def build_mapadv_table() -> str:
     rows = _read_csv("secure_mapping_adversary_results.csv")
     body = "\n".join(
@@ -890,6 +942,7 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:mapcompromise": build_mapcompromise_table,
     "tab:crossdom": build_crossdom_table,
     "tab:attrrecovery": build_attrrecovery_table,
+    "tab:attrcap": build_attrcap_table,
     "tab:mapadv": build_mapadv_table,
     "tab:hardcase": build_hardcase_table,
     "tab:restore": build_restore_table,
