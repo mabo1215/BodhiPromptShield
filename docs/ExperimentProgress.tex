@@ -10,13 +10,17 @@
 
 \section*{Revision-cycle experiment progress}
 \noindent
-Last updated: 2026-09-09 (third annotator scored; local build audit). Percentages describe repository work,
+Last updated: 2026-09-10 (attacker-capacity sweep completed; review findings F7--F9 closed).
+Percentages describe repository work,
 not a claim that blocked experiments are complete. The recorded AE decision on
 the TOPS submission is reject; the current target venue is PoPETs 2027 Issue~3
-(submission deadline 2026-11-30, 12-page main body, double blind), with TAISAP
-as the fallback. The paper is now two documents in the PoPETs template, \texttt{paper/main.tex}
+(submission deadline 2026-11-30 AoE, 12-page main body excluding the three
+required sections, double blind), re-verified against the live author
+instructions on 2026-09-10. The fallbacks are PoPETs Issue~4 and USENIX
+Security 2027 Cycle~2; ACM TOPS is explicitly not one, since it rejected this
+manuscript and its review is attached to this submission. The paper is now two documents in the PoPETs template, \texttt{paper/main.tex}
 (14 pages, main body ending on page~12) and \texttt{paper/appendix.tex}
-(9 pages), compiled separately and cross-referenced through \texttt{xr}. The
+(11 pages), compiled separately and cross-referenced through \texttt{xr}. The
 2026-09-06/07 GPU session on the RTX PRO 6000 host completed the E1/E3/E7
 roster; those rows are recorded below and the Results section has been rebuilt
 around them. A subsequent no-GPU pass audited the manuscript against the six
@@ -29,10 +33,12 @@ table-generation defects that silently reverted earlier manuscript fixes were
 repaired at their source. A 2026-09-09 session on the RTX PRO 6000 then re-measured the four CPPB
 appendix tables on the reconstructed 256-prompt surface under a fully
 manifested runtime, which is recorded below; the host was powered off after the
-results were pulled back and checksum-verified, so nothing is queued or
-executing anywhere. The paper builds to \texttt{main} 14 pages with the main body ending
-on page~12 and \texttt{appendix} 9 pages, with zero undefined references in
-either document. This table supersedes earlier
+results were pulled back and checksum-verified. The host was brought up again on
+2026-09-10 for the attacker-capacity sweep recorded below; all three runs
+finished and were pulled back, and the card is idle but powered on at the time
+of writing. The paper builds to \texttt{main} 14 pages with the main body ending
+on page~12 and \texttt{appendix} 11 pages, with zero errors and zero undefined
+references in either document. This table supersedes earlier
 revision-cycle status notes.
 
 \scriptsize
@@ -140,20 +146,44 @@ Second annotator closed out & The independent second reader's review pass, previ
 AgentDojo suite coverage closed out & Also moved out of the next-step table. Banking and slack are pooled and reported; travel stays abandoned on evidence rather than pending, because its agent emitted zero tool calls across all completed rows and rows without a tool call cannot evidence anything about tool-boundary restoration. The appendix states that suite shape, not suite count, bounds this. & \texttt{agentdojo\_injection\_summary\_pooled\_*}; \texttt{tab:inject} & Done (scope fixed on evidence) & 100\% \\
 Unplaced appendix floats repaired & Three cross-references printed as \texttt{??} in the built PDFs, two of them on pages~6 and~7 of the main body. The cause was not a mis-typed key: the two tables of the last appendix section (policy profiles and mapping threat surface) were declared \texttt{[t]}, were still in the float queue when the bibliography ended the document, and so were never shipped --- their captions never printed and their labels never reached the \texttt{.aux} that the main document reads through \texttt{xr}. Declaring both \texttt{[H]}, as the algorithm two sections later already is, places them where the text introduces them. & \texttt{paper/appendix.tex}; build logs & Done (0 undefined references; appendix 10 to 9 pages) & 100\% \\
 Third annotator closed out & The independent round is complete and scored. A reader who is not an author rated all 102 items from a blank sheet, seeing neither earlier reader's labels nor the judge's verdict, and agrees with the reported labels at Cohen's $\kappa=0.739$, 87.3\,\% raw --- the first inter-rater reliability estimate this subset supports, where round two could only give a primed upper bound. The export was checked against the two failure modes that matter before it was scored (a copy of round one; a degenerate sheet) and is neither: 58 YES to 44 NO, agreeing with round one on 89 of 102. Against the third reader the judge scores $\kappa=0.120$ and the lexical criterion $0.240$, within a few points of the $0.087$ and $0.250$ they score against the reported labels, so the proxy--human gap is not one annotator's idiosyncrasy. The reported labels and every figure are unchanged; round three is an independence check, not a replacement data source. & \texttt{semantic\_inferability\_round3\_annotations\_*}; \texttt{..\_agreement\_round3\_*}; \texttt{..\_human\_by\_method\_round3\_*}; \texttt{paper/main.tex} \S6.2 and Limitations & Done & 100\% \\
+\midrule
+\multicolumn{5}{l}{\emph{2026-09-10 RTX PRO 6000 session (attribute-recovery attack, attacker-capacity sweep) and review closure}} \\
+\midrule
+D3/F15 attribute-recovery attack & The forced-choice attack already in the appendix saturated: every mediated condition scored within seven points of no protection, because an attacker wins by recognising \emph{which} case a document is and mediation does not hide case identity. A second instrument asks the question the threat model poses instead --- the case's own fact with its most sensitive value blanked, filled from four same-kind candidates drawn from other cases, so neither the case nor the answer type is informative. Chance is $1/k$, scoring is an index match, and no judge model is involved. 1{,}237 questions over 466 cases; 250 facts dropped for carrying no single recoverable value. & \texttt{privacylens\_attribute\_recovery\_attack.py}; rows/summary/paired/manifest per attacker & Done & 100\% \\
+Attack result & Recovery falls from 97.7\,\% [96.7, 98.6] unprotected to 65.3\,\% [62.4, 68.2] under the learned detector, and nowhere near the 25\,\% chance line. Read on the questions whose value the detector actually removed --- where the answer cannot be read, only inferred --- it is 66.6\,\% [62.9, 70.2] for a Presidio placeholder, 59.7\,\% [55.5, 63.6] Casper-style and 64.0\,\% [60.8, 67.0] learned. The learned detector leaves the value verbatim in 15.2\,\% of releases against Presidio's 46.4\,\%: removing three times as much buys a few points the intervals barely separate. & \texttt{main.tex} \S6.6; appendix \S F.1, \texttt{tab:attrrecovery} & Done & 100\% \\
+Attacker-capacity sweep & The paper's own judge sweep moved agreement nearly fivefold with capacity, so a recovery rate from one attacker invited the same objection. The identical attack ran with an 8B and a 70B attacker. Question construction is seeded, so all three were posed the same 1{,}237 questions --- verified set-equal, not assumed --- which makes the comparison paired on the question rather than merely matched on protocol. & \texttt{attribute\_recovery\_capacity.py}; \texttt{privacylens\_attribute\_recovery\_capacity.csv} & Done & 100\% \\
+Capacity result & Seven of eight adjacent-capacity differences contain zero, including the learned detector at $-0.3$ [$-3.1$, $+2.5$] between 32B and 70B: across a ninefold range of attacker size, how often a removed value can be put back does not measurably move. The eighth inverts the intuition --- under Casper-style dummy values the 70B recovers 11.5 points \emph{fewer} than the 32B [$-15.8$, $-7.5$], because a stronger reader trusts a surface-plausible document and a plausible wrong value exploits that, where a typed placeholder announces itself. & Appendix \S F.2, \texttt{tab:attrcap} & Done & 100\% \\
+Scoring correction & Unanswered replies had been dropped from the denominator. Under dummy-value substitution that is not a parser fault: 25 of the 70B's Casper replies are ``none of these options are correct'', reasoning from the fake value Casper planted, which is the defence working. The summary now carries the unparsed count and the strict rate beside the lenient one. 8B and 32B have at most one unparsed reply anywhere, so no number already in the manuscript moved; only the 70B under Casper shifts, 48.5\,\% to 47.5\,\%. & \texttt{privacylens\_attribute\_recovery\_summary\_*.csv} & Done & 100\% \\
+F7 judge removed from the roster & \S5 listed judged inferability beside six live metrics and \S6.2 then showed it at $\kappa=0.087$ and stopped using it. The roster is six metrics; the seventh is named as absent on purpose because it is the instrument under test. & \texttt{paper/main.tex} \S5 & Done & 100\% \\
+F8 determinism stated & Decoding is deterministic --- temperature $0$, fixed seed, pinned local models --- so a repeat reproduces the run, and every reported interval is a sampling interval over evaluation units rather than across-run variance. One sentence, in the setup, where a reviewer asks the question. & \texttt{paper/main.tex} \S5 & Done & 100\% \\
+F9 detector label corrected & ``Proposed (released heuristic detector)'' made the shipped default read as the recommended configuration --- the row with the worst retention and 99.7\,\% ASR under zero-width insertion. The rows read ``heuristic detector, artifact default'', and the roster says the artifact defaults to it because it runs on unpacking with no weights to download, and that it is not what to deploy. & \texttt{main.tex}, \texttt{appendix.tex} & Done & 100\% \\
+Page budget held & Fitting F7--F9 pushed the conclusion onto page~13 twice. Recovered by deleting a ninety-word artifact description in the setup that the open-science statement makes almost verbatim --- and that statement is outside the page limit. & \texttt{main.tex} \S5 & Done & 100\% \\
+F10 ethics completed & The institutional sentence the repository could not supply was given by the authors: all three raters volunteered, none was compensated, and no review was sought because nothing was collected about the raters and the text they judged is synthetic and concerns no real person. The section states that reason rather than leaving it to be inferred. & \texttt{main.tex}, ethical considerations & Done & 100\% \\
+F11 bundle scanned & The prior-review bundle was scanned against the artifact's forbidden-string list plus author names, affiliations, repository and preprint patterns: the response and cover letter are clean and the AE letter's only hit is a false positive. The scan also found that the attached letter carries the paper's former title with nothing saying so; the response now explains the change, and the received letter is not edited. The upload field itself still needs an author account. & \texttt{docs/ae\_response.txt} & Partial & 80\% \\
+F12 second artifact pass & The first pass fixed the install and stopped one file short of the documentation. \texttt{src/README.md}, which ships, was a 211-line Chinese inventory of an earlier manuscript claiming code support for eight tables the paper does not contain. \texttt{run\_all\_figures.py}, the third command the package README hands a reviewer, drew nine figures from that same earlier paper and only one of the three the manuscript now shows. Both rewritten; the three manuscript figures regenerate byte for byte under the pinned matplotlib. & \texttt{src/README.md}; \texttt{src/figures/run\_all\_figures.py} & Done & 100\% \\
+Documentation staleness check & The packaging build now collects every label the manuscript defines and fails if shipped Markdown names one that is missing, so the next drift is caught by the build rather than by a reader. Thirteen deliberately-retained retired labels are declared on one visible line. & \texttt{src/package\_artifact.py} & Done & 100\% \\
+\texttt{algorithms/} mislabel & Both READMEs described \texttt{src/algorithms/} as the mediation mechanism. It holds 123 lines carried over from an earlier project, kept only because \texttt{run\_all.py} imports them as a smoke test. A reviewer following that pointer would find code from a different paper and conclude the system was not shipped; it is, in \texttt{mediation\_baselines.py} and \texttt{agentdojo\_restoration\_suite.py}. Both READMEs corrected. & \texttt{src/README.md}; \texttt{src/package\_artifact.py} & Done & 100\% \\
+Judge-validation subset drawn & 120 of 5{,}508 recorded judge decisions, stratified over 18 (condition, judge verdict) strata. The judge says ``leaked'' 18.9\,\% of the time overall, so an unstratified subset would let it inherit a high agreement rate from the base rate; the drawn subset is 50/50 on its own verdict. All 108 distinct sensitive items carry Chinese renderings with names, figures, dates and credentials carried over verbatim. The annotation page builds with all 120 items. & \texttt{privacylens\_judge\_human\_sheet.csv}; \texttt{\_key.csv}; \texttt{privacylens\_secret\_translations\_zh.json} & Done & 100\% \\
+Second annotator supported & The agreement script scored one annotator against the judge, which reproduces with the roles swapped the thing this paper argues against. \texttt{--second} adds the judge's agreement with a second independent rater and, more importantly, the two raters' agreement with each other --- the ceiling the judge's $\kappa$ is read against. Verified end to end on synthetic labels. & \texttt{privacylens\_judge\_agreement.py} & Done & 100\% \\
+Venue re-verified & Live author instructions fetched rather than recalled: 12 main-body pages excluding the three required sections, double blind, prior reviews required with any resubmission rejected elsewhere, preprints discouraged during review, artifact optional. Issue~3 closes 2026-11-30 AoE. Alternatives checked the same day: SaTML 2027 closes 09-29, S\&P 2027 Cycle~2 on 11-17, USENIX Security 2027 Cycle~2 on 2027-01-26, and both NDSS 2027 cycles are shut. & \texttt{USAGE.md}; \texttt{docs/progress.md} & Done & 100\% \\
 \end{longtable}
 
 \section*{Next-step plan}
 
 No model experiment is executing and none is queued. The RTX PRO 6000 was
-brought up on 2026-09-09 for the CPPB re-measurement recorded above and shut
-down when it finished; the other hosts were not used this cycle. Results, run
-manifests and the derived paper CSVs were pulled back and checksum-verified
-before shutdown, as were the recorded generation caches, which had existed only
-on that host despite the repository convention of retrieving them with the
-results.
+brought up again on 2026-09-10 for the three attacker runs recorded above; all
+three finished with exit~0, and their rows, summaries, paired differences and
+run manifests were pulled back and integrity-checked --- 4{,}948 rows each,
+1{,}237 per condition, no duplicate keys, and the question design verified
+identical across attackers rather than assumed. The card is idle but powered on;
+it was not shut down, because the host is shared and that decision is the
+owner's. The other hosts were not used this cycle.
 
-Completed work has been moved into the table above. That includes four rows
-that this pass retired from the plan: the named API downstream model and the
+Completed work has been moved into the table above. This pass also closed the
+last three open review findings (F7, F8, F9) and the context-inference adversary
+(F15), which the earlier plan had carried as an open research question. What
+remains below is gated on annotator time, on an author account, or on external
+resources --- not on compute. Earlier retirements from the plan were: the named API downstream model and the
 end-to-end formal guarantee, both closed as scope decisions rather than pending
 claims; the AgentDojo suite expansion, closed on evidence with travel abandoned;
 and the second annotator's review pass, complete and integrated. The rows below
@@ -183,6 +213,9 @@ CPPB live end-to-end rerun & The reconstructed 48-prompt $\times$ 4-condition pi
 CPPB multimodal regeneration & The original CPPB V4/V8 render, OCR, and runtime provenance cannot be filled and the source assets are not recoverable. The manuscript no longer depends on it: the unprovenanced subsection was removed and the OCR-mediated claim now rests on the three public document-image slices reported this pass. & Nothing for this cycle. Regeneration remains possible only if the original render package and OCR runtime record resurface. & 25\% & Not planned this cycle & Superseded rather than pending: the evaluated setting the review asked about is now backed by provenanced public benchmarks instead. \\
 Live-stack mapping-table compromise & The capability-graded reference compromise curve is complete and reported. A live deployment stack, audit path, credential model, and session-isolation probe are absent. & Freeze a live mapping service and run credential, audit-log, session-isolation, and recovery probes before claiming deployment-level compromise resistance. & 50\% & Gated: needs a deployment stack, not GPU capacity & Existing results support a mechanism-level claim only, and the manuscript scopes it that way. Not required for this submission. \\
 Licensed clinical coverage & Generic-to-clinical transfer is executed through the public PhysioNet route and reported in the cross-domain table. Licensed i2b2 and further domains remain protocol-only or pending access. & Obtain approved clinical data and complete the runtime and result manifests under the existing wrapper. & 60\% & Gated: pending i2b2 data-use approval & \texttt{tab:crossdom} supports the bounded public-transfer claim it makes, and nothing more is claimed. \\
+Judge-validation human check & The instrument is built and the subset is drawn: 120 decisions from the recorded run, stratified 50/50 over the judge's own verdict against an 18.9\,\% population rate, with Chinese renderings for all 108 distinct items and an annotation page that carries the released text the judge saw. The scoring script reports the judge against each rater and the two raters against each other. & Two people who are not authors annotate the 120 items independently, about one hour each, and return the exported CSV. Then \texttt{privacylens\_judge\_agreement.py} with \texttt{--second}. & 90\% & Gated on annotator time, not on compute & The one experiment still on the submission's critical path. Two raters rather than one, because a single rater reproduces --- with the roles swapped --- the unvalidated-rating problem this paper is about. The key file holds the judge's verdicts and must not reach the annotators. \\
+Prior-review upload field (F11) & The bundle is anonymous with respect to the authors and the live rules require only that prior reviews be included in the submission; no separate field is described publicly. & Check the field the submission form expects, with an author account, once the Issue~3 site opens. & 80\% & Gated on the venue site opening; not on the critical path & The site currently serves Issue~2, whose deadline has passed. A submission-day task. \\
+Hosted frontier attacker & The attacker-capacity sweep spans 8B to 70B and finds the recovery rate flat across it, but all three are open-weight models served locally. A hosted frontier model with better world knowledge could recover more. & Optional. If run, it would bound the attack from above rather than change the ordering the appendix relies on. & 0\% & Gated on an API key the authors do not have & Limitations already concedes that endpoint behaviour is unknown. The sweep bounds the local family, which the appendix states rather than implies. \\
 \end{longtable}
 
 \end{document}
