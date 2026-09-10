@@ -5,7 +5,7 @@
 From the repository root, either double-click:
 
 ```text
-run_cppb_blind_review_ui.bat
+src/run_cppb_blind_review_ui.bat
 ```
 
 or run:
