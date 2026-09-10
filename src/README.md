@@ -8,7 +8,11 @@ serving the open-weight models named in the run manifests.
 
 ## Layout
 
-- `algorithms/` — the mediation mechanism and its supporting algorithms.
+- `algorithms/` — **not** the mediation layer. 123 lines of unrelated code (a Laplace
+  mechanism, a substring-extraction routine) carried over from an earlier project and kept
+  only because `run_all.py` imports them as an import smoke test. The mediation layer is the
+  detector and sanitization-mode implementation in `experiments/mediation_baselines.py`,
+  with the agent-pipeline element in `experiments/agentdojo_restoration_suite.py`.
 - `experiments/` — every experiment, baseline, benchmark-construction and
   analysis script, together with the result records (`*_results.csv`,
   `*_rows_*.csv`, `*_summary_*.csv`) and the run manifests

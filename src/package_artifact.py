@@ -314,14 +314,19 @@ Anonymous supplementary material. {len(staged)} files.
 
 ## Layout
 
-    src/algorithms/     Mediation mechanism and the supporting algorithms.
-    src/experiments/    Every experiment, baseline, benchmark-construction and
+    src/experiments/    The mediation layer itself -- detectors and sanitization
+                        modes in mediation_baselines.py, the agent-pipeline
+                        element in agentdojo_restoration_suite.py -- and every
+                        experiment, baseline, benchmark-construction and
                         analysis script, together with the result records
                         (*_results.csv, *_rows_*.csv, *_summary_*.csv) and the
                         run manifests (*_runtime_manifest_*.csv) that record
                         model digests, quantization, decoding settings, seeds,
                         context length, library versions, and hardware.
     src/figures/        The figure scripts that produce the manuscript figures.
+    src/algorithms/     Not the mediation layer: 123 lines of unrelated code from
+                        an earlier project, kept only because run_all.py imports
+                        them as a smoke test.
     data/               The paper's own template-derived benchmark (CPPB) and
                         its annotation records.
     MANIFEST.csv        Every shipped file with size and SHA-256.
