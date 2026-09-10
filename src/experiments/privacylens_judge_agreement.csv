@@ -9,3 +9,5 @@ judge_vs_human_placeholder:learned_lr,14,0.571,moderate,0.786,4,0,3,7,
 judge_vs_human_placeholder:presidio,12,0.500,moderate,0.750,3,0,3,6,
 judge_vs_human_symbolic_early:gliner_pii,12,0.833,almost perfect,0.917,5,0,1,6,
 judge_vs_human_symbolic_late:gliner_pii,12,0.500,moderate,0.750,5,2,1,4,
+judge_vs_annotator2,120,0.517,moderate,0.758,47,16,13,44,second independent rater
+annotator1_vs_annotator2,120,0.917,almost perfect,0.958,59,1,4,56,inter-rater reliability; the ceiling the judge is read against
