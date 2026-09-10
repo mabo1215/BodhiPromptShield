@@ -272,14 +272,16 @@ reads only the body will take the negative result as the whole story and then be
 \emph{Action.} One clause in \S6.3: the channel does separate under a larger agent, pointer to the
 appendix.
 
-\item \pth\ \textbf{Four unused figure assets ship with the artifact.}
-\src{agent\_pipeline\_summary.png}, \src{agent\_propagation\_curves.png},
+\item \pth\ \textbf{[CORRECTED] Four unused figure assets sit in the manuscript tree ---
+but they do not ship.} \src{agent\_pipeline\_summary.png}, \src{agent\_propagation\_curves.png},
 \src{cppb\_benchmark\_composition.png} and \src{restoration\_ablation\_tradeoffs.png} are in
-\src{figs/} but referenced by neither document; the last belonged to the section retired in the
-previous round. Harmless in the PDF, mild noise for an artifact reviewer.
+\src{paper/figs/} and referenced by neither document; the last belonged to the section retired in the
+previous round. This review first wrote that they ship with the artifact. \emph{They do not:} the
+anonymized bundle contains no image files at all, because it packages \src{src/} and \src{data/} and
+not the manuscript tree. The finding is therefore cosmetic --- dead assets in a working directory ---
+and carries no consequence for an artifact reviewer.
 
-\emph{Action.} Remove them, or note in the artifact README that \src{figs/} carries assets from earlier
-drafts.
+\emph{Action.} Optional cleanup only.
 \end{enumerate}
 
 \subsection*{Positioning}
@@ -362,14 +364,66 @@ repository changing.
 \begin{enumerate}[label=D\arabic*.]
 \item \textbf{$\Pi_{\pi}$ (F1): demote or evaluate?} \emph{Recommended: demote.} It costs a day, it
 reclaims close to a page the body needs, and it removes the largest overclaim in the submission.
-Evaluating it is the stronger paper and roughly a week; it is worth doing only if the week exists and
-A2 still fits after it.
+\textbf{Answered 11 September 2026: demote.} Done; see the resolution log.
 \item \textbf{Algorithm~1 (F4): complete it or reduce it?} \emph{Recommended: reduce}, consistent with
 D1. A specification that matches the artifact is worth more than one that matches the ambition.
+\textbf{Answered 11 September 2026: reduce.} Done.
 \item \textbf{Appendix form (V1).} Needs an authenticated look at the submission form. Nobody but an
 author can close it.
 \item \textbf{Preprint (V2).} Still open from the previous round.
 \end{enumerate}
+
+\section*{Resolution log, 11 September 2026}
+The authors answered D1 (demote) and D2 (reduce). Both are applied, together with the P1 and P2 items
+that needed no decision. Both documents rebuild with zero errors and zero undefined references; the
+main body ends on page~12 with roughly twenty lines of headroom, where before this round it had five.
+
+\begin{itemize}
+\item \textbf{F1 (D1) --- $\Pi_{\pi}$ demoted.} \S4.5 is now a two-paragraph subsection titled
+\emph{Sanitization Mode Selection}. It states the design intent, points at the rule table, and then says
+plainly that every condition in the paper applies one mode uniformly, that what the results measure is
+modes and detectors rather than a selector, and that per-span routing is future work. The routing-state
+display, the argmin, and the ``systems mechanism rather than a cosmetic switch'' assertion are gone. The
+rule table moved to the appendix and its caption now opens ``This is a design table, not a
+measurement''. Appendix~I no longer reads the deployment ranking as a statement about $\Pi_{\pi}$.
+
+\item \textbf{F3 --- the unrealized equations deleted.} Both hatted-loss expansions are removed from the
+appendix rather than given coefficients, since the implementation never used them. The profile table's
+caption no longer refers to $\alpha/\beta$ terms, and its claim that the balanced profile ``yields the
+main paper's best privacy--utility compromise'' --- unsupportable, because no reported result is produced
+under a profile --- is deleted.
+
+\item \textbf{F4 (D2) --- Algorithm~1 reduced to what runs.} The mode is now a parameter of the
+procedure rather than something it computes, which is what the artifact does; the four routing-state
+variables it used without taking are gone; and the confidence threshold \S4.2 describes now appears in
+the loop that applies it. A note says which line a routing deployment would replace, and that no result
+here does.
+
+\item \textbf{F2 --- the normalization claim restated as a measured gap.} The bullet claiming
+adversarially robust Unicode and homoglyph folding is deleted. In its place \S4.2 states that none of
+the evaluated detectors normalizes before matching, points at \S6.5 for what that costs, and names
+canonicalization as the cheapest hardening the results support and something this paper did not
+evaluate. The framework and the adversarial section now agree.
+
+\item \textbf{F5 --- three tables anchored.} \src{tab:pljudge}, \src{tab:judgecap} and
+\src{tab:attrcap} are referenced from the sentences that already described them. Every float in both
+documents is now referenced.
+
+\item \textbf{F7 --- the attribute-recovery result promoted into the body}, with its headline number,
+the chance line, the capacity-invariance, and the asymmetry it establishes. Paid for by F1.
+
+\item \textbf{F8 --- the 70B separation stated in the body.} \S6.3 now says the judge-scored negative is
+agent-specific and gives the 70B figure, rather than deferring the whole reversal to the appendix.
+
+\item \textbf{F6 --- corrected, not fixed.} See the finding: the unused assets do not ship.
+\end{itemize}
+
+\subsection*{Still open}
+\begin{itemize}
+\item \textbf{F9} --- the contribution order, reserved by the authors.
+\item \textbf{V1} --- the appendix-form question; needs an authenticated look at the submission form.
+\item \textbf{V2} --- the preprint decision, still unanswered across two rounds.
+\end{itemize}
 
 \section*{What is already strong and should not be disturbed}
 Revision pressure sands off exactly these, so they are recorded deliberately.
