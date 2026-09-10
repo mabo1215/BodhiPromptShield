@@ -50,11 +50,15 @@ def _answer_column(row: dict[str, str]) -> str:
     raise SystemExit(f"no human answer column in {sorted(row)}")
 
 
-def run(annotations: Path, key: Path, out: Path) -> None:
-    with annotations.open(encoding="utf-8", newline="") as handle:
+def _read_answers(path: Path) -> dict[str, int | None]:
+    with path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
     column = _answer_column(rows[0])
-    human = {r["item_id"]: _parse_human(r[column]) for r in rows}
+    return {r["item_id"]: _parse_human(r[column]) for r in rows}
+
+
+def run(annotations: Path, key: Path, out: Path, second: Path | None = None) -> None:
+    human = _read_answers(annotations)
     with key.open(encoding="utf-8", newline="") as handle:
         key_rows = {r["item_id"]: r for r in csv.DictReader(handle)}
 
@@ -91,18 +95,53 @@ def run(annotations: Path, key: Path, out: Path) -> None:
             k, o, m = _kappa(sub)
             writer.writerow([f"judge_vs_human_{condition}", len(sub), f"{k:.3f}", _interpret(k),
                              f"{o:.3f}", m[0][0], m[0][1], m[1][0], m[1][1], ""])
+    if second is not None:
+        # The paper's own argument is that an unvalidated judge is not evidence.
+        # A single annotator is the same claim with the roles swapped, so a
+        # second independent rater is what makes the human side an estimate
+        # rather than an assertion.
+        other = _read_answers(second)
+        both = [i for i in annotated if other.get(i) is not None]
+        if not both:
+            print("[judge-agreement] second annotator has no overlapping answers yet")
+        else:
+            hh_pairs = [(human[i], other[i]) for i in both]
+            hh_k, hh_o, hh_m = _kappa(hh_pairs)
+            j2_pairs = [(other[i], int(key_rows[i]["judge_leak"])) for i in both]
+            j2_k, j2_o, j2_m = _kappa(j2_pairs)
+            print(f"  second annotator on {len(both)} shared items")
+            print(f"  judge vs annotator 2: kappa {j2_k:.3f} ({_interpret(j2_k)}), "
+                  f"raw agreement {j2_o:.1%}")
+            print(f"  annotator 1 vs annotator 2: kappa {hh_k:.3f} ({_interpret(hh_k)}), "
+                  f"raw agreement {hh_o:.1%}")
+            print("  NOTE: read the judge's kappa against this one. A judge that agrees with a "
+                  "person less than two people agree with each other is the finding; a judge that "
+                  "matches it is not.")
+            with out.open("a", encoding="utf-8", newline="") as handle:
+                writer = csv.writer(handle)
+                writer.writerow(["judge_vs_annotator2", len(both), f"{j2_k:.3f}",
+                                 _interpret(j2_k), f"{j2_o:.3f}", j2_m[0][0], j2_m[0][1],
+                                 j2_m[1][0], j2_m[1][1], "second independent rater"])
+                writer.writerow(["annotator1_vs_annotator2", len(both), f"{hh_k:.3f}",
+                                 _interpret(hh_k), f"{hh_o:.3f}", hh_m[0][0], hh_m[0][1],
+                                 hh_m[1][0], hh_m[1][1],
+                                 "inter-rater reliability; the ceiling the judge is read against"])
     print(f"[judge-agreement] wrote {out.name}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--annotations", required=True, help="the annotator's exported CSV")
+    parser.add_argument("--second", help="a second independent annotator's exported CSV; adds "
+                                         "inter-rater reliability, which is the ceiling the "
+                                         "judge's agreement should be read against")
     parser.add_argument("--tag", default="")
     args = parser.parse_args()
     suffix = f"_{args.tag}" if args.tag else ""
     run(Path(args.annotations),
         EXPERIMENTS_DIR / f"privacylens_judge_human_key{suffix}.csv",
-        EXPERIMENTS_DIR / f"privacylens_judge_agreement{suffix}.csv")
+        EXPERIMENTS_DIR / f"privacylens_judge_agreement{suffix}.csv",
+        Path(args.second) if args.second else None)
 
 
 if __name__ == "__main__":
