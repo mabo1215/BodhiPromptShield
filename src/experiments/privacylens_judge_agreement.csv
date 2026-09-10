@@ -1,0 +1,11 @@
+comparison,n,cohens_kappa,interpretation,raw_agreement,human_no_judge_no,human_no_judge_yes,human_yes_judge_no,human_yes_judge_yes,note
+judge_vs_human_overall,120,0.500,moderate,0.750,45,15,15,45,"subset stratified over condition and over the judge's own verdict, so raw agreement is not the judge's accuracy at its natural base rate"
+judge_vs_human_abstraction:qwen3:8b-q4km-hf,14,0.571,moderate,0.786,5,1,2,6,
+judge_vs_human_casper_style,14,0.429,moderate,0.714,7,4,0,3,
+judge_vs_human_llm_sanitizer:qwen3:8b-q4km-hf,14,0.286,fair,0.643,5,3,2,4,
+judge_vs_human_no_protection,14,0.571,moderate,0.786,5,1,2,6,
+judge_vs_human_placeholder:gliner_pii,14,0.286,fair,0.643,6,4,1,3,
+judge_vs_human_placeholder:learned_lr,14,0.571,moderate,0.786,4,0,3,7,
+judge_vs_human_placeholder:presidio,12,0.500,moderate,0.750,3,0,3,6,
+judge_vs_human_symbolic_early:gliner_pii,12,0.833,almost perfect,0.917,5,0,1,6,
+judge_vs_human_symbolic_late:gliner_pii,12,0.500,moderate,0.750,5,2,1,4,
