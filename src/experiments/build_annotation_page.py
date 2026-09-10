@@ -513,19 +513,29 @@ function setStatus(msg) {
   statusTimer = setTimeout(() => { $("status").textContent = ""; }, 2400);
 }
 
+// The question travels with the answer. A file of item ids and YES/NO cannot be
+// checked by anyone who does not also hold the sheet, and the sheet is the thing
+// an analyst is least likely to have to hand when a returned file looks wrong.
+// The text carries commas, quotes and newlines, so this quotes properly rather
+// than joining on commas and hoping.
+function csvCell(value) {
+  const v = value === undefined || value === null ? "" : String(value);
+  return /[",\\r\\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+}
+
 function toCsv() {
   const cell = (v) => (v === 1 ? "YES" : v === 0 ? "NO" : "");
   const rows = REVIEW
-    ? [["item_id", "annotator1", "annotator2", "changed", "reviewed"]]
-    : [["item_id", "human_inferable_YES_or_NO"]];
+    ? [["item_id", "annotator1", "annotator2", "changed", "reviewed", "fact", "__LEFTCOL__"]]
+    : [["item_id", "__ANSWERCOL__", "fact", "__LEFTCOL__"]];
   ITEMS.forEach((it) => {
-    if (!REVIEW) { rows.push([it.id, cell(answers[it.id])]); return; }
+    if (!REVIEW) { rows.push([it.id, cell(answers[it.id]), it.fact, it.text]); return; }
     const done = isDone(it.id);
     rows.push([it.id, cell(R1[it.id]), cell(answers[it.id]),
                done && answers[it.id] !== R1[it.id] ? "YES" : "NO",
-               done ? "YES" : "NO"]);
+               done ? "YES" : "NO", it.fact, it.text]);
   });
-  return rows.map((r) => r.join(",")).join("\\n") + "\\n";
+  return rows.map((r) => r.map(csvCell).join(",")).join("\\n") + "\\n";
 }
 
 $("btnYes").addEventListener("click", () => answer(1));
@@ -643,6 +653,8 @@ MODES = {
         "local": "privacylens-judge-check-v1",
         "collection": "judge_check",
         "export": "privacylens_judge_human_annotations.csv",
+        "answer_column": "human_leak_YES_or_NO",
+        "left_column": "action_shown_to_judge",
     },
     "blind": {
         "title": "可推断性标注",
@@ -660,6 +672,8 @@ MODES = {
         "local": "inferability-annotations-v1",
         "collection": "annotations",
         "export": "human_annotations.csv",
+        "answer_column": "human_inferable_YES_or_NO",
+        "left_column": "released_trajectory",
     },
     "independent": {
         "title": "可推断性标注 第三位",
@@ -677,6 +691,8 @@ MODES = {
         "local": "inferability-annotations-r3-v1",
         "collection": "round3",
         "export": "human_annotations_round3.csv",
+        "answer_column": "human_inferable_YES_or_NO",
+        "left_column": "released_trajectory",
     },
     "review": {
         "title": "可推断性标注 第二位",
@@ -694,6 +710,8 @@ MODES = {
         "local": "inferability-annotations-r2-v1",
         "collection": "round2",
         "export": "human_annotations_round2.csv",
+        "answer_column": "human_inferable_YES_or_NO",
+        "left_column": "released_trajectory",
     },
 }
 
@@ -754,6 +772,8 @@ def build(sheet: Path, out: Path, mode: str) -> None:
                 .replace("__LOCAL__", spec["local"])
                 .replace("__COLLECTION__", spec["collection"])
                 .replace("__EXPORTNAME__", spec["export"])
+                .replace("__ANSWERCOL__", spec["answer_column"])
+                .replace("__LEFTCOL__", spec["left_column"])
                 .replace("__LEFTHEAD__", spec["left_head"])
                 .replace("__RIGHTHEAD__", spec["right_head"])
                 .replace("__ASK__", spec["ask"])
