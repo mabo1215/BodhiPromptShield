@@ -355,7 +355,7 @@ builders for these labels:
 <!-- retired-labels: tab:catwise, tab:multimodal, tab:crossmodel, tab:mapadv,
      tab:hardcase, tab:multiseed, tab:lto, tab:baseline, tab:tabtransfer,
      tab:example, tab:tradeoff, tab:app-concept-example, tab:app-regimes,
-     tab:judge, tab:ablation -->
+     tab:judge, tab:ablation, tab:restore -->
 
 - `tab:cppb_card`
 - `tab:per`

@@ -51,7 +51,6 @@ number against its record.
 | `tab:portability` — second downstream model | `privacylens_downstream_suite.py` with a second agent model |
 | `tab:cppb_card` — controlled-benchmark accounting | `build_cppb_manifest.py` |
 | `tab:per`, `tab:utility`, `tab:pi_sensitivity`, `tab:latency` — the controlled-benchmark appendix, re-measured on the reconstructed surface | `cppb_reconstructed_paper_tables.py`; the execution environment behind the latency table is in `latency_host_manifest.csv` |
-| `tab:restore` — restoration-boundary analysis | recorded in `restoration_boundary_analysis.csv`; no generating script remains in the tree, so it is a record rather than reproducible output. The sanitization-mode ablation it used to sit beside was retired from the manuscript, and `sanitization_mode_ablation.csv` is kept as a record of the superseded controlled surface |
 | `fig:operating_points` — policy operating points | `policy_threshold_sweep.py`, `figures/prompt_privacy_operating_points.py` |
 
 `fill_paper_tables.py` writes the tables it has records for back into the
