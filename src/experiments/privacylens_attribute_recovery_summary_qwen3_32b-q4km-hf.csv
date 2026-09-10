@@ -1,5 +1,5 @@
-condition,questions,cases,recovery_percent,chance_percent,value_survives_release_percent,recovery_when_value_absent_percent,questions_value_absent
-no_protection,1237,466,"97.7 [96.7, 98.6]",25.0,"91.7 [89.2, 93.7]","82.5 [72.6, 90.6]",103
-placeholder:presidio,1236,466,"79.0 [76.3, 81.4]",25.0,"46.4 [41.7, 50.9]","66.6 [62.9, 70.2]",662
-casper_style,1237,466,"75.1 [72.1, 77.9]",25.0,"44.5 [39.9, 48.9]","59.7 [55.5, 63.6]",687
-placeholder:learned_lr,1237,466,"65.3 [62.4, 68.2]",25.0,"15.2 [12.1, 18.1]","64.0 [60.8, 67.0]",1049
+condition,questions,cases,recovery_percent,chance_percent,value_survives_release_percent,recovery_when_value_absent_percent,questions_value_absent,unparsed_replies,recovery_when_value_absent_percent_unparsed_as_failure
+no_protection,1237,466,"97.7 [96.7, 98.6]",25.0,"91.7 [89.2, 93.7]","82.5 [72.6, 90.6]",103,0,"82.5 [72.6, 90.6]"
+placeholder:presidio,1236,466,"79.0 [76.3, 81.4]",25.0,"46.4 [41.7, 50.9]","66.6 [62.9, 70.2]",662,1,"66.5 [62.8, 70.0]"
+casper_style,1237,466,"75.1 [72.1, 77.9]",25.0,"44.5 [39.9, 48.9]","59.7 [55.5, 63.6]",687,0,"59.7 [55.5, 63.6]"
+placeholder:learned_lr,1237,466,"65.3 [62.4, 68.2]",25.0,"15.2 [12.1, 18.1]","64.0 [60.8, 67.0]",1049,0,"64.0 [60.8, 67.0]"

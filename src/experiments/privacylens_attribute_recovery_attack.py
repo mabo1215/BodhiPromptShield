@@ -24,6 +24,7 @@ inference.
 from __future__ import annotations
 
 import argparse
+import collections
 import csv
 import json
 import os
@@ -143,7 +144,14 @@ def _build_questions(cases: list[dict], options: int, seed: int) -> tuple[list[d
 
 def _score(rows_path: Path, out: Path, options: int, n_boot: int) -> None:
     with rows_path.open(encoding="utf-8", newline="") as handle:
-        rows = [r for r in csv.DictReader(handle) if r["chosen_option"]]
+        every = list(csv.DictReader(handle))
+    rows = [r for r in every if r["chosen_option"]]
+    # An unparsed reply is usually the attacker refusing the question -- "none of
+    # these options are correct" -- and under dummy-value substitution that is
+    # the attack being misled, not a scoring glitch. Dropping those rows quietly
+    # removes the questions the defence worked best on, so the count is reported
+    # and the strict denominator is reported beside the lenient one.
+    unparsed = collections.Counter(r["condition"] for r in every if not r["chosen_option"])
     if not rows:
         print("[attack] nothing scored yet")
         return
@@ -155,7 +163,9 @@ def _score(rows_path: Path, out: Path, options: int, n_boot: int) -> None:
         writer = csv.writer(handle)
         writer.writerow(["condition", "questions", "cases", "recovery_percent",
                          "chance_percent", "value_survives_release_percent",
-                         "recovery_when_value_absent_percent", "questions_value_absent"])
+                         "recovery_when_value_absent_percent", "questions_value_absent",
+                         "unparsed_replies",
+                         "recovery_when_value_absent_percent_unparsed_as_failure"])
         for cond in order:
             sub = [r for r in rows if r["condition"] == cond]
             by_case: dict[str, list[tuple[float, float]]] = {}
@@ -165,6 +175,13 @@ def _score(rows_path: Path, out: Path, options: int, n_boot: int) -> None:
             # offers: the recovery-minus-survival gap mixes inference with the
             # guessing a forced choice always allows.
             absent_by_case: dict[str, list[float]] = {}
+            strict_by_case: dict[str, list[float]] = {}
+            for row in [r for r in every if r["condition"] == cond]:
+                # Strict denominator: every question posed whose value the
+                # release removed, with an unanswered one counted as a failure.
+                if row["survives_release"] == "0":
+                    strict_by_case.setdefault(row["case"], []).append(
+                        float(row["correct"]) if row["chosen_option"] else 0.0)
             for row in sub:
                 by_case.setdefault(row["case"], []).append((float(row["correct"]),
                                                             float(row["survives_release"])))
@@ -181,12 +198,19 @@ def _score(rows_path: Path, out: Path, options: int, n_boot: int) -> None:
                 absent_cell = f"{ap:.1f} [{alo:.1f}, {ahi:.1f}]"
             else:
                 ap, absent_cell = float("nan"), ""
+            strict = [(sum(v), float(len(v))) for v in strict_by_case.values()]
+            if strict:
+                stp, stlo, sthi = bootstrap_ratio_ci(strict, n_boot=n_boot, scale=100.0)
+                strict_cell = f"{stp:.1f} [{stlo:.1f}, {sthi:.1f}]"
+            else:
+                strict_cell = ""
             print(f"  {cond:<26} recovery {p:5.1f} [{lo:.1f}, {hi:.1f}]   "
                   f"value present {sp:5.1f}   when absent {absent_cell or 'n/a':<20} "
+                  f"strict {strict_cell or 'n/a':<20} unparsed {unparsed[cond]:3d}   "
                   f"chance {100.0 / options:.1f}   n={len(sub)}")
             writer.writerow([cond, len(sub), len(by_case), f"{p:.1f} [{lo:.1f}, {hi:.1f}]",
                              f"{100.0 / options:.1f}", f"{sp:.1f} [{slo:.1f}, {shi:.1f}]",
-                             absent_cell, n_absent])
+                             absent_cell, n_absent, unparsed[cond], strict_cell])
     print(f"[attack] wrote {out.name}")
 
 
