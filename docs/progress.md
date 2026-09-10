@@ -1,6 +1,262 @@
 # 论文进度
 
-## 2026-09-10 全量核对评审意见：F7/F8/F9 关闭，18 条全部有处置（当前最新）
+## 2026-09-11 D1/D2 已执行；模板那条 P0 是我误报，已撤回（当前最新）
+
+按你的答复：**D1 删、D2 删、D4 归你**（我没动 D4）。
+
+### 先更正一条：V1「模板是 2022 的、会 desk reject」是**我误报**
+
+我把官方 `submission-template-2027.zip` 下下来逐个文件比了 MD5——**六个文件和仓库里的完全一致**
+（`popets.sty`、`acmart.cls`、`ACM-Reference-Format.bst`、`acmnumeric.bbx`、`acmnumeric.cbx`、`cc-by-4.pdf`）。
+`2022/08/09` 只是 PoPETs 自己从没更新过的**包内版本串**，不是模板版本。
+preamble 也和官方模板的 `main.tex` 逐字一致（`[sigconf,anonymous,review]`、同样的 `settopmatter`、
+三个必需环境齐全）。**仓库本来就是合规的。** 评审文件里那条已改写成带证据的撤回。
+
+教训写进评审文件了：**style 文件里的版本串不等于模板版本**，判这件事的唯一办法是拿 venue 实际
+提供的 bundle 做 checksum，两分钟的事。
+
+### D1：两张表已删
+
+`tab:judge`（连同引出它那段）和 `tab:ablation` 都删了，restoration 那节开头的句子改成只指 `tab:restore`。
+**附录里现在没有任何被废弃的数字还在当结果用**——8.1 / 9.3 仅存的出现是 §C.2 那句"这是被废弃的一对、
+为什么不用"的说明本身。`tab:ablation` 那个孤立脚注（F7）跟着一起没了。
+
+**删表还牵出第三个受益者**：§C.3 那六个 category-wise 小数（0.96/0.95、6.5/5.8、0.84/16.8）
+我本来打算按记录补成表格，一查 `categorywise_analysis.csv` 是 09-07 的，
+**prompt 加权均值 9.51%，对上的是被废弃的 9.3%，不是重建后的 12.5%**，而且没有重建版。
+补表等于把 F1 在第三个地方再犯一次。改成只报**类别次序**（政策论证用的就是次序），并写明为什么不给具体率。
+
+### D2：自引已删，两份 PDF 现在完全没有身份字符串
+
+`ma2021privacy` 从正文两处引用和 `ref.bib` 一并删除。独立扫描：
+**main.pdf 和 appendix.pdf 都是 CLEAN**（此前 main.pdf 第 13 页命中三个作者名）。
+
+### 顺手关掉的（不需要你决策）
+
+- **F2**：读 Figure 5 那段四处错全修了——PER 方向反了的比较、和上文自相矛盾的 trade-off 说法、
+  six/seven 数错、以及**区间来源写错**（记录里是单次确定性运行在 256 条 prompt 上的 bootstrap 区间，
+  不是"repeated runs"的跨轮方差，后者恰恰是正文 determinism 那句明令排除的）。
+- **F4**：附录 §J 残留的 "boundary leakage" 改回 RCE。
+- **F5/F6**：`tab:restore` 的 caption 现在写明三列定义、说明它在被废弃的受控面上且记录里本来就没有区间、
+  并解释为什么它的 9.7% 和正文的 51.0% 不可比。
+- **V4**：摘要补上 CFP 要求的 real-world relevance 那句。**加完超页了**，
+  用压缩 §2.2 一处重复的攻击者能力列表付账，正文重新落回第 12 页结束。
+
+### 随包 README 的连带修复
+
+删标签把两份随包 README 打回不一致，**打包脚本的标签校验正确地拦了下来**（这个 guard 是有效的：
+另外 13 个陈旧标签都在 `retired-labels` 声明里，是刻意的）。已把 `tab:judge`/`tab:ablation` 加进声明，
+并把 `src/README.md` 里的 judge 行删掉、restore 行改写。artifact 已重打：
+**561 文件、匿名扫描 0 命中、判官验证记录 8 个文件都在**，旧包改名保留为 `..._pre_d1d2.zip`。
+
+### 当前状态
+
+`main.pdf` 14 页（正文止于 p12，必需小节从 p13 起）、`appendix.pdf` 11 页（少了两张表）、
+`RevisionSuggestions.pdf` 8 页，全部 0 error / 0 undefined reference。
+
+### 还开着
+
+**V3** 附录是不是该并进主 PDF（要登录看投稿表单）；**V5/D3** 预印本你还没答；
+**F8–F11** 定位类改动等 D4；另外 **`tab:restore` 本身**和被删的两张表是同一批 09-07 记录、
+同样没有区间——我只给它贴了诚实标签没删，因为你授权的是两张具体的表，不是第三张。
+要一致的话删掉它不损失任何东西（正文已经在真实 agent 数据上把恢复时机测得更好）。
+
+## 2026-09-10（第三轮）独立评审重置：按 PoPETs 2027 Issue 3 重写 RevisionSuggestions.tex
+
+你让我按 venue 要求做一次完整学术评审并覆盖重写评审文件。已完成：`docs/RevisionSuggestions.tex`
+**全文覆盖重写**（英文 LaTeX，529 行，构建 7 页、0 error、0 undefined reference）。
+
+**评审是重新做的，不是继承上一轮。** 我把 `main.tex`（550 行）和 `appendix.tex`（891 行）
+从头读完，附录是第一次通读；venue 要求是**今天从官网现抓的**
+（`crysp.petsymposium.org/authors-2027.php` 和 `petsymposium.org/cfp27.php`），
+不是照 `USAGE.md` 里记的。每一条断言缺陷的发现都回到 `src/experiments/` 的记录核过。
+
+### 打分（0–100）
+
+| 维度 | 分 | 依据 |
+|---|---|---|
+| 创新性 | 62 | 机制被自己让给了 Casper/PromptGraph/PAAC，全压在 framing 上 |
+| 方法严谨性 | 78 | 配对检验、bootstrap、人工验证都到位；扣在附录两套记录打架 |
+| 文献覆盖 | 82 | 该引的都引了，2026 的三篇也补了 |
+| 写作质量 | 74 | 正文克制；附录散文和自己的表脱节至少四处 |
+| 可复现性 | 88 | 最强项，我抽查的正文数字全部独立复算成功 |
+| Scope 契合 | 85 | 是典型 PoPETs systems paper |
+| **总体** | **74** | **major revision**，但缺口主要在附录卫生，不在科学 |
+
+### 两条 P0（都是这次新查出来的）
+
+**V1 —— 模板是 2022 年的，而 2027 模板是强制的。** `paper/template/popets.sty` 头部写着
+`[2022/08/09 ...]`。2027 作者指引明确要求使用更新后的 2027 PoPETs 模板，**否则 desk reject**。
+注意它不会报错——2022 的 sty 能正常排版，但元数据块、版权行、页面几何可能都是旧的。
+
+**F1 —— 附录同时存在两套互相矛盾的 CPPB 记录，而被保留的那套正是当年 TOPS 拒稿信引用的数字。**
+这是整份投稿里代价最高的一条：
+
+- `tab:per` / `tab:utility` 用的是**重建后、runtime 有记录**的那一套：
+  enterprise staged **37.5%**，proposed **12.5%**；而且 §C.2 正文**自己写明**
+  "更早的版本…put the baseline ahead at 8.1% against 9.3%"，那批 prompt "no longer exists"。
+- 可 `tab:judge` 印的还是 **8.1 / 9.3 / 61.3 / 48.7**——**四行全部**和 `tab:per` 打架；
+  `tab:ablation` 也还是 8.1 / 9.3；引出 `tab:judge` 的那段话还把 9.3% 称作
+  "**the canonical proposed operating point**"。
+- 更糟：`tab:judge` 的 caption 声称自己用的是 "the canonical full-benchmark operating points
+  reported in Tables tab:per and tab:utility"——**点名了它每一行都在矛盾的那两张表**。
+- 记录已核实：`cppb_privacy_judge_comparison.csv` = 8.1/9.3（旧），
+  `cppb_reconstructed_summary_qwen3_32b-q4km-hf.csv` = 37.50/12.50（新）。两套都在，附录混用且没说。
+
+**为什么它最贵**：TOPS 拒稿信第 4 条原话就是 "Enterprise redaction achieves lower exposure than
+the proposed configuration, **8.1% versus 9.3% PER**"，而 PoPETs **强制要求把这封信随投稿附上**。
+审稿人拿着信翻附录，会看到 8.1 vs 9.3 原样还在两张表里、还被称作 canonical——
+而 point-by-point response 说这条已经修了。
+
+### 另一条几乎同样严重（F2）
+
+读 Figure 5 的那一段，连续三个小句各错一处：
+1. "**Enterprise staged redaction remains the lower-PER point**"——`tab:per` 就在前一页，
+   37.5% vs 12.5%，**方向反了**，而且反成了当年被拒的那个说法；
+2. "the six-point threshold sweep shows **the expected exposure/utility trade-off**"——
+   上面两段刚说清楚阈值扫描是**平的**（七个 τ 全是 PER 12.5%），这句把被否掉的曲线又说了回来；
+3. "**six**-point"——集合里是七个值，figure caption 自己写的也是 seven-point。
+
+### 其余发现
+
+V2 自引 [15] `Ma, Wu, Lai, Yan` **三个名字就是本文作者名单**（形式上合规，但是最强的去匿名信号，
+而且那条引用在两处都没干活）；V3 附录是**独立编译的单独 PDF**，要确认投稿系统怎么收；
+V4 首页缺 CFP 要求的 real-world privacy relevance 那句；V5 预印本结论已和本稿相反。
+F3 附录 §C.3 六个小数**无表无记录**且写着 "(appendix)" 自指；F4 改名后的 "boundary leakage"
+在附录 §J 残留；F5 两个 RCE（CPPB 9.7% vs 正文 51.0%）没有互相解释；F6/F7 区间缺失与孤立脚注。
+
+### 需要你决策（评审文件 D1–D4）
+
+D1 `tab:judge` / `tab:ablation` 是重算还是删（**我建议删**）；D2 自引删不删（**建议删**）；
+D3 预印本 v2 投稿前发不发（**建议发，发完别动**）；D4 要不要把 judge 验证那条方法论结果
+提为第一贡献（这条是科学取向，纯属你的判断）。
+
+**A5.1 检查点**：10-31 之前如果 A1 没关完，建议改投 Issue 4（2027-02-28），
+不要带着 F1 投——审稿人对着拒稿信在同一份附录里比两张表就能查出来。
+
+## 2026-09-10（第二轮）正文超页已修 + A1.2 计数普查跑完，查出三处与记录不符
+
+你让我继续改。**先说最要紧的一条：当前构建的正文其实是超页的，而这份文件上一条写的
+"正文正好在第 12 页结束" 对当时的 PDF 不成立。**
+
+- `paper/main.pdf` 第 12 页停在 Conclusion 中间，**还有 16 行正文落在第 13 页**，
+  之后才是 Ethical Considerations。PoPETs 正文上限 12 页（三个必需小节、致谢、参考文献、
+  附录不计），超出直接 desk-reject。
+- 不是陈旧产物：`main.tex` 22:29 改完、PDF 22:30 构建，两者同步，git 也是干净的。
+  也就是说**照当时的状态投出去就是超页的**。
+- 教训记在这里：以后"是否合规"必须**从 PDF 里量**（读第 12/13 页的实际文本），
+  不能凭上一次的结论或印象照抄。
+
+**修的办法是删重复，不是删内容**（正文一个结论、一个数字都没少）：
+
+| 删掉的东西 | 它和谁重复 |
+|---|---|
+| §4.7 整节 "Propagation-Risk View of the Agent Pipeline" | 首句的边界图和 §2.1 逐字相同；"不是实测标量"和 §2.3 相同；末句和引言的论证相同。**唯一独有的边界求和式已内联搬进 §2.3** |
+| §2.3 末句 "design guide, not a formal privacy guarantee" | 就是 §2.4 Formal Privacy Scope 整节 |
+| §4.4 末句的度量清单 | 和 §2.3 的那句近乎逐字相同 |
+| §5.1 的四条 itemize、§4.1 的四条 enumerate | 改成行内句，内容不变，只省版面 |
+| §6.6 / §6.7 两个收尾小节 | 合并为一个标题 |
+
+改完**正文在第 12 页结束，三个必需小节从同一页开始，还余出约 5 行余量**，
+0 error、0 undefined reference。腾出来的空间正好付了下面三处诚实性修正的账。
+
+### A1.2 的计数普查（评审文件里挂了一轮的 "the sweep is still owed"）已经跑完
+
+**先说对上的**：Table 5 的 AI4Privacy 和 PrivacyLens 两半**逐格**对上
+`propagation_suite_*_results_pooled.csv`（含 FRR 列）；Table 6 的标识符列能从下游分片
+重算出来（13.7% = 102/747，其余同）；3,564 判定、102 条子集、200 个下游 case、
+493 条轨迹、300 篇文档、74 对 AgentDojo（banking 32 + slack 42）全部对上；
+§6.2 和判官容量附录里**每一个 κ、原始一致率、"判为可推断"的比例**都和一致性记录严丝合缝。
+
+**查出三处对不上，都已改：**
+
+1. **【P0】一个置信区间和自己的记录不符，而且错在两处。** AgentDojo 的
+   user-directed 配对差，正文 §6.5 和附录注入表都印的是 $-10.8$ [$-21.6$, $+1.4$]，
+   但**拿随包的聚合脚本重跑原始行，确定性地得到 $-10.8$ [$-23.0$, $+1.4$]**，
+   记录里根本没有 $-21.6$ 这个数。点估计和上界是对的、"区间含 0" 的结论不受影响，
+   但这**正是 F2 预言审稿人会去查的那种检查**。两处都已改。
+
+2. **【P1】一个"边界控制"范围只来自一个 suite，却写在讲两个 suite 的段落里。**
+   "raw values reach the tool boundary in 0.0--8.3%…restoration succeeds 85--100%"
+   是 **banking 两个注入臂**的数；slack 那边是 50.0% 和 0–100%。理由是正当的
+   （slack 只有 2 个任务会把受保护值放进工具参数），但稿子没说。已改成明确写 banking，
+   并交代 slack 的基数只有 2，太少不足以计率。
+
+3. **【P1】§6.5 报了"对自己有利的那个范围"。** "learned detector absorbs pure surface
+   noise（大多数攻击 ASR < 1%）"**漏掉了 case inversion 的 18.4% [13.3, 23.4]**——
+   它是第二差的一族，而且是排版类攻击，可稿子只把语义改写列为例外。配套那句 PER
+   "typographic attack 8.1--9.6%" 同样**把 zero-width 的 13.8% 和 case inversion 的
+   19.9% 排除在外**。两句都已按记录改写：八族里六族低于 1%，case inversion 和
+   paraphrase 是穿透的两族，PER 范围也放宽到真实值。
+
+### F1 顺手加固：恢复时机那条主张现在有配对检验了，而且不需要重跑
+
+之前 agent 侧是 2.7% [1.5, 4.1] 对 4.8% [3.3, 6.6]——**两个边际区间是重叠的**，
+而这篇论文在别处（McNemar、配对 bootstrap）都做配对检验，唯独这里没做。
+两个条件跑的是**同一批 200 个 case**，所以配对检验的数据一直都在记录里：
+
+- 配对差 **$-2.1$ 点 [$-3.6$, $-0.8$]**，不含 0；
+- 按 case 计，延后恢复时**8.0%** 的最终动作里出现过恢复前标识符，提前恢复是 **14.5%**
+  （McNemar，不一致 1/14，p = 0.001）；
+- **70B agent 复现：$-2.6$ [$-3.8$, $-1.4$]**，同向同量级。
+
+§6.4、摘要、贡献第 2 条都已补上。
+
+### 顺带删掉一句自相矛盾的话
+
+结论原本写 "restoration timing---**not detector quality**---is the dominant design variable"，
+但 §6.6 自己写的是 "detector choice sets the exposure floor"，§6.1 里 detector 之间
+PER 差 56.3% → 7.4%（49 点），而恢复时机的配对效应是 2.1 点。**两者是作用在不同量上的杠杆**，
+结论现在如实这么写。摘要的 "the layer's main lever" 改成 "governs what every stage upstream
+of the authorized boundary sees"；摘要另外补上 24--53% 那个数字**出自 102 条盲标子集**
+（正文本来就写了，摘要没写）。
+
+### 更正：PrivacyLens 自带 judge 的人工抽查**已经做完了**，本文件此前的"遗留问题"是过时的
+
+你问"之前做过吗"，我去查了记录，**做过，就在今天 21:47–22:31**。我上一轮说"缺两位非作者各约 1 小时"，
+是照本文件旧的"遗留问题"抄的，没核记录——那一条早该删了。已从`# 未修改或部分修改`和`# 遗留问题`两处删除。
+
+我从**原始标注重算了一遍**（不是读汇总表）：
+
+| 比较 | n | Cohen's κ | 原始一致率 |
+|---|---|---|---|
+| judge vs 读者 1 | 120 | 0.500 | 75.0% |
+| judge vs 读者 2 | 120 | 0.517 | 75.8% |
+| **读者 1 vs 读者 2** | 120 | **0.917** | **95.8%** |
+
+和 `privacylens_judge_agreement.csv` 以及附录 G 的表逐格相符。附录里那两个派生结论也复算过：
+115 条两位读者一致、5 条分歧 ✓；judge 在那 115 条共识里反着判 **27** 条 ✓；
+5 条分歧**全部**来自"改写型"条件（abstraction ×2、llm_sanitizer ×2、transformer placeholder ×1），
+无保护和符号映射一条都没有 ✓。原始标注在 `data/privacylens_judge_human_annotations{,2}.csv`。
+
+**结论**：这一项不是待办，它已经写进论文了——Limitations 那句"κ≈0.51 而两人之间 0.917"和附录 G 的整节。
+
+### 但它带出两处连带缺口，都已修
+
+1. **artifact 包比标注早了两小时，没带上标注结果。** `submit/..._anonymous.zip` 是 19:42 打的，
+   而标注 21:47 才落地。包里只有**空白表、key 和脚本**，**没有两位读者的标签，也没有
+   `privacylens_judge_agreement.csv`**——也就是说 artifact reviewer **重算不出附录 G 那张表**，
+   而 open science 小节声称"每个报告数字背后的记录都随包提供"。已重打：561 个文件，
+   两位读者的标签和一致性记录都在，匿名扫描 0 命中，旧包**改名保留**为
+   `..._pre_judgevalidation_1942.zip`（没有删）。
+
+2. **伦理小节只写了 102 条那批标注者，没写这两位读者。** 原文是"Three people annotated the
+   factual-inferability subset…"，而这是**第二次人工标注活动**（120 条、两位非作者、盲表）。
+   F10 当初要求的正是"标注者是谁、看到了什么、标签是否发布"，所以这算它重新裂开一次。
+   已补写进 `\begin{ethics}`。**你答复了这两位读者和 102 条那两位不是同一批人**，
+   所以伦理小节现在明写 two further readers…different people from the two above,
+   so five people contributed labels in total，并把自愿无报酬那句改成 All five——
+   不让读者误以为全程只有三个人。总计五位标注者（1 位作者 + 4 位非作者）。
+   伦理小节不计页数，正文仍在第 12 页结束，0 undefined reference。
+
+### 一件需要你知道的事：本机有自动提交
+
+改到一半时 **23:14 有一次自动提交（`u2314`，父仓库 4f38db0 + `paper` 子模组 dc22b68）
+把我当时的在制品提交了**。我全程没有执行任何 git 写操作。日志里 `u2224`、`u1300`、`u2314`
+这种 `uHHMM` 的提交都是它。**目前 `paper/main.tex` 还有 4 行未提交**（§2.3/§4.4 的删重复
+和 §6.5 的两处诚实性修正）。要不要我提交，你说一声。
+
+## 2026-09-10 全量核对评审意见：F7/F8/F9 关闭，18 条全部有处置
 
 你让我把 `paper/` 和 `docs/RevisionSuggestions.tex` 逐条对一遍。**我是对着 `.tex` 原文核的，
 不是照这轮会话的记忆**，结果查出**三条还开着**（都是 P2，此前每次汇报都被漏掉了）：
@@ -2014,24 +2270,6 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 2026-09-09：`# 遗留问题` 的六条已全部答复，本节按答复重排。放弃与认可两条已闭合并
 移入 `# 已全部修改`；另外三条从"等你拍板"变成"工具已就绪、等人力或等主机"。
 
-**等标注人力，不等你决策**
-
-- **PrivacyLens 自带 judge 的人工抽查**（90%）：**只差标注工时了。** 重放在 09-09 已经跑完
-  （`privacylens_judge_decisions_qwen3_32b-q4km-hf_recorded9.csv`，5508 条逐项判定，
-  脚本确认全部来自缓存），今天把剩下三步做完：
-  - **子集已抽**：120 条 / 5508，按 18 个 (条件 × judge 判定) 层分层。分层是关键——
-    judge 在全体里只有 18.9% 说"泄漏"，不分层的话一个"九成说没泄漏"的 judge 靠基准率就能
-    白捡高一致率；抽出来的子集在 judge 自己的判定上是 50/50，它捡不到。
-    `privacylens_judge_human_sheet.csv`（盲表）与 `privacylens_judge_human_key.csv`
-    （**带 judge 判定，分析用，不能给标注者**）已提交。
-  - **中文对照已补**：108 条敏感项全部有中文，人名/金额/日期/证件号/凭据一律照抄不译——
-    它们正是决定"这个动作有没有泄漏这一条"的东西，译了就换了题。动作原文一个字不译。
-  - **标注页已生成**（120 条齐、无缺译）。**发布成 artifact 被这个会话的权限分类器挡了**，
-    所以先以本地 HTML 文件发给你；功能完全一样（无 `window.claude` 时退回浏览器本地存储 +
-    剪贴板/下载导出）。页面可从已提交的盲表用一条命令原样重建：
-    `python build_annotation_page.py --mode judge_check --tag "" --out <路径>`。
-  - 标完把导出的 CSV 回传，`privacylens_judge_agreement.py` 出整体与逐条件的 κ。
-
 **卡在外部资源，不需要你现在决定**
 
 - **PrivacyRestore 同协议复现**（60%）：需要白盒自服务模型 + 约 5 天。论文已给出不复现的
@@ -2044,25 +2282,6 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 # 遗留问题
 
 需要你提供/决策。答完一条即可就地删掉该条。
-
-0. **判官人工抽查的标注工时——加分项，不是阻塞项**（此处更正我先前"唯一挡在投稿路上"的说法，
-   那个定性下重了）。
-
-   **先澄清一个容易混的点**：已完成的三人标注和这一项**不是同一件事**。三人标的是
-   `semantic_inferability_human_sheet_vgpu3090.csv`（102 条），检验的是**我们自己的 27B judge**
-   在"读者是否仍能得知这条事实"上的表现，结论是 κ=0.087、不可信，支撑 §6.2。
-   这一项是 `privacylens_judge_human_sheet.csv`（120 条），检验的是 **PrivacyLens 自带的 7B judge**
-   在"这个动作是否泄漏了这条信息"上的表现，支撑 §6.3 的下游泄漏率——**那个 judge 至今没人验过**。
-
-   **不做也能投**：Limitations 已明说那批数字来自未经验证的 judge 并要求读者据此打折；
-   而且从它得出的是否定结论，论文也已声明过不了多重比较校正，没有任何主张压在上面。
-   **做了会更硬**，理由是一致性：本文的论点就是"未经人工验证的 judge 不算证据"，
-   自己却报了另一个未验证 judge 的数字——审稿人抓的是这个不一致，不是错误。
-
-   工具与子集全部就绪（按判官自身判定 50/50 分层、108 条中文对照、标注页已发你）。
-   需要**两位非作者**各标一遍（每人约 1 小时）。只用一位的话，"你的判官没和人对过"
-   会原样落到"你的人没和人对过"上。`privacylens_judge_human_key.csv` 含判官判定，**不能给标注者**。
-   - A: 
 
 1. **同名 arXiv 预印本 `arXiv:2604.05793` 要更新什么**——见下方"预印本需要更新的内容"，
    确认后我可以直接生成用于 arXiv v2 的稿件。

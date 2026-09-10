@@ -38,7 +38,6 @@ number against its record.
 | `tab:downstream` — PrivacyLens downstream leakage and helpfulness | `privacylens_downstream_suite.py` |
 | `tab:inject` — AgentDojo under prompt injection | `agentdojo_restoration_suite.py` |
 | `fig:inferability` — surface form against factual inferability | `figures/fact_retention_vs_inferability.py` |
-| `tab:judge` — lightweight learned privacy-judge baseline on the controlled benchmark | `cppb_privacy_judge_baseline.py` |
 | `tab:judgecap` — judge agreement with human labels across model capacity | `semantic_inferability_judge_capacity.py`; the human labels and the two automated proxies are scored by `semantic_inferability_agreement.py` |
 | `tab:contextattack` — case-identifiability control | `privacylens_context_inference_attack.py` |
 | `tab:attrrecovery` — attribute recovery against the released surface | `privacylens_attribute_recovery_attack.py`; `--score-only` rebuilds the summary and the paired differences from the shipped rows without calling a model |
@@ -52,7 +51,7 @@ number against its record.
 | `tab:portability` — second downstream model | `privacylens_downstream_suite.py` with a second agent model |
 | `tab:cppb_card` — controlled-benchmark accounting | `build_cppb_manifest.py` |
 | `tab:per`, `tab:utility`, `tab:pi_sensitivity`, `tab:latency` — the controlled-benchmark appendix, re-measured on the reconstructed surface | `cppb_reconstructed_paper_tables.py`; the execution environment behind the latency table is in `latency_host_manifest.csv` |
-| `tab:restore`, `tab:ablation` — restoration-boundary and sanitization-mode ablations | recorded in `restoration_boundary_analysis.csv` and `sanitization_mode_ablation.csv`; no generating script remains in the tree, so they are records rather than reproducible output |
+| `tab:restore` — restoration-boundary analysis | recorded in `restoration_boundary_analysis.csv`; no generating script remains in the tree, so it is a record rather than reproducible output. The sanitization-mode ablation it used to sit beside was retired from the manuscript, and `sanitization_mode_ablation.csv` is kept as a record of the superseded controlled surface |
 | `fig:operating_points` — policy operating points | `policy_threshold_sweep.py`, `figures/prompt_privacy_operating_points.py` |
 
 `fill_paper_tables.py` writes the tables it has records for back into the
