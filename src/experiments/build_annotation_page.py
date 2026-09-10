@@ -725,8 +725,14 @@ def _parse(value: str) -> int | None:
     return None
 
 
-def build(sheet: Path, out: Path, mode: str) -> None:
-    spec = MODES[mode]
+def build(sheet: Path, out: Path, mode: str, round_id: str = "") -> None:
+    spec = dict(MODES[mode])
+    if round_id:
+        spec["collection"] = f"{spec['collection']}_{round_id}"
+        spec["local"] = f"{spec['local']}-{round_id}"
+        stem, dot, ext = spec["export"].rpartition(".")
+        spec["export"] = f"{stem}_{round_id}{dot}{ext}"
+        spec["subtitle"] = f"{spec['subtitle']} &middot; 标注者 {round_id}"
     with sheet.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
     items = [
@@ -793,10 +799,19 @@ def main() -> None:
     parser.add_argument("--tag", default="vgpu3090")
     parser.add_argument("--mode", choices=sorted(MODES), default="blind")
     parser.add_argument("--out", required=True)
+    # Two annotators must not share a page. The stored answers live in one
+    # collection keyed by mode, so a second person opening the same published
+    # page has the first person's answers restored into it and is confirming
+    # them rather than answering. That is not a second opinion, and the
+    # inter-rater kappa computed from it would be 1.000 by construction.
+    parser.add_argument("--round", dest="round_id", default="",
+                        help="isolates this annotator: suffixes the stored collection, the "
+                             "browser key and the export filename, so two people never write "
+                             "into the same record")
     args = parser.parse_args()
     suffix = f"_{args.tag}" if args.tag else ""
     sheet = MODES[args.mode]["sheet"].format(suffix=suffix)
-    build(EXPERIMENTS_DIR / sheet, Path(args.out), args.mode)
+    build(EXPERIMENTS_DIR / sheet, Path(args.out), args.mode, args.round_id)
 
 
 if __name__ == "__main__":
