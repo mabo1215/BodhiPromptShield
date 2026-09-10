@@ -2206,6 +2206,20 @@ PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submis
     附录五处语气残留清理。构建：main 14 页（正文止于第 12 页）、appendix 8 页，
     0 undefined/悬空/未引用，双盲干净。
 
+14. **排版越界修复（2026-09-11）**：正文三处文字跑出栏外——§3 收束段（§3.5 之后）那行的
+    "stored-text de-identification" 超宽 24.7pt，直接压进右栏正文；§1 第三段的
+    "representation anonymiza-" 超宽 18.3pt；§6.1 的 "action/observation" 超宽 16.3pt。
+    根因不是句子长，而是 TeX 对含显式连字符或斜杠的词不再自动断字，
+    "de-identification" / "action/observation" 因此整块不可断。已在连字符与斜杠后补零宽空格
+    （`de-\hspace{0pt}identification`，正文 12 处；`action/\hspace{0pt}observation`）恢复断字点，
+    并给 main 与 appendix 各加 `\emergencystretch=1em` 兜住剩下几行无合法断点的情况；
+    两处改动都只影响断行，不动任何字句。附录页眉的 "Supplementary Appendix:" 前缀
+    把标题挤进 venue 行造成叠字，改用 `\title[短标题]{全标题}`：页眉与正文一致，
+    首页标题仍保留 "Supplementary Appendix:"。构建：main 14 页、appendix 11 页均不变，
+    overfull 警告 main 由 14 条降到 1 条、appendix 由 7 条降到 2 条，剩下的是 acmart
+    版权盒自身的 3.85pt 与附录一行 1.02pt（约 0.36mm，肉眼不可见）。
+    注意 `submit/` 里的预印本是改前源码构建的，如需发布应重建。
+
 ## 2026-09-03 revision cycle completion：vGPU 实验回收、论文回填与审稿闭环（当前新增）
 
 - 已统一主文与附录 privacy-judge 表的企业基线和提出方法数值：统一为企业 staged redaction `8.1%`、提出方法 `9.3%`。同步修改了 `paper/main.tex`、`src/experiments/cppb_privacy_judge_baseline.py`、`cppb_privacy_judge_comparison.csv` 和 runtime manifest；表格回填后仍保持该数值。
