@@ -1,6 +1,74 @@
 # 论文进度
 
-## 2026-09-11（第二轮）`tab:restore` 也删了，附录彻底没有被废弃的那批数据了（当前最新）
+## 2026-09-11（第三轮）第二次独立评审重置：这次查出的是结构问题，不是算错（当前最新）
+
+`docs/RevisionSuggestions.tex` 已**全文覆盖重写**（英文 LaTeX，405 行，构建 6 页、0 error、
+0 undefined reference）。这次通读了**此前没细看的 §4 框架章和附录 L/M**（策略画像、映射威胁面、
+核心算法），问题就出在那里。
+
+**这一轮的性质和上一轮不同。** 上一轮的缺陷是算术性的——数字和记录对不上，那些已经全部关闭、
+这次复查没再发现一处。**这次查出的是结构性的：§4 描述的机制，评测从来没跑过，代码里也没有。**
+四条 P0/P1 里有三条是这个形状，而数字普查抓不到它们。
+
+### 总体 77（上一轮 74），仍是 major revision，但缺口集中在一节
+
+方法严谨性 80(+2)、写作 78(+4)——上一轮的附录矛盾都修掉了；
+**可复现性 82(−6)**，因为 $\Pi_\pi$ 从论文里复现不出来。
+
+### P0：策略路由选择器 $\Pi_\pi$ 从未被评测，而论文断言它不只是个开关
+
+§4.5 给了 $\Pi_\pi$ 的路由状态、argmin 目标、Table 3 规则表，附录 L 展开了两个损失函数
+和三个 profile。**没有任何实验跑过它。**
+
+我核的证据链：
+- 下游 runner 枚举的条件是 `placeholder:<detector>` / `abstraction:<model>` /
+  `symbolic_late|early:<detector>`——**每个条件把一种模式统一套用到所有 span**，没有逐 span 路由；
+- 全树搜 profile 名、选择器、六个损失项名（`DirectExposureRisk`、`SemanticDrift`、
+  `LatencyPenalty` 等），**只命中 CPPB 重建脚本**；
+- `mediation_baselines.py`（所有真实数据实验的检测器与模式实现）**完全没有路由逻辑**，
+  只暴露检测器和三个整体渲染函数；
+- `agentdojo_restoration_suite.py` 唯一那次命中是注释里说注入"routes a token"，不是选择器。
+
+所以 $\Pi_\pi$ 只在 CPPB 上被碰过一次，而附录现在如实报告那次测量是**空结果**
+（七个 τ 全返回同样的 PER）。**选择器唯一的评测显示它不改变结果，正文又从不使用它。**
+另外附录 L 的 profile 表还写着 balanced "yields the main paper's best privacy--utility compromise"
+——可正文没有任何结果是在某个 profile 下产生的，也从没说过用的是哪个 $\pi$。
+
+**建议降级而不是辩护**：§4.5 压成一段、Table 3 挪进附录、删掉 profile 表的性能声称、
+软化附录 I。**这能腾出接近一页**，正文正好缺这个空间。跑通它是更强的论文，约一周。
+
+### P1：§4.2 声称有对抗归一化，而 §6.5 测的正是它不存在
+
+§4.2 把 "adversarially robust normalization, including Unicode/homoglyph folding" 列为检测器信号，
+§6.5 却报告启发式检测器**零宽字符插入 99.7% ASR**、homoglyph 65.4%。
+`mediation_baselines.py` 里**没有任何 unicode 归一化**——没有 `unicodedata`、没有 NFKC、
+没有 confusable folding。全仓库提到 homoglyph/零宽的只有两个**攻击**脚本。
+这比"功能没实现"更糟，因为**论文自己的对抗章节就是反证**，两页之隔。
+
+### 另两条 P1
+
+- **路由目标是方程，实现是别的东西**：$\alpha_{1..3}$、$\beta_{1..3}$ **全文没有任何数值**，
+  而附录 L 的表注自己承认它们是"emphasis trends through the rule table"。方程不是实现。
+- **Algorithm 1 缺一半输入**：`Require` 只收 $(x, E(x), \mathcal{D}, \pi)$，第二行却用了
+  $r_i,q_i,a_i,\ell_i$——这四个从没定义或推导过；而且它**无条件保护 $E(x)$ 里每个 span**，
+  §4.2 说的置信度阈值 $\tau$ 在算法里根本不出现。
+
+### 其余
+
+三张附录表（`tab:pljudge`、`tab:judgecap`、`tab:attrcap`）**没有任何正文锚点**（其余 29 张都有）；
+属性还原攻击这个最强结果仍只在附录、正文只给了一个从句；70B 那条推翻负结果的发现正文也压得太轻；
+`figs/` 里有 4 个没用的遗留图片。
+
+### 需要你决策
+
+**D1** $\Pi_\pi$ 降级还是补跑（**建议降级**，一天，且腾出近一页）；
+**D2** Algorithm 1 补全还是收缩（**建议收缩**，与 D1 一致）；
+**D3** 附录形式（需登录看投稿表单）；**D4** 预印本（仍未答）。
+
+**A4.1 检查点**：10-31 前若 A1 没关完建议改投 Issue 4——**框架章描述 artifact 里没有的机制，
+会被读成 overclaiming 而不是笔误，那是 reject 而不是 revise 的量级。**
+
+## 2026-09-11（第二轮）`tab:restore` 也删了，附录彻底没有被废弃的那批数据了
 
 按你的答复删掉 `tab:restore`。**两张表都没了之后那一节就空了**，所以
 `\section{Restoration and Sanitization-Mode Mechanism}` 整节一起删。

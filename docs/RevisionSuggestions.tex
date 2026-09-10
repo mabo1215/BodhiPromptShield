@@ -16,15 +16,14 @@
 \newcommand{\pt}{\textbf{[P2]}}
 \newcommand{\pth}{\textbf{[P3]}}
 \newcommand{\src}[1]{\texttt{#1}}
-\newcommand{\ok}{\textcolor{black}{\textbf{pass}}}
-\newcommand{\fail}{\textcolor{black}{\textbf{FAIL}}}
-\newcommand{\chk}{\textcolor{black}{\textbf{verify}}}
+\newcommand{\ok}{\textbf{pass}}
+\newcommand{\chk}{\textbf{verify}}
 
 \title{Independent Review and Revision Plan\\
 \large BodhiPromptShield: Pre-Inference Prompt Mediation for Surface-Form\\Privacy Propagation in LLM Agent Pipelines\\
 \normalsize Target venue: PoPETs 2027 Issue~3 (Proceedings on Privacy Enhancing Technologies)\\
-\normalsize Submission deadline 30 November 2026, 23:59:59 AoE (firm) --- 81 days from this review}
-\author{Independent review, 10 September 2026}
+\normalsize Submission deadline 30 November 2026, 23:59:59 AoE (firm) --- 80 days from this review}
+\author{Independent review, 11 September 2026}
 \date{}
 
 \begin{document}
@@ -32,568 +31,375 @@
 \maketitle
 
 \section*{Review basis}
-This is a fresh, independent review. It was written from the manuscript as it currently
-stands and from the released records, deliberately without consulting the previous review
-round, its findings, or its completion status; where this review reaches the same conclusion
-as an earlier one, it did so from the artifact rather than by inheritance.
+This is a fresh review of the manuscript as it now stands. It does not inherit findings, priorities,
+or completion judgements from any earlier round; where it lands on the same ground as a previous
+review it got there from the artifact.
 
-Sources read: \src{paper/main.tex} (550 lines) and \src{paper/appendix.tex} (891 lines) in
-full; the built \src{paper/main.pdf} (14 pages) and \src{paper/appendix.pdf} (12 pages),
-both compiled from the current source with zero errors and zero undefined references; and,
-for every quantity this review asserts is wrong, the corresponding record under
-\src{src/experiments/} together with the code that produced it. Main body and appendix are
-reviewed jointly as one submission, because the venue will read them that way.
+Sources read: \src{paper/main.tex} (550 lines) and \src{paper/appendix.tex} (832 lines) in full,
+including the framework and algorithm sections that earlier rounds had not examined closely; the
+built \src{paper/main.pdf} (14 pages, body ending on page~12) and \src{paper/appendix.pdf}
+(11 pages), both compiled from current source with zero errors and zero undefined references; and,
+for every claim this review says is unsupported, the code under \src{src/} that would have to
+implement it. Venue requirements come from the live PoPETs pages fetched on 10--11 September 2026.
 
-Venue requirements were fetched from the live PoPETs pages on 10 September 2026
-(\src{crysp.petsymposium.org/authors-2027.php} and \src{petsymposium.org/cfp27.php}) rather
-than taken from the repository's recorded configuration. Where a requirement is quoted below
-it is quoted from those pages.
-
-Every finding that asserts a defect names the check that produced it, so that a co-author can
-repeat the check rather than take this document's word for it. Findings are ordered by the
-cost of being caught on them, not by the effort to fix them.
+\textbf{The character of this round is different from the last one.} The previous cycle's defects
+were arithmetic: numbers that disagreed with their records. Those are gone --- this review checked
+and could not find one. What it found instead is structural, and it is the kind of thing a numeric
+sweep cannot catch: \textbf{Section~4 describes machinery that the evaluation never exercises and
+that the released code does not contain.} Three of the four P0/P1 findings below are of that shape.
 
 \section*{Summary of the submission}
-The paper reframes prompt privacy in LLM agent pipelines as a \emph{propagation-control}
-problem rather than a document-redaction problem: a sensitive span masked once at a document
-boundary can still reach retrieval queries, memory writes, tool arguments and logs, and every
-downstream copy inherits whatever the first write contained. It proposes a mediation layer
-placed on the single edge from which all later copies derive; the layer detects sensitive
-spans before release and routes each to a typed placeholder, a semantic abstraction, or a
-secure symbolic token, deferring restoration of exact values to an authorized execution
-boundary.
+The paper reframes prompt privacy in agent pipelines as propagation control rather than document
+redaction: a span masked once can still reach retrieval queries, memory writes, tool arguments and
+logs, and every downstream copy inherits what the first write contained. It places a mediation layer
+on the single edge all later copies derive from, routing detected spans to typed placeholders,
+semantic abstractions, or secure symbolic tokens, and deferring restoration to an authorized
+execution boundary.
 
-The evaluation runs ten mediation methods under one matched protocol across four sources:
-300 AI4Privacy documents through a deterministic reference agent, 493 PrivacyLens agent
-trajectories, a 200-task PrivacyLens downstream evaluation scored by that benchmark's own
-judge model and verbatim prompts, and AgentDojo banking and slack tasks executing real tools
-under prompt injection. A paper-specific controlled benchmark (CPPB) is confined to the
-appendix and used only for routing-policy ablation. Bootstrap intervals accompany reported
-quantities, and paired tests are used where conditions share evaluation units.
-
-Three results are foregrounded. Identifier propagation is controllable (PER 7.4\% on
-AI4Privacy against 46.7\% and 52.2\% for the strongest external comparators). Restoration
-timing governs the upstream surface (released-context exposure 1.6\% deferred against 51.0\%
-early; 2.7\% against 4.8\% in what the agent itself writes, paired $-2.1$ points
-[$-3.6$, $-0.8$]). And measuring factual disclosure is much harder than measuring
-identifiers: a word-overlap metric and a 27B LLM judge both report that mediation leaves
-facts intact, and both disagree with blind human annotation ($\kappa=0.25$ and $0.09$), while
-the human labels reverse the conclusion.
+Evidence comes from four sources under one matched protocol: 300 AI4Privacy documents through a
+deterministic reference agent, 493 PrivacyLens trajectories, 200 PrivacyLens downstream tasks scored
+by that benchmark's own judge, and AgentDojo banking and slack tasks executing real tools under
+injection. Three results lead: identifier propagation is controllable (PER 7.4\% against 46.7\% and
+52.2\% for the strongest external comparators); restoration timing governs the upstream surface
+(1.6\% against 51.0\% in the released context, and a paired $-2.1$ points [$-3.6$, $-0.8$] in what the
+agent itself writes, replicated on a second agent family); and measuring factual disclosure is far
+harder than measuring identifiers --- two automated proxies both fail against blind human annotation,
+which reverses their conclusion.
 
 \section*{Overall assessment}
 
-\textbf{Recommendation: major revision.} This is a stronger submission than its previous
-history suggests, and it is close to being a good PoPETs paper. The measurement work is
-careful, the negative results are reported as negative, and the paper's best idea---that a
-semantic-leakage judge is not evidence until it has been checked against people---is executed
-properly and then applied reflexively to the benchmark's own judge. The main body is in good
-shape.
+\textbf{Recommendation: major revision}, but the distance to acceptance is shorter than that label
+suggests, and the remaining work is concentrated in one section rather than spread across the paper.
 
-\textbf{The appendix is not, and that is where the submission is currently lost.} A reviewer
-who reads only the main body would likely vote weak accept. A reviewer who reads the appendix
-against its own tables finds an internal contradiction that reproduces, verbatim, the number
-the attached prior review used to reject this paper (F1). Because PoPETs \emph{requires} the
-prior reviews to be attached, that reviewer will have the rejection letter open beside the
-appendix. This is the single highest-cost defect in the submission and it is roughly a day of
-work to fix.
+The evidence chapters are in good order. The measurement discipline is real: paired tests where units
+are shared, bootstrap intervals throughout, negative results reported as negative, and --- the thing
+that most distinguishes this paper --- a methodological finding applied reflexively to the authors'
+own instruments and then to the benchmark's. This review could reproduce every main-body number it
+checked from the released records.
+
+\textbf{The problem is Section~4.} The framework chapter presents a policy-aware routing selector
+$\Pi_{\pi}$ with an argmin objective, a rule table, two loss expansions in the appendix, and a table
+of three deployment profiles. \textbf{No experiment in the paper exercises any of it.} Every reported
+condition applies one sanitization mode uniformly; the routing selector's only measurement is a
+threshold sweep on the controlled surface, which the appendix now correctly reports as flat. Section~4
+also credits the detector with adversarial normalization that the released code does not implement and
+that Section~6.5 measures the absence of. In a 12-page budget with about five lines of slack, roughly
+a page is spent on unevaluated machinery while genuinely load-bearing results sit in the appendix.
+
+This is fixable in a week without running anything new, and mostly by deletion.
 
 \begin{table}[h]
 \centering
 \small
-\caption{Multi-dimensional assessment (0--100), scored against PoPETs 2027 expectations.}
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.6cm}c>{\raggedright\arraybackslash}X}
+\caption{Multi-dimensional assessment (0--100) against PoPETs 2027 expectations. Deltas are against
+this reviewer's reading of the previous manuscript state.}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.5cm}c>{\raggedright\arraybackslash}X}
 \toprule
 Dimension & Score & Basis \\
 \midrule
-Novelty / originality & 62 & The sanitize-then-restore mechanism is explicitly conceded as prior art (Casper, PromptGraph, PAAC). The contribution is the propagation-control framing, restoration timing as a variable, and the judge-validation result. Defensible but thin if a reviewer discounts framing contributions. \\
-Methodological rigour & 78 & Matched protocol, paired tests where units are shared, bootstrap intervals throughout, human validation of both judges, adversary instantiated for all four threat classes. Docked for the appendix carrying two contradictory measurement eras (F1, F2). \\
-Literature coverage & 82 & Correct spine, and the 2026 systems that narrow the novelty gap are cited rather than avoided. \\
-Writing quality & 74 & Main body is disciplined and does not argue with itself. Appendix prose has drifted from its own tables in at least four places. \\
-Reproducibility & 88 & Per-run manifests with model digests and decoding settings; artifact tested by unpack-and-run on a clean host; tables regenerate from records. The strongest dimension. \\
-Venue fit (scope) & 85 & Squarely a PoPETs systems paper: deployable privacy control, measured, with the limits stated. \\
+Novelty / originality & 62 & Unchanged. The sanitize-then-restore mechanism is conceded as prior art; the contribution is the propagation framing, restoration timing, and the judge-validation methodology. \\
+Methodological rigour & 80 \small(+2) & The superseded measurement era is now fully out of the appendix. Paired testing and interval discipline are consistent. \\
+Literature coverage & 82 & Correct spine; the 2026 systems that narrow the novelty gap are cited rather than avoided. \\
+Writing quality & 78 \small(+4) & The appendix no longer contradicts its own tables. Docked because Section~4 describes a system other than the one evaluated. \\
+Reproducibility & 82 \small($-6$) & Records, manifests and artifact remain excellent, but $\Pi_{\pi}$ cannot be reproduced from the paper: its coefficients are never given, and Algorithm~1 omits half its own inputs. \\
+Venue fit (scope) & 85 & Squarely a PoPETs systems paper. \\
 \midrule
-\textbf{Overall} & \textbf{74} & Major revision. Most of the gap is appendix hygiene, not science. \\
+\textbf{Overall} & \textbf{77} \small(+3) & Major revision; one section, mostly by deletion. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \section{Venue compliance audit}
-Checked against the live 2027 author instructions on 10 September 2026.
+Checked against the live 2027 author instructions.
 
 \begin{table}[h]
 \centering
 \small
-\caption{PoPETs 2027 Issue~3 requirement audit.}
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{4.4cm}c>{\raggedright\arraybackslash}X}
+\caption{PoPETs 2027 Issue~3 requirement audit. Nothing in this table now blocks submission except the
+two rows that need an authenticated account.}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{4.3cm}c>{\raggedright\arraybackslash}X}
 \toprule
-Requirement & Status & Evidence / action \\
+Requirement & Status & Evidence \\
 \midrule
-Main body $\le$ 12 typeset pages & \ok & Body ends on page~12; \emph{Ethical Considerations} begins on page~12. Slack is roughly five lines, so any addition must be paid for. \\
-Ethics / Open Science / AI Use present and excluded from the limit & \ok & All three present, after the conclusion, correctly outside the count. \\
-Double-blind: no author names or affiliations & \ok & Both PDFs render ``Anonymous Author(s)''. \src{.tex} sources retain real names, which the \src{anonymous} class option suppresses. \\
-Double-blind: own prior work in third person & \ok & Resolved 11 September 2026: the self-citation was dropped (V2). Neither built PDF now contains any author, affiliation or e-mail string. \\
-\textbf{Mandatory 2027 PoPETs LaTeX template} & \ok & Verified 11 September 2026: all six template files are MD5-identical to the official \src{submission-template-2027.zip} and the preamble matches the bundle's own \src{main.tex}. See V1, which this review first recorded as a failure in error. \\
-First page states real-world privacy relevance & \ok & Addressed 11 September 2026: the abstract now names the deployment and the operator answerable for it. See V4. \\
-Prior reviews attached (rejected elsewhere) & \ok & \src{docs/AESuggestion.txt} plus a point-by-point response and cover letter, anonymous with respect to the authors. The upload field itself still needs an author with an account. \\
-Preprint policy & \chk & Preprints during review are discouraged, not forbidden. A same-title preprint exists and its conclusions are now contradicted by this manuscript. See V5. \\
-Artifact submission & \ok & Optional at submission, required on acceptance; the anonymized bundle is built, scanned, and unpack-tested. \\
-Appendix form & \chk & The appendix is a \emph{separately compiled} document with its own title page. Confirm the submission form expects a separate supplementary PDF rather than clearly-marked appendices inside the main PDF. See V3. \\
-Resubmission spacing rule & \ok & The prior rejection was at ACM TOPS, not PoPETs, so the skip-an-issue rule does not apply. \\
+Main body $\le$ 12 typeset pages & \ok & Body ends on page~12; \emph{Ethical Considerations} begins on page~13. Slack is about five lines. \\
+Ethics / Open Science / AI Use present, excluded from the limit & \ok & All three present after the conclusion, in the environments the template provides. \\
+Mandatory 2027 PoPETs LaTeX template & \ok & All six template files are MD5-identical to the official \src{submission-template-2027.zip}; the preamble matches the bundle's \src{main.tex}. \\
+Double-blind: no identifying strings & \ok & An independent scan of both built PDFs for author names, affiliations, e-mail addresses and institutions returns clean. \\
+Double-blind: own prior work in third person & \ok & The self-citation that named the author team was removed. \\
+First page states real-world privacy relevance & \ok & The abstract names the deployment and the operator answerable for it. \\
+Prior reviews attached & \ok & Letter, point-by-point response and cover letter, all anonymous with respect to the authors. \\
+Preprint policy & \chk & Discouraged, not forbidden. A same-title preprint states conclusions this manuscript has since reversed. See V2. \\
+Artifact & \ok & Anonymized bundle builds, scans clean, and its label check gates documentation drift. \\
+Appendix form & \chk & Separately compiled PDF with its own title page. Confirm against the submission form. See V1. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \section{Findings}
-Priorities: \pz\ blocks submission; \po\ accept-critical; \pt\ materially strengthens;
-\pth\ camera-ready or optional.
+Priorities: \pz\ blocks submission; \po\ accept-critical; \pt\ materially strengthens; \pth\ optional.
 
-\subsection*{Venue compliance}
-\begin{enumerate}[label=V\arabic*.]
-
-\item \textbf{[RETRACTED --- verified compliant, 11 September 2026]} \textbf{The 2022 date stamp in
-\src{popets.sty} is not a stale template.}
-This review originally recorded a \pz\ desk-reject risk here, because
-\src{paper/template/popets.sty} declares \src{[2022/08/09 ...]} while the venue mandates the updated
-2027 template. \textbf{That finding was wrong and is withdrawn.}
-
-\emph{The check that settled it.} The official bundle was downloaded from
-\src{crysp.petsymposium.org/files/submission-template-2027.zip} (HTTP 200, 175{,}053 bytes) and compared
-file by file against \src{paper/template/}. All six shipped files --- \src{popets.sty},
-\src{acmart.cls}, \src{ACM-Reference-Format.bst}, \src{acmnumeric.bbx}, \src{acmnumeric.cbx} and
-\src{cc-by-4.pdf} --- are \textbf{MD5-identical} to the repository's copies. The 2022 string is
-PoPETs' own internal package version, which they have never bumped; it is not evidence of a stale
-template. The preamble matches the bundle's \src{main.tex} exactly ---
-\src{documentclass[sigconf,anonymous,review]\{acmart\}}, the same \src{settopmatter} line, and all
-three mandatory environments (\src{ethics}, \src{openscience}, \src{ai}) present and correctly placed
-after the conclusion.
-
-\emph{Lesson worth keeping.} A version string inside a style file is not a template version. The check
-that decides this question is a checksum against the bundle the venue actually serves, it takes two
-minutes, and no future review of this paper should raise the template question without running it
-first.
-
-\item \po\ \textbf{A self-citation reproduces the submission's exact author list and buys
-almost nothing.}
-Reference [15] renders as \emph{Bo Ma, Jinsong Wu, Edmund Lai, and Weiqi Yan. 2021} --- three
-of the four names, in order, are this submission's three authors. It is cited twice
-(\S1 and \S3.1), both times in third person inside a generic citation group alongside Dwork
-and Chaudhuri, where it does no work that those two do not already do. Third-person citation
-is what the policy requires, so this is not a violation; it is a de-anonymization risk that
-costs the paper nothing to remove. A reviewer who notices a four-author 2021 privacy-embedding
-paper cited for background, and reads the author list, has the submitting team.
-
-\emph{Action.} Either drop the citation (the sentence loses nothing) or keep it and accept the
-exposure deliberately. Do not attempt to anonymize the bibliography entry itself --- masked
-references are more conspicuous than plain ones.
-
-\item \po\ \textbf{The appendix is a separate document with its own title page; confirm the
-submission expects that.}
-\src{appendix.tex} is a standalone \src{acmart} document with \src{\textbackslash maketitle}
-and the title ``Supplementary Appendix: \ldots''. The venue excludes ``clearly-marked
-appendices'' from the page limit, wording that ordinarily describes appendices \emph{inside}
-the submission PDF. A separate PDF is usually accepted as supplementary material, but
-supplementary material is not always guaranteed to be read, and this submission puts load-
-bearing evidence there: the attribute-recovery attack (the fourth adversary class), the
-judge validation, and the interval table.
-
-\emph{Action.} Check the submission form. If the system takes one PDF, append the appendix to
-the main body behind a clearly-marked appendix heading. If evidence a reviewer must see to
-credit a threat-model claim is in a file they may not open, move at least the attribute-recovery
-result summary into the main body.
-
-\item \pt\ \textbf{The first page does not state real-world privacy relevance in its own
-sentence.}
-The CFP asks that the first page clearly state how the work is relevant to real-world privacy
-applications. The abstract establishes the setting and the introduction's reimbursement-assistant
-example does the job well --- but that example is on page~1 column~2 and is framed as
-motivation rather than as the relevance statement the CFP asks for.
-
-\emph{Action.} One sentence, either at the end of the abstract or as the introduction's
-opening claim, naming the deployed systems this protects and the operator who is answerable
-for what crosses their boundary. Budget for it: the body has about five lines of slack.
-
-\item \pt\ \textbf{The preprint's conclusions now contradict the submission.}
-Preprints during review are discouraged rather than forbidden, so the existing same-title
-preprint is not a compliance problem. It is a refereeing problem: its third headline claim is
-the opposite of this manuscript's (it reports that mediation barely changes factual leakage,
-which blind human annotation has since reversed), and its evidence base is the CPPB surface
-this manuscript has demoted to an appendix ablation.
-
-\emph{Action.} Decide before the deadline, not during review. Either post a v2 that carries
-the current conclusions before submitting, or leave the preprint untouched until a decision
-is returned. Do not update it during review --- that is the action the policy specifically
-discourages.
-\end{enumerate}
-
-\subsection*{Evidence integrity}
+\subsection*{The framework describes a system the evaluation does not test}
 \begin{enumerate}[label=F\arabic*.]
 
-\item \pz\ \textbf{The appendix contains two mutually contradictory CPPB measurement eras,
-and the superseded one reproduces the exact figure the attached prior review used to reject
-the paper.}
-This is the finding that should be fixed first.
+\item \pz\ \textbf{The policy-aware routing selector $\Pi_{\pi}$ is never evaluated, and the paper
+asserts that it is more than a switch.}
+\S4.5 introduces $\Pi_{\pi}$ with a routing state $z_i=(c_i,p_i,r_i,q_i,a_i,\ell_i)$, an argmin over
+$\{\texttt{placeholder},\texttt{abstract},\texttt{symbolic}\}$, and Table~3 of routing rules.
+Appendix~L expands both hatted losses into weighted sums and gives three deployment profiles.
+\S4.5 then states: ``\emph{This formalization makes $\Pi_{\pi}$ a systems mechanism rather than a
+cosmetic switch.}'' That sentence is the claim a reviewer will test, and the paper contains no
+evidence for it.
 
-\S C.2 (Table~2, \src{tab:per}) and \S C.4 (Table~3, \src{tab:utility}) are measured on the
-reconstructed 256-prompt surface under a named, digest-recorded runtime. They report
-enterprise staged redaction at \textbf{PER 37.5\%} and the proposed utility-constrained
-setting at \textbf{12.5\%}, and the prose beneath Table~2 states plainly that an earlier
-version of the table ``put the baseline ahead at 8.1\% against 9.3\%'', that those numbers
-came from a prompt set that no longer exists under a runtime that was never recorded, and
-that only the named runtime is reported.
+\emph{Checks that establish this.} Every condition in the downstream table is a single mode applied
+uniformly --- the released runner enumerates \src{placeholder:<detector>},
+\src{abstraction:<model>}, \src{symbolic\_late:<detector>} and \src{symbolic\_early:<detector>}, with
+no per-span routing anywhere in it. A search of the whole tree for the profile names, the selector, or
+any of the six loss terms (\src{DirectExposureRisk}, \src{ContextLeakageRisk},
+\src{RestorationSurface}, \src{ExactValuePenalty}, \src{SemanticDrift}, \src{LatencyPenalty}) returns
+only the CPPB reconstruction script. \src{mediation\_baselines.py}, which implements the detectors and
+the modes for every real-data experiment, contains no routing logic at all.
 
-Two later tables did not get that message:
-\begin{itemize}
-\item \textbf{Table~13 (\src{tab:judge})} prints \emph{Enterprise staged redaction 8.1},
-\emph{Proposed (utility-constrained) 9.3}, \emph{Regex-only 61.3}, \emph{Capitalization
-heuristic 48.7}. Every one of those four rows disagrees with \src{tab:per}, which gives
-37.5, 12.5, 50.0 and 62.5 for the same methods on the same benchmark.
-\item \textbf{Table~9 (\src{tab:ablation})} prints \emph{Typed placeholder 8.1} and
-\emph{Secure symbolic mapping 9.3}, the same superseded pair.
-\item The paragraph introducing Table~13 calls 9.3\% ``\emph{the canonical proposed operating
-point}'' --- naming as canonical the number the appendix has already disowned.
-\end{itemize}
+So $\Pi_{\pi}$ is exercised on exactly one surface --- CPPB --- and the appendix now reports that
+measurement as a null: all seven thresholds return the same exposure, because the detector's
+confidences are bimodal and no span lies in the swept range. \textbf{The selector's only evaluation
+shows it does not move the outcome, and the main body never uses it.}
 
-Worse, \textbf{Table~13's caption asserts a provenance that is false}: ``every comparison
-baseline uses the canonical full-benchmark operating points reported in
-Tables~[\src{tab:per}] and~[\src{tab:utility}]'' --- naming \src{tab:per} and \src{tab:utility}, the two tables it
-contradicts in every row.
+Two further consequences. Appendix~L's profile table claims the balanced profile ``\emph{yields the
+main paper's best privacy--utility compromise}'' --- but no main-paper result is produced under any
+profile, and the main text never states which $\pi$ is active for its headline numbers. And
+Appendix~I still reads $\Pi_{\pi}$ as ``a placement decision on the privacy--utility frontier rather
+than a routing heuristic'', an interpretation of a mechanism with no measurements behind it.
 
-\emph{Verification.} \src{cppb\_privacy\_judge\_comparison.csv} holds exactly Table~13's
-values (\src{Enterprise staged redaction,8.1}; \src{Proposed (utility-constrained),9.3}).
-\src{cppb\_reconstructed\_summary\_qwen3\_32b-q4km-hf.csv} holds exactly \src{tab:per}'s
-(\src{enterprise\_staged,...,37.50,32.03,43.75}; \src{proposed\_utility\_constrained,...,%
-12.50,8.59,17.19}). Both records exist; the appendix draws from both without saying so.
+\emph{Action.} The honest and cheapest fix is to demote, not defend. Cut \S4.5 to a short paragraph
+saying that mode selection is policy-governed in the design, that the released implementation applies
+a fixed mode per condition, and that a routing policy is future work; move Table~3 to the appendix as
+a design table; delete the profile table's performance claim; and soften Appendix~I. This reclaims
+close to a page in a body with five lines of slack --- room the paper needs for F7 and F8 below. The
+alternative, running the selector against fixed-mode baselines on PrivacyLens, is roughly a week and
+would turn the framing into a result; it is the stronger paper if the time exists.
 
-\emph{Why this is the most expensive defect in the submission.} The attached prior review
-states, as its fourth reason for rejection: ``Enterprise redaction achieves lower exposure
-than the proposed configuration, 8.1\% versus 9.3\% PER.'' PoPETs requires that letter to be
-submitted with the paper. A reviewer holding it, who opens the appendix and finds
-\emph{8.1 versus 9.3} still printed in two tables and called canonical in one paragraph, will
-reasonably conclude the authors did not fix the finding they claim to have fixed --- and the
-point-by-point response says they did.
+\item \po\ \textbf{\S4.2 credits the detector with adversarial normalization the system does not
+have, and \S6.5 measures its absence.}
+The extraction subsection lists among the detector's signals ``\emph{adversarially robust
+normalization, including Unicode/homoglyph folding and surface-form canonicalization before rule or
+NER passes}''. \S6.5 then reports the heuristic detector at \textbf{99.7\% ASR [98.9, 100.0] under
+zero-width insertion} and 65.4\% under homoglyph substitution, and the learned detector at 18.4\%
+under case inversion.
 
-\emph{Action.} Regenerate Table~13 and Table~9 from the reconstructed records, or delete both
-tables. Deleting is defensible and is the safer choice under time pressure: Table~13's
-argument (``detection is commoditized, the contribution is routing and restoration'') is
-already made by \src{tab:lightclf} on real AI4Privacy data, which is stronger evidence than a
-controlled surface. If they are kept, the caption must state which record era produced them,
-and no number in the appendix may be called ``canonical'' unless \src{tab:per} agrees.
-Then grep the whole appendix for \src{8.1} and \src{9.3} and confirm every remaining
-occurrence belongs to a different measurement.
+\emph{Check.} \src{mediation\_baselines.py} contains no Unicode normalization of any kind --- no
+\src{unicodedata}, no NFKC, no confusable folding, no zero-width stripping. The only files in the
+repository that mention homoglyphs or zero-width characters are the two \emph{attack} suites, which
+generate them. The described defence is not in the evaluated system.
 
-\item \pz\ \textbf{The paragraph reading the CPPB operating-point figure contradicts its own
-table, contradicts the finding two paragraphs above it, and miscounts the sweep.}
-The paragraph after Figure~5 (\S C.5) contains three defects in three consecutive clauses:
+This is more damaging than an unimplemented feature, because the paper's own adversarial section is
+the evidence against it. A reviewer who reads \S4.2 and then \S6.5 sees the framework claiming a
+defence and the results measuring exactly its absence, one page apart.
 
-\begin{enumerate}[label=(\alph*)]
-\item ``\emph{Enterprise staged redaction remains the lower-PER point}'' --- \src{tab:per},
-one page earlier, gives enterprise staged redaction 37.5\% against the proposed setting's
-12.5\%. Lower PER is better; the proposed setting is lower by a factor of three. This is the
-rejected claim from the prior review surviving in prose, and it is now false against the
-paper's own table.
-\item ``\emph{the six-point threshold sweep shows the expected exposure/utility trade-off}''
---- the paragraph two above it reports the sweep as a \emph{null}: every
-$\tau\in\{0.30,0.40,0.50,0.55,0.60,0.70,0.80\}$ returns PER 12.5\%, because the detector's
-confidences are bimodal and no span sits in the swept range. The paper's own honest and
-interesting finding is that there is no trade-off curve here; this sentence re-asserts the
-curve.
-\item ``\emph{six-point}'' --- the set has seven elements, and the figure caption says
-``seven-point''.
+\emph{Action.} Delete the bullet, or restate it as an explicitly unimplemented design recommendation
+that \S6.5 motivates --- which is the more useful version, since ``normalize before matching'' is a
+real lesson the attack results support. Sweep \S4.2's other bullets against the artifact while there:
+``contextual privacy judgment'' and ``optional OCR-based extraction'' should each either point at the
+component that implements it or be marked as design surface.
+
+\item \po\ \textbf{The routing objective is stated as an equation and implemented as something else.}
+\S4.5 and Appendix~L define the two hatted losses as weighted sums with coefficients
+$\alpha_1..\alpha_3$ and $\beta_1..\beta_3$. \textbf{No numerical value for any of the six is given
+anywhere in the paper.} Appendix~L's own table caption then says the $\alpha/\beta$ terms are
+``\emph{realized as profile-level emphasis trends through the rule table rather than as separately
+learned per-prompt coefficients}'', and the table supplies only Low/Medium/High.
+
+The equations are therefore not the implementation, and the caption admits it in wording most readers
+will pass over. For a paper whose reproducibility is otherwise its strongest dimension --- model
+digests, decoding settings, per-run manifests --- this is the one place where a reader cannot
+reconstruct what was run, and it is in the mechanism the paper names as its contribution.
+
+\emph{Action.} If F1 is resolved by demotion, this resolves with it: drop the equations along with the
+argmin and describe the rule table as what it is. If the equations stay, they need their coefficients.
+
+\item \po\ \textbf{Algorithm~1 omits half of its own inputs and contradicts \S4.2 on when a span is
+protected.}
+Its \src{Require} clause takes the raw prompt $x$, span set $E(x)$, task context $\mathcal{D}$, policy
+profile $\pi$. Its second line constructs $z_i \gets (c_i,p_i,r_i,q_i,a_i,\ell_i)$ --- but
+$r_i,q_i,a_i,\ell_i$ (risk tier, exact-value requirement, restoration authorization, latency
+sensitivity) are never inputs, never derived, and never defined in the algorithm. A reader
+implementing from the specification cannot produce $z_i$.
+
+Second, the loop protects \emph{every} span in $E(x)$ unconditionally, while \S4.2 states that ``a
+span is marked for protection when its confidence exceeds a configurable threshold $\tau$''. The
+threshold that Appendix~L tabulates per profile, and that the CPPB sweep varies, does not appear in
+the algorithm at all.
+
+\emph{Action.} Either add the four routing-state components to the signature and the $\tau$ test to
+the loop, or --- consistent with F1 --- reduce the algorithm to what the system actually does: detect,
+apply the configured mode, record the mapping, return. A four-line honest algorithm is worth more than
+a fourteen-line aspirational one.
 \end{enumerate}
 
-\emph{Action.} Rewrite the paragraph from the tables as they now stand. The honest reading is
-short: the proposed setting reaches lower exposure than the enterprise baseline on this
-surface, the threshold sweep is flat and that flatness is a property of the detector rather
-than of the policy, and the figure is therefore a picture of operating points rather than of a
-frontier. Also verify the claim in the same paragraph that the figure ``carries 95\%
-confidence intervals from repeated runs'' --- \src{tab:pi\_sensitivity} shows no intervals, and
-if the figure's intervals come from the five-seed multiseed records rather than from the
-reconstructed pass, the sentence should say which.
-
-\item \po\ \textbf{Category-wise numbers are stated in prose with no table, no record
-reference, and a stale cross-reference.}
-\S C.3 reads: ``The category-wise breakdown (appendix) shows that person and financial
-identifiers achieve Span~F1 of 0.96/0.95 with PER of 6.5/5.8, whereas context-dependent spans
-fall to Span~F1 0.84 with PER 16.8.'' Three problems: the section \emph{is} the appendix, so
-``(appendix)'' is a pointer to itself left over from an earlier structure; six numbers are
-asserted with no table and no record named, which is the one class of quantity a reviewer
-cannot check; and the section then draws a policy conclusion from them (``it justifies
-assigning higher protection weight in $\Pi_\pi$ to context-sensitive categories'').
-
-\emph{Action.} Either render the breakdown as a table from its record, or delete the numbers
-and keep the qualitative claim. Do not leave six unsourced decimals in a paper whose
-reproducibility is its strongest dimension.
-
-\item \po\ \textbf{A renamed metric's old name survives in the appendix.}
-The main text renamed boundary leakage to \emph{Released-Context Exposure} precisely so it
-could not be read as an agent-behaviour measurement. \S J still opens ``\emph{Boundary leakage
-is deliberately absent from Table~[\src{tab:portability}]}''. A reviewer meeting the old name in the appendix
-will look for its definition in the main text and not find it.
-
-\emph{Action.} Rename to RCE and sweep both files for other survivals of the old vocabulary.
-
-\item \pt\ \textbf{Two different RCE values are reported for early restoration and never
-reconciled.}
-Appendix Table~8 (\src{tab:restore}, CPPB) gives late restoration RCE 1.8\% against early
-9.7\%. Main-text Table~6 (PrivacyLens) gives 1.6\% against 51.0\%. The late-restoration
-figures agree to within noise; the early-restoration figures differ by a factor of five. The
-explanation is presumably that the two surfaces expose different amounts of planning context,
-but nothing says so, and the main text leads with the 51.0\% figure.
-
-\emph{Action.} One sentence in the appendix table's caption or the paragraph above it, stating
-that CPPB's agent has a shorter planning surface and that the two numbers are not comparable.
-A reviewer who spots a $9.7$ and a $51.0$ for the same condition and no explanation will
-assume one of them is wrong.
-
-\item \pt\ \textbf{\src{tab:restore} reports no intervals while its main-text counterpart
-does.}
-Table~8 gives TSR, RSR and RCE as bare point estimates. Every comparable table in the
-submission carries bootstrap intervals, and the paper's own earlier revision history shows
-that asymmetric interval coverage reads as selective reporting.
-
-\emph{Action.} Add intervals from the record, or state in the caption that this is a
-controlled-surface ablation reported as point estimates and say why.
-
-\item \pth\ \textbf{Dangling footnote marker in \src{tab:ablation}.}
-The table carries the note ``$^{*}$UPR with authorized restoration at tool boundary'' but no
-$^{*}$ appears on any cell. Either mark the cell the note describes or fold the note into the
-caption. (If F1 is resolved by deleting this table, this finding disappears with it.)
-\end{enumerate}
-
-\subsection*{Argument and positioning}
+\subsection*{Presentation and evidence placement}
 \begin{enumerate}[label=F\arabic*.,resume]
 
-\item \po\ \textbf{The novelty claim has no second line of defence, and the paper knows it.}
-\S3.3 concedes, correctly and to its credit, that ``the replacement operation itself is not
-new'', citing Casper, PromptGraph and PAAC. Everything then rests on the propagation-control
-framing plus restoration timing. But the paper's own measurements narrow that further: on
-PrivacyLens, Casper-style reaches PER 1.4\% against the proposed 1.8\%, and the paired
-restoration-timing effect on agent-emitted identifiers is 2.1 points. A reviewer inclined to
-discount framing contributions can assemble a rejection from the paper's own honest numbers.
+\item \po\ \textbf{Three appendix tables are never referenced from any text.}
+\src{tab:pljudge} (judge validation), \src{tab:judgecap} (judge capacity) and \src{tab:attrcap}
+(attacker capacity) carry no \src{\textbackslash ref} from either document. Their sections discuss
+their contents in prose without pointing at them. In a two-column layout an unanchored float can land
+a page from its discussion, and ACM copy-editing flags unreferenced floats.
 
-\emph{Action.} This is not a request to overclaim. It is a request to put the strongest
-genuinely-new result where a reviewer cannot miss it. The judge-validation result --- that two
-independent proxies for semantic leakage both fail against blind human annotation, that this
-holds across a ninefold range of judge capacity, and that the same check applied reflexively
-puts the benchmark's own judge at $\kappa\approx0.51$ against a human ceiling of $0.917$ --- is
-a methodological contribution that stands on its own and is not claimed by any of the cited
-prior systems. It is currently the third of three contributions. Consider making it the first,
-and saying in the introduction that the paper's transferable finding is about \emph{how to
-measure} agent privacy, not only about one layer.
+\emph{Check.} Extracting every float label from both files and every \src{\textbackslash ref} target
+from both leaves exactly these three unmatched; the other twenty-nine are referenced.
 
-\item \pt\ \textbf{The over-redaction cost is honest but is priced in only one direction.}
-The learned detector's 0.36 precision at 0.95 recall (\src{tab:lightclf}) is what produces
-retention of 0.80 and 0.75 and the 41.8\% FRR on the heuristic default. Appendix~J prices this
-well. What is missing is the operator's question: is there a threshold on this detector that
-trades a little recall for materially better retention? \S C.5 shows the routing threshold is
-flat, but that is $\Pi_\pi$'s threshold, not the detector's decision boundary.
+\emph{Action.} One \src{\textbackslash ref} each, in the sentence that already describes the table.
 
-\emph{Action.} If a precision/recall sweep of the learned detector exists in the records, add
-three rows. If not, one sentence saying the detector is used at its default operating point
-and that tuning it is deployment work, so a reviewer does not read the omission as avoidance.
+\item \pt\ \textbf{The paper's strongest adversarial result is appendix-only and gets one clause in the
+body.}
+The attribute-recovery attack --- 64.0\% [60.8, 67.0] of \emph{removed} values recovered against a 25\%
+chance line, stable across a ninefold range of attacker capacity, with dummy values beating
+placeholders against a stronger reader --- is the most quotable finding in the submission and the one
+that most directly answers ``what does this layer not do''. \S6.6 gives it a subordinate clause.
 
-\item \pt\ \textbf{The attribute-recovery attack is the paper's strongest adversarial result
-and it is in the appendix.}
-That 64.0\% [60.8, 67.0] of removed values are recoverable against a 25\% chance line, that
-this is stable from 8B to 70B attackers, and that dummy values beat placeholders against a
-stronger reader, is the most quotable finding in the submission and the one that most directly
-answers ``what does this layer not do''. \S6.6 gives it one clause.
+The asymmetry it establishes --- how much surface form a detector removes governs what a downstream
+reader can copy, and barely governs what an adversary can reconstruct --- is a better statement of the
+paper's own thesis than the annotation study alone supports.
 
-\emph{Action.} Two sentences in \S6.2 or \S6.6 with the headline number and the asymmetry it
-establishes. If the body cannot afford them, they are worth more than the CPPB sentence in
-\S5.2.
+\emph{Action.} Two sentences in \S6.2 or \S6.6 with the headline number. F1's demotion pays for them.
 
-\item \pth\ \textbf{The 70B portability run reverses a main-text negative result and this is
-underplayed.}
-On the 70B agent, six of eight conditions survive Holm correction and the learned detector
-reaches $-18.5$ points, where the 32B agent resolves nothing. The appendix states this
-plainly. The main text mentions it in a subordinate clause. A reviewer may read the main text's
-negative framing as the whole story and be surprised by the appendix.
+\item \pt\ \textbf{The 70B portability run reverses a main-text negative result, and the body
+under-reports it.}
+On the 70B agent six of eight conditions survive Holm correction and the learned detector reaches
+$-18.5$ points, where the 32B agent resolves nothing. The appendix says so plainly; the body carries it
+in a subordinate clause. The current framing is conservative rather than wrong, but a reviewer who
+reads only the body will take the negative result as the whole story and then be surprised.
 
-\emph{Action.} The current framing is defensible and conservative; the risk is only that it
-undersells. One clause in \S6.3 noting that the channel does separate under a larger agent,
-with the appendix pointer, is enough.
+\emph{Action.} One clause in \S6.3: the channel does separate under a larger agent, pointer to the
+appendix.
+
+\item \pth\ \textbf{Four unused figure assets ship with the artifact.}
+\src{agent\_pipeline\_summary.png}, \src{agent\_propagation\_curves.png},
+\src{cppb\_benchmark\_composition.png} and \src{restoration\_ablation\_tradeoffs.png} are in
+\src{figs/} but referenced by neither document; the last belonged to the section retired in the
+previous round. Harmless in the PDF, mild noise for an artifact reviewer.
+
+\emph{Action.} Remove them, or note in the artifact README that \src{figs/} carries assets from earlier
+drafts.
+\end{enumerate}
+
+\subsection*{Positioning}
+\begin{enumerate}[label=F\arabic*.,resume]
+
+\item \pt\ \textbf{Novelty still has no second line of defence, and F1 makes that worse.}
+\S3.3 concedes that the replacement mechanism is prior art. The remaining claim is the propagation
+framing plus restoration timing. If \S4.5 is demoted per F1, the framework chapter's distinctive
+apparatus goes with it, and what remains is a placement argument plus a measurement programme.
+
+That is defensible --- and this review thinks it is the right paper --- but it should be argued
+deliberately rather than left to a reviewer to notice. The judge-validation result is a
+\emph{methodological} contribution that none of the cited prior systems claims: two independent proxies
+for semantic leakage both failing against blind human annotation, the failure surviving a ninefold
+capacity sweep, and the same instrument then turned on the benchmark's own judge. It transfers beyond
+this layer.
+
+\emph{Action.} This is the authors' framing call and they have reserved it. Whichever order is chosen,
+the introduction should state in one sentence what the paper contributes that is not a placement
+decision.
+\end{enumerate}
+
+\subsection*{Carried over, needing the authors}
+\begin{enumerate}[label=V\arabic*.]
+\item \po\ \textbf{Appendix form.} The appendix is a separately compiled PDF with its own title page,
+and it now holds the fourth adversary class, the judge validation, and the interval table. The venue
+excludes ``clearly-marked appendices'' from the page limit, wording that ordinarily describes
+appendices inside the submission PDF. Check the submission form; if supplementary material is not
+guaranteed to reach reviewers, the attribute-recovery result must move into the body regardless of F7.
+\item \pt\ \textbf{Preprint.} A same-title preprint states the third headline conclusion the opposite
+way round. Posting a corrected version before submitting is compliant; updating it during review is the
+action the policy discourages. Unanswered from the previous round.
 \end{enumerate}
 
 \section{Revision actions}
-Owners: \emph{paper} = edits under \src{paper/}; \emph{src} = code and records under
-\src{src/}; \emph{submit} = submission bundle. Days are calendar days from 10 September 2026
-against the 30 November deadline.
+Days are calendar days from 11 September 2026 against the 30 November deadline.
 
-\subsection*{A1. Stop the desk-reject and the credibility hit (days 1--3) \pz}
+\subsection*{A1. Make Section~4 describe the evaluated system (days 1--7) \pz}
 \begin{enumerate}[label=A1.\arabic*]
-\item Obtain the 2027 PoPETs template bundle from the live author instructions; replace the
-template files wholesale; rebuild both documents; re-verify that the body still ends on
-page~12 and that references remain resolved (V1).
-\item Regenerate or delete \src{tab:judge} and \src{tab:ablation}; correct the caption's false
-provenance claim; grep the appendix for every remaining \src{8.1} and \src{9.3} and confirm
-each belongs to a live measurement (F1).
-\item Rewrite the Figure~5 reading paragraph from the current tables: fix the reversed PER
-comparison, the contradicted trade-off claim, and the six/seven miscount; verify the
-confidence-interval provenance claim (F2).
-\item Re-run a full numeric sweep of the \emph{appendix} against its records, in the way the
-main body was already swept. Both P0 findings above are appendix-only, which suggests the
-appendix has never had the treatment the main body received.
+\item Decide F1: demote $\Pi_{\pi}$ (recommended, about a day) or evaluate it (about a week). If
+demoting: cut \S4.5 to a paragraph, move Table~3 to the appendix, delete the profile table's
+performance claim, soften Appendix~I, and drop the loss equations with it (F3).
+\item Delete or restate the adversarial-normalization bullet in \S4.2, and audit the other bullets in
+that list against the artifact (F2).
+\item Rewrite Algorithm~1 to match the implementation, or complete its signature and add the $\tau$
+test (F4).
+\item State, once, which policy configuration the reported results were produced under --- or, after
+demotion, that a fixed mode per condition was used and no routing policy was active.
 \end{enumerate}
 
-\subsection*{A2. Compliance and anonymity (days 1--5) \pz}
+\subsection*{A2. Place the evidence where reviewers read it (days 5--15) \po}
 \begin{enumerate}[label=A2.\arabic*]
-\item Decide and act on the self-citation (V2).
-\item Confirm the submission form's expectation for the appendix, and whether supplementary
-material is guaranteed to reach reviewers; relocate load-bearing evidence if it is not (V3).
-\item Add the first-page real-world-relevance sentence (V4).
-\item Verify the prior-review bundle upload field with an authenticated account; this is the
-one compliance item no one but an author can close.
+\item Reference the three unanchored tables (F5).
+\item Promote the attribute-recovery headline into the body, paid for by A1.1 (F7).
+\item Add the 70B separation clause to \S6.3 (F8).
+\item Resolve the appendix-form question and relocate load-bearing evidence if needed (V1).
 \end{enumerate}
 
-\subsection*{A3. Evidence hygiene (days 3--12) \po}
+\subsection*{A3. Framing and housekeeping (days 10--25) \pt}
 \begin{enumerate}[label=A3.\arabic*]
-\item Table or delete the category-wise numbers (F3).
-\item Rename the surviving ``boundary leakage'' (F4); reconcile the two RCE readings (F5);
-add or explain \src{tab:restore}'s missing intervals (F6); fix the dangling footnote (F7).
+\item Settle the contribution order and add the one-sentence statement of what is contributed beyond
+placement (F9).
+\item Decide the preprint (V2); clean the unused figure assets (F6).
 \end{enumerate}
 
-\subsection*{A4. Strengthen the case (days 10--30) \po/\pt}
+\subsection*{A4. Submission logistics \pz}
 \begin{enumerate}[label=A4.\arabic*]
-\item Reorder the contributions so the judge-validation methodology leads, and say in the
-introduction that it transfers beyond this layer (F8).
-\item Promote the attribute-recovery headline into the body (F10).
-\item Add the detector operating-point sentence or rows (F9); add the 70B clause (F11).
-\end{enumerate}
-
-\subsection*{A5. Submission logistics \pz}
-\begin{enumerate}[label=A5.\arabic*]
-\item \textbf{Checkpoint 31 October.} If A1 is not fully closed, submit to Issue~4
-(28 February 2027) rather than submit with F1 live. A contradiction a reviewer can find by
-comparing two tables in the same document, on the same number the attached rejection letter
-names, is worse than a three-month delay.
-\item \textbf{Final build check.} Template version is 2027; body ends on page~12; the three
-required sections follow it; zero undefined references; no identity string on any page except
-the bibliography, and the bibliography's only self-citation is a deliberate decision; every
-figure and table referenced from the text; appendix and main body cross-references resolve in
-both directions.
-\item \textbf{Re-verify the live author instructions in the final week.} Everything in this
-document's compliance table was fetched on 10 September 2026 and is the one class of fact that
-can change without anything in the repository changing.
+\item \textbf{Checkpoint 31 October.} If A1 is not closed, submit to Issue~4 (28 February 2027). A
+framework section describing machinery the artifact does not contain is the kind of finding that
+produces a reject rather than a revise, because it reads as overclaiming rather than as an error.
+\item \textbf{Final build check.} Body ends on page~12; three required sections follow; zero undefined
+references; no identity string in either PDF; every float referenced; cross-document references resolve
+both ways.
+\item \textbf{Re-verify the live author instructions in the final week.} Everything in the compliance
+table was fetched on 10--11 September 2026 and is the one class of fact that changes without the
+repository changing.
 \end{enumerate}
 
 \section{Decisions required from the authors}
 \begin{enumerate}[label=D\arabic*.]
-\item \textbf{Table~13 and Table~9 (F1): regenerate or delete?} \emph{Recommended: delete.}
-Their argument is already carried by \src{tab:lightclf} on real data, deleting removes the
-collision with the attached prior review entirely, and it costs less time than a regeneration
-that must then be re-verified. Regenerate only if the CPPB judge baseline is wanted for its
-own sake. \textbf{Answered 11 September 2026: delete.} Both tables and the paragraph introducing
-\src{tab:judge} are gone; see the resolution log.
-\item \textbf{Self-citation (V2): drop or keep?} \emph{Recommended: drop.} It is doing no
-argumentative work in either location, and it is the clearest de-anonymization signal in the
-submission. \textbf{Answered 11 September 2026: drop.} Both citations and the bibliography entry are
-removed, and neither built PDF now carries any author string.
-\item \textbf{Preprint (V5): post a corrected v2 before submitting, or leave it?}
-\emph{Recommended: post v2 before the deadline, then leave it alone.} The current public
-version states a conclusion this paper has since reversed, and a reviewer who finds it will be
-reading the wrong claims under the right title.
-\item \textbf{Contribution order (F8): lead with the measurement result?} This is a genuine
-scientific-framing choice and is the authors' to make. It changes the abstract, the
-contribution list, and the introduction's last two paragraphs. It does not change any
-measurement. \textbf{Reserved by the authors, 11 September 2026: their call, deliberately not
-actioned here.}
+\item \textbf{$\Pi_{\pi}$ (F1): demote or evaluate?} \emph{Recommended: demote.} It costs a day, it
+reclaims close to a page the body needs, and it removes the largest overclaim in the submission.
+Evaluating it is the stronger paper and roughly a week; it is worth doing only if the week exists and
+A2 still fits after it.
+\item \textbf{Algorithm~1 (F4): complete it or reduce it?} \emph{Recommended: reduce}, consistent with
+D1. A specification that matches the artifact is worth more than one that matches the ambition.
+\item \textbf{Appendix form (V1).} Needs an authenticated look at the submission form. Nobody but an
+author can close it.
+\item \textbf{Preprint (V2).} Still open from the previous round.
 \end{enumerate}
 
-\section*{Resolution log, 11 September 2026}
-Everything below was applied and rebuilt. Both documents compile with zero errors and zero undefined
-references; the main body ends on page~12 and the three required sections begin on page~13.
-
-\begin{itemize}
-\item \textbf{V1 --- withdrawn, not fixed.} The template was already the mandated 2027 bundle; see the
-retraction above for the checksum evidence.
-
-\item \textbf{F1 (D1) --- both tables deleted.} \src{tab:judge} with its introducing paragraph, and
-\src{tab:ablation}, are removed, and the sentence that opened the restoration section was retargeted to
-\src{tab:restore} alone. A sweep confirms no superseded figure is presented as a result anywhere in the
-appendix: the only surviving mention of 8.1 and 9.3 is the sentence in \S C.2 that names them as the
-superseded pair and says why they are not used. \src{tab:ablation}'s dangling footnote (F7) went with it.
-
-\item \textbf{V2 (D2) --- self-citation dropped.} Removed from both citation sites and from the
-bibliography. An independent scan of both built PDFs for author names, affiliations, e-mail addresses and
-institutions now returns clean, where it previously hit three names on the references page.
-
-\item \textbf{F2 --- the figure-reading paragraph rewritten.} All four defects fixed: the reversed PER
-comparison now reads in the direction its own table supports (12.5\% against 37.5\%), the contradicted
-trade-off claim is replaced by the flat reading the sweep actually produced, the six/seven miscount is
-corrected, and the interval provenance is stated correctly --- the record carries bootstrap intervals over
-the 256 prompts of a single deterministic pass, not variance across repeated runs, which is what the
-sentence had claimed and what the paper's own determinism statement forbids.
-
-\item \textbf{F3 --- superseded per-category rates removed, ordering kept.} The check that decided it:
-\src{categorywise\_analysis.csv} is dated 7 September and its prompt-weighted mean PER is 9.51\%, matching
-the superseded 9.3\% aggregate rather than the reconstructed 12.5\%. No regenerated per-category record
-exists, so tabulating it would have re-introduced F1 in a third place. The section now reports the
-ordering, which is what the policy argument uses, and says why the rates are absent.
-
-\item \textbf{F4 --- stale metric name renamed.} \S J's surviving ``boundary leakage'' is now
-released-context exposure.
-
-\item \textbf{F5 and F6 --- resolved by deletion.} These were first addressed by rewriting
-\src{tab:restore}'s caption to define its columns, admit it had no intervals, and explain why its 9.7\%
-early-restoration figure could not be read against the main text's 51.0\%. The authors then extended the
-D1 decision to the table itself, which removes both findings at the source.
-
-\item \textbf{\src{tab:restore} --- deleted, and its section with it.} It carried the same provenance
-problem D1 removed elsewhere: a 7~September record, named \src{blr} in that record, with no resampled
-interval available. With \src{tab:ablation} already gone, deleting it left the enclosing section with no
-content, so the section went too. Nothing is lost: restoration timing is measured on real agent data in
-the main text, with a paired test and a second-agent replication, and the sanitization modes are compared
-in the downstream table. \textbf{The appendix is now free of the superseded measurement era entirely} ---
-the only place those numbers appear is the sentence in \S C.2 that names them as superseded. Appendix
-section lettering shifted by one as a result; every main-text reference resolves through a label, so all
-of them updated automatically and the build reports no undefined reference.
-
-\item \textbf{V4 --- first-page relevance sentence added}, paid for by compressing a duplicated
-attacker-capability list in \S2.2. The page-12 boundary was re-verified after each of the two attempts
-this took.
-\end{itemize}
-
-\subsection*{Still open}
-\begin{itemize}
-\item \textbf{V3} --- whether the submission form expects a separate appendix PDF, and whether
-supplementary material is guaranteed to reach reviewers. Needs an authenticated account.
-\item \textbf{V5 (D3)} --- the preprint decision, unanswered.
-\item \textbf{F8--F11} --- the positioning work, gated on D4, which the authors have reserved.
-\end{itemize}
-
 \section*{What is already strong and should not be disturbed}
-Revision pressure tends to sand off exactly the things that make a paper credible, so these
-are recorded deliberately.
+Revision pressure sands off exactly these, so they are recorded deliberately.
 
 \begin{itemize}
-\item \textbf{The negative results are reported as negative.} Mediation does not defend against
-prompt injection; judge-scored leak rates do not survive multiple-comparison correction on the
-32B agent; the authors' own 27B judge failed its validation at $\kappa=0.087$. None of this is
-buried, and the paper is far more credible for it.
-\item \textbf{The judge-validation idea is executed properly and then applied reflexively.}
-Blind to method and to the judge's verdict; an independent third rater from a blank sheet
-giving a real inter-rater estimate ($\kappa=0.739$); a capacity sweep ruling out ``the judge was
-too small''; and then the same instrument turned on the benchmark's own judge, which the paper
-had every incentive not to check. That last move is what separates this from a paper that
-merely reports a negative result.
-\item \textbf{Restoration timing is now measured on the agent, not only on the release.} The
-paired test on the identifiers the agent itself writes, replicated on a second agent family, is
-what turns a definitional quantity into a result.
-\item \textbf{Reproducibility is real rather than asserted.} Per-run manifests with model
-digests, quantization and decoding settings; an artifact that has actually been unpacked on a
-clean host and re-run; tables that regenerate from records. This review was able to
-independently reproduce every main-body number it checked, which is not the usual experience.
-\item \textbf{Scope statements are made once and not repeated defensively.} \S2.4 states the
-formal-privacy scope and the paper then stops apologizing, which is the right discipline.
+\item \textbf{The evidence chapters no longer contain a number that disagrees with its record.} This
+review looked; the previous round's arithmetic defects are closed and none has reappeared. The
+superseded controlled-surface era is entirely out of the appendix.
+\item \textbf{Negative results are reported as negative.} Mediation does not defend the instruction
+channel; judge-scored leak rates do not survive correction on the 32B agent; the authors' own judge
+failed its validation at $\kappa=0.087$.
+\item \textbf{The judge-validation idea is executed properly and applied reflexively.} Blind to method
+and verdict, an independent rater from a blank sheet giving a real inter-rater estimate
+($\kappa=0.739$), a capacity sweep closing the obvious objection, and then the same instrument turned
+on the benchmark's own judge, which the authors had every incentive not to check.
+\item \textbf{Restoration timing is measured on the agent, not only on the release}, paired on the case
+and replicated on a second agent family. That is what makes it a result rather than a definition.
+\item \textbf{Reproducibility infrastructure is real.} Per-run manifests with digests, quantization and
+decoding settings; an artifact unpack-tested on a clean host; a packaging check that fails the build
+when shipped documentation names a manuscript label that no longer exists. That last one caught
+documentation drift during the previous round exactly as intended.
 \end{itemize}
 
 \section*{Note on this review's own limits}
-Three things this review could not close. The submission form was not accessible without an
-authenticated account, so V3 and the prior-review upload field are stated as checks rather than
-as findings. The 2027 template bundle could not be downloaded and diffed here, so V1 names the
-version mismatch and the check to run rather than the specific differences. And the CPPB
-figure's confidence-interval provenance (F2) was not traced to a record; it is flagged for
-verification rather than asserted as a defect.
+Two items are stated as checks rather than findings because they cannot be closed without an
+authenticated account: the submission form's expectation for the appendix (V1), and the prior-review
+upload field. One caution on this review's central finding: F1 asserts that no experiment exercises
+$\Pi_{\pi}$, established by reading the released runners and searching the tree for the selector and its
+six loss terms. If a routing path exists that does not use those names, the finding is wrong and the
+authors will know at once --- but then the paper has a reproducibility problem of a different kind,
+because this reviewer could not find it.
 
 \end{document}
