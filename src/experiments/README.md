@@ -298,6 +298,17 @@ per-file inventory below maps each record to the manuscript object it supports.
 - `i2b2_transfer_run_log.csv`
   - Raw rerun record for the current i2b2 wrapper roster and waiting/executed clinical state
 
+- `privacylens_attribute_recovery_attack.py`
+  - Four-way attribute recovery against the released surface: the case's own sensitive fact with its most sensitive value blanked, filled from four same-kind candidates drawn from other cases, so neither the case identity nor the answer type is informative. Chance is 1/k and scoring is an index match, with no judge model in the loop. `--score-only` rebuilds every reported quantity from the shipped rows without calling a model
+- `privacylens_attribute_recovery_rows_<attacker>.csv`
+  - One row per question: the blanked value, the candidate slot it occupied, the attacker's choice, whether the value still appears verbatim in the released text, and the reply. The survival column is what makes the value-absent accuracy rebuildable rather than something to take on trust
+- `privacylens_attribute_recovery_summary_<attacker>.csv` / `_paired_<attacker>.csv` / `_manifest_<attacker>.csv`
+  - Per-condition recovery, literal survival and recovery-when-absent with bootstrap intervals; paired differences between conditions and between recovery and survival; and the run manifest recording attacker digest, quantization, decoding, seed and context length
+- `attribute_recovery_capacity.py`
+  - Pairs the attacker runs on the identical seeded questions and reports the difference between adjacent capacities on the questions whose value the detector removed. Verifies that a shared question was posed the same way in both runs and refuses to pair them otherwise; a run still in progress pairs on the intersection
+- `privacylens_attribute_recovery_capacity.csv`
+  - The cross-attacker paired differences
+
 ## Writing records back into the manuscript
 
 Run:

@@ -36,7 +36,9 @@ number against its record.
 | `fig:inferability` — surface form against factual inferability | `figures/fact_retention_vs_inferability.py` |
 | `tab:judge` — lightweight learned privacy-judge baseline on the controlled benchmark | `cppb_privacy_judge_baseline.py` |
 | `tab:judgecap` — judge agreement with human labels across model capacity | `semantic_inferability_judge_capacity.py`; the human labels and the two automated proxies are scored by `semantic_inferability_agreement.py` |
-| `tab:contextattack` — executed attack on the released surface | `privacylens_context_inference_attack.py`, `privacylens_attribute_recovery_attack.py` |
+| `tab:contextattack` — case-identifiability control | `privacylens_context_inference_attack.py` |
+| `tab:attrrecovery` — attribute recovery against the released surface | `privacylens_attribute_recovery_attack.py`; `--score-only` rebuilds the summary and the paired differences from the shipped rows without calling a model |
+| attacker-capacity comparison, reported in the same appendix section | `attribute_recovery_capacity.py`, which pairs the attacker runs on the identical seeded questions and refuses to pair them if a shared question was posed differently |
 | `tab:advmeas` — adaptive adversary against the actual detectors | `measured_adaptive_adversary.py` |
 | `tab:mapcompromise` — mapping-table compromise curve | `secure_mapping_compromise.py` |
 | `tab:crossdom` — cross-domain transfer of the learned detector | `cross_domain_detector.py` |
