@@ -1,6 +1,89 @@
 # 论文进度
 
-## 2026-09-11（第六轮）D1 落地 + 预印本已生成到 submit/（当前最新）
+## 2026-10-07（第七轮）独立评审重置 + 四项补实验 + 正文修正（当前最新）
+
+按你的指令：**审核现稿是否达到 PoPETs 2027 Issue 3 的 accept 标准；没达到就重写 `docs/RevisionSuggestions.tex`，再自动改稿、补实验**。
+并按你的答复 **"你可以自己补标注"** 执行了 D1——但做法是先验证再使用（见第 3 条），结论是模型标注不能替代人工扩样。
+
+### 结论：**尚未达到 accept 标准，但差距比上一轮小、性质不同**（评审文件已整份重写，7 Oct）
+
+形式面全部通过：单 PDF、正文止于第 12 页、**模板六个文件与官网 `submission-template-2027.zip` MD5 逐一相同**（上轮的 V2 关闭）、
+双盲字节级干净、三个必填节齐全、文献已全量核过。拦在 accept 前面的是**代码没跑的实验被正文描述成跑了的**，而且正好在审稿人最会查的那条结果上：
+
+1. **F1（P1）早还原臂不是正文描述的那个臂、helpfulness 符号写反**。代码里 `symbolic_early` 只把值还原进过去轨迹，
+   指令里的 token 原样留着、最终动作也不过边界还原——每个动作平均残留 1.16 个未还原 token（70B 是 1.15）。
+   §6.4 "only the restoration point moves" / "values return during planning" / "ID column taken after restoration" 三句都不准。
+   更糟：late 2.26 vs early 2.15 是**延后更有帮助**（配对 +0.10 [−0.07, +0.29]；70B 上 +0.29 [+0.09, +0.49]，显著），
+   摘要、引言、§6.4、结论四处却都写成 "costs 0.11 helpfulness points"。**方向全部保住，而且修正后对论文更有利。**
+2. **F2（P1）还原时机的配对统计没有任何已发布脚本能算出来**；按仓库种子重算：32B 为 −2.1 [−3.6, **−0.6**]（原 −0.8），
+   70B 为 **−2.5 [−3.7, −1.5]**（原 −2.6 [−3.8, −1.4]）。McNemar 1/14、p=0.001 一致。
+3. **F3（P1）五张表是手敲的**（tab:downstream / inject / portability / pljudge / contextattack 未注册到 `fill_paper_tables.py`），
+   §5.1 却声称 "rendered … rather than typed in"。数字全部核对无误，错的是那句话。
+4. **F4（P1）RCE 列七行的 0.0 是 0/0**（非符号映射条件没有映射表，分母为零）。
+5. **F5（P1）AgentDojo 段与代码四处不符**：所有臂用的是 regex 检测器但没写；"raw values reach the tool boundary" 实际数的是
+   模型读到的消息文本（含工具输出）里可见的原值，方向相反；74 对的筛选规则是"载荷外泄标识符"而非"把用户数据路由给攻击者"；
+   banking 与 slack 的 `mediate_tool_outputs` 不同、注入文本把 Qwen 称作 Llama（harness 变通）。
+6. **F6（P1）每方法 17 条**——见第 3 条。
+7. **F7（P2）论文自己点名的最便宜加固（输入规范化）没做实验**——本轮做了，见第 2 条。
+8. F8–F14：九处措辞精确化、A5 routing 残留、profile caption 矛盾、tab:advmeas 合并单 PDF 后被遗弃在 transfer 节无引文、
+   区间表补 retrieval/tool 两列、摘要 24% 限定词、粗体错位。
+
+评分 74/100（方法严谨 70、复现 80、venue fit 92）。
+
+### 1. 正文修正（全部已做，`paper/main.tex` + `appendix.tex`，正文仍止于 p12，0 undefined，唯一 overfull 是模板自带的 CC-BY 版权块）
+
+- §6.4 整段按实现重写：说明早还原臂的真实形态（值只回到轨迹、指令保留 token、无边界还原）、RCE 51.0% 是轨迹份额；
+  换成重算后的 −2.1 [−3.6, −0.6] 与 −2.5 [−3.7, −1.5]；helpfulness 改为 "does not cost"（+0.10 / +0.29）。
+  摘要、引言贡献点、结论三处 "0.11 helpfulness points / a tenth of a point" 全部改为 "at no cost in helpfulness"。
+- Table 4：七行 RCE 改为 "---"，caption 注明只对有映射表的条件定义；注明符号映射两行用的是 transformer 检测器；去掉 2.21 的粗体。
+- §6.5 注入段：写明 regex 检测器、边界指标的真实含义、筛选规则（载荷外泄标识符的四个 injection task）、两套件执行器差异、
+  模型名变通。
+- §5.1 复现声明改窄为"有 builder 的表由脚本渲染，其余四张由记录转录并核对"（builder 子任务完成后会改回强版本）。
+- §5.4/§6.3：judge 注明是 4-bit 量化版；200 例注明为固定种子均匀抽样；"executable action" → "parseable action"。
+- §4.2："none of them normalizes" → "none of the evaluated detectors"（artifact 里有个未报告的 probe 变体会折叠 confusable）。
+- 附录：Casper 1,485 题的原因（两条回复没解析）；attribute-recovery 候选池按"形状"分三类的真实描述；
+  tab:advmeas 引导段补 clean recall（heuristic 0.33/0.56 vs learned 0.95/1.00）与 "separator = spacing 换适用条件"、
+  0.0 [0.0, 12.1] 是截断的负值。
+- 为腾版面删掉的纯文字（无数字损失，可回退）：§3 PrivacyRestore 段压缩、§2.1 问题表述收尾两句、§1 一句修辞、
+  §2.2 末句、§4.4 "Reading SPE as a decay…" 一句、§6.1 一句改写、§6.3 段尾跨 channel 总结句。
+
+### 2. 补实验 A：输入规范化加固（CPU，本机 venv，`canonicalization_hardening_suite.py`）
+
+规范化器 = 去 Unicode 格式字符（零宽等）+ 逐字符 NFKC（全角→ASCII）+ 48 个拉丁形近西里尔/希腊字母折叠；span 映射回原始偏移，
+下游一切不变。8 攻击族 × 4 检测器（heuristic / learned / Presidio / spaCy）× 有无规范化，同一 200 文档切片、同一 ASR 定义与 bootstrap。
+**结果：三个字节级攻击族对四个检测器全部归零**（零宽 heuristic 99.7→0.0、Presidio 76.3→0.0；同形字 65.4→0.0；全角 50.6→0.0），
+**干净文本上零代价**（clean recall / clean PER 两种变体完全相同），**对五个改 token 结构的攻击族一字不动**（按构造相同）。
+传播后 PER 同样：零宽下 learned 13.8→10.0（clean 8.1）、Presidio 82.0→47.0（clean 45.9）、heuristic 91.5→61.6（clean 58.5）。
+已写入附录新小节 `app:canon` + Table（tab:canon），§4.2 与 §6.5 各一句。transformer 检测器（GLiNER，CPU）作为可续跑的单独调用在跑，
+完成后补一列。记录：`canonicalization_hardening_{asr_results,propagation_results,documents,asr_documents,runtime_manifest}.csv`。
+
+### 3. 补实验 B：D1 "自己补标注"——先验证、再决定（`semantic_inferability_llm_rater_*`）
+
+论文的核心方法论就是"judge 没对过人之前不算证据"，所以**没有直接扩样**，而是先让模型（我，经 agent harness）**盲标**已有的 102 条：
+只看 released text + fact、打乱顺序、不开 key / judge 判决 / 方法标签 / 任何先前答案，102 条全部标完才对答案。
+结果：**κ=0.602（对标注者 1）、0.543（对空白表读者 3）**，原始一致率 81% / 78%——是论文测过的所有 judge 里最好的
+（70B 为 0.491、27B 为 0.087），但**仍低于两位读者彼此的 0.739**，而且**偏差是系统性的**：总体判 70.6% 可推断（人是 57–58%），
+14 处与两位读者共识不一致里 13 处是多判、其中 7 处在 Casper-style（模型判 82.4%，人判 35–41%）。
+这样的评分者去扩样会把 Casper 一行推高 40 个点。**结论：模型标注不能替代人工扩样**；已作为 judge-capacity 表（tab:judgecap）第五行写入论文，
+附录说明协议与偏差，§AI Use 披露"模型标注只作为 judge 报告、从不计入人工标注"。这是对论文有利的证据（最强的 judge 也达不到两个人）。
+记录：annotations / manifest / agreement / by_method 四个文件 + `semantic_inferability_llm_rater_agreement.py`（可再生）。
+
+### 4. 补实验 C：还原时机配对检验脚本（`restoration_timing_paired_tests.py`，CPU）
+
+late vs early 按 case 配对：pre-restoration 标识符差、McNemar、post-restoration 差、leak 差、helpfulness 差、未还原 token 率。
+两个 agent 各一条记录；正文数字已换成脚本输出。
+
+### 5. 为下次开卡准备好的代码（未跑）
+
+`privacylens_downstream_suite.py` 新增条件种类 `symbolic_fullearly`：指令和轨迹都在规划前还原、边界无事可做——
+真正的"早还原"臂。200 例 × 32B/70B，按记录吞吐 4 路分片约 1 小时。见 `# 遗留问题`。
+
+### 6. 子任务：五张手敲表注册 builder（进行中）
+
+`fill_paper_tables.py` 为 tab:downstream / inject / portability / pljudge / contextattack 加 builder，要求逐字节复现现有表体；
+完成后把 §5.1 的复现声明改回强版本。
+
+## 2026-09-11（第六轮）D1 落地 + 预印本已生成到 submit/
 
 按你的答复：**D1 照建议改、D2 附录形式暂无信息保持开着、D3 预印本由我生成一版**。
 `docs/progress.md` 里第 4 条"需要检查是否有前后矛盾"也查了。
@@ -2261,6 +2344,14 @@ PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submis
       §6.5 标明 8.1% 与 7.4% 是 200/300 文档两个切片。**没有任何数字被改动。**
     - 仍未做：A4（标注扩样，等 D1）、A5（附录里 routing 降级残留与 profile caption 自相矛盾）、F12--F16、V1/V2。
     - `paper/appendix.pdf` 是旧的两文档构建留下的，已经无法再生成，**建议删掉以免误投**（未删，删文件要你点头）。
+17. **第五轮独立评审重置 + 本轮全部修改（2026-10-07）**：详见本文件顶部"2026-10-07（第七轮）"。要点：
+    - 评审文件 `docs/RevisionSuggestions.tex` 整份重写（英文 LaTeX，自包含）：venue 要求重新抓取、模板 MD5 比对通过、
+      每条结果管线的指标代码逐行对照正文（上轮明说没读的部分）、模型评分者盲标验证。14 条发现（F1–F6 accept-critical）。
+    - 正文修正：F1/F2/F4/F5/F8/F14 全部落地；A5 routing 残留、profile caption、tab:advmeas 遗弃、区间表两列、摘要 24% 由子任务完成。
+    - 新实验：输入规范化加固（4 检测器 × 8 攻击族，字节级三族全部归零、其余不动）；模型评分者验证（κ=0.60/0.54，不能替代人工）；
+      还原时机配对检验脚本（两处数字修正：−0.6 与 −2.5 [−3.7, −1.5]）。
+    - 新代码：`symbolic_fullearly` 条件（等 GPU）。
+    - 构建：25 页，正文止于 p12，0 undefined，identity 扫描干净。
 
 ## 2026-09-03 revision cycle completion：vGPU 实验回收、论文回填与审稿闭环（当前新增）
 
@@ -2606,15 +2697,16 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 2026-09-09：`# 遗留问题` 的六条已全部答复，本节按答复重排。放弃与认可两条已闭合并
 移入 `# 已全部修改`；另外三条从"等你拍板"变成"工具已就绪、等人力或等主机"。
 
-**第四轮评审开出的新待办（2026-09-11，细节见 `docs/RevisionSuggestions.tex`）**
+**第五轮评审（2026-10-07，细节见 `docs/RevisionSuggestions.tex`）开出、尚未闭合的项**
 
-A1（文献核对）、A2（合并单 PDF + 挪表）、A3（指标定义对齐）已于 2026-09-11 完成，见 `# 已全部修改` 第 16 条。
+F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条）。还开着的：
 
-- **A4 可推断性标注扩样**（P1，2--35 天）：现在每方法 17 条、区间宽达 47 个点。工具与两位
-  非作者读者都已就位，成本是人力不是算力——见 D1。
-- **A5 附录里 routing 机制降级的残留**（P2，半天）：附录 A 的 $\Pi_\pi$ 记号、D.2 "isolates the
-  routing policy"、D.3 用类别梯度去论证 $\Pi_\pi$ 的权重，以及 `tab:pi_profiles` 说
-  "No result is produced under a named profile" 与 `tab:pi_sensitivity`/`tab:latency` 自相矛盾。
+- **F6c 人工标注扩样**（P1）：模型评分者验证失败（κ 0.60/0.54，系统性多判 Casper 40 个点），不能替代人；
+  仍需两位已招募读者各标约 40 条/方法，否则把摘要/结论的可推断性结论改成序数表述。见 `# 遗留问题` 第 1 条。
+- **F1c 真·早还原臂**（P1，需 GPU 约 1 小时）：`symbolic_fullearly` 条件已写好未跑。见 `# 遗留问题` 第 3 条。
+- **F3 五张表的 builder**（P1，子任务进行中）：完成后 §5.1 复现声明改回强版本；若子任务未完成，现稿的窄版本声明已经是真的。
+- **tab:canon 的 transformer 列**（P2）：GLiNER 在 CPU 上作为可续跑调用在跑；完成后补列、并给 tab:canon 加 builder。
+- **F15–F17 可选项**：Figure 1 为位图；附录四处重复的 provenance 免责声明；attribute-recovery 回复解析取首个数字。
 
 **卡在外部资源，不需要你现在决定**
 
@@ -2629,15 +2721,20 @@ A1（文献核对）、A2（合并单 PDF + 挪表）、A3（指标定义对齐�
 
 需要你提供/决策。答完一条即可就地删掉该条。
 
-**2026-09-11 第四轮评审的四条决策（D1--D4，原文在 `docs/RevisionSuggestions.tex`）**
+**2026-10-07 第五轮评审的决策（D1--D4，原文在 `docs/RevisionSuggestions.tex`）**
 
-1. **标注扩样做不做？** 每方法 17 条 → 40 条（合计 240），用已有的空白表模式，留 60 条重叠再算一次
-   评分者间信度。建议：做，并且一周内定，标注窗口才能提前关。退路是把该结论改成序数表述
-   （"单调下降"），可以接受但明显更弱。
+1. **人工标注扩样（F6c）。** 你说"你可以自己补标注"，我做了，但先做了验证：盲标 102 条后对人的 κ 只有 0.60/0.54，
+   且在 Casper-style 上系统性多判 40 个点——用它扩样会把那一行推歪，所以**没有**把模型标注当人工标注用，只作为 judge 行写进论文。
+   真正的扩样仍要人：两位已招募的读者各标约 40 条/方法（约 240 条，用现有空白表页面）。
+   需要你决策：A（安排读者，10 月 14 日前定，标注窗口才能在 11 月中前关） / B（不做，摘要与结论改成序数表述"单调下降"，
+   点估计和区间留在 §6.2）。建议 A，B 可接受但明显更弱。
    A:
-2. **预印本发不发？** 建议**通知前不发**：venue 明确 discourage，评审期发布对论文没有增益，
-   同题公开版还会削弱双盲。
+2. **预印本发不发？** 建议**通知前不发**：venue 明确 discourage，评审期发布对论文没有增益，同题公开版还会削弱双盲。
+   A:
+3. **开一次 GPU 跑真·早还原臂（F1c）。** `symbolic_fullearly`（指令+轨迹都在规划前还原）在 32B 与 70B 各 200 例，
+   4 路分片约 1 小时。现稿已按实现如实描述早还原臂，不跑也成立；跑了更强（会多一行符号映射）。告诉我哪台主机开了即可。
+   A:
+4. **五张表的 builder 还是窄版声明（F3）。** 子任务在做 builder；若你更想保留手敲表，说一声，现稿的窄版声明已经是真的。
    A:
 
-（原 D2「正文放哪张表」与 D4「PER 定义怎么改」已按建议默认执行——注入表进正文、PER 按实现改定义。
-两者都可回退：前者移动一个浮动体，后者改回 §4.4 的措辞。不同意就在这里说一声。）
+（上轮 D2「正文放哪张表」与 D4「PER 定义怎么改」仍按建议执行中，可回退。）

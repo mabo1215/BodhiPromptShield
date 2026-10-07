@@ -215,7 +215,7 @@ class Condition:
             template = ABSTRACTION_TEMPLATE if self.kind == "abstraction" else None
             kwargs = {"template_path": template} if template else {}
             self.sanitizer = LLMSanitizer(self.arg, ollama_url=f"{base_url}/api/generate", **kwargs)
-        elif self.kind in ("placeholder", "symbolic_late", "symbolic_early"):
+        elif self.kind in ("placeholder", "symbolic_late", "symbolic_early", "symbolic_fullearly"):
             if self.arg not in detectors:
                 raise ValueError(f"{spec}: detector '{self.arg}' not built")
         elif self.kind not in ("no_protection", "casper_style"):
@@ -239,7 +239,14 @@ class Condition:
         instr_r = render_symbolic(instr, det(instr), namespace, mapping)
         traj_r = render_symbolic(traj, det(traj), namespace, mapping)
         if self.kind == "symbolic_early":
+            # Values return into the past trajectory before planning; the
+            # instruction keeps its tokens and the action is not restored at the
+            # boundary, so tokens the agent copies from the instruction stay.
             return instr_r, restore_symbolic(traj_r, mapping), mapping, "early"
+        if self.kind == "symbolic_fullearly":
+            # Values return everywhere before planning: the agent sees no token
+            # at all, and the boundary has nothing left to restore.
+            return restore_symbolic(instr_r, mapping), restore_symbolic(traj_r, mapping), mapping, "early"
         return instr_r, traj_r, mapping, "late"
 
 

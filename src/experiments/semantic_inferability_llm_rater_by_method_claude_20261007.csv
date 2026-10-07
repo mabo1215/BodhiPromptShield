@@ -1,0 +1,7 @@
+method_key,items,rater_inferable,annotator1_inferable,annotator3_inferable,judge_inferable
+no_protection,17,"100.0 [100.0, 100.0]",100.0,100.0,94.1
+regex_only,17,"100.0 [100.0, 100.0]",94.1,88.2,64.7
+presidio,17,"64.7 [41.2, 88.2]",52.9,47.1,94.1
+casper_style,17,"82.4 [64.7, 100.0]",41.2,35.3,76.5
+heuristic_mediator,17,"35.3 [11.8, 58.8]",23.5,23.5,76.5
+learned_lr,17,"41.2 [17.6, 64.7]",35.3,47.1,82.4

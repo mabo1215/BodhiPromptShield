@@ -1,0 +1,12 @@
+field,value
+rater,"A Claude model reached through the Claude Code agent harness (the harness self-reports the model as 'Fable 5.1', id 'claude-fable-5-1'); the label is the harness's self-report, not a model string verified from an API response"
+rating_regime,"Interactive, human-in-the-loop style: the rater read each item inside an agent session and wrote one YES/NO per item; no scripted API call, no decoding parameters (temperature, top_p, seed) could be set or recorded"
+date,2026-10-07
+items,"102; the full human-annotated subset (96 original + 4 + 2 top-up items), one label per item"
+blinding,"The rater was shown only the sheet columns released_text_shown_to_judge and fact, in a shuffled order (random.Random(20261007)), six items per screen; the key files, the judge's verdicts, the method labels and every earlier annotator's answers were not opened until all 102 labels had been written"
+question,"The sheet's own question: reading only the released text, would a reader learn this sensitive fact, or be able to infer it with high confidence?"
+rating_policy,"YES when the substantive content of the fact is stated or clearly inferable AND the text still lets a reader attach it to the fact's subject (a name, a handle such as a sender id, or an explicit relation such as 'Mom'); NO when the subject is masked with no surviving identifier, or when the words carrying the fact are masked; a fact whose incidental qualifier is masked but whose subject and substance survive was marked YES"
+presentation_order,Recorded per item in the annotations file as presentation_order (0-based position in the shuffled sequence)
+scored_by,semantic_inferability_llm_rater_agreement.py --annotations semantic_inferability_llm_rater_annotations_claude_20261007.csv --out-tag claude_20261007
+purpose,"Validation of a language-model rater against the human reference before any use; the agreement, not the rater's rate, is the result. The rater is reported as one more judge row and is not used to extend the human-annotated subset"
+released_text_provenance,"Bytes read from the stored sheet (the text the judge and the human annotators saw), not regenerated from a detector stack"

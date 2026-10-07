@@ -1,0 +1,35 @@
+field,value
+benchmark,"AI4Privacy PII-Masking-300K (English) test slice, real text + gold spans"
+slice,first 200 documents of split ai4privacy-test
+attacks,Homoglyph substitution; Zero-width insertion; Intra-token spacing; Case inversion; Leetspeak; Separator injection (ids); Mixed-language fullwidth; Paraphrase (digit spell-out)
+variants,"plain (detector as released); canonical (same detector behind the canonicalizer, spans mapped back)"
+canonicalizer_rule_1,"drop Unicode format characters (general category Cf: U+200B-U+200D, U+2060, U+FEFF, U+00AD, ...)"
+canonicalizer_rule_2,"NFKC-normalize each remaining character on its own (fullwidth forms to ASCII, ideographic space to space; an expansion maps every produced character to the same original index)"
+canonicalizer_rule_3,"fold Latin-lookalike Cyrillic and Greek letters to Latin with an explicit table; case, ordinary spaces, punctuation and digits are left unchanged"
+confusable_table_size,48
+asr_definition,Fraction of previously-caught applicable spans pushed to evade by the attack
+pipeline,"Deterministic reference agent (retrieval=first half, memory=verbatim, tool=structured fields)"
+measurement,PER and SPE of the mutated gold spans after mediation of the mutated document
+bootstrap,"1000 document-level percentile resamples, 95% CI, seed 17"
+span_ordering,"typed spans sorted by start before the registry merge, in both variants"
+memoization,each base detector caches typed() per input text within an invocation
+llm_in_loop,None; measurement is exact against the real detectors
+python,3.13.14
+platform,Windows-11-10.0.26300-SP0
+detector.heuristic_mediator,Proposed (released heuristic detector)
+detector.learned_lr,Proposed (learned detector)
+detector.presidio,Microsoft Presidio
+presidio.presidio_analyzer,2.2.364
+presidio.spacy,3.8.16
+presidio.spacy_model,en_core_web_lg
+detector.spacy_ner,spaCy NER masking
+spacy_ner.spacy,3.8.16
+spacy_ner.spacy_model,en_core_web_lg
+wall_seconds.asr.heuristic_mediator,3.9
+wall_seconds.asr.learned_lr,3.7
+wall_seconds.asr.presidio,34.4
+wall_seconds.asr.spacy_ner,26.6
+wall_seconds.propagation.heuristic_mediator,4.4
+wall_seconds.propagation.learned_lr,4.4
+wall_seconds.propagation.presidio,4.7
+wall_seconds.propagation.spacy_ner,4.7

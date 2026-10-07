@@ -1,0 +1,7 @@
+comparison,n,cohens_kappa,interpretation,raw_agreement,other_no_rater_no,other_no_rater_yes,other_yes_rater_no,other_yes_rater_yes
+rater_vs_annotator1,102,0.602,moderate,0.814,27,16,3,56
+rater_vs_annotator2_primed,96,0.607,moderate,0.812,26,17,1,52
+rater_vs_annotator3_blank_sheet,102,0.543,moderate,0.784,26,18,4,54
+rater_vs_judge,102,0.233,fair,0.716,10,9,20,63
+rater_vs_lexical,102,0.364,fair,0.775,11,4,19,68
+annotator1_vs_annotator3_reference,102,0.739,substantial,0.873,37,6,7,52

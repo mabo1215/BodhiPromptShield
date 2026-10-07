@@ -1,0 +1,65 @@
+detector_key,detector,variant,attack_family,documents,applicable_spans,clean_recall,attacked_recall,attack_success_rate,attack_success_lo,attack_success_hi
+heuristic_mediator,Proposed (released heuristic detector),plain,Homoglyph substitution,171,893,0.33,0.11,65.4,58.0,72.4
+heuristic_mediator,Proposed (released heuristic detector),plain,Zero-width insertion,171,893,0.33,0.00,99.7,98.9,100.0
+heuristic_mediator,Proposed (released heuristic detector),plain,Intra-token spacing,171,893,0.33,0.17,47.1,31.1,60.8
+heuristic_mediator,Proposed (released heuristic detector),plain,Case inversion,171,893,0.33,0.27,18.0,2.6,31.0
+heuristic_mediator,Proposed (released heuristic detector),plain,Leetspeak,171,893,0.33,0.22,33.6,25.6,40.1
+heuristic_mediator,Proposed (released heuristic detector),plain,Separator injection (ids),142,472,0.56,0.57,0.0,0.0,12.1
+heuristic_mediator,Proposed (released heuristic detector),plain,Mixed-language fullwidth,176,1165,0.41,0.20,50.6,43.5,57.3
+heuristic_mediator,Proposed (released heuristic detector),plain,Paraphrase (digit spell-out),142,472,0.56,0.19,65.9,55.3,74.8
+heuristic_mediator,Proposed (released heuristic detector) + canonicalization,canonical,Homoglyph substitution,171,893,0.33,0.33,0.0,0.0,0.0
+heuristic_mediator,Proposed (released heuristic detector) + canonicalization,canonical,Zero-width insertion,171,893,0.33,0.33,0.0,0.0,0.0
+heuristic_mediator,Proposed (released heuristic detector) + canonicalization,canonical,Intra-token spacing,171,893,0.33,0.17,47.1,31.1,60.8
+heuristic_mediator,Proposed (released heuristic detector) + canonicalization,canonical,Case inversion,171,893,0.33,0.27,18.0,2.6,31.0
+heuristic_mediator,Proposed (released heuristic detector) + canonicalization,canonical,Leetspeak,171,893,0.33,0.22,33.6,25.6,40.1
+heuristic_mediator,Proposed (released heuristic detector) + canonicalization,canonical,Separator injection (ids),142,472,0.56,0.57,0.0,0.0,12.1
+heuristic_mediator,Proposed (released heuristic detector) + canonicalization,canonical,Mixed-language fullwidth,176,1165,0.41,0.41,0.0,0.0,0.0
+heuristic_mediator,Proposed (released heuristic detector) + canonicalization,canonical,Paraphrase (digit spell-out),142,472,0.56,0.19,65.9,55.3,74.8
+learned_lr,Proposed (learned detector),plain,Homoglyph substitution,171,893,0.95,0.95,0.2,0.0,0.6
+learned_lr,Proposed (learned detector),plain,Zero-width insertion,171,893,0.95,0.94,0.8,0.0,1.8
+learned_lr,Proposed (learned detector),plain,Intra-token spacing,171,893,0.95,0.96,0.0,0.0,0.0
+learned_lr,Proposed (learned detector),plain,Case inversion,171,893,0.95,0.77,18.4,13.3,23.4
+learned_lr,Proposed (learned detector),plain,Leetspeak,171,893,0.95,0.99,0.0,0.0,0.0
+learned_lr,Proposed (learned detector),plain,Separator injection (ids),142,472,1.00,1.00,0.0,0.0,0.0
+learned_lr,Proposed (learned detector),plain,Mixed-language fullwidth,176,1165,0.96,0.95,0.9,0.2,1.6
+learned_lr,Proposed (learned detector),plain,Paraphrase (digit spell-out),142,472,1.00,0.72,28.2,21.1,35.6
+learned_lr,Proposed (learned detector) + canonicalization,canonical,Homoglyph substitution,171,893,0.95,0.95,0.0,0.0,0.0
+learned_lr,Proposed (learned detector) + canonicalization,canonical,Zero-width insertion,171,893,0.95,0.95,0.0,0.0,0.0
+learned_lr,Proposed (learned detector) + canonicalization,canonical,Intra-token spacing,171,893,0.95,0.96,0.0,0.0,0.0
+learned_lr,Proposed (learned detector) + canonicalization,canonical,Case inversion,171,893,0.95,0.77,18.4,13.3,23.4
+learned_lr,Proposed (learned detector) + canonicalization,canonical,Leetspeak,171,893,0.95,0.99,0.0,0.0,0.0
+learned_lr,Proposed (learned detector) + canonicalization,canonical,Separator injection (ids),142,472,1.00,1.00,0.0,0.0,0.0
+learned_lr,Proposed (learned detector) + canonicalization,canonical,Mixed-language fullwidth,176,1165,0.96,0.96,0.0,0.0,0.0
+learned_lr,Proposed (learned detector) + canonicalization,canonical,Paraphrase (digit spell-out),142,472,1.00,0.72,28.2,21.1,35.6
+presidio,Microsoft Presidio,plain,Homoglyph substitution,171,893,0.43,0.33,22.1,12.7,31.1
+presidio,Microsoft Presidio,plain,Zero-width insertion,171,893,0.43,0.10,76.3,70.4,81.5
+presidio,Microsoft Presidio,plain,Intra-token spacing,171,893,0.43,0.18,58.9,50.8,65.3
+presidio,Microsoft Presidio,plain,Case inversion,171,893,0.43,0.28,35.9,28.0,42.0
+presidio,Microsoft Presidio,plain,Leetspeak,171,893,0.43,0.21,50.3,42.4,57.4
+presidio,Microsoft Presidio,plain,Separator injection (ids),142,472,0.57,0.41,27.9,18.9,36.2
+presidio,Microsoft Presidio,plain,Mixed-language fullwidth,176,1165,0.46,0.27,40.4,33.8,46.9
+presidio,Microsoft Presidio,plain,Paraphrase (digit spell-out),142,472,0.57,0.50,12.6,0.0,24.9
+presidio,Microsoft Presidio + canonicalization,canonical,Homoglyph substitution,171,893,0.43,0.43,0.0,0.0,0.0
+presidio,Microsoft Presidio + canonicalization,canonical,Zero-width insertion,171,893,0.43,0.43,0.0,0.0,0.0
+presidio,Microsoft Presidio + canonicalization,canonical,Intra-token spacing,171,893,0.43,0.18,58.9,50.8,65.3
+presidio,Microsoft Presidio + canonicalization,canonical,Case inversion,171,893,0.43,0.28,35.9,28.0,42.0
+presidio,Microsoft Presidio + canonicalization,canonical,Leetspeak,171,893,0.43,0.21,50.3,42.4,57.4
+presidio,Microsoft Presidio + canonicalization,canonical,Separator injection (ids),142,472,0.57,0.41,27.9,18.9,36.2
+presidio,Microsoft Presidio + canonicalization,canonical,Mixed-language fullwidth,176,1165,0.46,0.46,0.0,0.0,0.0
+presidio,Microsoft Presidio + canonicalization,canonical,Paraphrase (digit spell-out),142,472,0.57,0.50,12.6,0.0,24.9
+spacy_ner,spaCy NER masking,plain,Homoglyph substitution,171,893,0.31,0.30,5.0,0.0,15.0
+spacy_ner,spaCy NER masking,plain,Zero-width insertion,171,893,0.31,0.08,74.7,66.7,81.3
+spacy_ner,spaCy NER masking,plain,Intra-token spacing,171,893,0.31,0.16,50.2,37.8,59.8
+spacy_ner,spaCy NER masking,plain,Case inversion,171,893,0.31,0.15,51.2,42.3,58.2
+spacy_ner,spaCy NER masking,plain,Leetspeak,171,893,0.31,0.15,51.2,42.7,58.7
+spacy_ner,spaCy NER masking,plain,Separator injection (ids),142,472,0.20,0.26,0.0,0.0,0.0
+spacy_ner,spaCy NER masking,plain,Mixed-language fullwidth,176,1165,0.27,0.20,25.7,14.7,35.0
+spacy_ner,spaCy NER masking,plain,Paraphrase (digit spell-out),142,472,0.20,0.47,0.0,0.0,0.0
+spacy_ner,spaCy NER masking + canonicalization,canonical,Homoglyph substitution,171,893,0.31,0.31,0.0,0.0,0.0
+spacy_ner,spaCy NER masking + canonicalization,canonical,Zero-width insertion,171,893,0.31,0.31,0.0,0.0,0.0
+spacy_ner,spaCy NER masking + canonicalization,canonical,Intra-token spacing,171,893,0.31,0.16,50.2,37.8,59.8
+spacy_ner,spaCy NER masking + canonicalization,canonical,Case inversion,171,893,0.31,0.15,51.2,42.3,58.2
+spacy_ner,spaCy NER masking + canonicalization,canonical,Leetspeak,171,893,0.31,0.15,51.2,42.7,58.7
+spacy_ner,spaCy NER masking + canonicalization,canonical,Separator injection (ids),142,472,0.20,0.26,0.0,0.0,0.0
+spacy_ner,spaCy NER masking + canonicalization,canonical,Mixed-language fullwidth,176,1165,0.27,0.27,0.0,0.0,0.0
+spacy_ner,spaCy NER masking + canonicalization,canonical,Paraphrase (digit spell-out),142,472,0.20,0.47,0.0,0.0,0.0
