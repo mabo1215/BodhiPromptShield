@@ -203,6 +203,12 @@ def post_process(s: str) -> str:
 # ---------------------------------------------------------------------------
 
 
+# Condition kinds whose argument names a span detector. main() builds exactly
+# the detectors these name, so a kind missing here would start without its
+# detector and fail on the first case.
+DETECTOR_KINDS = ("placeholder", "symbolic_late", "symbolic_early", "symbolic_fullearly")
+
+
 class Condition:
     """Maps (instruction, trajectory) to released texts plus a restoration map."""
 
@@ -215,7 +221,7 @@ class Condition:
             template = ABSTRACTION_TEMPLATE if self.kind == "abstraction" else None
             kwargs = {"template_path": template} if template else {}
             self.sanitizer = LLMSanitizer(self.arg, ollama_url=f"{base_url}/api/generate", **kwargs)
-        elif self.kind in ("placeholder", "symbolic_late", "symbolic_early", "symbolic_fullearly"):
+        elif self.kind in DETECTOR_KINDS:
             if self.arg not in detectors:
                 raise ValueError(f"{spec}: detector '{self.arg}' not built")
         elif self.kind not in ("no_protection", "casper_style"):
@@ -486,7 +492,7 @@ def main() -> int:
         cases = cases[i::n]
         args.output_tag = f"{args.output_tag + '_' if args.output_tag else ''}shard{i}of{n}"
     specs = [c.strip() for c in args.conditions.split(",") if c.strip()]
-    needed = sorted({s.split(":", 1)[1] for s in specs if s.split(":")[0] in ("placeholder", "symbolic_late", "symbolic_early")}
+    needed = sorted({s.split(":", 1)[1] for s in specs if s.split(":")[0] in DETECTOR_KINDS}
                     | ({"casper_style"} if "casper_style" in specs else set()))
     learned = _train_learned_detector() if "learned_lr" in needed else None
     detectors = {d.key: d for d in build_detectors(needed, learned_weights=learned, spacy_model=args.spacy_model,
