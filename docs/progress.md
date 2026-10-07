@@ -1,6 +1,61 @@
 # 论文进度
 
-## 2026-10-07（第七轮）独立评审重置 + 四项补实验 + 正文修正（当前最新）
+## 2026-10-08（第七轮续）stash 恢复 + F3 关闭 + tab:canon 补齐 transformer 列（当前最新）
+
+按你的指令：**检查并 stash pop 前面的工作区改动，检查现有修改进度，继续修改**；以及中途补充的
+**"提交前确认这份改动的来源，如果是脚本造成的，应该改脚本，不要提交这份改动"**。
+
+### 1. stash 处置
+
+- `stash@{0}`（10-08 06:43 "Teleport auto-stash"，基于当前 HEAD）= 上一会话未提交的工作：
+  `fill_paper_tables.py` 新增五个 builder（F3 子任务）+ canonicalization 套件 transformer（GLiNER）检测器跑完后追加的结果。**已 pop。**
+- `stash@{1}`（09-03 "pre-pull local documentation changes"）是旧的文档删除改动，与本轮无关，**未动、保留**。
+
+### 2. paper 子模块里那份未提交改动：已确认是脚本造成的，未提交
+
+现象：`paper/main.tex`、`appendix.tex` 有未提交改动——tab:attrrecovery / tab:attrcap 从 tabularx 退回 tabular、
+表头不再分行、两处粗体消失，tab:measprop 的 "heuristic detector, artifact default" 变回 "released heuristic detector"。
+这些全都是**撤销**之前提交过的手工修正（ed2cce6 "Keep three appendix tables inside the column"、1313de8 等）。
+
+**来源验证**：用改之前的 `fill_paper_tables.py`（即 stash 里那版）对已提交的 main.tex/appendix.tex 重跑一遍，
+输出与工作区两个文件 **MD5 完全一致**（main `dc190bcc`、appendix `58b77abe`）。即：上一会话为验证新 builder 跑了整张表回填，
+而三个**旧** builder（tab:measprop、tab:attrrecovery、tab:attrcap）落后于后来在论文里做的手工修正，一跑就把修正静默覆盖回去。
+
+**处置**（按你的要求）：改脚本，不提交这份改动。
+- 三个旧 builder 已改为输出现稿的形式：行名改为 "Proposed (heuristic detector, artifact default)"；
+  两张 recovery 表改用 `tabularx{\columnwidth}` + 分行表头；粗体按规则生成而不是硬编码
+  （tab:attrrecovery 加粗 "value present" 列最小值，即正文首先读的那格；tab:attrcap 加粗全格最小值，即唯一一处随攻击者容量移动的那格）。
+- 工作区那两份改动已备份到会话 scratchpad 后用 `git checkout` 撤掉（可由旧脚本逐字节再生，不是数据）。
+- 修好后对两份**真实文件**跑整张表回填：**零改动**。
+
+### 3. F3 关闭：所有结果表都由脚本渲染
+
+- 上一会话写好的五个 builder（tab:downstream / inject / portability / pljudge / contextattack）逐字节复现现稿 ✔。
+- 本轮再补三个：**tab:propints**（区间表，两数据源全列带 CI）、**tab:judgecap**（judge 容量表，每格都从记录算出，
+  如 81.4% = 83/102 来自 judge_vs_human 列联格、70.6% = 72/102 来自评分者列联格）、**tab:canon**。前两个逐字节复现现稿。
+- 共注册 **36 个**标签。仍无 builder 的都是**描述性表**（威胁映射、相关工作对比、模型清单、示例、策略规则/配置、映射面），不含测量值。
+- §5.1 复现声明改回强版本：*"Every results table is rendered from the released records by a single table-fill pass rather than typed in,
+  and both result figures are plotted from the same records…"*（两张结果图确有生成脚本；句子比窄版短，版面无压力）。
+
+### 4. tab:canon 补齐 transformer 列（F7 完成）
+
+GLiNER 在 CPU 上的那次可续跑调用已跑完（ASR 551.8 s）。结果与其余四个检测器一致：**规范化把三个字节级攻击族全部归零**
+（transformer：零宽 38.2→0.0、全角 76.9→0.0、同形字本来就是 0.0），干净文本零代价（clean recall 0.61/0.66/0.59 两变体相同、clean PER 37.3 相同），
+五个 token 级攻击族一格不动。传播后 PER：零宽下 90.9%→37.2%（clean 37.3%）——**完全回到干净水平**。
+表由 builder 渲染、列序为 Heuristic / Transformer / Learned / Presidio / spaCy NER；附录 app:canon 三处 "four detectors" 改为五个，
+补了 transformer 的全角与传播数字。主文 §6.5 原句 "closes the three byte-level families completely for every detector" 现在对五个检测器都成立，未改。
+
+### 5. 构建
+
+26 页，**正文仍止于 p12**，0 undefined。日志里有一条 `Overfull \vbox (88pt) while \output is active`（文末），
+**不是本轮造成的**：在临时目录里用已提交版本构建，同一条警告一字不差地存在（上轮记录"唯一 overfull 是 CC-BY 块"不准确，此处更正）；
+目视检查最后一页无溢出。评审文件 resolution log 已补 8 Oct 条目，构建 8 页、0 undefined。
+
+### 还开着
+
+只剩需要你决定或开卡的两项：**F6c 人工标注扩样**（`# 遗留问题` 第 1 条）、**F1c 真·早还原臂**（第 3 条，告诉我哪台主机开了即可）。
+
+## 2026-10-07（第七轮）独立评审重置 + 四项补实验 + 正文修正
 
 按你的指令：**审核现稿是否达到 PoPETs 2027 Issue 3 的 accept 标准；没达到就重写 `docs/RevisionSuggestions.tex`，再自动改稿、补实验**。
 并按你的答复 **"你可以自己补标注"** 执行了 D1——但做法是先验证再使用（见第 3 条），结论是模型标注不能替代人工扩样。
@@ -78,7 +133,7 @@ late vs early 按 case 配对：pre-restoration 标识符差、McNemar、post-re
 `privacylens_downstream_suite.py` 新增条件种类 `symbolic_fullearly`：指令和轨迹都在规划前还原、边界无事可做——
 真正的"早还原"臂。200 例 × 32B/70B，按记录吞吐 4 路分片约 1 小时。见 `# 遗留问题`。
 
-### 6. 子任务：五张手敲表注册 builder（进行中）
+### 6. 子任务：五张手敲表注册 builder（已于 10-08 完成，见上一节）
 
 `fill_paper_tables.py` 为 tab:downstream / inject / portability / pljudge / contextattack 加 builder，要求逐字节复现现有表体；
 完成后把 §5.1 的复现声明改回强版本。
@@ -2352,6 +2407,12 @@ PoPETs 2027 作者须知（2026-09-06 核实）：正文 12 页；模板 `submis
       还原时机配对检验脚本（两处数字修正：−0.6 与 −2.5 [−3.7, −1.5]）。
     - 新代码：`symbolic_fullearly` 条件（等 GPU）。
     - 构建：25 页，正文止于 p12，0 undefined，identity 扫描干净。
+18. **F3 关闭 + tab:canon transformer 列（2026-10-08）**：详见本文件顶部"2026-10-08（第七轮续）"。要点：
+    - `fill_paper_tables.py` 注册到 36 个标签：五张手敲表 + tab:propints / tab:judgecap / tab:canon；除 tab:canon 新增列外全部逐字节复现现稿。
+    - 修复三个落后于手工修正的旧 builder（tab:measprop / attrrecovery / attrcap），此前任何一次重跑都会把修正静默回退；
+      paper 工作区里由此产生的未提交回退已逐字节确认来源后撤掉，未提交。
+    - §5.1 复现声明改回强版本。
+    - tab:canon 补 transformer 列，附录 app:canon 改为五个检测器。
 
 ## 2026-09-03 revision cycle completion：vGPU 实验回收、论文回填与审稿闭环（当前新增）
 
@@ -2699,13 +2760,11 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 
 **第五轮评审（2026-10-07，细节见 `docs/RevisionSuggestions.tex`）开出、尚未闭合的项**
 
-F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条）。还开着的：
+F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条）；F3 的 builder 与 tab:canon 的 transformer 列于 2026-10-08 完成（第 18 条）。还开着的：
 
 - **F6c 人工标注扩样**（P1）：模型评分者验证失败（κ 0.60/0.54，系统性多判 Casper 40 个点），不能替代人；
   仍需两位已招募读者各标约 40 条/方法，否则把摘要/结论的可推断性结论改成序数表述。见 `# 遗留问题` 第 1 条。
 - **F1c 真·早还原臂**（P1，需 GPU 约 1 小时）：`symbolic_fullearly` 条件已写好未跑。见 `# 遗留问题` 第 3 条。
-- **F3 五张表的 builder**（P1，子任务进行中）：完成后 §5.1 复现声明改回强版本；若子任务未完成，现稿的窄版本声明已经是真的。
-- **tab:canon 的 transformer 列**（P2）：GLiNER 在 CPU 上作为可续跑调用在跑；完成后补列、并给 tab:canon 加 builder。
 - **F15–F17 可选项**：Figure 1 为位图；附录四处重复的 provenance 免责声明；attribute-recovery 回复解析取首个数字。
 
 **卡在外部资源，不需要你现在决定**
@@ -2733,8 +2792,6 @@ F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条
    A:
 3. **开一次 GPU 跑真·早还原臂（F1c）。** `symbolic_fullearly`（指令+轨迹都在规划前还原）在 32B 与 70B 各 200 例，
    4 路分片约 1 小时。现稿已按实现如实描述早还原臂，不跑也成立；跑了更强（会多一行符号映射）。告诉我哪台主机开了即可。
-   A:
-4. **五张表的 builder 还是窄版声明（F3）。** 子任务在做 builder；若你更想保留手敲表，说一声，现稿的窄版声明已经是真的。
    A:
 
 （上轮 D2「正文放哪张表」与 D4「PER 定义怎么改」仍按建议执行中，可回退。）

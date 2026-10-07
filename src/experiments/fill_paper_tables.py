@@ -1,5 +1,5 @@
 """
-Fill code-backed empirical tables in paper/main.tex from CSV files under src/experiments.
+Fill code-backed empirical tables in paper/main.tex and paper/appendix.tex from CSV files under src/experiments.
 
 This script only updates tables that are directly backed by repository CSVs:
   - tab:cppb_card        <- cppb_accounting_summary.csv
@@ -28,6 +28,17 @@ This script only updates tables that are directly backed by repository CSVs:
   - tab:ocrslice         <- {cord,funsd,sroie}_transfer_results.csv
   - tab:blindutility     <- data/cppb_blind_utility_summary.csv
   - tab:blindutilitytemplate <- data/cppb_blind_utility_by_template.csv
+  - tab:downstream       <- privacylens_downstream_summary_qwen3_32b-q4km-hf_pooled.csv
+                            (RCE shown only where the per-case shards record a mapping)
+  - tab:inject           <- agentdojo_injection_summary_pooled_qwen3_32b-q4km-hf.csv
+  - tab:portability      <- privacylens_downstream_summary_{qwen3_32b,llama3.3_70b}-q4km-hf_pooled.csv
+                            + downstream_paired_tests_llama3.3_70b-q4km-hf.csv
+  - tab:pljudge          <- privacylens_judge_agreement.csv
+  - tab:contextattack    <- privacylens_context_attack_summary_qwen3_32b-q4km-hf.csv
+  - tab:propints         <- propagation_suite_{ai4privacy,privacylens}_results_pooled.csv
+  - tab:judgecap         <- semantic_inferability_{agreement,agreement_round3,capacity_agreement_*}_vgpu3090.csv
+                            + semantic_inferability_llm_rater_agreement_claude_20261007.csv
+  - tab:canon            <- canonicalization_hardening_asr_results.csv
 
 It intentionally does NOT touch illustrative or manually curated tables such as:
   - tab:example
@@ -36,11 +47,13 @@ It intentionally does NOT touch illustrative or manually curated tables such as:
 Usage:
   python src/experiments/fill_paper_tables.py
   python src/experiments/fill_paper_tables.py --paper paper/main.tex --dry-run
+  python src/experiments/fill_paper_tables.py --paper paper/appendix.tex
 """
 from __future__ import annotations
 
 import argparse
 import csv
+import glob
 import os
 import re
 from typing import Callable
@@ -313,7 +326,9 @@ MEASPROP_ORDER = [
     ("presidio", "Microsoft Presidio"),
     ("casper_style", "Casper-style (rules + NER, dummy values)"),
     ("llm_sanitizer", "LLM sanitizer (8B)"),
-    ("heuristic_mediator", "Proposed (released heuristic detector)"),
+    # The records call it the released heuristic detector; the manuscript says
+    # why the artifact ships it by default, so the row carries that role.
+    ("heuristic_mediator", "Proposed (heuristic detector, artifact default)"),
     ("gliner_pii", "Proposed (transformer PII detector)"),
     ("learned_lr", "Proposed (learned detector)"),
 ]
@@ -512,17 +527,25 @@ def build_attrrecovery_table() -> str:
     """
     rows = _read_csv("privacylens_attribute_recovery_summary_qwen3_32b-q4km-hf.csv")
     chance = rows[0]["chance_percent"] if rows else "25.0"
-    header = ("Condition & Recovered (\\%) & Value present (\\%) & "
-              "Recovered when absent (\\%) " + r"\\" + "\n")
+    header = ("Condition & \\makecell{Recov-\\\\ered (\\%)} & \\makecell{Value\\\\present (\\%)} & "
+              "\\makecell{Recovered\\\\when absent (\\%)} " + r"\\" + "\n")
+    # The value-present column is the one the text reads first: the condition
+    # that leaves the value verbatim least often is set in bold.
+    least = min(float(_ci_point(r["value_survives_release_percent"])) for r in rows)
+
+    def _present(row: dict[str, str]) -> str:
+        cell = _tex_escape(row["value_survives_release_percent"])
+        return "\\textbf{" + cell + "}" if abs(float(_ci_point(cell)) - least) < 1e-9 else cell
+
     body = "\n".join(
         f"{_tex_escape(_RECOVERY_CONDITION_LABELS.get(row['condition'], row['condition']))} & "
         f"{_tex_escape(row['recovery_percent'])} & "
-        f"{_tex_escape(row['value_survives_release_percent'])} & "
+        f"{_present(row)} & "
         f"{_tex_escape(row['recovery_when_value_absent_percent'])} \\\\"
         for row in rows
     )
     return (
-        "\\begin{tabular}{lccc}\n"
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccc}\n"
         + "\\toprule\n"
         + header
         + "\\midrule\n"
@@ -530,7 +553,7 @@ def build_attrrecovery_table() -> str:
         + "\\midrule\n"
         + f"Chance & {_fmt_float(chance)} & --- & {_fmt_float(chance)} \\\\\n"
         + "\\bottomrule\n"
-        + "\\end{tabular}"
+        + "\\end{tabularx}"
     )
 
 
@@ -555,7 +578,7 @@ def build_attrcap_table() -> str:
     wanted = ("no_protection", "placeholder:presidio", "casper_style", "placeholder:learned_lr")
     short = {"no_protection": "None", "placeholder:presidio": "Presidio",
              "casper_style": "Casper", "placeholder:learned_lr": "Learned"}
-    body_rows = []
+    grid = []
     for tag, label in _ATTACKER_CAPACITY:
         try:
             rows = _read_csv(f"privacylens_attribute_recovery_summary_{tag}.csv")
@@ -566,12 +589,24 @@ def build_attrcap_table() -> str:
         for cond in wanted:
             row = by_cond.get(cond)
             cells.append(_tex_escape(row["recovery_when_value_absent_percent"]) if row else "---")
-        body_rows.append(f"{_tex_escape(label)} & " + " & ".join(cells) + " \\\\")
-    if not body_rows:
+        grid.append((label, cells))
+    if not grid:
         raise FileNotFoundError("no attacker-capacity summaries found")
+    # The lowest cell is set in bold: it is the one capacity moved, and the
+    # text reads the rest of the grid against it.
+    least = min(float(_ci_point(c)) for _, cells in grid for c in cells if c != "---")
+    body_rows = [
+        f"{_tex_escape(label)} & "
+        + " & ".join(
+            "\\textbf{" + c + "}" if c != "---" and abs(float(_ci_point(c)) - least) < 1e-9 else c
+            for c in cells
+        )
+        + " \\\\"
+        for label, cells in grid
+    ]
     header = ("Attacker & " + " & ".join(short[c] for c in wanted) + " " + r"\\" + "\n")
     return (
-        "\\begin{tabular}{lcccc}\n"
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccc}\n"
         + "\\toprule\n"
         + "& \\multicolumn{4}{c}{Recovered when value absent (\\%)} \\\\\n"
         + "\\cmidrule(lr){2-5}\n"
@@ -581,7 +616,7 @@ def build_attrcap_table() -> str:
         + "\\midrule\n"
         + "Chance & 25.0 & 25.0 & 25.0 & 25.0 \\\\\n"
         + "\\bottomrule\n"
-        + "\\end{tabular}"
+        + "\\end{tabularx}"
     )
 
 
@@ -925,6 +960,478 @@ def build_blind_utility_template_table() -> str:
     )
 
 
+# ---------------------------------------------------------------------------
+# PrivacyLens downstream protocol, its portability and judge checks, the
+# forced-choice context attack, and AgentDojo prompt injection.
+# ---------------------------------------------------------------------------
+
+# The agent each downstream record was produced with, by the role the paper
+# gives it: the reported agent and the second family it is checked against.
+_DOWNSTREAM_AGENT = "qwen3_32b-q4km-hf"
+_DOWNSTREAM_SECOND_AGENT = "llama3.3_70b-q4km-hf"
+
+# The downstream conditions in the order the manuscript reads them. Keys are
+# the mediation specs the suite was run with; a key ending in ":" names a
+# helper-model condition and is matched by prefix, so the two 8B conditions
+# still render if the helper tag changes.
+_DOWNSTREAM_ORDER = (
+    ("no_protection", "No protection"),
+    ("placeholder:presidio", "Typed placeholder (Presidio)"),
+    ("casper_style", "Casper-style"),
+    ("placeholder:learned_lr", "Typed placeholder (learned)"),
+    ("placeholder:gliner_pii", "Typed placeholder (transformer)"),
+    ("llm_sanitizer:", "LLM sanitizer (8B)"),
+    ("abstraction:", "Semantic abstraction (8B)"),
+    ("symbolic_late:gliner_pii", "Symbolic mapping, late restoration"),
+    ("symbolic_early:gliner_pii", "Symbolic mapping, early restoration"),
+)
+
+
+def _downstream_summary(agent: str) -> dict[str, dict[str, str]]:
+    return {r["condition"]: r for r in _read_csv(f"privacylens_downstream_summary_{agent}_pooled.csv")}
+
+
+def _downstream_row(by_cond: dict[str, dict[str, str]], key: str) -> dict[str, str]:
+    if key in by_cond:
+        return by_cond[key]
+    if key.endswith(":"):
+        matches = [c for c in by_cond if c.startswith(key)]
+        if len(matches) == 1:
+            return by_cond[matches[0]]
+    raise KeyError(f"downstream condition not found: {key}")
+
+
+def _downstream_protected_values(agent: str) -> dict[str, int]:
+    """Per condition, how many values the mediation mapping held across all cases.
+
+    This is the denominator of the released-context exposure rate. It is zero
+    wherever no mapping exists, and the pooled summary prints 0.0 there, which
+    is not a measurement; the table shows a dash instead. The count lives in
+    the per-case shards, read the way the pooling script reads them.
+    """
+    pattern = os.path.join(EXPERIMENTS_DIR, f"privacylens_downstream_rows_{agent}_shard*of*.csv")
+    paths = [p for p in sorted(glob.glob(pattern)) if "partial" not in os.path.basename(p)]
+    if not paths:
+        raise FileNotFoundError(f"no downstream shards found for {agent}")
+    totals: dict[str, int] = {}
+    for path in paths:
+        with open(path, "r", encoding="utf-8", newline="") as f:
+            for row in csv.DictReader(f):
+                totals[row["condition"]] = totals.get(row["condition"], 0) + int(float(row["protected_values"] or 0))
+    return totals
+
+
+def build_downstream_table() -> str:
+    """Task-native privacy and utility on the reported agent, with CIs.
+
+    Cells are the pooled record's own "point [lo, hi]" strings. The RCE
+    column is defined only where a mapping exists; the lowest defined rate
+    is set in bold, since that column is the restoration-timing result.
+    """
+    by_cond = _downstream_summary(_DOWNSTREAM_AGENT)
+    denominators = _downstream_protected_values(_DOWNSTREAM_AGENT)
+    rows = [(label, _downstream_row(by_cond, key)) for key, label in _DOWNSTREAM_ORDER]
+    defined = [r for _, r in rows if denominators.get(r["condition"], 0) > 0]
+    best = min(float(_ci_point(r["boundary_leak_percent"])) for r in defined) if defined else None
+
+    body_lines = []
+    for label, row in rows:
+        if row in defined:
+            rce = row["boundary_leak_percent"]
+            if abs(float(_ci_point(rce)) - best) < 1e-9:
+                rce = "\\textbf{" + rce + "}"
+        else:
+            rce = "---"
+        body_lines.append(
+            " & ".join(
+                [
+                    _tex_escape(label),
+                    row["leak_rate_percent"],
+                    row["secret_leak_percent"],
+                    row["helpfulness_mean"],
+                    row["exact_id_exposure_percent"],
+                    rce,
+                ]
+            )
+            + " \\\\"
+        )
+    return (
+        "\\begin{tabular}{lccccc}\n"
+        + "\\toprule\n"
+        + "Condition & Leak (\\%) & Secret (\\%) & Help.\\ (0--3) & ID exp.\\ (\\%) & RCE (\\%) \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        + "\\end{tabular}"
+    )
+
+
+def _holm_p(cell: str) -> str:
+    p = float(cell)
+    return "$<$0.001" if p < 0.001 else f"{p:.3f}"
+
+
+def build_portability_table() -> str:
+    """The downstream conditions under both agents, point estimates only.
+
+    The paired column is the Holm-corrected McNemar test on the second agent,
+    read from its paired-test record; the unprotected reference row has no
+    test against itself.
+    """
+    first = _downstream_summary(_DOWNSTREAM_AGENT)
+    second = _downstream_summary(_DOWNSTREAM_SECOND_AGENT)
+    paired = {r["condition"]: r for r in _read_csv(f"downstream_paired_tests_{_DOWNSTREAM_SECOND_AGENT}.csv")}
+
+    body_lines = []
+    for key, label in _DOWNSTREAM_ORDER:
+        a, b = _downstream_row(first, key), _downstream_row(second, key)
+        test = paired.get(b["condition"])
+        body_lines.append(
+            " & ".join(
+                [
+                    _tex_escape(label),
+                    _ci_point(a["exact_id_exposure_percent"]),
+                    _ci_point(b["exact_id_exposure_percent"]),
+                    _ci_point(a["leak_rate_percent"]),
+                    _ci_point(b["leak_rate_percent"]),
+                    _ci_point(a["helpfulness_mean"]),
+                    _ci_point(b["helpfulness_mean"]),
+                    _holm_p(test["mcnemar_p_holm"]) if test else "\\textemdash",
+                ]
+            )
+            + " \\\\"
+        )
+    return (
+        "\\begin{tabular}{@{}lccccccc@{}}\n"
+        + "\\toprule\n"
+        + "& \\multicolumn{2}{c}{ID exp.\\ (\\%)} & \\multicolumn{2}{c}{Leak (\\%)} & \\multicolumn{2}{c}{Help.} & \\\\\n"
+        + "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\\cmidrule(lr){6-7}\n"
+        + "Condition & 32B & 70B & 32B & 70B & 32B & 70B & Holm $p$ \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        + "\\end{tabular}"
+    )
+
+
+# The agreement record keeps one row per comparison; the readers' row is the
+# ceiling the judge is read against and is set apart below a rule.
+_PLJUDGE_ROWS = (
+    ("judge_vs_human_overall", "Judge vs.\\ reader 1"),
+    ("judge_vs_annotator2", "Judge vs.\\ reader 2"),
+)
+_PLJUDGE_CEILING = ("annotator1_vs_annotator2", "Reader 1 vs.\\ reader 2")
+
+
+def build_pljudge_table() -> str:
+    by_comparison = {r["comparison"]: r for r in _read_csv("privacylens_judge_agreement.csv")}
+
+    def _cells(key: str, label: str, bold: bool) -> str:
+        row = by_comparison[key]
+        cells = [label, f"{float(row['cohens_kappa']):.3f}", f"{float(row['raw_agreement']) * 100:.1f}\\%"]
+        if bold:
+            cells = ["\\textbf{" + c + "}" for c in cells]
+        return " & ".join(cells) + " \\\\"
+
+    body = "\n".join(_cells(key, label, False) for key, label in _PLJUDGE_ROWS)
+    ceiling = _cells(*_PLJUDGE_CEILING, True)
+    return (
+        "\\begin{tabular}{lcc}\n"
+        + "\\toprule\n"
+        + "Comparison & Cohen's $\\kappa$ & Raw agreement \\\\\n"
+        + "\\midrule\n"
+        + body + "\n"
+        + "\\midrule\n"
+        + ceiling + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabular}"
+    )
+
+
+def _thousands(value: str) -> str:
+    return f"{int(float(value)):,}".replace(",", "{,}")
+
+
+# The forced-choice attack conditions in the order the manuscript reads them.
+_CONTEXT_ATTACK_ORDER = ("no_protection", "placeholder:presidio", "placeholder:learned_lr", "casper_style")
+
+
+def build_contextattack_table() -> str:
+    """Forced-choice case identification on the released surface.
+
+    The lowest accuracy is set in bold: on this axis the condition that most
+    misleads the attacker is the one the text singles out.
+    """
+    by_cond = {r["condition"]: r for r in _read_csv(f"privacylens_context_attack_summary_{_DOWNSTREAM_AGENT}.csv")}
+    rows = [by_cond[c] for c in _CONTEXT_ATTACK_ORDER]
+    best = min(float(_ci_point(r["attack_accuracy_percent"])) for r in rows)
+    chance = rows[0]["chance_percent"]
+
+    body_lines = []
+    for row in rows:
+        accuracy = row["attack_accuracy_percent"]
+        if abs(float(_ci_point(accuracy)) - best) < 1e-9:
+            accuracy = "\\textbf{" + accuracy + "}"
+        body_lines.append(
+            f"{_tex_escape(_RECOVERY_CONDITION_LABELS.get(row['condition'], row['condition']))} & "
+            f"{accuracy} & {_thousands(row['questions'])} \\\\"
+        )
+    return (
+        "\\begin{tabular}{lcc}\n"
+        + "\\toprule\n"
+        + "Condition & Attack accuracy (\\%) & Questions \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body_lines) + "\n"
+        + "\\midrule\n"
+        + f"Chance & {_fmt_float(chance)} & --- \\\\\n"
+        + "\\bottomrule\n"
+        + "\\end{tabular}"
+    )
+
+
+# The AgentDojo arms in the order the manuscript reads them, by the restoration
+# policy each ran under.
+_INJECT_ARMS = (
+    ("unprotected", "No protection"),
+    ("unrestricted", "Unrestricted restoration"),
+    ("user_directed", "User-directed restoration"),
+)
+
+
+def _signed_ci(cell: str) -> str:
+    """A signed "point [lo, hi]" cell with each number in math mode, so its sign typesets as one."""
+    point, _, rest = cell.partition("[")
+    lo, _, hi = rest.rstrip("]").partition(",")
+    return f"${point.strip()}$ [${lo.strip()}$, ${hi.strip()}$]"
+
+
+def build_inject_table() -> str:
+    by_arm = {r["arm"]: r for r in _read_csv(f"agentdojo_injection_summary_pooled_{_DOWNSTREAM_AGENT}.csv")}
+    body_lines = []
+    for arm, label in _INJECT_ARMS:
+        row = by_arm[arm]
+        delta = row["paired_asr_delta_vs_unprotected"].strip()
+        body_lines.append(
+            " & ".join(
+                [
+                    _tex_escape(label),
+                    row["attack_success_percent"],
+                    row["utility_percent"],
+                    _signed_ci(delta) if delta else "---",
+                ]
+            )
+            + " \\\\"
+        )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccc}\n"
+        + "\\toprule\n"
+        + "Condition & ASR (\\%) & Util.\\ (\\%) & Paired $\\Delta$ ASR (pts) \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Propagation with intervals on every column, judge capacity against the human
+# reference, and input canonicalization against surface-form evasion.
+# ---------------------------------------------------------------------------
+
+# tab:propints is the wide companion of tab:measprop, so its rows use short labels.
+_PROPINTS_LABELS = {
+    "casper_style": "Casper-style",
+    "heuristic_mediator": "Proposed (heuristic)",
+    "gliner_pii": "Proposed (transformer)",
+    "learned_lr": "Proposed (learned)",
+}
+
+
+def build_propints_table() -> str:
+    """Every propagation column with its interval, on both real sources.
+
+    Degenerate intervals are kept here, unlike tab:measprop, because the point
+    of this table is that every column carries one.
+    """
+    ai4 = _measprop_source("propagation_suite_ai4privacy_results_pooled.csv")
+    pl = _measprop_source("propagation_suite_privacylens_results_pooled.csv")
+    body_lines = []
+    for key, label in MEASPROP_ORDER:
+        a, p = ai4[key], pl[key]
+        body_lines.append(
+            " & ".join(
+                [
+                    _tex_escape(_PROPINTS_LABELS.get(key, label)),
+                    a["retrieval_spe"],
+                    a["memory_spe"],
+                    a["tool_spe"],
+                    a["per_percent"],
+                    a["text_retention"],
+                    p["memory_spe"],
+                    p["per_percent"],
+                    p["text_retention"],
+                    p["semantic_residue"],
+                ]
+            )
+            + " \\\\"
+        )
+    n_ai4 = next(iter(ai4.values()))["documents"]
+    n_pl = next(iter(pl.values()))["documents"]
+    return (
+        "\\begin{tabular}{@{}lccccccccc@{}}\n"
+        + "\\toprule\n"
+        + f"& \\multicolumn{{5}}{{c}}{{\\emph{{AI4Privacy text, reference agent ({n_ai4} docs)}}}} "
+        + f"& \\multicolumn{{4}}{{c}}{{\\emph{{PrivacyLens agent trajectories ({n_pl} tasks)}}}} \\\\\n"
+        + "\\cmidrule(lr){2-6}\\cmidrule(lr){7-10}\n"
+        + "& \\multicolumn{3}{c}{SPE} & & & SPE & & & \\\\\n"
+        + "\\cmidrule(lr){2-4}\\cmidrule(lr){7-7}\n"
+        + "Method & Retrieval & Memory & Tool & PER & Ret. & Memory & PER & Ret. & FRR \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body_lines)
+        + "\n\\bottomrule\n"
+        + "\\end{tabular}"
+    )
+
+
+def _manifest(name: str) -> dict[str, str]:
+    return {r["field"]: r["value"] for r in _read_csv(name)}
+
+
+def _pct(numerator: int, denominator: int) -> str:
+    return f"{100.0 * numerator / denominator:.1f}"
+
+
+# The judges re-run on the identical prompt and released text, by record tag.
+_JUDGE_CAPACITY = ("qwen3_8b-q4km-hf", "qwen3_32b-q4km-hf", "llama3.3_70b-q4km-hf")
+
+
+def build_judgecap_table() -> str:
+    """Inferability-judge agreement with the two independent readers, by capacity.
+
+    Each judge row is kappa against annotator 1 and against annotator 3 (the
+    blank-sheet reader) on the 102-item subset, and how often the judge calls a
+    fact inferable. The reported 27B judge comes from the first agreement
+    record and the round-3 record; the re-run judges from their capacity
+    records; the frontier rater from its validation record, whose yes-rate is
+    read off its contingency cells. The highest judge kappa in each column and
+    the readers' own agreement, the ceiling, are set in bold.
+    """
+    def _model(tag: str) -> str:
+        return tag.removesuffix("-q4km-hf")
+
+    rows: list[tuple[str, str, float, float, str]] = []
+
+    def _add(label: str, params: str, k1: str, k3: str, yes: str) -> None:
+        rows.append((label, params, float(k1), float(k3), yes))
+
+    reported = _manifest("semantic_inferability_runtime_manifest_vgpu3090.csv")
+    first = {r["comparison"]: r for r in _read_csv("semantic_inferability_agreement_vgpu3090.csv")}
+    round3 = {r["comparison"]: r for r in _read_csv("semantic_inferability_agreement_round3_vgpu3090.csv")}
+    j1 = first["judge_vs_human"]
+    reported_yes = int(j1["human_no_pred_yes"]) + int(j1["human_yes_pred_yes"])
+    capacity: dict[str, tuple] = {}
+    for tag in _JUDGE_CAPACITY:
+        by_ref = {r["reference"]: r for r in _read_csv(f"semantic_inferability_capacity_agreement_{tag}_vgpu3090.csv")}
+        size = _manifest(f"semantic_inferability_capacity_manifest_{tag}_vgpu3090.csv")["judge_parameter_size"]
+        a1, a3 = by_ref["annotator1"], by_ref["annotator3"]
+        capacity[tag] = (size, a1["cohens_kappa"], a3["cohens_kappa"], f"{float(a1['judge_yes_rate']) * 100:.1f}")
+
+    # Ordered by parameter count, with the reported judge in its place.
+    _add(f"\\texttt{{{_model(_JUDGE_CAPACITY[0]).replace('_', ':')}}}", *capacity[_JUDGE_CAPACITY[0]])
+    _add(f"\\texttt{{{reported['judge_model']}}} (reported)", reported["judge_parameter_size"],
+         j1["cohens_kappa"], round3["judge_vs_annotator3"]["cohens_kappa"], _pct(reported_yes, int(j1["n"])))
+    for tag in _JUDGE_CAPACITY[1:]:
+        _add(f"\\texttt{{{_model(tag).replace('_', ':')}}}", *capacity[tag])
+
+    rater = {r["comparison"]: r for r in _read_csv("semantic_inferability_llm_rater_agreement_claude_20261007.csv")}
+    r1 = rater["rater_vs_annotator1"]
+    rater_yes = int(r1["other_no_rater_yes"]) + int(r1["other_yes_rater_yes"])
+    _add("Frontier model, agent harness", "---", r1["cohens_kappa"],
+         rater["rater_vs_annotator3_blank_sheet"]["cohens_kappa"], _pct(rater_yes, int(r1["n"])))
+
+    best1 = max(r[2] for r in rows)
+    best3 = max(r[3] for r in rows)
+
+    def _k(value: float, best: float) -> str:
+        cell = f"{value:.3f}"
+        return "\\textbf{" + cell + "}" if abs(value - best) < 1e-9 else cell
+
+    body = "\n".join(
+        f"{label} & {params} & {_k(k1, best1)} & {_k(k3, best3)} & {yes}\\% \\\\"
+        for label, params, k1, k3, yes in rows
+    )
+    readers = round3["annotator1_vs_annotator3_independent"]
+    n = int(readers["n"])
+    a1_yes = _pct(int(readers["cell_yes_no"]) + int(readers["cell_yes_yes"]), n)
+    a3_yes = _pct(int(readers["cell_no_yes"]) + int(readers["cell_yes_yes"]), n)
+    return (
+        "\\begin{tabularx}{\\columnwidth}{lcccc}\n"
+        + "\\toprule\n"
+        + "Judge & Params & $\\kappa$ vs.\\ A1 & $\\kappa$ vs.\\ A3 & Calls inferable \\\\\n"
+        + "\\midrule\n"
+        + body + "\n"
+        + "\\midrule\n"
+        + f"Annotator 1 vs.\\ annotator 3 & --- & \\multicolumn{{2}}{{c}}{{\\textbf{{{float(readers['cohens_kappa']):.3f}}}}} "
+        + f"& {a1_yes} / {a3_yes}\\% \\\\\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+# Detectors as the canonicalization table reads them, left to right: the three
+# configurations of the proposed layer, then the two external baselines.
+_CANON_DETECTORS = (
+    ("heuristic_mediator", "Heuristic"),
+    ("gliner_pii", "Transformer"),
+    ("learned_lr", "Learned"),
+    ("presidio", "Presidio"),
+    ("spacy_ner", "spaCy NER"),
+)
+# The byte-level families the canonicalizer addresses, then the five that
+# change token structure and so are untouched by it by construction.
+_CANON_BYTE_LEVEL = ("Homoglyph substitution", "Zero-width insertion", "Mixed-language fullwidth")
+_CANON_TOKEN_LEVEL = (
+    "Intra-token spacing",
+    "Case inversion",
+    "Leetspeak",
+    "Separator injection (ids)",
+    "Paraphrase (digit spell-out)",
+)
+
+
+def build_canon_table() -> str:
+    """Attack success with and without the canonicalizer, plain -> canonical.
+
+    A detector whose record is absent is left out rather than shown as a gap,
+    so the table renders whatever has finished.
+    """
+    cells: dict[tuple[str, str, str], str] = {}
+    for row in _read_csv("canonicalization_hardening_asr_results.csv"):
+        cells[(row["detector_key"], row["variant"], row["attack_family"])] = row["attack_success_rate"]
+    detectors = [(k, label) for k, label in _CANON_DETECTORS if (k, "plain", _CANON_BYTE_LEVEL[0]) in cells]
+    if not detectors:
+        raise FileNotFoundError("no canonicalization results found")
+
+    def _line(family: str) -> str:
+        pairs = [
+            f"{_fmt_float(cells[(k, 'plain', family)])} $\\rightarrow$ {_fmt_float(cells[(k, 'canonical', family)])}"
+            for k, _ in detectors
+        ]
+        return f"{_tex_escape(family)} & " + " & ".join(pairs) + " \\\\"
+
+    return (
+        "\\begin{tabularx}{\\textwidth}{>{\\raggedright\\arraybackslash}X" + "c" * len(detectors) + "}\n"
+        + "\\toprule\n"
+        + "Attack family & " + " & ".join(label for _, label in detectors) + " \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(_line(f) for f in _CANON_BYTE_LEVEL) + "\n"
+        + "\\midrule\n"
+        + "\n".join(_line(f) for f in _CANON_TOKEN_LEVEL) + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
 TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:cppb_card": build_cppb_accounting_table,
     "tab:per": build_per_table,
@@ -954,6 +1461,14 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:ocrslice": build_ocrslice_table,
     "tab:blindutility": build_blind_utility_table,
     "tab:blindutilitytemplate": build_blind_utility_template_table,
+    "tab:downstream": build_downstream_table,
+    "tab:inject": build_inject_table,
+    "tab:portability": build_portability_table,
+    "tab:pljudge": build_pljudge_table,
+    "tab:contextattack": build_contextattack_table,
+    "tab:propints": build_propints_table,
+    "tab:judgecap": build_judgecap_table,
+    "tab:canon": build_canon_table,
 }
 
 

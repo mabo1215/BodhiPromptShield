@@ -533,6 +533,33 @@ the manuscript integration pending); \src{restoration\_timing\_paired\_tests.py}
 (F2); the \src{symbolic\_fullearly} condition (F1c, run pending a host); the appendix consistency
 items F9--F13 (edits on disk, verification in progress); the canonicalization suite (F7, in progress).
 
+\paragraph{8 October 2026.} F3 is closed by the recommended route. Builders for the five typed
+tables (\src{tab:downstream}, \src{tab:inject}, \src{tab:portability}, \src{tab:pljudge},
+\src{tab:contextattack}) and for three further record-backed appendix tables (\src{tab:propints},
+\src{tab:judgecap}, \src{tab:canon}) are registered, 36 labels in all. Each was checked against the
+committed manuscript by substitution, and every one reproduces its table byte for byte; the only
+table the pass changes is \src{tab:canon}, which gains its transformer column. The tables still
+without a builder are descriptive (threat map, prior-work comparison, model roster, examples,
+policy rules and profiles, mapping surface) and carry no measured value. The \S5.1 sentence is
+restored to the strong form: every results table is rendered by the pass, and both result figures
+are plotted from the same records.
+
+The same check found a regression the review had not anticipated: three \emph{older} builders
+(\src{tab:measprop}, \src{tab:attrrecovery}, \src{tab:attrcap}) lagged behind hand fixes made in
+the manuscript earlier (the configuration label of the heuristic row; the column-width layout of the
+two recovery tables; the bold cells), so any rerun of the pass silently reverted them. That is what
+had happened in the manuscript working copy, where a rerun had left those reversions uncommitted;
+they were reproduced exactly from the pre-fix script, discarded rather than committed, and the
+builders were corrected so that the pass now reproduces the committed tables. A rerun of the full
+pass on both files is a no-op apart from the intended \src{tab:canon} column.
+
+F7 is complete: the transformer detector's run finished, and the canonicalizer closes the three
+byte-level families for all five detectors (transformer: zero-width $38.2\rightarrow0.0$, fullwidth
+$76.9\rightarrow0.0$; residual exposure under zero-width $90.9\%\rightarrow37.2\%$ against $37.3\%$
+clean), at no cost on clean text, and leaves the five token-level families unchanged. The appendix
+text now reports all five. Open: F6c (human annotation, author decision D1) and F1c (GPU session,
+D2); D4 and the preprint are unchanged.
+
 \section*{Limits of this review}
 \begin{itemize}
 \item \textbf{The bibliography was not re-sampled.} It was fully audited 26 days ago and the file

@@ -63,3 +63,19 @@ spacy_ner,spaCy NER masking + canonicalization,canonical,Leetspeak,171,893,0.31,
 spacy_ner,spaCy NER masking + canonicalization,canonical,Separator injection (ids),142,472,0.20,0.26,0.0,0.0,0.0
 spacy_ner,spaCy NER masking + canonicalization,canonical,Mixed-language fullwidth,176,1165,0.27,0.27,0.0,0.0,0.0
 spacy_ner,spaCy NER masking + canonicalization,canonical,Paraphrase (digit spell-out),142,472,0.20,0.47,0.0,0.0,0.0
+gliner_pii,Proposed (transformer PII detector),plain,Homoglyph substitution,171,893,0.61,0.63,0.0,0.0,0.2
+gliner_pii,Proposed (transformer PII detector),plain,Zero-width insertion,171,893,0.61,0.38,38.2,28.4,48.1
+gliner_pii,Proposed (transformer PII detector),plain,Intra-token spacing,171,893,0.61,0.35,42.5,35.8,49.2
+gliner_pii,Proposed (transformer PII detector),plain,Case inversion,171,893,0.61,0.59,2.4,0.0,7.1
+gliner_pii,Proposed (transformer PII detector),plain,Leetspeak,171,893,0.61,0.59,3.7,0.0,8.5
+gliner_pii,Proposed (transformer PII detector),plain,Separator injection (ids),142,472,0.66,0.42,36.3,29.4,44.0
+gliner_pii,Proposed (transformer PII detector),plain,Mixed-language fullwidth,176,1165,0.59,0.14,76.9,70.6,82.3
+gliner_pii,Proposed (transformer PII detector),plain,Paraphrase (digit spell-out),142,472,0.66,0.39,41.5,34.0,49.0
+gliner_pii,Proposed (transformer PII detector) + canonicalization,canonical,Homoglyph substitution,171,893,0.61,0.61,0.0,0.0,0.0
+gliner_pii,Proposed (transformer PII detector) + canonicalization,canonical,Zero-width insertion,171,893,0.61,0.61,0.0,0.0,0.0
+gliner_pii,Proposed (transformer PII detector) + canonicalization,canonical,Intra-token spacing,171,893,0.61,0.35,42.5,35.8,49.2
+gliner_pii,Proposed (transformer PII detector) + canonicalization,canonical,Case inversion,171,893,0.61,0.59,2.4,0.0,7.1
+gliner_pii,Proposed (transformer PII detector) + canonicalization,canonical,Leetspeak,171,893,0.61,0.59,3.7,0.0,8.5
+gliner_pii,Proposed (transformer PII detector) + canonicalization,canonical,Separator injection (ids),142,472,0.66,0.42,36.3,29.4,44.0
+gliner_pii,Proposed (transformer PII detector) + canonicalization,canonical,Mixed-language fullwidth,176,1165,0.59,0.59,0.0,0.0,0.0
+gliner_pii,Proposed (transformer PII detector) + canonicalization,canonical,Paraphrase (digit spell-out),142,472,0.66,0.39,41.5,34.0,49.0
