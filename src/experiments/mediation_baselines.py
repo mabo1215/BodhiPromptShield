@@ -473,20 +473,29 @@ def render_symbolic(text: str, spans: list[Span], namespace: str, mapping: dict[
     return released
 
 
-# Tokens are matched whole. BPSMAP-<ns>-1 is a prefix of BPSMAP-<ns>-10 to -19,
-# so restoring with str.replace in insertion order turned every token from the
-# tenth on into the first value plus a digit, and a substring test counted the
-# first token as present wherever a later one was.
-_SYMBOLIC_TOKEN = re.compile(r"BPSMAP-[0-9a-f]+-[0-9]+")
+# Tokens are matched against the mapping's own keys, longest first.
+# BPSMAP-<ns>-1 is a prefix of BPSMAP-<ns>-10 to -19, so restoring with
+# str.replace in insertion order turned every token from the tenth on into the
+# first value plus a digit, and a substring test counted the first token as
+# present wherever a later one was. A pattern for the token shape alone is not
+# enough either: render_symbolic can place a token directly before a digit
+# (a value replaced inside a longer number), and a greedy pattern then reads
+# the digit as part of the counter. Longest-key-first matching handles both.
+def _token_pattern(mapping: dict[str, str]) -> re.Pattern[str] | None:
+    if not mapping:
+        return None
+    return re.compile("|".join(re.escape(t) for t in sorted(mapping, key=len, reverse=True)))
 
 
 def symbolic_tokens_in(text: str, mapping: dict[str, str]) -> list[str]:
-    """Mapped tokens that occur whole in ``text``, once each, in order of first occurrence."""
-    return list(dict.fromkeys(t for t in _SYMBOLIC_TOKEN.findall(text) if t in mapping))
+    """Mapped tokens that occur in ``text``, once each, in order of first occurrence."""
+    pattern = _token_pattern(mapping)
+    return list(dict.fromkeys(pattern.findall(text))) if pattern else []
 
 
 def restore_symbolic(text: str, mapping: dict[str, str]) -> str:
-    return _SYMBOLIC_TOKEN.sub(lambda m: mapping.get(m.group(0), m.group(0)), text)
+    pattern = _token_pattern(mapping)
+    return pattern.sub(lambda m: mapping[m.group(0)], text) if pattern else text
 
 
 # ---------------------------------------------------------------------------
