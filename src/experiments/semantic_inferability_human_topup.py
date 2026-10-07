@@ -28,6 +28,12 @@ again after installing more of the stack without duplicating work.
 Usage:
     python semantic_inferability_human_topup.py --tag vgpu3090
     python semantic_inferability_human_topup.py --methods presidio,casper_style --out topup2
+    python semantic_inferability_human_topup.py --extend-to 40 --out extend40
+
+``--extend-to N`` grows every requested method to N items from the same
+shuffled order, continuing after the items already rated (the base key and any
+top-up), so the extension is balanced, disjoint from the rated subset, and
+behind the same two verifications.
 """
 
 from __future__ import annotations
@@ -35,6 +41,7 @@ from __future__ import annotations
 import argparse
 import csv
 import random
+from collections import Counter
 import sys
 from pathlib import Path
 
@@ -80,7 +87,7 @@ def _replay_sampler(rows: list[dict]) -> dict[str, list[dict]]:
     return by_method
 
 
-def run(tag: str, methods: list[str], out_suffix: str) -> int:
+def run(tag: str, methods: list[str], out_suffix: str, extend_to: int | None = None) -> int:
     suffix = f"_{tag}" if tag else ""
     rows = _read(EXPERIMENTS_DIR / f"semantic_inferability_rows{suffix}.csv")
     key = _read(EXPERIMENTS_DIR / f"semantic_inferability_human_key{suffix}.csv")
@@ -88,25 +95,32 @@ def run(tag: str, methods: list[str], out_suffix: str) -> int:
     by_method = _replay_sampler(rows)
 
     # --- verification 1: the replay must reproduce the key that was actually rated.
-    existing = {(r["method_key"], r["doc_id"], r["fact_index"]) for r in key}
+    # Rated items are the base key plus every top-up key, deduplicated: the base
+    # key later absorbed the first top-ups, so its size is not a constant. Per
+    # method, the rated items must be exactly a prefix of the replayed order.
+    rated_items = {(r["method_key"], r["doc_id"], r["fact_index"]) for r in key}
+    for path in sorted(EXPERIMENTS_DIR.glob(f"semantic_inferability_human_key_topup*{suffix}.csv")):
+        rated_items |= {(r["method_key"], r["doc_id"], r["fact_index"]) for r in _read(path)}
+    rated_count = {m: sum(1 for item in rated_items if item[0] == m) for m in ALL_METHODS}
     replayed = {
         (m, r["doc_id"], r["fact_index"])
         for m, mrows in by_method.items()
-        for r in mrows[:EXISTING_PER_METHOD]
+        for r in mrows[:rated_count.get(m, 0)]
     }
-    if replayed != existing:
-        print(f"FAIL: sampler replay does not reproduce the existing key "
-              f"({len(replayed & existing)}/{len(existing)} items match).")
+    if replayed != rated_items:
+        print(f"FAIL: sampler replay does not reproduce the rated items "
+              f"({len(replayed & rated_items)}/{len(rated_items)} match).")
         return 1
-    print(f"[verify 1] sampler replay reproduces all {len(existing)} rated items")
+    print(f"[verify 1] sampler replay reproduces all {len(rated_items)} rated items as per-method prefixes")
 
     # --- verification 2: a regenerated surface must equal the text the annotator saw.
     # Methods already topped up in an earlier pass are not re-emitted.
     already: set[str] = set()
     for path in sorted(EXPERIMENTS_DIR.glob(f"semantic_inferability_human_key_topup*{suffix}.csv")):
         already |= {r["method_key"] for r in _read(path)}
-    todo = [m for m in methods if m not in already]
-    if already:
+    rated = rated_count
+    todo = [m for m in methods if m not in already] if extend_to is None else list(methods)
+    if already and extend_to is None:
         print(f"[skip] already topped up: {', '.join(sorted(already))}")
     if not todo:
         print("nothing left to add for the requested methods.")
@@ -142,6 +156,13 @@ def run(tag: str, methods: list[str], out_suffix: str) -> int:
     additions = []
     for method in todo:
         pool = by_method.get(method, [])
+        if extend_to is not None:
+            # Continue the method's own shuffled order after every item already rated.
+            batch = pool[rated[method]:extend_to]
+            if len(batch) < extend_to - rated[method]:
+                print(f"  {method}: pool holds only {len(pool)} items")
+            additions.extend(batch)
+            continue
         if len(pool) <= EXISTING_PER_METHOD:
             print(f"  {method}: pool exhausted, no further item available")
             continue
@@ -149,6 +170,10 @@ def run(tag: str, methods: list[str], out_suffix: str) -> int:
     if not additions:
         print("FAIL: nothing to add.")
         return 1
+    if extend_to is not None:
+        # The pool is read method by method; shuffling before ids are assigned
+        # keeps neither position nor id from telling an annotator the method.
+        random.Random(SEED + extend_to).shuffle(additions)
 
     used = {int(r["item_id"]) for r in key}
     for path in sorted(EXPERIMENTS_DIR.glob(f"semantic_inferability_human_key_topup*{suffix}.csv")):
@@ -175,7 +200,7 @@ def run(tag: str, methods: list[str], out_suffix: str) -> int:
     print(f"wrote {out_key.name} (verdicts withheld from the sheet)")
     # Count every prior top-up, not just the base key, or a later run misreports the total.
     print(f"subset would grow {len(used)} -> {len(used) + len(additions)}; "
-          f"methods covered: {', '.join(r['method_key'] for r in additions)}")
+          f"items per method: {dict(sorted(Counter(r['method_key'] for r in additions).items()))}")
     return 0
 
 
@@ -185,8 +210,9 @@ def main() -> int:
     parser.add_argument("--methods", default=",".join(ALL_METHODS),
                         help="Comma-separated detector keys to consider")
     parser.add_argument("--out", default="topup", help="Output filename suffix")
+    parser.add_argument("--extend-to", type=int, help="Grow every requested method to this many items")
     args = parser.parse_args()
-    return run(args.tag, [m.strip() for m in args.methods.split(",") if m.strip()], args.out)
+    return run(args.tag, [m.strip() for m in args.methods.split(",") if m.strip()], args.out, args.extend_to)
 
 
 if __name__ == "__main__":

@@ -624,6 +624,14 @@ INDEPENDENT_NOTE = (
     "轨迹不翻译：其中的遮蔽块是实验操作本身。"
 )
 
+EXTENSION_NOTE = (
+    "本轮是<strong>扩样</strong>：138 条全新的条目，你此前没有标过，也<strong>从空表开始</strong>——"
+    "页面里没有任何其他标注者的答案，也没有模型的判定。两位标注者各自独立完成同一份表，互不相看。<br>"
+    "作答后自动跳下一条；方向键翻页，实心方块表示已标注。答案即时保存。<br>"
+    "事实句附中文参考，<strong>以英文为准</strong>——模型判断的就是那句英文。"
+    "轨迹不翻译：其中的遮蔽块是实验操作本身。"
+)
+
 JUDGE_NOTE = (
     "本轮验证的<strong>不是我们的方法，而是 PrivacyLens 自带的判官模型</strong>："
     "论文第 6.3 节的下游泄漏率全部由它判定，从未与人工比对过。<br>"
@@ -691,6 +699,30 @@ MODES = {
         "local": "inferability-annotations-r3-v1",
         "collection": "round3",
         "export": "human_annotations_round3.csv",
+        "answer_column": "human_inferable_YES_or_NO",
+        "left_column": "released_trajectory",
+    },
+    # Grows the subset from 17 to 40 items per method. The sheet is drawn by
+    # semantic_inferability_human_topup.py --extend-to 40, behind the same two
+    # verifications as every earlier top-up, and shuffled before ids are
+    # assigned. Each reader gets their own --round, so the two records never
+    # share storage and their agreement is an inter-rater estimate.
+    "extension": {
+        "title": "可推断性标注 扩样",
+        "subtitle": "独立盲标 &middot; 本页不含任何标注者的答案，也不含模型的判定结果",
+        "note": EXTENSION_NOTE,
+        "count_label": "已标",
+        "jump_label": "跳到第一条未标",
+                "left_head": "中介后的 agent 轨迹 &mdash; 下游读者看到的内容",
+        "right_head": "敏感事实",
+        "ask": "仅凭左侧轨迹，读者是否仍能得知这条事实，或以高置信度推断出来？",
+        "yes_label": "是，仍可得知",
+        "no_label": "否，已无法得知",
+        "sheet": "semantic_inferability_human_sheet_extend40{suffix}.csv",
+        "zh": "fact_translations_zh.json",
+        "local": "inferability-annotations-ext40-v1",
+        "collection": "extend40",
+        "export": "human_annotations_extend40.csv",
         "answer_column": "human_inferable_YES_or_NO",
         "left_column": "released_trajectory",
     },
