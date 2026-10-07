@@ -571,6 +571,28 @@ moves that cell from 48.5\% to 48.7\% or 48.4\%. One sentence in the attribute-r
 now says so. F15 is not actionable: Figure~1 has no vector source in the repository, and a redraw
 would again be raster.
 
+\paragraph{8 October 2026, afternoon: a defect this review did not find.} Preparing F1c exposed a
+bug in symbolic restoration that every earlier review, this one included, read past.
+\src{restore\_symbolic} replaced tokens with \texttt{str.replace} in insertion order, and
+\texttt{BPSMAP-<ns>-1} is a prefix of \texttt{-10} to \texttt{-19}: from the tenth value on, a token
+came back as the first value plus a digit. On the 200-case subset, 166 mappings hold ten or more
+values. An audit that replays every recorded field from the generation cache (all 200 cases match on
+both agents) finds that the late arm's restored action, which the judge scores, changed in 54 cases
+on the 32B agent and 35 on the 70B, and that the trajectory the early arm's agent read changed in 166
+on each. The restoration-timing result therefore rested on a late arm scored partly on wrong values
+and an early arm that did not measure what it was named for. The fix matches the mapping's own tokens
+longest first; render-then-restore is now the identity. AgentDojo is unaffected (its mappings never
+exceed five values).
+
+Following the authors' decision, the trajectory-only early arm is retired and replaced by the true
+early arm (F1c). Its agent prompt is the no-protection prompt byte for byte on all 200 cases, and
+replayed cache-only it generated no call on either agent: restoring before planning is, for the
+agent, no mediation at all, with released-context exposure 100\%. The late arm is being rerun with
+corrected restoration (agent replies replayed, changed judge calls regenerated), and a control
+regenerates the true early arm from an empty cache. Section~6.4, Table~4, the portability table and
+the paired tests are to be revised once those numbers are in; until then the manuscript's
+restoration-timing numbers should be read as superseded.
+
 \section*{Limits of this review}
 \begin{itemize}
 \item \textbf{The bibliography was not re-sampled.} It was fully audited 26 days ago and the file
