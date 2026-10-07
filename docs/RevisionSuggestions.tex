@@ -588,10 +588,16 @@ Following the authors' decision, the trajectory-only early arm is retired and re
 early arm (F1c). Its agent prompt is the no-protection prompt byte for byte on all 200 cases, and
 replayed cache-only it generated no call on either agent: restoring before planning is, for the
 agent, no mediation at all, with released-context exposure 100\%. The late arm is being rerun with
-corrected restoration (agent replies replayed, changed judge calls regenerated), and a control
-regenerates the true early arm from an empty cache. Section~6.4, Table~4, the portability table and
-the paired tests are to be revised once those numbers are in; until then the manuscript's
-restoration-timing numbers should be read as superseded.
+corrected restoration (agent replies replayed with no generation; 217 and 132 judge calls
+regenerated, exactly the ones the audit predicted), and a control regenerating the true early arm
+from an empty cache is queued. The late arm itself barely moved; the comparison did. Deferral against
+true early restoration cuts the identifiers the agent writes by $-11.0$ points [$-13.3$, $-8.7$]
+($-11.0$ [$-13.7$, $-8.6$] on the 70B), against $-2.1$ before, and helpfulness now moves the other
+way: $-0.13$ [$-0.31$, $+0.04$] and $-0.25$ [$-0.40$, $-0.12$]. The abstract, contribution list and
+conclusion no longer say ``at no cost in helpfulness''; Section~6.4, Table~4 and the portability
+table are revised; Holm correction runs over the seven conditions actually tested. One further
+sentence in the portability appendix, that late restoration was the cheapest condition on both agents,
+was untrue on the 32B before the fix (the LLM sanitizer cost less) and is corrected.
 
 \section*{Limits of this review}
 \begin{itemize}

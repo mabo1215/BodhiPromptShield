@@ -37,6 +37,13 @@ CONTROL = "no_protection"
 DEFAULT_MODELS = ["qwen3_32b-q4km-hf", "llama3.3_70b-q4km-hf"]
 
 
+# Conditions whose agent and judge inputs equal the control's by construction.
+# The true early arm restores every value before planning, so its prompt is the
+# no-protection prompt byte for byte; comparing it with the control tests no
+# hypothesis, and counting it in the Holm family would only change the family.
+IDENTICAL_TO_CONTROL = frozenset({"symbolic_fullearly:gliner_pii"})
+
+
 def mcnemar_exact_p(b: int, c: int) -> float:
     """Two-sided exact McNemar p-value from the two discordant-pair counts.
 
@@ -119,7 +126,7 @@ def paired_tests(agent_model: str) -> Path:
     raw_p: list[float] = []
 
     for cond in order:
-        if cond == CONTROL:
+        if cond == CONTROL or cond in IDENTICAL_TO_CONTROL:
             continue
         treated = by_condition[cond]
         cases = sorted(set(treated) & set(control))
