@@ -59,7 +59,8 @@ from agentdojo.types import ChatMessage, text_content_block_from_string
 
 from ai4privacy_matched_baseline_suite import _merge_spans
 import ai4privacy_lightweight_classifier_baseline as clf
-from mediation_baselines import Detector, bootstrap_ratio_ci, build_detectors, render_symbolic, restore_symbolic
+from mediation_baselines import (Detector, bootstrap_ratio_ci, build_detectors, render_symbolic, restore_symbolic,
+                                 symbolic_tokens_in)
 
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
@@ -127,7 +128,7 @@ class RestoringToolsExecutor(ToolsExecutor):
                 for key, value in list(call.args.items()):
                     if not isinstance(value, str):
                         continue
-                    emitted = [tok for tok in mapping if tok in value]
+                    emitted = symbolic_tokens_in(value, mapping)
                     if emitted:
                         self.state["tokens_emitted"] = self.state.get("tokens_emitted", 0) + len(emitted)
                         if self.restore and self._authorized(call, mapping):

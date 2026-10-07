@@ -45,7 +45,7 @@ import ai4privacy_lightweight_classifier_baseline as clf
 from measured_privacylens_propagation import _gold_spans as _pl_gold_spans
 from mediation_baselines import (
     DEFAULT_CACHE_DIR, Detector, GenerationFailed, LLMSanitizer, bootstrap_ratio_ci, build_detectors, render_placeholders,
-    render_symbolic, restore_symbolic, substitute_dummy,
+    render_symbolic, restore_symbolic, substitute_dummy, symbolic_tokens_in,
 )
 from ollama_client import AGENT_NUM_CTX, JUDGE_NUM_CTX, CachedOllamaChat
 
@@ -308,7 +308,7 @@ def evaluate_case(case: dict, prefix_row: dict, cond: Condition, agent: CachedOl
     ids_total = len(gold_texts)
     ids_in_output = sum(1 for g in gold_texts if g in action_out)
     ids_in_final = sum(1 for g in gold_texts if g in final_action)
-    tokens_in_output = sum(1 for tok in mapping if tok in action_out)
+    tokens_in_output = len(symbolic_tokens_in(action_out, mapping))
     visible_context = instr_r + "\n" + traj_r
     raw_visible = sum(1 for v in mapping.values() if v in visible_context)
 

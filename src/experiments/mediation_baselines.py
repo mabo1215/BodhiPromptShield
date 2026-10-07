@@ -473,10 +473,20 @@ def render_symbolic(text: str, spans: list[Span], namespace: str, mapping: dict[
     return released
 
 
+# Tokens are matched whole. BPSMAP-<ns>-1 is a prefix of BPSMAP-<ns>-10 to -19,
+# so restoring with str.replace in insertion order turned every token from the
+# tenth on into the first value plus a digit, and a substring test counted the
+# first token as present wherever a later one was.
+_SYMBOLIC_TOKEN = re.compile(r"BPSMAP-[0-9a-f]+-[0-9]+")
+
+
+def symbolic_tokens_in(text: str, mapping: dict[str, str]) -> list[str]:
+    """Mapped tokens that occur whole in ``text``, once each, in order of first occurrence."""
+    return list(dict.fromkeys(t for t in _SYMBOLIC_TOKEN.findall(text) if t in mapping))
+
+
 def restore_symbolic(text: str, mapping: dict[str, str]) -> str:
-    for token, value in mapping.items():
-        text = text.replace(token, value)
-    return text
+    return _SYMBOLIC_TOKEN.sub(lambda m: mapping.get(m.group(0), m.group(0)), text)
 
 
 # ---------------------------------------------------------------------------
