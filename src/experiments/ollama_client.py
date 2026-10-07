@@ -38,8 +38,12 @@ FIXED_NUM_CTX = DEFAULT_NUM_CTX  # retained for callers that predate per-model s
 class CachedOllamaChat:
     def __init__(self, model: str, base_url: str = DEFAULT_BASE_URL, cache_dir: Path = DEFAULT_CACHE_DIR,
                  think: bool = False, retries: int = 3, timeout: int = 900,
-                 num_ctx: int = DEFAULT_NUM_CTX) -> None:
+                 num_ctx: int = DEFAULT_NUM_CTX, cache_only: bool = False) -> None:
         self.model = model
+        # A replay that must not generate: a miss returns None (reported as a
+        # failure) instead of loading the model, which on a shared card could
+        # evict another tenant or spill to CPU.
+        self.cache_only = cache_only
         # One value per client instance: Ollama sizes a model's KV cache from
         # the context of the request that loads it, and a later request with a
         # different context forces a reload of the whole model.
@@ -75,6 +79,9 @@ class CachedOllamaChat:
         key = self._key(messages, options)
         if key in self.cache:
             return self.cache[key]
+        if self.cache_only:
+            self.failures += 1
+            return None
         payload = json.dumps({"model": self.model, "messages": messages, "stream": False, "think": self.think,
                               "options": options, "keep_alive": "30m"}).encode("utf-8")
         last: Exception | None = None

@@ -48,6 +48,7 @@ from mediation_baselines import (
     render_symbolic, restore_symbolic, substitute_dummy, symbolic_tokens_in,
 )
 from ollama_client import AGENT_NUM_CTX, JUDGE_NUM_CTX, CachedOllamaChat
+from ollama_client import DEFAULT_CACHE_DIR as CHAT_CACHE_DIR
 
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
@@ -476,6 +477,14 @@ def main() -> int:
     # ceiling for both roles; their manifests name no context at all.
     parser.add_argument("--agent-num-ctx", type=int, default=AGENT_NUM_CTX)
     parser.add_argument("--judge-num-ctx", type=int, default=JUDGE_NUM_CTX)
+    parser.add_argument("--agent-cache-only", action="store_true",
+                        help="Never generate an agent reply: a case whose reply is not cached is skipped and "
+                             "reported. Judge calls may still generate. For replays on a shared card.")
+    parser.add_argument("--judge-cache-only", action="store_true",
+                        help="Never generate a judge verdict either: a case with an uncached verdict is skipped.")
+    parser.add_argument("--cache-dir", type=Path, default=CHAT_CACHE_DIR,
+                        help="Generation cache directory. A fresh directory forces every call to be generated, "
+                             "which is how a replayed result is checked against a regenerated one.")
     parser.add_argument("--export-judge-decisions", action="store_true",
                         help="Replay every case from cache and write the judge's per-secret decisions "
                              "and the action it saw, without touching the canonical rows file. Every "
@@ -498,8 +507,10 @@ def main() -> int:
     detectors = {d.key: d for d in build_detectors(needed, learned_weights=learned, spacy_model=args.spacy_model,
                                                      ollama_url=f"{args.base_url}/api/generate")}
     conditions = [Condition(s, detectors, args.base_url, args.spacy_model) for s in specs]
-    agent = CachedOllamaChat(args.agent_model, base_url=args.base_url, num_ctx=args.agent_num_ctx)
-    judge = CachedOllamaChat(args.judge_model, base_url=args.base_url, num_ctx=args.judge_num_ctx)
+    agent = CachedOllamaChat(args.agent_model, base_url=args.base_url, num_ctx=args.agent_num_ctx,
+                             cache_dir=args.cache_dir, cache_only=args.agent_cache_only)
+    judge = CachedOllamaChat(args.judge_model, base_url=args.base_url, num_ctx=args.judge_num_ctx,
+                             cache_dir=args.cache_dir, cache_only=args.judge_cache_only)
 
     safe_agent = re.sub(r"[^A-Za-z0-9_.-]+", "_", args.agent_model)
     rows_path = _with_tag(EXPERIMENTS_DIR / f"privacylens_downstream_rows_{safe_agent}.csv", args.output_tag)
@@ -558,6 +569,13 @@ def main() -> int:
     for label, client in (("agent", agent), ("judge", judge)):
         for k, v in client.metadata().items():
             manifest.append({"field": f"{label}.{k}", "value": v})
+        # How much of this invocation was generated rather than replayed; a
+        # cache-only miss counts as a failure and its case is not written.
+        manifest.append({"field": f"{label}.generated_this_invocation", "value": str(client.generated)})
+        manifest.append({"field": f"{label}.failed_or_uncached_this_invocation", "value": str(client.failures)})
+    manifest.append({"field": "cache_dir", "value": os.path.relpath(args.cache_dir, EXPERIMENTS_DIR)})
+    manifest.append({"field": "agent_cache_only", "value": str(bool(args.agent_cache_only))})
+    manifest.append({"field": "judge_cache_only", "value": str(bool(args.judge_cache_only))})
     for d in detectors.values():
         for k, v in d.versions.items():
             manifest.append({"field": f"{d.key}.{k}", "value": str(v)})
