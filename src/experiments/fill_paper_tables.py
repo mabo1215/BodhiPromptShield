@@ -53,7 +53,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import glob
 import os
 import re
 from typing import Callable
@@ -983,7 +982,8 @@ _DOWNSTREAM_ORDER = (
     ("llm_sanitizer:", "LLM sanitizer (8B)"),
     ("abstraction:", "Semantic abstraction (8B)"),
     ("symbolic_late:gliner_pii", "Symbolic mapping, late restoration"),
-    ("symbolic_early:gliner_pii", "Symbolic mapping, early restoration"),
+    # The true early arm; the trajectory-only arm it replaces is retired.
+    ("symbolic_fullearly:gliner_pii", "Symbolic mapping, early restoration"),
 )
 
 
@@ -1007,17 +1007,17 @@ def _downstream_protected_values(agent: str) -> dict[str, int]:
     This is the denominator of the released-context exposure rate. It is zero
     wherever no mapping exists, and the pooled summary prints 0.0 there, which
     is not a measurement; the table shows a dash instead. The count lives in
-    the per-case shards, read the way the pooling script reads them.
+    the per-case rows, read exactly as the pooling script reads them
+    (superseding records and retired conditions applied).
     """
-    pattern = os.path.join(EXPERIMENTS_DIR, f"privacylens_downstream_rows_{agent}_shard*of*.csv")
-    paths = [p for p in sorted(glob.glob(pattern)) if "partial" not in os.path.basename(p)]
-    if not paths:
+    from aggregate_paper_results import read_downstream_rows
+
+    rows = read_downstream_rows(agent)
+    if not rows:
         raise FileNotFoundError(f"no downstream shards found for {agent}")
     totals: dict[str, int] = {}
-    for path in paths:
-        with open(path, "r", encoding="utf-8", newline="") as f:
-            for row in csv.DictReader(f):
-                totals[row["condition"]] = totals.get(row["condition"], 0) + int(float(row["protected_values"] or 0))
+    for row in rows:
+        totals[row["condition"]] = totals.get(row["condition"], 0) + int(float(row["protected_values"] or 0))
     return totals
 
 

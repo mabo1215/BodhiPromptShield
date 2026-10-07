@@ -1,0 +1,2 @@
+condition,cases,action_rate,leak_rate_percent,secret_leak_percent,helpfulness_mean,exact_id_exposure_percent,exact_id_exposure_pre_restore_percent,boundary_leak_percent,unrestored_token_rate
+symbolic_fullearly:gliner_pii,200,"100.0 [100.0, 100.0]","35.0 [28.5, 41.5]","17.5 [13.6, 21.4]","2.46 [2.33, 2.58]","13.1 [10.5, 16.1]","13.1 [10.5, 16.1]","100.0 [100.0, 100.0]","0.00 [0.00, 0.00]"

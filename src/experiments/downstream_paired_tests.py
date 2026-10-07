@@ -28,7 +28,7 @@ import sys
 from math import comb
 from pathlib import Path
 
-from aggregate_paper_results import _read_shards, _write
+from aggregate_paper_results import _write, read_downstream_rows
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 N_BOOT = 1000
@@ -99,7 +99,7 @@ def _fmt(point: float, lo: float, hi: float, digits: int) -> str:
 
 def paired_tests(agent_model: str) -> Path:
     """Compare every mediated condition with no_protection on matched cases."""
-    rows = _read_shards(f"privacylens_downstream_rows_{agent_model}_shard*of*.csv")
+    rows = read_downstream_rows(agent_model)
     if not rows:
         raise SystemExit(f"no downstream shards found for {agent_model}")
 

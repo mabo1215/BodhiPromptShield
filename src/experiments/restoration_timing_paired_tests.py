@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Paired comparison of late against early symbolic restoration on the same cases.
+"""Paired comparison of late against true early symbolic restoration on the same cases.
 
 ``downstream_paired_tests.py`` compares every mediated condition with the
 unprotected control. The restoration-timing claim is a different pair: the two
@@ -27,12 +27,15 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from aggregate_paper_results import _read_shards, _write
+from aggregate_paper_results import _write, read_downstream_rows
 from downstream_paired_tests import DEFAULT_MODELS, mcnemar_exact_p, paired_bootstrap_diff
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 LATE_PREFIX = "symbolic_late"
-EARLY_PREFIX = "symbolic_early"
+# The true early arm: every value is restored before planning, so the agent
+# reads no token at all. (The earlier symbolic_early arm restored the
+# trajectory only, and its rows are retired; see aggregate_paper_results.)
+EARLY_PREFIX = "symbolic_fullearly"
 
 
 def _fmt(point: float, lo: float, hi: float, digits: int) -> str:
@@ -47,7 +50,7 @@ def _arm(rows: list[dict], prefix: str) -> tuple[str, dict[str, dict]]:
 
 
 def paired_tests(agent_model: str) -> Path:
-    rows = _read_shards(f"privacylens_downstream_rows_{agent_model}_shard*of*.csv")
+    rows = read_downstream_rows(agent_model)
     if not rows:
         raise SystemExit(f"no downstream shards found for {agent_model}")
     late_name, late = _arm(rows, LATE_PREFIX)

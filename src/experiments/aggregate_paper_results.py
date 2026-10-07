@@ -82,9 +82,36 @@ def pool_propagation(source: str) -> Path:
     return path
 
 
+# Records that supersede conditions of the canonical downstream shards, applied
+# in this order. A record replaces every canonical row of each condition it
+# contains. "restorefix" is the late symbolic arm rerun after restore_symbolic
+# was fixed: agent replies replayed from the recorded cache, judge verdicts
+# regenerated where the corrected restoration changed the action. "fullearly"
+# is the true early arm (every value restored before planning).
+DOWNSTREAM_SUPERSEDING = ("restorefix", "fullearly")
+# Conditions kept as records but not reported: the restoration bug changed the
+# trajectory the agent read in 166 of 200 cases on each agent, so these rows do
+# not measure the arm they are named for.
+DOWNSTREAM_RETIRED = frozenset({"symbolic_early:gliner_pii"})
+
+
+def read_downstream_rows(agent_model: str) -> list[dict]:
+    """Per-case downstream rows as reported: canonical shards, superseded and retired conditions applied."""
+    rows = _read_shards(f"privacylens_downstream_rows_{agent_model}_shard*of*.csv")
+    for tag in DOWNSTREAM_SUPERSEDING:
+        path = EXPERIMENTS_DIR / f"privacylens_downstream_rows_{agent_model}_{tag}.csv"
+        if not path.exists():
+            continue
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            newer = list(csv.DictReader(handle))
+        replaced = {r["condition"] for r in newer}
+        rows = [r for r in rows if r["condition"] not in replaced] + newer
+    return [r for r in rows if r["condition"] not in DOWNSTREAM_RETIRED]
+
+
 def pool_downstream(agent_model: str = "qwen3_32b-q4km-hf") -> Path:
     """Pool PrivacyLens downstream cases across shards and recompute CIs."""
-    rows = _read_shards(f"privacylens_downstream_rows_{agent_model}_shard*of*.csv")
+    rows = read_downstream_rows(agent_model)
     if not rows:
         raise SystemExit("no downstream shards found")
 
@@ -317,6 +344,7 @@ def main() -> int:
     pool_propagation("ai4privacy")
     pool_propagation("privacylens")
     pool_downstream()
+    pool_downstream("llama3.3_70b-q4km-hf")
     rebuild_agentdojo_injection_baseline()
     pool_agentdojo_suites()
     pool_agentdojo_injections()
