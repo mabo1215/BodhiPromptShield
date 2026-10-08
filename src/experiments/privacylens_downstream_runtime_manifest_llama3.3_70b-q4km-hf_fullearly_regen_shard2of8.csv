@@ -1,0 +1,28 @@
+field,value
+benchmark,"PrivacyLens (NeurIPS 2024 D&B) main_data.json, naive agent prompt rendered by PrivacyLens code"
+cases,25
+conditions,symbolic_fullearly:gliner_pii
+judge_protocol,"PrivacyLens evaluate_final_action.py prompts (judge_leakage per sensitive item; helpfulness 0-3), verbatim"
+decoding,"temperature 0, top_p 1, seed 17; agent num_predict 700 num_ctx 7168; judge num_predict 400 num_ctx 10240"
+bootstrap,"1000 case-level resamples, 95% percentile CI"
+python,3.12.3
+platform,Linux-5.15.0-78-generic-x86_64-with-glibc2.35
+agent.model_name,llama3.3:70b-q4km-hf
+agent.model_digest,bb2a7bfed908f43250d36ddecfebd435cbbe83a877e4cf28f8aa3c093fbb257f
+agent.model_family,llama
+agent.model_parameter_size,70.6B
+agent.model_quantization,Q4_K_M
+agent.generated_this_invocation,25
+agent.failed_or_uncached_this_invocation,0
+judge.model_name,mistral:7b-instruct-v0.2-q4km-hf
+judge.model_digest,79c08d3519c6cf4ef7bc2f6bec6e463411c66054c3193befba266874c11da3f4
+judge.model_family,llama
+judge.model_parameter_size,7.2B
+judge.model_quantization,Q4_K_M
+judge.generated_this_invocation,117
+judge.failed_or_uncached_this_invocation,0
+cache_dir,../../../bps_regen_cache
+agent_cache_only,False
+judge_cache_only,False
+gliner_pii.gliner,0.2.28
+gliner_pii.gliner_model,urchade/gliner_multi_pii-v1
