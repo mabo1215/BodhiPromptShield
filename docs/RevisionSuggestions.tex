@@ -599,6 +599,21 @@ table are revised; Holm correction runs over the seven conditions actually teste
 sentence in the portability appendix, that late restoration was the cheapest condition on both agents,
 was untrue on the 32B before the fix (the LLM sanitizer cost less) and is corrected.
 
+\paragraph{8 October 2026, evening: the control falsified a reproducibility claim.} The 32B half of
+the control finished: the true early arm regenerated from an empty cache on the recording host, same
+model digests and decoding settings. Every one of its 200 agent prompts hits a recorded cache key, as
+it must, but only 48 replies come back byte for byte; of 812 judge calls, 254 have a recorded prompt
+and 114 of those reproduce. Per case, the leak verdict agrees on 172 of 200 and helpfulness on 143.
+Pooled, the arm moves by at most a point (leak 38.0 to 37.0, helpfulness 2.42 to 2.38), and the timing
+contrast holds against either record: pre-restoration identifiers $-11.0$ replayed and $-11.5$
+[$-13.9$, $-9.3$] regenerated; helpfulness $-0.13$ and $-0.09$ [$-0.26$, $+0.07$], unresolved both
+times. The finding is about the manuscript, not the arm: Section~5 stated that decoding ``is
+deterministic throughout \ldots\ so repeating a run reproduces it'', and it does not. That sentence
+now says decoding is not bitwise reproducible across runs; Section~6.4 says the early row reuses the
+no-protection generations and reports the regenerated contrast; the CPPB appendix no longer calls its
+run a deterministic pass. The 70B half is queued behind other work on the host and will be added to
+the same sentence when it completes. Main body still ends on page 12.
+
 \section*{Limits of this review}
 \begin{itemize}
 \item \textbf{The bibliography was not re-sampled.} It was fully audited 26 days ago and the file
