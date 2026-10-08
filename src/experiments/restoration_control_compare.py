@@ -12,10 +12,15 @@ two agree, at two levels:
     hash of (model, messages, options), in the recorded cache; the share whose
     reply is byte-identical is the run-to-run reproducibility of the stack;
   * cases: the per-case outcomes the paper reports (action, leak, leak count,
-    helpfulness, identifier counts), replayed record against regenerated record.
+    helpfulness, identifier counts), replayed record against regenerated record;
+  * the restoration-timing contrast: the late arm paired against each of the
+    two early records, so the claim can be read off either.
 
 Usage:
-  python src/experiments/restoration_control_compare.py --regen-cache <dir>
+  python src/experiments/restoration_control_compare.py --regen-cache <dir> [--recorded-cache <dir>]
+
+--recorded-cache defaults to the local generation cache; point it at a copy of
+the recording host's cache when the local one is older than the replay.
 """
 from __future__ import annotations
 
@@ -26,7 +31,8 @@ import json
 import re
 from pathlib import Path
 
-from aggregate_paper_results import _ci, _write
+from aggregate_paper_results import _ci, _write, read_downstream_rows
+from downstream_paired_tests import paired_bootstrap_diff
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 RECORDED_CACHE = EXPERIMENTS_DIR / "ollama_cache"
@@ -34,6 +40,7 @@ AGENTS = (("qwen3:32b-q4km-hf", "qwen3_32b-q4km-hf"), ("llama3.3:70b-q4km-hf", "
 JUDGE = "mistral:7b-instruct-v0.2-q4km-hf"
 OUTCOMES = ("has_action", "leak_any", "leak_count", "helpfulness", "ids_in_output", "ids_in_final_action")
 CONDITION = "symbolic_fullearly:gliner_pii"
+LATE = "symbolic_late:gliner_pii"
 
 
 def _cache(directory: Path, model: str) -> dict[str, str]:
@@ -59,15 +66,34 @@ def _rows(paths: list[str]) -> dict[str, dict[str, str]]:
     return rows
 
 
+def _timing(late: dict[str, dict[str, str]], early: dict[str, dict[str, str]]) -> dict[str, str]:
+    """Late minus early, paired on case, as restoration_timing_paired_tests reports it."""
+    cases = sorted(set(late) & set(early))
+
+    def pairs(field: str, denominator: str | None) -> list[tuple[float, float, float, float]]:
+        return [(float(late[k][field]), float(late[k][denominator]) if denominator else 1.0,
+                 float(early[k][field]), float(early[k][denominator]) if denominator else 1.0) for k in cases]
+
+    def fmt(diff: tuple[float, float, float], digits: int) -> str:
+        return f"{diff[0]:+.{digits}f} [{diff[1]:+.{digits}f}, {diff[2]:+.{digits}f}]"
+
+    return {
+        "pre_restoration_id_diff_points": fmt(paired_bootstrap_diff(pairs("ids_in_output", "ids_total"), scale=100.0), 1),
+        "leak_rate_diff_points": fmt(paired_bootstrap_diff(pairs("leak_any", None), scale=100.0), 1),
+        "helpfulness_diff": fmt(paired_bootstrap_diff(pairs("helpfulness", None)), 2),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     parser.add_argument("--regen-cache", type=Path, required=True)
+    parser.add_argument("--recorded-cache", type=Path, default=RECORDED_CACHE)
     args = parser.parse_args()
 
     out = []
-    judge_recorded, judge_regen = _cache(RECORDED_CACHE, JUDGE), _cache(args.regen_cache, JUDGE)
+    judge_recorded, judge_regen = _cache(args.recorded_cache, JUDGE), _cache(args.regen_cache, JUDGE)
     for model, safe in AGENTS:
-        recorded, regen = _cache(RECORDED_CACHE, model), _cache(args.regen_cache, model)
+        recorded, regen = _cache(args.recorded_cache, model), _cache(args.regen_cache, model)
         replay = _rows([str(EXPERIMENTS_DIR / f"privacylens_downstream_rows_{safe}_fullearly.csv")])
         regenerated = _rows(sorted(glob.glob(str(EXPERIMENTS_DIR / f"privacylens_downstream_rows_{safe}_fullearly_regen_shard*of*.csv"))))
         if not regen or not regenerated:
@@ -90,6 +116,10 @@ def main() -> int:
             row[f"{label}_leak_rate_percent"] = _ci(sub, "leak_any", None, 100.0, 1)
             row[f"{label}_helpfulness_mean"] = _ci(sub, "helpfulness", None, 1.0, 2)
             row[f"{label}_exact_id_exposure_percent"] = _ci(sub, "ids_in_final_action", "ids_total", 100.0, 1)
+        late = {r["case"]: r for r in read_downstream_rows(safe) if r["condition"] == LATE}
+        for label, source in (("replayed", replay), ("regenerated", regenerated)):
+            for key, value in _timing(late, source).items():
+                row[f"late_vs_{label}_early_{key}"] = value
         out.append(row)
 
     judge_found = sum(1 for k in judge_regen if k in judge_recorded)
