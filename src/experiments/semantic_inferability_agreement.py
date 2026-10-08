@@ -20,6 +20,16 @@ upper bound, never as an independent reliability estimate; the count of items
 the second reader changed is reported alongside it, since that is the part the
 priming cannot manufacture. The judge and the lexical criterion are scored
 against the second reader's own labels.
+
+With ``--extend-a`` and/or ``--extend-b`` the script scores the extension
+round: 138 further items (23 per method) that take each method from 17 judged
+items to 40. Two readers label the same extension items on separate blank
+pages, so reader A against reader B is an independent inter-rater estimate.
+By default the extension is reported on its own. Whether its labels may be
+pooled with round one's 102 depends on who the readers are: a pooled
+40-per-method rate is only one person's labelling if the pooled reader is
+annotator 1. ``--pool-with-round1 A`` (or ``B``) states that this holds and
+writes the pooled per-method rates; without it nothing is pooled.
 """
 from __future__ import annotations
 
@@ -295,14 +305,107 @@ def run_round3(round3: Path, sheet: Path, round2: Path | None, key: Path,
     _write_by_method(by_method, [(i, a3[i]) for i in annotated], key_rows)
 
 
+def _read_labels(path: Path) -> dict[str, int]:
+    """Completed labels from a blank-sheet export (item_id, human_inferable_YES_or_NO)."""
+    with path.open(encoding="utf-8", newline="") as handle:
+        rows = {r["item_id"]: _parse_human(r["human_inferable_YES_or_NO"])
+                for r in csv.DictReader(handle)}
+    return {item: value for item, value in rows.items() if value is not None}
+
+
+def _kappa_row(writer, label: str, n: int, result, note: str = "") -> None:
+    kappa, obs, matrix = result
+    writer.writerow([label, n, f"{kappa:.3f}", _interpret(kappa), f"{obs:.3f}",
+                     matrix[0][0], matrix[0][1], matrix[1][0], matrix[1][1], note])
+
+
+def run_extend(readers: dict[str, Path], ext_key: Path, round1_sheet: Path,
+               round1_key: Path, pool: str | None, out: Path, by_method_stem: Path) -> None:
+    """Score the extension round's two blank-sheet readers, and pool only on request."""
+    with ext_key.open(encoding="utf-8", newline="") as handle:
+        key_rows = {r["item_id"]: r for r in csv.DictReader(handle)}
+    labels = {name: {i: v for i, v in _read_labels(path).items() if i in key_rows}
+              for name, path in readers.items()}
+
+    if not any(labels.values()):
+        print("[agreement] the extension exports have no completed annotations yet.")
+        return
+    if pool is not None and pool not in labels:
+        raise SystemExit(f"--pool-with-round1 {pool} needs reader {pool}'s export")
+
+    with out.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["comparison", "n", "cohens_kappa", "interpretation", "raw_agreement",
+                         "cell_no_no", "cell_no_yes", "cell_yes_no", "cell_yes_yes", "note"])
+        if "A" in labels and "B" in labels:
+            shared = sorted(set(labels["A"]) & set(labels["B"]), key=int)
+            if shared:
+                result = _kappa([(labels["A"][i], labels["B"][i]) for i in shared])
+                print(f"  reader A vs reader B: kappa {result[0]:.3f} "
+                      f"({_interpret(result[0])}), raw agreement {result[1]:.1%}, n={len(shared)}")
+                _kappa_row(writer, "readerA_vs_readerB_independent", len(shared), result,
+                           "both readers labelled the extension items on separate blank "
+                           "pages; an inter-rater reliability estimate")
+        for name, got in labels.items():
+            items = sorted(got, key=int)
+            print(f"[agreement] reader {name}: {len(items)} of {len(key_rows)} extension items")
+            if not items:
+                continue
+            for proxy, column in (("judge", "judge_inferable"), ("lexical", "lexical_retained")):
+                result = _kappa([(got[i], int(key_rows[i][column])) for i in items])
+                print(f"  {proxy:7s} vs reader {name}: kappa {result[0]:.3f} "
+                      f"({_interpret(result[0])}), raw agreement {result[1]:.1%}")
+                _kappa_row(writer, f"{proxy}_vs_reader{name}", len(items), result)
+            _write_by_method(by_method_stem.with_name(f"{by_method_stem.name}_reader{name}.csv"),
+                             [(i, got[i]) for i in items], key_rows)
+
+        if pool is not None:
+            with round1_key.open(encoding="utf-8", newline="") as handle:
+                r1_key = {r["item_id"]: r for r in csv.DictReader(handle)}
+            r1 = {i: v for i, v in _read_labels(round1_sheet).items() if i in r1_key}
+            clash = set(r1) & set(labels[pool])
+            if clash:
+                raise SystemExit(f"round one and the extension share item ids {sorted(clash)[:5]}")
+            pooled = [(i, r1[i]) for i in sorted(r1, key=int)]
+            pooled += [(i, labels[pool][i]) for i in sorted(labels[pool], key=int)]
+            merged_key = {**r1_key, **key_rows}
+            for column, proxy in (("judge_inferable", "judge"), ("lexical_retained", "lexical")):
+                result = _kappa([(v, int(merged_key[i][column])) for i, v in pooled])
+                print(f"  {proxy:7s} vs pooled annotator 1 + reader {pool}: kappa "
+                      f"{result[0]:.3f} ({_interpret(result[0])}), n={len(pooled)}")
+                _kappa_row(writer, f"{proxy}_vs_pooled_round1_reader{pool}", len(pooled), result,
+                           f"pools annotator 1's round-one labels with reader {pool}'s; valid "
+                           f"only because reader {pool} was declared to be annotator 1")
+            _write_by_method(by_method_stem.with_name(f"{by_method_stem.name}_pooled.csv"),
+                             pooled, merged_key)
+    print(f"[agreement] wrote {out.name}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag", default="vgpu3090")
     parser.add_argument("--round2", help="the second annotator's exported CSV")
     parser.add_argument("--round3", help="the third annotator's exported CSV")
+    parser.add_argument("--extend-a", help="extension reader A's exported CSV")
+    parser.add_argument("--extend-b", help="extension reader B's exported CSV")
+    parser.add_argument("--pool-with-round1", choices=("A", "B"),
+                        help="declare that this extension reader is annotator 1, and pool "
+                             "their labels with round one into 40 items per method")
     args = parser.parse_args()
     suffix = f"_{args.tag}" if args.tag else ""
     key = EXPERIMENTS_DIR / f"semantic_inferability_human_key{suffix}.csv"
+    if args.extend_a or args.extend_b:
+        readers = {name: Path(path) for name, path in (("A", args.extend_a),
+                                                        ("B", args.extend_b)) if path}
+        run_extend(readers,
+                   EXPERIMENTS_DIR / f"semantic_inferability_human_key_extend40{suffix}.csv",
+                   EXPERIMENTS_DIR / f"semantic_inferability_human_sheet{suffix}.csv", key,
+                   args.pool_with_round1,
+                   EXPERIMENTS_DIR / f"semantic_inferability_agreement_extend40{suffix}.csv",
+                   EXPERIMENTS_DIR / f"semantic_inferability_human_by_method_extend40{suffix}")
+        return
+    if args.pool_with_round1:
+        parser.error("--pool-with-round1 needs --extend-a or --extend-b")
     if args.round3:
         default_r2 = EXPERIMENTS_DIR / f"semantic_inferability_round2_annotations{suffix}.csv"
         run_round3(Path(args.round3),
