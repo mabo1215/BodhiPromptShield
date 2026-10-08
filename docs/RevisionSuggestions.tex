@@ -629,6 +629,18 @@ no longer ranks late restoration as the cheapest and most stable condition (its 
 0.5 helpfulness points or more (Casper-style, the learned detector on the 70B) are unaffected. Main
 body still ends on page 12; the table-fill pass leaves both files unchanged.
 
+\paragraph{9 October 2026: D1 taken, F6c under way.} The authors took the recommended route and
+confirmed that the extension readers are the same annotators 1 and 3 who rated round one, each again
+from a blank sheet. Two separate blank pages carry the same 138 new items (23 per method, taking each
+method from 17 items to 40), with storage, browser keys and export names kept apart so that neither
+reader can see the other's answers; reader A is annotator 1 and reader B is annotator 3. Because the
+readers are unchanged, each one's extension labels pool with that reader's own round-one labels, and
+annotator~1 against annotator~3 can be re-estimated as an independent reliability figure on all 240
+items rather than 102 (it is 0.739 on round one). \src{semantic\_inferability\_agreement.py} now
+scores the extension on its own and, when told which reader is annotator~1, writes the pooled
+per-method rates; it was checked on synthetic exports, and no result file has been written. Labels
+are due back by mid-November; nothing in the manuscript changes until they are.
+
 \section*{Limits of this review}
 \begin{itemize}
 \item \textbf{The bibliography was not re-sampled.} It was fully audited 26 days ago and the file

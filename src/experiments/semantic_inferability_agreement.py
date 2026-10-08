@@ -25,11 +25,12 @@ With ``--extend-a`` and/or ``--extend-b`` the script scores the extension
 round: 138 further items (23 per method) that take each method from 17 judged
 items to 40. Two readers label the same extension items on separate blank
 pages, so reader A against reader B is an independent inter-rater estimate.
-By default the extension is reported on its own. Whether its labels may be
-pooled with round one's 102 depends on who the readers are: a pooled
-40-per-method rate is only one person's labelling if the pooled reader is
-annotator 1. ``--pool-with-round1 A`` (or ``B``) states that this holds and
-writes the pooled per-method rates; without it nothing is pooled.
+By default the extension is reported on its own. The extension readers are
+round one's annotators 1 and 3, so each can be pooled with their own
+round-one labels into 240 items, 40 per method, and annotator 1 against
+annotator 3 can be re-estimated on all 240. ``--pool-with-round1 A`` (the
+assignment used: A is annotator 1, B is annotator 3) states which reader is
+which and writes the pooled rates; without it nothing is pooled.
 """
 from __future__ import annotations
 
@@ -320,7 +321,8 @@ def _kappa_row(writer, label: str, n: int, result, note: str = "") -> None:
 
 
 def run_extend(readers: dict[str, Path], ext_key: Path, round1_sheet: Path,
-               round1_key: Path, pool: str | None, out: Path, by_method_stem: Path) -> None:
+               round3_sheet: Path, round1_key: Path, pool: str | None, out: Path,
+               by_method_stem: Path) -> None:
     """Score the extension round's two blank-sheet readers, and pool only on request."""
     with ext_key.open(encoding="utf-8", newline="") as handle:
         key_rows = {r["item_id"]: r for r in csv.DictReader(handle)}
@@ -362,22 +364,44 @@ def run_extend(readers: dict[str, Path], ext_key: Path, round1_sheet: Path,
         if pool is not None:
             with round1_key.open(encoding="utf-8", newline="") as handle:
                 r1_key = {r["item_id"]: r for r in csv.DictReader(handle)}
-            r1 = {i: v for i, v in _read_labels(round1_sheet).items() if i in r1_key}
-            clash = set(r1) & set(labels[pool])
-            if clash:
-                raise SystemExit(f"round one and the extension share item ids {sorted(clash)[:5]}")
-            pooled = [(i, r1[i]) for i in sorted(r1, key=int)]
-            pooled += [(i, labels[pool][i]) for i in sorted(labels[pool], key=int)]
             merged_key = {**r1_key, **key_rows}
-            for column, proxy in (("judge_inferable", "judge"), ("lexical_retained", "lexical")):
-                result = _kappa([(v, int(merged_key[i][column])) for i, v in pooled])
-                print(f"  {proxy:7s} vs pooled annotator 1 + reader {pool}: kappa "
-                      f"{result[0]:.3f} ({_interpret(result[0])}), n={len(pooled)}")
-                _kappa_row(writer, f"{proxy}_vs_pooled_round1_reader{pool}", len(pooled), result,
-                           f"pools annotator 1's round-one labels with reader {pool}'s; valid "
-                           f"only because reader {pool} was declared to be annotator 1")
-            _write_by_method(by_method_stem.with_name(f"{by_method_stem.name}_pooled.csv"),
-                             pooled, merged_key)
+            other = "B" if pool == "A" else "A"
+            # The pooled reader is annotator 1; the other extension reader is
+            # annotator 3, whose round-one labels are the blank-sheet round three.
+            pooled: dict[int, dict[str, int]] = {}
+            for annotator, reader, sheet in ((1, pool, round1_sheet), (3, other, round3_sheet)):
+                if reader not in labels:
+                    continue
+                first = {i: v for i, v in _read_labels(sheet).items() if i in r1_key}
+                clash = set(first) & set(labels[reader])
+                if clash:
+                    raise SystemExit(f"round one and the extension share item ids "
+                                     f"{sorted(clash, key=int)[:5]}")
+                pooled[annotator] = {**first, **labels[reader]}
+                items = sorted(pooled[annotator], key=int)
+                print(f"[agreement] pooled annotator {annotator} (round one + reader {reader}): "
+                      f"{len(items)} items")
+                for proxy, column in (("judge", "judge_inferable"),
+                                      ("lexical", "lexical_retained")):
+                    result = _kappa([(pooled[annotator][i], int(merged_key[i][column]))
+                                     for i in items])
+                    print(f"  {proxy:7s} vs pooled annotator {annotator}: kappa "
+                          f"{result[0]:.3f} ({_interpret(result[0])}), "
+                          f"raw agreement {result[1]:.1%}")
+                    _kappa_row(writer, f"{proxy}_vs_pooled_annotator{annotator}", len(items),
+                               result, f"annotator {annotator}'s round-one labels pooled with "
+                               f"extension reader {reader}'s, declared to be the same person")
+                _write_by_method(
+                    by_method_stem.with_name(f"{by_method_stem.name}_pooled_annotator{annotator}.csv"),
+                    [(i, pooled[annotator][i]) for i in items], merged_key)
+            if 1 in pooled and 3 in pooled:
+                shared = sorted(set(pooled[1]) & set(pooled[3]), key=int)
+                result = _kappa([(pooled[1][i], pooled[3][i]) for i in shared])
+                print(f"  pooled annotator 1 vs pooled annotator 3: kappa {result[0]:.3f} "
+                      f"({_interpret(result[0])}), raw agreement {result[1]:.1%}, n={len(shared)}")
+                _kappa_row(writer, "pooled_annotator1_vs_annotator3_independent", len(shared),
+                           result, "round one plus extension; both readers worked from blank "
+                           "sheets in both rounds, so this is an inter-rater reliability estimate")
     print(f"[agreement] wrote {out.name}")
 
 
@@ -389,8 +413,9 @@ def main() -> None:
     parser.add_argument("--extend-a", help="extension reader A's exported CSV")
     parser.add_argument("--extend-b", help="extension reader B's exported CSV")
     parser.add_argument("--pool-with-round1", choices=("A", "B"),
-                        help="declare that this extension reader is annotator 1, and pool "
-                             "their labels with round one into 40 items per method")
+                        help="declare that this extension reader is annotator 1 and the "
+                             "other is annotator 3, and pool each with their round-one "
+                             "labels into 40 items per method")
     args = parser.parse_args()
     suffix = f"_{args.tag}" if args.tag else ""
     key = EXPERIMENTS_DIR / f"semantic_inferability_human_key{suffix}.csv"
@@ -399,8 +424,9 @@ def main() -> None:
                                                         ("B", args.extend_b)) if path}
         run_extend(readers,
                    EXPERIMENTS_DIR / f"semantic_inferability_human_key_extend40{suffix}.csv",
-                   EXPERIMENTS_DIR / f"semantic_inferability_human_sheet{suffix}.csv", key,
-                   args.pool_with_round1,
+                   EXPERIMENTS_DIR / f"semantic_inferability_human_sheet{suffix}.csv",
+                   EXPERIMENTS_DIR / f"semantic_inferability_round3_annotations{suffix}.csv",
+                   key, args.pool_with_round1,
                    EXPERIMENTS_DIR / f"semantic_inferability_agreement_extend40{suffix}.csv",
                    EXPERIMENTS_DIR / f"semantic_inferability_human_by_method_extend40{suffix}")
         return
