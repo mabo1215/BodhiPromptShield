@@ -765,6 +765,8 @@ def build(sheet: Path, out: Path, mode: str, round_id: str = "") -> None:
         stem, dot, ext = spec["export"].rpartition(".")
         spec["export"] = f"{stem}_{round_id}{dot}{ext}"
         spec["subtitle"] = f"{spec['subtitle']} &middot; 标注者 {round_id}"
+        # Two readers' pages otherwise share one name in the tab and the gallery.
+        spec["title"] = f"{spec['title']} {round_id}"
     with sheet.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
     items = [
