@@ -30,9 +30,11 @@ Value preservation
 An evasion that destroys the value is not an evasion.  Every rewrite is passed
 to a decoder call -- the same model, shown only the rewritten span, never the
 original -- that writes the value in ordinary form.  A rewrite preserves the
-value when the decoded text equals the original after case folding and removing
-everything but letters and digits, or when both denote the same calendar date
-(a date rewritten in another format is the same value).  ASR is reported both
+value when the rewrite itself still spells the original's letters and digits in
+order, or when the decoded text does after case folding and removing everything
+else, or when both denote the same calendar date (a date rewritten in another
+format is the same value).  Punctuation is ignored, so "a [at] b" preserves
+"a.b"; the rule is the same for every detector.  ASR is reported both
 over all rewrites and over value-preserving rewrites; the second is the attack
 that matters.
 
@@ -142,8 +144,15 @@ def _dates(value: str) -> set:
     return found
 
 
-def preserves(original: str, decoded: str) -> bool:
-    """Whether the decoded value is the original: equal letters and digits, or the same calendar date."""
+def preserves(original: str, decoded: str, rewrite: str = "") -> bool:
+    """Whether a reader recovers the original: equal letters and digits, or the same calendar date.
+
+    A rewrite that still spells the original's letters and digits in order carries the value whatever
+    the decoder makes of it; the decoder is unreliable on undisguised identifiers (it reads
+    "UGG576437H" as a number), so it is consulted only when the rewrite changed them.
+    """
+    if rewrite and _normalize(rewrite) == _normalize(original):
+        return True
     if not decoded:
         return False
     if _normalize(decoded) == _normalize(original):
@@ -376,7 +385,7 @@ def run(docs: list[Doc], detectors: list[Detector], attacker: Attacker, rounds: 
                     original = text[gold[i][0]:gold[i][1]]
                     row = {"detector": det.key, "round": rnd, "doc_id": doc_id, "span_idx": i, "original": original,
                            "rewrite": rewrite, "decoded": decoded,
-                           "preserved": int(bool(rewrite) and preserves(original, decoded)),
+                           "preserved": int(bool(rewrite) and preserves(original, decoded, rewrite)),
                            "caught_clean": int(i in caught_clean[doc_id]),
                            "caught_attacked": int(_covered(new_spans[i], detected))}
                     out.append(row)
@@ -489,7 +498,7 @@ def main() -> int:
             "rounds": str(args.rounds), "context_chars": str(CONTEXT_CHARS),
             "system_prompt": SYSTEM_PROMPT, "rewrite_instruction": REWRITE_INSTRUCTION,
             "decoder_system": DECODER_SYSTEM, "decoder_instruction": DECODER_INSTRUCTION,
-            "preservation_rule": "decoded value equals the original after case folding and keeping only letters and digits, or both denote the same calendar date (the original read unambiguously)",
+            "preservation_rule": "the rewrite, or else the decoded value, equals the original after case folding and keeping only letters and digits, or the decoded value denotes the same calendar date as an unambiguous original",
             "asr_definition": "per span: among applicable spans caught on clean text, the fraction not caught after the "
                               "attack; asr_preserving counts only rewrites whose value is recovered",
             "detectors": "; ".join(f"{d.key} {json.dumps(d.versions, sort_keys=True)}" for d in detectors),
