@@ -821,6 +821,8 @@ _DOWNSTREAM_ORDER = (
     ("no_protection", "No protection"),
     ("placeholder:presidio", "Typed placeholder (Presidio)"),
     ("casper_style", "Casper-style"),
+    # The same release with Casper's dummy->original map applied to the action.
+    ("casper_restored", "Casper-style, restored"),
     ("placeholder:learned_lr", "Typed placeholder (learned)"),
     ("placeholder:gliner_pii", "Typed placeholder (transformer)"),
     ("llm_sanitizer:", "LLM sanitizer (8B)"),

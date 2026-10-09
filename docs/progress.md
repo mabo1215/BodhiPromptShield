@@ -7,10 +7,26 @@
 - 评分者：四位非作者是**网上招募的志愿者，没有报酬**；开始前**书面和口头**都告知过标签的用途和会公开发布。（你先写了"雇佣关系"，随后更正为志愿者。）论文伦理一节已补一句（paper `5b7e82e`）：the four non-authors were volunteers recruited online, and before labeling each was told, in writing and orally, how the labels would be used and that they would be released。正文仍止于第 11 页。
 - 主机：vGPU 3090 有卡，先用它；PRO 6000 无卡模式只做准备，准备完关机。
 
+**Casper-style 补还原：两个 agent 都跑完，已写进论文（2026-10-09 19:45）**
+- 回放：32B、70B 的 agent 回复全部来自 casper_style 的缓存（各 0 次生成、0 次未命中）。judge 新生成 697 次和 687 次。发给 agent 的文本在本地 `.venv`（en_core_web_lg）里复现，200 例逐字节一致。70B 清单里 agent digest 为空，因为 vGPU 上没有 70B 模型；回复对应的是原运行的 `bb2a7bfed908…`。
+- 结果（括号内为配对 bootstrap 区间）：
+
+  | | 32B | 70B |
+  |---|---|---|
+  | 泄露率：不还原 → 还原 | 28.5 → 33.0（+4.5 [−0.5, +10.0]，p=0.14） | 19.5 → 23.0（+3.5 [−1.5, +8.0]，p=0.23） |
+  | helpfulness：不还原 → 还原 | 1.69 → 2.29（+0.61 [0.43, 0.80]） | 1.43 → 2.12（+0.69 [0.51, 0.89]） |
+  | 还原后相对不保护的泄露差 | −5.0 [−12.0, +2.0]，p=0.22，不显著 | −12.0 [−19.0, −5.5]，Holm 0.006 |
+  | 还原后相对不保护的 helpfulness 差 | −0.12 [−0.30, +0.04] | −0.34 [−0.51, −0.18] |
+  | learned 相对还原后的 Casper | 泄露 −4.0（p=0.32），helpfulness −0.09 | 泄露 −6.5（p=0.07），helpfulness −0.72 |
+
+- 结论：不还原时 Casper 的效用损失，大部分是"没还原"造成的；补上还原后效用基本收回，泄露上升的幅度配对检验分不出来。还原后的 RCE 是 13.6%（符号映射 late 是 1.6%）。本地核实了原因：检测器在一处替换了某个值，在另一处又漏掉了它；被替换的值里还有不少 NER 误报，比如 "Messenger"、"Slack"、"hours"。
+- 论文（paper `2d2589a`）：tab:downstream 和 tab:portability 各加一行 "Casper-style, restored"（填表脚本新增该条件）。§6.3 效用段重写。70B 的 Holm 族从 7 个条件变成 8 个，"six of the seven" 改为 "seven of the eight"（正文、附录、表注三处）。附录攻击段的 "0.73 helpfulness" 改为"不还原 0.73、还原后 0.12"。正文写明还原臂新增的 judge 调用是在另一张卡上生成的（模型 digest 相同），helpfulness 增幅是运行间波动的三倍。编译 22 页、0 undefined，正文仍止于第 11 页。
+- 32B 的 Holm 校正结论不变：casper_style 和 learned 校正后都不显著（0.075、0.156）。
+
 **vGPU 3090（RTX 3090 48 GB，12 核）在跑的**（16:58 起）：
 - 环境：代码快进到 `3eb0a85`；Ollama 从 0.32.15 换成与 PRO 6000 相同的 0.33.3（旧版移到 `/root/autodl-tmp/ollama-0.32.15-backup/`，可恢复）；32B agent（`cdf6a2e00f0e`）和 Mistral judge（`79c08d3519c6`）的 digest 与原运行一致；spaCy 3.8.16 / Presidio 2.2.364 / en_core_web_lg 3.8.0 / AgentDojo 0.1.35 两台主机相同。
 - 缓存：PRO 6000 的 `ollama_cache`（4 个文件）和 `bps_regen_cache`（3 个）经共享盘 `/autodl-fs/data/bps_transfer_20261009/` 直传 vGPU，md5 7/7 一致（没有经过本机）。
-- **casper_restored**：32B（judge num_ctx 12288，按原运行）跑完接 70B（7168/10240），agent 只读缓存。实测约 50 秒/例，两个 agent 合计约 5–6 小时。
+- **casper_restored**：32B（judge num_ctx 12288，按原运行）跑完接 70B（7168/10240），agent 只读缓存。18:24、19:40 先后完成，见上。
 - **AgentDojo 修正后重跑**：6 个臂并行（最初是两条串行队列，GPU 只用到 49%，17:08 改为并行，已写入的行保留并跳过）。实测每次运行约 7–8 分钟，222 次预计 6–10 小时。
 - **每个 agent 的 judge 调用拆分**：已完成（CPU）。32B 重新生成 812 次、254 次对得上原 key、114 次逐字节相同；70B 是 812/204/92。与附录 Run-to-run variation 段的数字一致，论文不用改。结果已拉回入库。
 - 记录：`ollama show qwen3:32b-q4km-hf --parameters` 为空，模型文件没有设任何采样参数。旧 AgentDojo 注入运行的清单显示它们是在 vGPU 3090 上用 Ollama 0.32.15 跑的（Python 3.10.12、内核 5.15.0-119）。查了 0.32.15 的源码（`openai/openai.go`）：OpenAI 兼容接口在请求不带 temperature 时设 **temperature = 1.0**、**top_p = 1.0**；AgentDojo 0.1.35 也没有发 seed。所以旧运行是 temperature 1.0 的随机采样。§6.5 和 tab:inject 会随重跑整段替换；如果还要提旧运行，就照这个数写。这次重跑用的是 Ollama 0.33.3，换主机和版本都已记录。
