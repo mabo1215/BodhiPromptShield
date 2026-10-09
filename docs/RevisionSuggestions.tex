@@ -23,653 +23,609 @@
 \title{Independent Review and Revision Plan\\
 \large BodhiPromptShield: Pre-Inference Prompt Mediation for Surface-Form\\Privacy Propagation in LLM Agent Pipelines\\
 \normalsize Target venue: PoPETs 2027 Issue~3 (Proceedings on Privacy Enhancing Technologies)\\
-\normalsize Submission 30 November 2026, 23:59:59 AoE (firm) --- 54 days from this review}
-\author{Independent review, 7 October 2026}
+\normalsize Submission 30 November 2026, 23:59:59 AoE (firm) --- 52 days from this review}
+\author{Independent review, 9 October 2026}
 \date{}
 
 \begin{document}
-\sloppy
 \maketitle
 
-\section*{Review basis}
-A fresh review of the manuscript as it stands today. No finding, priority or completion judgement
-is carried over from the review of 11 September 2026; where this review reaches the same conclusion,
-it reached it again from the sources, and it says so.
+\section{How this review was conducted}
+This review is a reset. It takes no finding, priority or completion judgment from any earlier review round
+and was written from the current manuscript alone: \src{paper/main.tex}, \src{paper/appendix.tex} (included
+at the end of the main file, so the submission is one PDF), and the rendered \src{paper/main.pdf}
+(26 pages; main body pages 1--12). The paper was examined along four independent dimensions, each by a
+reviewer who was not shown any earlier review or progress note:
+\begin{enumerate}
+\item \textbf{Claims against records.} About 900 reported values were traced to the result records and the
+code that writes them; every metric definition in the paper was read against its implementation.
+\item \textbf{Scientific substance}, as a PoPETs programme-committee member would read it. That reviewer was
+allowed the rejected ACM TOPS review the authors will attach, since PoPETs reviewers will see it.
+\item \textbf{Bibliography and positioning.} 32 entries were resolved against canonical records, and the
+related-work section was checked for missing 2024--2026 work that bears on the novelty claims.
+\item \textbf{Venue compliance and presentation.} The PoPETs 2027 call, the author guidelines and the official
+template package were fetched on 9 October 2026 and checked against the PDF, including byte-level anonymity.
+\end{enumerate}
+Every finding below that concerns code or data was re-verified by reading the code path or record
+directly before it was recorded here.
 
-Read in full: \src{paper/main.tex} (533 lines) and \src{paper/appendix.tex} (757 lines), and the
-built single-document \src{paper/main.pdf} (24 pages: main body 1--12, mandatory sections and
-references on 13, appendix 14--24; compiled from current source with zero undefined references).
-Four classes of check were run rather than assumed, and three of them are new to this manuscript:
+\section{Verdict}
+\textbf{Not ready for acceptance. Expected outcome as it stands: weak reject, with a credible path to major
+revision.} Indicative score 45/100 (novelty 3/10, rigor 6/10, evaluation 5/10, clarity 5/10, venue fit 6/10).
 
-\begin{itemize}
-\item \textbf{The venue's live requirements}, fetched from \src{petsymposium.org/authors-2027.php}
-and \src{cfp27.php} on 7 October 2026. Unchanged since 11 September: 12 typeset pages for the main
-body; ethics, open-science and AI-use sections mandatory and outside the limit; appendices inside the
-same PDF, with the paper self-contained without them; the official template only; preprints
-discouraged; AI-generated bibliographic data named as research-misconduct territory. Issue~3:
-submission 30 November 2026, rebuttal 12--18 January, notification 1 February, revision 1 March 2027.
-\item \textbf{The template bundle, byte-compared.} \src{submission-template-2027.zip} was downloaded
-from the venue and every file under \src{paper/template/} matched its counterpart by MD5
-(\src{acmart.cls}, \src{popets.sty}, \src{ACM-Reference-Format.bst}, \src{acmnumeric.bbx},
-\src{acmnumeric.cbx}, \src{cc-by-4.pdf}); the preamble conventions match the bundle's \src{main.tex}.
-The previous review left this as an open check. It is closed.
-\item \textbf{The metric code of every results pipeline, read line by line.} The previous review
-read only the propagation and CPPB suites and said so. This one read the PrivacyLens downstream
-suite, the AgentDojo injection suite, the context-inference and attribute-recovery attacks, the
-adaptive-evasion suite and the judge-agreement scripts against the sentences in the manuscript that
-describe them. This is where the review's principal findings come from (F1--F5, F8). Every number
-sampled from the tables matched its record except two restoration-timing values (F2).
-\item \textbf{A model rater, validated blind against the human reference.} The previous review's
-only item with real duration was extending the 17-items-per-method inferability annotation. The
-owners authorised the reviewing process to do that annotation itself. Because the paper's own thesis
-is that a judge is not evidence until checked against people, the rater first answered the existing
-102-item sheet blind (text and fact only, shuffled, no key, no method, no earlier answer) and was
-scored against the two human readers before any extension was considered. The result (F6) settles
-the question in the negative and is recorded as a new judge row rather than as human labels.
-\end{itemize}
+The paper's measurement content is strong and unusually honest. Its blind human validation shows that both
+automated factual-leakage measures fail ($\kappa=0.163$ and $0.221$ against a human reference on which two
+readers agree at $\kappa=0.849$). An attribute-recovery attacker recovers removed values at 64\% against a
+25\% chance line, and does so independently of attacker capacity. Negative results are reported plainly, and
+the main tables regenerate byte-for-byte from the released records.
 
-The bibliography was not re-audited: all fifty entries were resolved against canonical sources on
-11 September and the file has not changed since.
+What holds the paper back is what it claims around that content. The proposed PET adds little that is new:
+the replacement operation is conceded as prior art, and deferred restoration is already practised by a cited
+2026 system. The propagation result is close to a tautology: on a deterministic reference agent every
+boundary is a projection of the mediated prompt, and every compared method is applied at the same point,
+so the table measures detectors, not placement. Several baselines and metrics are not what the text says
+they are. The evaluation data are synthetic but are called ``real'', without the extrapolation paragraph the
+call requires. The appendix still carries material from a superseded pipeline.
 
-\section*{Summary of the submission}
-The paper reframes prompt privacy in agent pipelines as propagation control rather than document
-redaction. A mediation layer sits on the single edge every later copy derives from, replaces
-detected spans with typed placeholders, semantic abstractions or per-session symbolic tokens, and
-defers restoration of exact values to an authorized execution boundary. Evidence comes from four
-sources under one matched protocol---300 AI4Privacy documents through a deterministic reference
-agent, 493 PrivacyLens trajectories, 200 PrivacyLens downstream tasks scored by that benchmark's
-own judge, and AgentDojo banking and slack tasks executing real tools under injection---plus a
-controlled 256-prompt surface in the appendix. Three results lead: identifier propagation is
-controllable (PER 7.4\% against 46.7\% Casper-style and 52.2\% Presidio on AI4Privacy);
-restoration timing governs what the agent itself writes before the boundary (a paired $-2.1$
-points, replicated on a second agent family); and measuring factual disclosure is harder than
-measuring identifiers, with two automated proxies failing against blind human annotation that
-reverses their conclusion.
+Most of this can be fixed by writing and by record-only recomputation within the time available. Moving to
+an accept needs either a measurement-study framing that the evidence fully supports (decision D1) or a
+restoration policy that is evaluated as a mechanism.
 
-\section*{Overall assessment}
-
-\textbf{Recommendation: not yet at the acceptance standard; revise, then submit to Issue~3.} The
-submission is compliant with the venue in form---single PDF, body ending on page~12, template
-verified, anonymity clean at the byte level, all three mandatory sections present---and its
-measurement discipline remains better than most systems papers at this venue. What stands between
-it and acceptance is narrower than last time and different in kind: it is no longer formatting or
-citations, it is \textbf{a small number of places where the prose describes an experiment the code
-did not run, in the one result a reviewer will check hardest}.
-
-\textbf{First, the restoration-timing arm is not the arm the paper describes.} \S6.4 says the two
-symbolic-mapping rows differ only in \emph{when} values are restored, and that the identifier column
-is ``taken after restoration''. In the code the early arm restores values into the past trajectory
-and nowhere else: the user instruction keeps its tokens and the final action is never passed through
-a boundary restoration, so tokens the agent copies from the instruction stay in the action (1.16
-unrestored tokens per action on the 32B agent, 1.15 on the 70B). The 51.0\% released-context figure
-is the trajectory's share of the protected values, not ``values return during planning''. And the
-helpfulness sentence has its sign backwards: deferral reads 2.26 against 2.15, which is \emph{higher},
-by $+0.10$ [$-0.07$, $+0.29$] on the 32B and $+0.29$ [$+0.09$, $+0.49$] on the 70B---the paper says
-deferral ``costs 0.11 helpfulness points'' and the abstract, introduction and conclusion all carry
-that cost. None of this reverses the finding; the direction of every restoration-timing number
-survives and is, if anything, conservative. But a reviewer who opens the artifact finds that the
-paper's one fully-controlled comparison is described wrongly in three places, in a paper whose
-central methodological claim is that measurements must be described as they were made.
-
-\textbf{Second, the paper's reproducibility claim is overstated in exactly the tables it matters
-for.} \S5.1 says every record-backed table is rendered from the released records by a single
-table-fill pass ``rather than typed in''. The downstream table, the injection table, the portability
-table, the judge-validation table and the forced-choice table are not registered with that pass;
-they were typed. The restoration-timing paired statistics---the $-2.1$ points, the McNemar
-$p=0.001$---were produced by no released script at all, and when regenerated with the repository's
-own seed one interval bound and one point estimate differ from the manuscript ($-0.6$ not $-0.8$;
-$-2.5$ not $-2.6$ on the 70B). The numbers are right to within rounding and the regeneration
-confirms the ordering; what is wrong is the sentence that says they could not have drifted.
-
-\textbf{Third, the AgentDojo paragraph does not describe the AgentDojo experiment.} The detector
-used in every injection arm (regex-only) is never named; ``raw values reach the tool boundary'' counts
-values visible in the message text the model reads, including tool \emph{outputs}, and ignores tool
-arguments---the opposite direction; the 74-pair filter is ``identifier exfiltration'', not ``injections
-that route user data to an attacker''; the two pooled suites run with different executor settings;
-and the injection text addresses the Qwen agent as a Llama model because of a work-around in the
-harness. Each is a one-clause fix; together they are the kind of thing that turns a careful reviewer
-into a hostile one.
-
-Everything else is wording, a column, or a decision. The annotation question is now answered rather
-than open (F6). The one experiment the paper names as its own cheapest hardening and did not run
-(input canonicalization, \S4.2) is being run as part of this cycle (F7). With a week of focused
-work the paper is a strong Issue~3 submission; it should not be submitted before that week.
-
-\begin{table}[h]
-\centering
-\small
-\caption{Multi-dimensional assessment (0--100) against PoPETs 2027 expectations. Independent
-scoring; no previous round's scores were consulted.}
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.5cm}c>{\raggedright\arraybackslash}X}
+\section{Venue requirements (fetched 9 October 2026)}
+Sources: \url{https://petsymposium.org/cfp27.php}, \url{https://petsymposium.org/authors-2027.php}, and
+\url{https://petsymposium.org/files/submission-template-2027.zip}.
+\begin{center}\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.5cm}Y>{\raggedright\arraybackslash}p{1.2cm}}
 \toprule
-Dimension & Score & Basis \\
+Rule & Evidence in the current PDF & Status \\
 \midrule
-Novelty / originality & 60 & Mechanism conceded as prior art; what is new is the propagation
-framing, restoration timing as a measured variable, and the judge-validation methodology. Unchanged
-in substance. \\
-Methodological rigour & 70 & Paired tests, bootstrap intervals, multiplicity correction where
-claimed. Held down by one experiment described as a different experiment (F1), paired statistics
-with no script behind them (F2), and an injection section whose prose and code disagree on four
-points (F5). \\
-Literature coverage & 78 & Fifty entries resolved against canonical sources in the previous cycle;
-three 2026 systems verified. \\
-Writing quality & 80 & Specific, willing to report negatives, and now consistent between body and
-appendix on the routing demotion. \\
-Reproducibility & 80 & Every quoted number regenerates from a record, including two this review
-corrected. Held down by the ``not typed in'' sentence being false for five tables (F3). \\
-Venue fit (scope, form) & 92 & Template byte-verified, single self-contained PDF, body on page~12,
-anonymity clean, mandatory sections present. \\
-\midrule
-\textbf{Overall} & \textbf{74} & \textbf{Revise before submitting.} One accept-critical
-description error in a headline result; the rest is a week of wording and one script. \\
+Main body $\leq$ 12 typeset pages (desk reject otherwise) & Conclusion ends on p.~12, right column, one line of slack & \ok{} (no slack) \\
+Template unmodified & popets.sty, acmart.cls, .bst/.bbx/.cbx and cc-by-4.pdf byte-identical to the official zip; class options identical; no \verb|\vspace| or spacing hacks & \ok \\
+Mandatory sections, exact titles and placement & Ethical Considerations, Open Science, AI Use on p.~13, before References & \ok \\
+Self-contained without appendices & Several main-text claims rest only on appendix evidence (F10) & \fail \\
+Purely synthetic evaluation needs ``a well-marked paragraph explaining why the results of the evaluation can be extrapolated to real-world use cases'' & AI4Privacy, PrivacyLens, AgentDojo and CPPB are synthetic, the text calls them ``real'', and no such paragraph exists (F1) & \fail \\
+First page states real-world privacy relevance & Abstract and introduction do & \ok \\
+Anonymization & No names, affiliations, e-mails or repository links in text, raw bytes or decompressed streams; XMP author ``Anonymous Author(s)''. Minor metadata leaks (F18) & \ok{} (minor fix) \\
+Prior reviews of a rejected version must be attached & ACM TOPS review to be attached; confirm there were no other reviewed versions (D5) & \chk \\
+Rejected PoPETs papers must skip a full issue & Confirm no PoPETs 2027 Issue~2 submission (D5) & \chk \\
+Hallucinated references are grounds for desk rejection & No fabricated entry found; two author lists are wrong (F14) & \fail{} (minor) \\
+Fonts TrueType/Type 1 (camera-ready) & Figures 2--4 embed Type 3 fonts (F16) & \fail{} (camera-ready) \\
 \bottomrule
 \end{tabularx}
-\end{table}
-
-\section{Venue compliance audit}
-
-\begin{table}[h]
-\centering
-\small
-\caption{PoPETs 2027 Issue~3 requirement audit, against the author instructions fetched 7 October 2026.}
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{4.6cm}c>{\raggedright\arraybackslash}X}
-\toprule
-Requirement & Status & Evidence \\
-\midrule
-Main body $\le$ 12 typeset pages & \ok & Conclusion ends on page~12; Ethical Considerations opens
-page~13. Zero headroom: any addition to the body must be paid for in the body. \\
-Three mandatory sections, outside the limit & \ok & Present after the conclusion in the template's
-own environments. \\
-Ethics section states whether an external panel was consulted & \ok & States that no review was
-sought and why. \\
-Open Science states the release plan & \ok & Public release under an open license upon acceptance. \\
-AI Use disclosure & \ok & Covers code, scripts and editing, and states that every bibliographic
-entry was resolved against its canonical record. Must be extended once a model rater's labels are
-reported (F6). \\
-Appendices in the same submission PDF & \ok & One document, appendix clearly marked from page~14. \\
-Paper self-contained without appendices & \ok & The injection table is in the body; evasion,
-portability and attribute recovery are summarized in the body with their key numbers. \\
-Mandatory 2027 LaTeX template, unmodified & \ok & Six template files MD5-identical to the venue's
-\src{submission-template-2027.zip}; preamble matches the bundle. \\
-Double-blind: no identifying strings & \ok & No author name, affiliation, e-mail, host name or local
-path in the PDF's text or metadata. \\
-Citations resolve to the work they name & \ok & Full audit of fifty entries completed 11 September;
-file unchanged since. \\
-Every float referenced & \ok & All floats referenced from the text. \\
-Preprint policy (discouraged while under review) & \chk & A preprint has been built and not posted.
-See V1. \\
-Artifact submission & \ok & Optional for accepted papers; the artifact exists and unpack-tests clean. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\section{Findings}
-Priorities: \pz\ blocks submission; \po\ accept-critical; \pt\ materially strengthens; \pth\ optional.
-Where a finding was verified in code, the file is named; line numbers refer to the repository at the
-time of review.
-
-\subsection*{Accept-critical}
-\begin{enumerate}[label=F\arabic*.]
-
-\item \po\ \textbf{The early-restoration arm is not the arm \S6.4 describes, and the helpfulness
-comparison is stated with the wrong sign.}
-
-In \src{privacylens\_downstream\_suite.py}, \src{Condition.apply} returns, for
-\src{symbolic\_early}, the tokenized instruction unchanged, the trajectory with values restored, and
-mode \src{early}; \src{evaluate\_case} restores the final action only when the mode is \src{late}.
-So in the early arm the agent plans over a trajectory that carries raw values and an instruction
-that carries tokens, and whatever tokens it copies into its action are never restored. The pooled
-record reports 1.16 unrestored tokens per action for that arm on the 32B agent (1.15 on the 70B);
-in 148 of 200 actions on the 32B at least one \src{BPSMAP} token remains. Three sentences in \S6.4
-are therefore inaccurate: ``detector and mapping fixed, only the restoration point moves'' (the
-instruction's treatment and the absence of a boundary pass also differ); ``when values return during
-planning'' (they return into the trajectory only, which is why released-context exposure reads 51.0\%
-rather than 100\%); and ``the ID column of Table~4 is taken after restoration'' (true for the late
-row only). The judge that scores helpfulness and leakage in the early arm is reading actions with
-tokens in them.
-
-The helpfulness sentence is wrong in direction. Late restoration scores 2.26 and early 2.15, so
-deferral is \emph{more} helpful: paired on the case, $+0.10$ [$-0.07$, $+0.29$] on the 32B and
-$+0.29$ [$+0.09$, $+0.49$] on the 70B (regenerated by the script in F2). The manuscript says
-``Deferral costs 0.11 helpfulness points'' (\S6.4), ``for 0.11 helpfulness points'' (abstract),
-``for 0.11 points of task helpfulness'' (introduction) and ``for a tenth of a helpfulness point''
-(conclusion), every one of which reads as a cost.
-
-What survives, and should be said: every restoration-timing number keeps its direction, and the
-comparison is conservative in the paper's favour---a fully restored early arm would show the agent
-even more raw values, not fewer. The portability appendix already says the 70B result is the one
-where the costs are most stable; it is also the one where deferral's helpfulness advantage is
-resolved.
-
-\emph{Action.} (a) Describe the early arm as implemented: values restored into the past trajectory
-before planning, instruction left tokenized, no boundary restoration, and say what that implies for
-the helpfulness and leak judgments. (b) Correct the sign in all four places; the honest sentence is
-that deferral does not cost helpfulness and on the second agent gains it. (c) Add a true early arm
-to the suite---both texts restored before planning, nothing left for the boundary---and queue it for
-the next GPU session (200 cases $\times$ 2 agents; roughly an hour sharded four ways at the
-recorded throughput). The condition is implemented in this cycle as \src{symbolic\_fullearly}; only
-the run is outstanding. Until it runs, the paper states the arm as it is.
-
-\item \po\ \textbf{The restoration-timing paired statistics were produced by no released script,
-and two of them differ from the records when regenerated.}
-
-\src{downstream\_paired\_tests.py} compares each condition with no protection only; nothing in the
-artifact computes late against early. The manuscript's $-2.1$ points [$-3.6$, $-0.8$], the
-McNemar $1/14$, $p=0.001$, and the 70B's $-2.6$ [$-3.8$, $-1.4$] exist in a progress note. Regenerated
-from the shards with the repository's seed and case-level resampling, the 32B reads $-2.1$
-[$-3.6$, $-0.6$] and the 70B $-2.5$ [$-3.7$, $-1.5$]; the McNemar counts match. The differences are
-rounding and seed, and the ordering is untouched. The defect is that \S5.1 promises every reported
-number regenerates from the artifact and these did not.
-
-\emph{Action.} Done in this cycle: \src{restoration\_timing\_paired\_tests.py} writes one record per
-agent with the pre- and post-restoration identifier differences, McNemar, leak and helpfulness
-differences and unrestored-token rates. Update the four numbers in \S6.4 and Appendix~I to the
-regenerated values.
-
-\item \po\ \textbf{Five tables are typed in, under a sentence that says none is.}
-
-\src{fill\_paper\_tables.py} registers 28 labels. \src{tab:downstream}, \src{tab:inject},
-\src{tab:portability}, \src{tab:pljudge} and \src{tab:contextattack} are not among them. Every value
-in them matches its summary record, so nothing is wrong with the numbers; the sentence in \S5.1
-(``rendered from the released records by a single table-fill pass rather than typed in, so each
-reported number can be regenerated from the artifact'') is false for the downstream and injection
-story, which is where a reviewer will try it.
-
-\emph{Action.} Either register builders for the five tables so that the sentence becomes true, or
-narrow the sentence to the tables it covers and say the other five are transcribed from named summary
-records and checked. The first is a few hours and is the one to do; the second is the fallback if
-the page budget or time does not allow.
-
-\item \po\ \textbf{Released-context exposure reads 0.0 for seven rows that have no denominator.}
-
-RCE is \src{raw\_values\_visible\_before\_tool / protected\_values}, and \src{protected\_values} is
-the size of the symbolic mapping, which is empty for every non-symbolic condition; the bootstrap
-helper returns 0.0 on a zero denominator. Table~4 prints 0.0 for no protection, whose released
-context exposes every value. A reviewer reading the column sees a measurement that was never made.
-
-\emph{Action.} Print an em-dash for the seven conditions without a mapping and say in the caption
-that RCE is defined only where a mapping exists. One line.
-
-\item \po\ \textbf{The injection paragraph (\S6.5) disagrees with the injection code on four points.}
-
-\begin{itemize}
-\item The detector in every AgentDojo arm is \src{regex\_only} (manifests); the paper never names
-it, and the suite's default is the learned detector, which invites the wrong assumption.
-\item ``Raw values reach the tool boundary in 0.0--8.3\%'' is computed as the share of protected
-values visible in the text of user, assistant and tool messages---tool outputs echoing a value count,
-tool-call arguments do not (\src{agentdojo\_restoration\_suite.py}, \src{\_text\_of}). The metric is
-``raw value visible to the model'', which is the opposite direction from what the sentence says.
-\item The 74 pairs are banking injections 1 and 8 and slack 2 and 4 (\src{aggregate\_paper\_results.py}):
-the criterion is that the payload exfiltrates an identifier (an IBAN or a message dump). Banking
-injections 0, 2 and 3 also route user data to the attacker and were excluded, so ``the injections
-that route user data to an attacker'' is not the rule applied.
-\item Banking arms run with \src{mediate\_tool\_outputs=True} and slack arms with \src{False}, and
-the harness appends a Llama model name to the pipeline name so that AgentDojo's attack can phrase its
-injection; the injected text therefore addresses the Qwen agent as Llama-3-70b. Neither is wrong to
-have done; both must be stated.
-\end{itemize}
-
-\emph{Action.} One sentence each: name the detector; describe the boundary metric as what it
-measures; state the filter as applied; disclose the executor difference and the model-name
-work-around. Pay for the lines in the same subsection.
-
-\item \po\ \textbf{17 items per method remains the weakest number under a headline claim, and a
-model rater cannot replace the humans it would need.}
-
-The decision the previous review asked for was taken: the annotation was to be extended by the
-reviewing process itself. Done honestly, that meant validating the rater first. A frontier model
-answered the 102-item sheet blind---released text and fact only, shuffled order, no key, no method,
-no judge verdict, no earlier annotator's answer---and was scored afterwards
-(\src{semantic\_inferability\_llm\_rater\_agreement.py}; annotations and manifest in the records):
-
-\begin{center}
-\small
-\begin{tabular}{lcc}
-\toprule
-Comparison & Cohen's $\kappa$ & Raw agreement \\
-\midrule
-Rater vs.\ annotator 1 (author, blind) & 0.602 & 81.4\% \\
-Rater vs.\ annotator 3 (blank sheet) & 0.543 & 78.4\% \\
-Rater vs.\ 27B judge & 0.233 & 71.6\% \\
-Annotator 1 vs.\ annotator 3 (reference) & 0.739 & 87.3\% \\
-\bottomrule
-\end{tabular}
 \end{center}
 
-Two readings. The rater is the best judge the paper has tested---above the 70B's 0.491 and seven
-times the reported 27B judge---and still short of two people. And its disagreements are not noise:
-it calls 70.6\% of items inferable where the readers call 57--58\%, and the over-call concentrates in
-one arm, Casper-style dummy-value substitution, where it reads 82.4\% against the readers' 35--41\%.
-Thirteen of its fourteen disagreements with the readers' consensus are over-calls, seven of them on
-Casper items. A rater with that bias would not extend the human estimates; it would move the
-Casper row by forty points.
-
-\emph{Action.} (a) Report the rater as one more row of the judge-capacity table, with its agreement,
-its rate and its bias, and name it as a model reached through an agent harness with no decoding
-control---this is a result in the paper's favour, since even the strongest judge tested does not
-reach two readers. (b) Extend the AI-use section to say that a model produced those labels and that
-they are reported only as a judge. (c) The human extension needs human hours: roughly 40 items per
-method from the two readers already recruited. If those hours are not available before the deadline,
-state the inferability claim ordinally in the abstract and conclusion---mediation lowers inferability
-monotonically across the roster---and leave the point estimates with their intervals in \S6.2. Do
-not quote a 47-point interval as if it were a rate.
-\end{enumerate}
-
-\subsection*{Strengthening}
-\begin{enumerate}[label=F\arabic*.,resume]
-
-\item \pt\ \textbf{The paper names its own cheapest hardening and does not evaluate it.}
-
-\S4.2 says no evaluated detector normalizes its input and that canonicalizing before the rule and
-NER passes ``is the cheapest hardening the results here point to, and it is not what we evaluated''.
-A reviewer will ask why not, because the three attack families that dominate the adversarial table
-(zero-width insertion at 99.7\% ASR, homoglyphs at 65.4\%, fullwidth at 50.6\%) are byte-level and
-exactly what Unicode normalization removes. The experiment is CPU-only and reuses the released
-attack and propagation code.
-
-\emph{Action.} Run it: a canonicalizer (format-character stripping, NFKC, Latin-confusable folding,
-with spans mapped back to original offsets) wrapped around each detector, scored on the same
-200-document slice with the same ASR definition and the same post-propagation PER, plain against
-canonical, all eight families. Report which families it closes and which it cannot (the ones that
-change token structure). This is in progress in this cycle. One appendix table and three sentences
-in \S6.5.
-
-\item \pt\ \textbf{Nine descriptive details the code makes precise and the prose leaves vague.}
+\section{What is sound and should not be disturbed}
 \begin{itemize}
-\item The symbolic-mapping rows use the transformer (GLiNER) detector
-(\src{symbolic\_late:gliner\_pii}); the text never says which, and the suite default is the learned one.
-\item The 200-case subset is \src{random.Random(17).sample(cases, 200)}: a seeded uniform sample,
-not stratified; the seed is not in the manifest. Say ``a seeded uniform sample''.
-\item ``Every condition produced an executable action'' is \src{"Action:" in output}; nothing checks
-executability. Say ``a parseable action''.
-\item PrivacyLens' judge here is a 4-bit quantization (Q4\_K\_M) of Mistral-7B-Instruct-v0.2 served
-through a chat endpoint, not the fp16 weights the benchmark ran; the few-shot example carries a
-literal backslash-n where upstream has a newline. The appendix table already records the quantization;
-the body should say ``quantized'' once. The inherited helpfulness parser scores 0 whenever a 0 appears
-in the answer tail, which is upstream's behaviour and should be footnoted as such.
-\item The attribute-recovery candidates come in three kinds---identifier, any number, first
-capitalized token---so ``a name hidden among names, an amount among amounts'' overstates: the entity
-pool mixes names, places and products; the number pool mixes amounts, dates and counts.
-\item Casper-style has 1,485 questions in Table~12 against 1,487 elsewhere: two unparsed replies were
-dropped and the counter that should report them is dead. Say so in the caption.
-\item ``Separator injection'' and ``intra-token spacing'' are the same mutation with different
-applicability predicates; the heuristic's 0.0 [0.0, 12.1] under separator injection is a clipped
-negative (attacked recall exceeded clean recall). Say both.
-\item ASR is conditioned on spans the detector caught clean, and the heuristic catches 0.33 of
-alphabetic spans against the learned detector's much larger base; the clean recall never appears. Add
-it to the evasion table or its caption.
-\item ``None of them normalizes its input'' is true of every detector behind a reported table, but
-the artifact ships a confusable-folding variant in an unreported probe suite. Qualify the sentence
-(``none of the evaluated detectors'') so the artifact does not contradict it.
+\item \textbf{Reproducibility of the main tables.} All 21 tables built by the table-fill pass come out
+byte-identical to the current source when the pass is re-run, and the pooled summaries rebuild exactly from
+per-document and per-case rows. The headline numbers were verified, including PER 7.4/1.8,
+13.7$\rightarrow$2.1--3.1, $-11.0$ [$-13.3$, $-8.7$], $\kappa$ 0.163/0.221/0.849, inferability
+97.5$\rightarrow$50/40/32.5/25, the McNemar and Holm values, all run-to-run figures, and RCE 1.6\%.
+\item \textbf{Validation of the leakage instruments}: the human reference with a non-author blank-sheet
+reader, validation of the benchmark's own judge, and the judge-capacity sweep.
+\item \textbf{The attribute-recovery attack}: blanked value, same-kind distractors, no judge in the loop, and
+questions paired across three attacker capacities.
+\item \textbf{Paired statistics with Holm correction}, and quantified run-to-run nondeterminism.
+\item \textbf{Utility measured by each benchmark's own scoring}, with text retention reported beside exposure.
+\item \textbf{Canonicalization}, which is measured rather than recommended.
+\item \textbf{Template, mandatory sections and PDF anonymity}, which are clean.
 \end{itemize}
 
-\item \pt\ \textbf{The appendix still described the routing mechanism the body demoted.} Appendix~A's
-notation introduced ``the routing selector $\Pi_{\pi}$'' as an evaluated component; Appendix~D opened
-with CPPB as the surface on which ``the routing policy $\Pi_{\pi}$ can be varied''; D.2 closed on
-``isolates the routing policy''; D.3 drew a weighting for $\Pi_{\pi}$ from a mechanism the paper did
-not evaluate. The same finding as the previous review's F7, reached again from the source.
-\emph{Action.} Executed in this cycle (see the resolution log).
+\section{Findings}
+Severity: \pz{} blocks acceptance or risks desk rejection; \po{} a reviewer would flag it as incorrect or
+require it; \pt{} should be fixed; \pth{} polish.
 
-\item \pt\ \textbf{The profile-table caption contradicted two tables in the same appendix.}
-``No result in this paper is produced under a named profile'' against three named rows in the
-sensitivity table and a named row in the latency table. \emph{Action.} Executed in this cycle.
+\subsection*{F1 \pz{} Synthetic data are called ``real'', and the required extrapolation paragraph is missing}
+\textbf{Evidence.} The ethics statement (p.~13) says ``AI4Privacy is a synthetic PII corpus; PrivacyLens
+trajectories are synthetic agent tasks''. The body says otherwise in at least these places:
+\begin{itemize}
+\item \S5.1: ``four public sources with real text or real agent trajectories'';
+\item contribution 3: ``on real agent data'';
+\item \S6 opening: ``five measured results on real agent data'';
+\item Table~4 caption: ``two real sources'';
+\item \S6.1: ``real PrivacyLens agent-task trajectories'';
+\item \S6.5 and the Table~14 caption: ``real AI4Privacy text'';
+\item Appendix~A: ``real-data slices'';
+\item Appendix~D: ``every claim the paper defends is measured on real agent data''.
+\end{itemize}
+The call requires a well-marked extrapolation paragraph for purely synthetic evaluations.
+The TOPS reviewers asked for real agent stacks, so to a reader holding that review this wording reads as
+overclaiming.
 
-\item \pt\ \textbf{The evasion table was stranded without prose after the single-PDF merge.}
-\src{tab:advmeas} floated inside the external-transfer section with no sentence introducing it,
-followed by an orphan paragraph about widening the 74-pair base; the threat-aligned section's opening
-sentence still said the adaptive adversary was reported in the main text. \emph{Action.} Executed
-in this cycle: a subsection with a lead-in, the table moved, the orphan paragraph given a lead
-sentence, the opening sentence corrected.
+\textbf{Action.} Replace ``real'' with ``public benchmark'' throughout, and keep ``real'' only for live
+execution: AgentDojo tools that actually run, and real-text transfer slices. Add
+\verb|\paragraph{Extrapolation to real-world use.}| to \S5.1, about eight lines. It should say why
+synthetic PII and agent tasks transfer, and it should cite the real-text slices (TAB court judgments, PhysioNet
+clinical notes, CORD/FUNSD/SROIE images) and the live tool execution in AgentDojo, together with their limits.
+The space has to come from the cuts listed in F10.
 
-\item \pt\ \textbf{The three-boundary story was evidenced on one boundary in the interval table.}
-Retrieval and tool columns exist in the pooled record for AI4Privacy and were absent from
-Appendix~H; the PrivacyLens tool boundary carries no gold and the paper did not say why.
-\emph{Action.} Executed in this cycle.
+\subsection*{F2 \pz{} The propagation result is close to a tautology, and the placement claim has no experiment behind it}
+\textbf{Evidence.}
+\begin{itemize}
+\item \S4.4 says the boundaries are ``three different projections of the same mediated prompt'' and that ``no
+boundary can expose a value that $\tilde x$ no longer carries''. On a deterministic reference agent, SPE is
+therefore detector recall rendered three ways. The memory-stage SPE tracks PER within noise (1.9 against 1.8
+on PrivacyLens).
+\item The projection rules are not given in the paper. The text calls the retrieval query ``shortened,
+keyword-weighted''; the code keeps the first half of the text.
+\item On PrivacyLens the three ``stages'' are the recorded instruction, trajectory and action, each mediated
+separately, with no agent in the loop. The PrivacyLens retrieval column is computed but dropped from the
+interval table without explanation.
+\item All ten methods in Table~4 are applied at the same ingress point. Only the detected span set differs. Yet
+\S6.1 says ``what separates the methods is where mediation is applied rather than detector novelty'', and
+\S5.3 says the proposed configurations ``isolate how much of the result comes from the propagation-control
+placement''. Placement is never varied.
+\item Real agents also take in sensitive values mid-trajectory, through tool outputs, retrieved documents and
+memory reads. The design's claim that the layer ``sits on the single edge every later copy is derived from''
+does not cover these. The evaluation is inconsistent here: the AgentDojo banking arms mediate tool outputs and
+the slack arms do not.
+\end{itemize}
+\textbf{Action, writing (required, no GPU).}
+\begin{itemize}
+\item Attribute Table~4's differences to detectors, and delete both placement sentences.
+\item State the reference agent's projection rules exactly.
+\item Describe the PrivacyLens stage construction honestly as mediation of recorded artifacts.
+\item Restore the dropped column or say why it is omitted.
+\item Present the real-agent propagation evidence as the downstream identifier exposure in the final action of
+a live agent (\S6.3), which is the one measurement where a model generates the boundary artifact.
+\end{itemize}
+\textbf{Action, experiment (decision D2).} Build a compact live stack: a ReAct-style agent with a real vector
+store, persistent memory, logs and tools, with sensitive values entering both at ingress and through tool
+outputs and retrieved documents. Hold the detector fixed and compare ingress-only, egress/log-only and per-edge
+mediation, measuring survival in the artifacts the agent itself generates. This turns placement into a
+measured variable and makes the $R_{\text{prop}}$ of \S2.3 estimable. Without it, cut \S2.3 to one sentence.
+Effort: 2--3 person-weeks and about 3 GPU-days.
 
-\item \pt\ \textbf{The abstract's most aggressive number came from the configuration the paper
-says not to deploy.} ``24\% under our most aggressive detector'' is the over-redacting heuristic
-default. \emph{Action.} Executed in this cycle: qualified in place at equal length.
+\subsection*{F3 \pz{} The PET contribution is unclear, and the closest prior art is mis-described or missing}
+\textbf{Evidence.}
+\begin{itemize}
+\item The paper concedes that the replacement operation is prior art, that the detector is not the
+contribution, and that the per-span mode selector is unevaluated (\S4.5).
+\item What remains is placement (F2) and deferred restoration. The second is standard vault tokenization, and a
+cited system already practises it in agents. \S3.3 says PAAC ``restore[s] within a single exchange'', but PAAC
+runs a planner--executor loop in which ``a deterministic registry performs all substitution and reversal,
+keeping actions directly executable on device''. Only the claim that the restoration point is a
+\emph{variable} survives, and F6 shows that variable is binary here.
+\item ``Propagation control across agent states'' is information-flow control, which the paper never
+mentions. The bibliography audit also lists work a PoPETs reviewer will expect:
+  \begin{itemize}
+  \item classic IFC (Denning 1976; Myers and Liskov's JIF; TaintDroid);
+  \item agent data-flow defences: CaMeL (Debenedetti et al.\ 2025) and AirGapAgent (Bagdasarian et al., CCS
+  2024);
+  \item sanitization beyond surface form: Xin et al., ``A False Sense of Privacy'' (arXiv:2504.21035), which
+  already shows that PII scrubbing leaves meaning-level leakage and so bears directly on the surface-versus-fact
+  contribution; and Staab et al., ``Language Models are Advanced Anonymizers'' (ICLR 2025);
+  \item judge--human alignment: Meisenbacher et al.\ (HAIPS@CCS 2025, arXiv:2508.12158) found LLM judges
+  \emph{matching} aggregate human privacy perception, which must be reconciled with this paper's
+  judge-failure finding;
+  \item agent privacy evaluation: AgentDAM (NeurIPS 2025 D\&B); Wang et al., ``Privacy in Action'' (Findings
+  EMNLP 2025); agent-memory leakage (Wang et al., ACL 2025);
+  \item earlier prompt sanitizers: HaS (arXiv:2309.03057) and Pr$\varepsilon\varepsilon$mpt (NDSS 2026), a
+  prompt sanitizer with formal guarantees that a reviewer will contrast with this layer's ``no guarantee''
+  scope;
+  \item real-world evidence that users disclose sensitive data to chatbots: Trust No Bot (COLM 2024).
+  \end{itemize}
+\end{itemize}
+\textbf{Action (decision D1).} Rewrite the related work around IFC and agent data-flow defences, correct the
+PAAC sentence, add the works above, and choose a framing:
+\begin{itemize}
+\item[(a)] \textbf{Recommended for the time available:} a measurement study of what ingress mediation can and
+cannot do in agent pipelines, together with the finding about instrument validity. Every result in the paper
+already supports this framing.
+\item[(b)] A PET contribution built on a policy-checked, recipient- and context-aware restoration capability,
+evaluated as a mechanism (F6, F7). This needs the Phase~C experiments.
+\end{itemize}
 
-\item \pt\ \textbf{One bold value is misplaced.} Table~4 bolds helpfulness 2.21 (learned) while
-2.33, 2.27, 2.26 and 2.25 are higher. Bold the best, or none.
+\subsection*{F4 \po{} Baselines are not what the text says they are}
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{The Casper-style downstream arm omits restoration.} The paper describes the reproduced
+mechanism as including ``local restoration through a client-held mapping'' (\S3.3). The downstream code
+discards the restoration map (\src{substitute\_dummy(\ldots)[0]}, restoration mode \src{none}), so dummy values
+reach the scored action unrestored. The 0.73-point helpfulness penalty and the statement that typed
+placeholders ``dominate'' Casper-style depend on this. \emph{Action:} restore dummy$\rightarrow$original in the
+emitted action, re-judge on both agents (the cached agent replies can be reused), and redo \S6.3's comparison.
+Effort: under one GPU-day.
+\item \textbf{In the propagation table, ``Casper-style (rules + NER, dummy values)'' substitutes no dummy
+values.} The propagation suite masks every method with one fixed marker. Its ``LLM sanitizer'' surface is the
+original text with the characters the rewrite changed masked out, not the rewrite itself.
+\emph{Action:} relabel both rows and disclose how they were projected, or implement real substitution and
+measure survival on the actual rewrite.
+\item \textbf{The headline margin uses a detector trained in-domain.} The ``learned detector'' is a token-level
+logistic regression trained on the AI4Privacy training split and tested in-domain against zero-shot Presidio,
+Casper-style and the transformer detector. Its precision is 0.36. The main body says none of this.
+\emph{Action:} disclose it in \S5.3, add precision to Table~4, and either add an in-domain-adapted competitor
+(for example a fine-tuned transformer PII model) or state the asymmetry as a limitation beside the 6--7$\times$
+claim.
+\item \textbf{The appendix carries a stale comparison.} Table~21 gives ``Presidio-class (+NER)'', ``Hybrid
+rule+context de-id'' and ``BodhiPromptShield (heuristic)'' identical values (0.23/0.44/0.30/52.5/0.70), and
+these disagree with Table~4 (52.2 and 56.3). The TAB slice's ``Presidio-class'' contains no Presidio or NER,
+non-regex methods receive the gold applicant name as input, the training split is included, and two baselines
+beat the proposed method on F1 (0.66, 0.65 against 0.59) without the prose saying so. Appendix~G also claims
+that TAB is ``summarized in the main text'', which it is not. \emph{Action:} remove Table~21 and the TAB slice,
+or regenerate both with the canonical implementations, without the oracle input, and with honest prose.
+\item \pt{} \textbf{Stronger comparators are missing}: an iterative adversarial LLM anonymizer (Staab et al.\
+2025) instead of a one-shot 8B rewrite, and PrivacyLens's own privacy-enhanced system prompt. These are
+optional, at about 2 GPU-days.
 \end{enumerate}
 
-\subsection*{Optional}
-\begin{enumerate}[label=F\arabic*.,resume]
-\item \pth\ \textbf{Figure~1 is the only raster figure} (about 210 dpi across two columns).
-Regenerate as PDF if the source allows.
-\item \pth\ \textbf{Four appendix captions repeat a 40-word provenance disclaimer verbatim.} State
-it once in the section preamble.
-\item \pth\ \textbf{Attribute-recovery answer parsing takes the first digit 1--4 anywhere in the
-reply}, so ``Option 2 is wrong; 3'' scores 2. Rare, and the capacity table's refusal analysis shows
-the authors read the replies; worth one sentence in the appendix.
+\subsection*{F5 \po{} Metric definitions disagree with the code that computes them}
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{ASR} is defined as the fraction of previously caught spans that evade, but it is computed as a
+net recall drop clipped at zero, \src{max(0, (caught\_clean $-$ caught\_attacked)/caught\_clean)}. Spans caught
+only after the attack therefore cancel spans that evade. Counted per span, the heuristic detector's separator
+injection is 35.2\% (reported 0.0) and spacing 79.7\% (47.1); the learned detector's case inversion is 19.6\%
+(18.4). ``Six of the eight families stay below 1\%'' becomes four. Clipping hides negative values, such as
+$-4.7$ for learned leetspeak, printed as 0.0 [0.0, 0.0]. \emph{Action:} either recompute ASR per span or
+define it as $1-$attacked/clean recall and disclose the clipping. Apply the same change to the
+canonicalization table.
+\item \textbf{PER} is defined per prompt and macro-averaged over privacy-bearing prompts (\S4.4), but the code
+pools characters ($\sum$residual$/\sum$sensitive). Per-prompt averaging keeps the AI4Privacy headline (8.6 for
+learned against 54.6 for Presidio and 47.4 for Casper) but reverses the PrivacyLens ordering discussed in
+\S6.1 (Casper 3.5, learned 1.0). \emph{Action:} define PER as the pooled ratio and give effective counts (35
+of 300 and 47 of 493 units carry no gold), or report both aggregations.
+\item \textbf{FRR is called ``a lower bound on factual disclosure''} (\S5.4, Table~4 caption), but on the
+240-item reference the lexical measure is at or above the human rate for every method (Presidio 100 against
+50; learned 92.5 against 32.5). It also matches words as substrings. \emph{Action:} describe it as a permissive
+lexical-overlap measure that over-states disclosure relative to human judgment, and match whole words.
+\item \textbf{SPE units differ by source}: whole-span on AI4Privacy, character-level on PrivacyLens. Whole-span
+counting treats a partly leaked span as suppressed, which is anti-conservative. \emph{Action:} use
+character-level counting on both, or justify the difference in the caption.
+\item \pt{} The PER convention for semantic abstraction (``near-verbatim cue \ldots{} salient entity head'',
+\S4.4) is implemented nowhere. \emph{Action:} delete the convention or implement it.
 \end{enumerate}
 
-\subsection*{Needs the authors}
-\begin{enumerate}[label=V\arabic*.]
-\item \po\ \textbf{Preprint.} Built, not posted. The venue discourages posting while under review.
-Recommendation unchanged: do not post before notification.
-\item \po\ \textbf{A GPU session} for the true early-restoration arm (F1c), about an hour of a 32B
-and a 70B agent. Code is ready; no host was reachable during this review and none was started.
-\item \po\ \textbf{Human annotation hours} for F6c, or the decision to state the claim ordinally.
+\subsection*{F6 \po{} Restoration timing is a binary contrast, and the trust boundary is undefined}
+\textbf{Evidence.} Early restoration gives the agent the unprotected prompt byte for byte (\S6.4), so the
+$-11.0$-point contrast is mediation against no mediation, not an effect of restoration \emph{timing}.
+\begin{itemize}
+\item The paper never says which parties are untrusted: the model provider, index, memory store, logs or tools.
+\item The abstraction mode and the LLM sanitizer need a model that sees raw text, which is therefore inside the
+trusted computing base. The paper does not say so.
+\item The ``authorized execution boundary'' has no authorizer, policy or authentication.
+\item On PrivacyLens the final action is often the contextual-integrity violation itself, so boundary
+restoration puts the secret back into the disallowed flow (identifier exposure 11.5\% after restoration).
+\item Figure~1 draws ``Mapping \& Restore'' inside the middleware, before the protected prompt is forwarded. It
+draws the downstream components as a chain, which contradicts \S4.4. It labels inference ``LLM/VLM'', though
+VLMs are out of scope, and an arrow clips the input text.
+\end{itemize}
+\textbf{Action.}
+\begin{itemize}
+\item Rename the claim to what it measures: deferral against restoring before planning.
+\item Add a trust-domain figure and an explicit TCB.
+\item Define the authorization step.
+\item Redraw Figure~1 to match the text. If it was produced with an image model, the AI Use section and the
+caption must say so (decision D5).
+\item Optional (Phase~C): add intermediate restoration points (restore into retrieval queries only, memory
+writes only, or tool arguments only) and a recipient-aware policy evaluated on PrivacyLens, where a leak means
+an inappropriate recipient. This is the PET contribution of framing D1(b).
+\end{itemize}
+
+\subsection*{F7 \po{} The security evaluation is thin for a PET venue}
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{Table~3 (mapping-table compromise) is definitional, not measured.} T0/T1 target values and
+T0--T3 cross-session values are literal zeros in the code, T2's 50\% holds by construction, and all sessions
+share the same eight values. Yet \S4.6 calls these ``measured''. \emph{Action:} reduce it to one sentence that
+states the isolation property, which also frees space.
+\item \textbf{The ``restoration-trigger probes'' listed as executed in Table~1 have no result anywhere.}
+\emph{Action:} remove the claim, or run the probes and report them.
+\item \textbf{AgentDojo omits the decisive number.} The text says the attacker usually steals ``a placeholder
+rather than a live identifier'' but never gives the rate. \emph{Action:} report raw-value exfiltration per
+restoration policy from the existing logs. If time allows, add a restoration-oracle (confused-deputy) attack:
+an injection that asks the authorized boundary to restore a value to an attacker-named recipient. Also correct
+the prose: 0.0--8.3\% is per protected value (per case it is 1 of 16); the 85--100\% includes scope refusals
+that are correct by design (17/17 authorized restorations succeeded); and only one slack run placed a token in
+a tool argument, not two tasks.
+\item \pt{} \textbf{No LLM-paraphrase evasion attack is run against the learned detector}, although digit
+spell-out alone reaches 28\%. \textbf{There is no analysis of what placeholders leak}: entity counts and types,
+per-session counters, frequency linkage.
 \end{enumerate}
 
-\section{Revision actions}
-Calendar days from 7 October 2026 against the 30 November deadline. The critical path is about a
-week of work with six weeks of slack; the only items with real duration are the GPU run and the
-annotation hours, and neither blocks submission if the fallbacks are taken.
+\subsection*{F8 \po{} The abstract and contributions combine configurations and omit costs}
+\begin{itemize}
+\item The best exposure numbers come from the learned detector with typed placeholders and no restoration. The
+restoration-timing result and its ``modest helpfulness cost'' come from symbolic mapping with the transformer
+detector. No single configuration is shown to deliver both.
+\item On the 70B agent, learned typed placeholders cut leakage to 16.5\% but drop helpfulness from 2.46 to 1.40
+(Appendix~H). The main text reports the $-18.5$-point leak reduction without this cost.
+\item The 25\% inferability headline belongs to the heuristic detector, which the paper itself says not to
+deploy (retention 0.60, FRR 41.8\%).
+\item ``From 98\% to 25--50\%'' (abstract, contribution 4, conclusion, Appendix~E) leaves out regex-only at
+87.5\%, which is one of the six annotated methods.
+\item The Limitations claim that the intervals ``separate every mediated method from the control'' is false
+for regex-only: $-10.0$ [$-22.5$, $0.0$], with an upper bound of exactly zero.
+\end{itemize}
+\textbf{Action.}
+\begin{itemize}
+\item Name one recommended configuration and report its privacy and utility side by side on both agents.
+\item State the 70B helpfulness cost wherever the 70B leak result appears.
+\item Attribute the 25\% figure to its detector.
+\item Correct the range and the Limitations sentence.
+\item Consider putting the 64\% attribute-recovery result in the abstract: it is the strongest measured
+statement of the paper's central asymmetry.
+\end{itemize}
 
-\subsection*{A1. Restoration timing, described as run (one day) \po}
-\begin{enumerate}[label=A1.\arabic*]
-\item Rewrite the early-arm description in \S6.4 and the caption of Table~4 to match the
-implementation (F1a).
-\item Correct the helpfulness sign in the abstract, introduction, \S6.4 and conclusion (F1b).
-\item Replace the four paired numbers with the regenerated values (F2).
-\item Print an em-dash for RCE where no mapping exists, with one clause in the caption (F4).
-\item Queue \src{symbolic\_fullearly} for the next GPU session and, once it has run, add it as a
-third symbolic row (F1c).
-\end{enumerate}
+\subsection*{F9 \po{} The CPPB appendix raises provenance concerns a TOPS-aware reviewer will notice}
+\begin{itemize}
+\item The appendix narrates that the original prompt set ``no longer exists'', that one runtime ``was never
+recorded'', and that the per-category record ``predates the reconstruction''.
+\item The baseline comparison runs in the opposite direction from the version the TOPS reviewers saw: enterprise
+staged redaction was ahead (8.1 against 9.3) and now trails (37.5 against 12.5).
+\item Figure~4 plots superseded and interpolated data (a sloped curve, with a $\tau=0.30$ point at 6.13), while
+the caption says every point was measured and the text says the curve is flat.
+\item The claim that ``the two intervals do not overlap'' treats 256 prompts as independent, although there are
+only eight distinct protected strings. A template-clustered bootstrap gives [3.1, 25.0] against [21.9, 53.1],
+which overlap.
+\item The ``five seeds'' (\S5.5) and the dev/test gaps come from the old run.
+\item The semantic-abstraction PER of 27.3 comes from a rerun with a CPPB-specific prompt template (an earlier
+run gave 75.3), and the switch is not disclosed.
+\item The confidence histogram has no record.
+\end{itemize}
+\textbf{Action (decision D3).} No main claim rests on CPPB. Recommended: remove the CPPB result tables, Figure~4
+and the history narration, keeping at most the benchmark card and the latency figure with correct provenance.
+The alternative is to regenerate everything under a recorded runtime, with clustered intervals and no
+narration.
 
-\subsection*{A2. Injection paragraph (half a day) \po}
-\begin{enumerate}[label=A2.\arabic*]
-\item Name the detector, restate the boundary metric, state the filter as applied, disclose the
-executor difference and the model-name work-around (F5).
-\end{enumerate}
+\subsection*{F10 \po{} The main body is not self-contained, and it has no spare space}
+\begin{itemize}
+\item The main body points into the appendices 29 times.
+\item These results appear only in the appendix: the attribute-recovery result that \S6.6 calls ``the sharpest
+statement of this paper's result'', the adaptive-evasion table, the benchmark-judge validation that \S6.3
+relies on, and the second-agent results.
+\item AC and TSR are used in \S2.3 and \S4.4 but are defined only in Appendix~D.
+\item The conclusion ends with one line to spare.
+\end{itemize}
+\textbf{Action.}
+\begin{itemize}
+\item Move a compact attribute-recovery table and a compact evasion table into \S6, and define every metric the
+body uses.
+\item Make room by:
+  \begin{itemize}
+  \item cutting Table~3 (F7a);
+  \item cutting \S2.3 to one sentence unless D2 runs;
+  \item trimming the abstract from about 385 words to about 250;
+  \item removing the overlap between Figure~2 and Table~4;
+  \item removing the repeated deployment-setting text in \S1.
+  \end{itemize}
+\item Aim for a third of a page of slack, so that later fixes do not break the limit.
+\end{itemize}
 
-\subsection*{A3. Reproducibility claim (half a day) \po}
-\begin{enumerate}[label=A3.\arabic*]
-\item Register builders for the five typed tables, or narrow the \S5.1 sentence (F3).
-\end{enumerate}
+\subsection*{F11 \pt{} Human-annotation design and wording}
+\begin{itemize}
+\item ``Blind to method'' cannot be literally true: the released text visibly carries placeholders, dummy
+values or untouched spans. Say ``without being told the method''.
+\item Items are unpaired across methods.
+\item The inferability intervals resample 10{,}000 times at item level, although items cluster (the 40
+heuristic items come from 33 documents).
+\item The frontier-model rater has no decoding control and no stated identity.
+\end{itemize}
+\textbf{Action.}
+\begin{itemize}
+\item Correct the wording.
+\item Use a document-clustered bootstrap.
+\item Keep the frontier rater in the appendix only, with its limits stated, or drop it.
+\item A paired, crossed design (the same facts under every method, rotated across three or more non-author
+raters) is the right next study, but it is not needed for this submission.
+\end{itemize}
 
-\subsection*{A4. Inferability evidence (one day, plus human hours if available) \po}
-\begin{enumerate}[label=A4.\arabic*]
-\item Add the model-rater row to the judge-capacity table and the sentence to the AI-use section (F6a, F6b).
-\item Decide the human extension by 14 October; if declined, restate the claim ordinally (F6c).
-\end{enumerate}
+\subsection*{F12 \pt{} Statistical reporting does not match the stated protocol}
+\begin{itemize}
+\item \S5.5 and \S6 state 1{,}000 document- or task-level resamples. The inferability intervals use 10{,}000
+item-level resamples.
+\item The AgentDojo paired $\Delta$ resamples pairs ($74=37$ tasks $\times$ 2). Resampling by task gives
+[$-17.6$, $+6.8$] instead of [$-14.9$, $+4.1$], with the same conclusion.
+\item Table~4 compares ten methods on two sources without multiplicity correction.
+\item Contribution 3 promises ``confidence intervals on every reported quantity'', but Tables~3, 10--13, 15 and
+20--22 have none.
+\item Each arm is a single generation pass, and Appendix~H shows that helpfulness differences under about 0.2
+are within run-to-run variation.
+\end{itemize}
+\textbf{Action.}
+\begin{itemize}
+\item State the resampling unit and count per analysis, and resample by task where pairs share a task.
+\item Say that the headline margins survive Holm correction.
+\item Delete ``on every reported quantity''.
+\item Present helpfulness differences under 0.2 as unresolved.
+\end{itemize}
 
-\subsection*{A5. Hardening experiment and wording (two days) \pt}
-\begin{enumerate}[label=A5.\arabic*]
-\item Finish the canonicalization run, add its table to the appendix and three sentences to \S6.5 (F7).
-\item Apply the nine wording items (F8) and the bold fix (F14).
-\end{enumerate}
+\subsection*{F13 \pt{} Prose that misstates its own records}
+Each of the following was checked against the record. Correct each one:
+\begin{itemize}
+\item Appendix~E: ``six times less often than a Presidio placeholder'' is 3.05$\times$, and ``removing three
+times as much'' is about 1.6$\times$.
+\item Appendix~F: ``roughly six times'' the reported judge's agreement is 3.1$\times$ at $\kappa=0.163$.
+\item ``Both directions'' holds only overall, not per method.
+\item ``[$-11.2$, $+0.0$]'' has an upper bound of exactly 0.0, so ``contains zero'' is borderline.
+\item ``No other number moves'' is false (70B no protection 78.4$\rightarrow$77.7; Presidio
+63.8$\rightarrow$63.2 and 66.6$\rightarrow$66.5).
+\item ``Against a typed placeholder'' means the Presidio placeholder. Against the learned placeholder, Casper is
+$+9.8$.
+\item Appendix~D: AC ``0.98 and 0.96'' should be 0.97.
+\item Strict UPR 0.95 should be 0.96 (it was rounded twice), and the column labelled UPR is AC.
+\item Appendix~G: ``every method cuts PER far below 100\%'' is false for regex-only (95.3, 96.4).
+\item Appendix~G: the OCR path is described as ``exactly the pipeline used for typed prompts'', but it is a
+separate heuristic and shares the generic path on SROIE.
+\item \S6.3: ``parseable action in 100.0\%'' only checks for the substring ``Action:''.
+\item The PhysioNet pilot model is missing from the model table, which claims to name every model, and its
+$\pm$ is an SD over $n=3$.
+\item Sign-mixed intervals: write ``$-9.5$ [$-16.0$, $-2.5$]'', and give contribution 2 as ``$-11.0$
+[$-13.3$, $-8.7$]''.
+\item $\kappa=0.163$ is ``slight'', not ``chance'' (conclusion).
+\item The proxies are not ``near-flat'': the lexical measure is 45.0 for the heuristic.
+\item Figure~3 prints ``32'' where the text says 32.5 (round-half-even).
+\item The latency provenance points to the wrong host and to cold-start-dominated means.
+\item Paired $p=1.0$ (\S6.3) and the per-agent judge-call split have no output record. Write both to the records.
+\end{itemize}
 
-\subsection*{A6. Submission logistics \pz}
-\begin{enumerate}[label=A6.\arabic*]
-\item Rebuild and confirm: body ends on page~12, three mandatory sections after it, zero undefined
-references, no identity string, every float referenced, zero overfull boxes.
-\item Re-read the live author instructions in the final week of November.
-\item Freeze the manuscript by 15 November.
-\end{enumerate}
+\subsection*{F14 \pt{} Bibliography}
+\begin{itemize}
+\item \po{} \src{mireshghallah2024confaide}: the author list is wrong. The correct list is Mireshghallah, Kim,
+Zhou, Tsvetkov, Sap, Shokri, Choi; Berg-Kirkpatrick is not an author. ``Even when no identifier is present''
+is not a ConfAIde finding.
+\item \po{} \src{yuan2026paac}: mis-described (F3).
+\item \po{} \src{tamber2026privacyalign}: unconditioned judges reach $\kappa\approx0.45$ against human labels,
+and conditioning improves but does not close the gap. The paper's paraphrase overstates the conditioning
+effect.
+\item \src{schick2023toolformer} is missing Eric Hambro.
+\item \src{meystre2010extracting} points to the 2008 information-extraction review. Use the 2010 BMC
+de-identification review (DOI 10.1186/1471-2288-10-70).
+\item Training-data attacks (\src{carlini2021extracting}, \src{mireshghallah2023privacy}) are cited for
+prompt-side exposure, and \src{carlini2023diffusion} is cited for OCR exposure. Move or remove these
+citations.
+\item RAG-privacy claims cite works that do not discuss privacy. Add Zeng et al.\ (Findings ACL 2024).
+\item \src{elemam2011systematic} is a review of re-identification attacks, not guidance.
+\item Datasets and models that are run but never cited: AI4Privacy, GLiNER, spaCy, Qwen3, Llama~3, Mistral~7B,
+Gemma~2 and RapidOCR. Also give the pinned Presidio version.
+\item Cite Boucher et al., ``Bad Characters'' (IEEE S\&P 2022) for the zero-width, homoglyph and fullwidth
+attack families.
+\item PrivacyLens already validated its leakage judge (Fleiss $\kappa=0.82$). Say so where \S6.2 recommends
+human validation.
+\item Remove the three uncited entries and the stale \src{paper/build/ref.bib}.
+\item The AI Use statement says every entry was resolved against its canonical record. That must be true after
+these fixes.
+\item \pth{} Missing pages and DOIs for 12 entries (list in the bibliography audit), accents (Tram\`er,
+Erlingsson, F\'abio), and \src{note} fields that print as prose.
+\end{itemize}
+
+\subsection*{F15 \pt{} Writing, tone and the reader-first boundary}
+\textbf{Revision-history language} reads as a reproducibility warning sign. Examples:
+\begin{itemize}
+\item ``ours included, until this check'';
+\item ``Rater reliability is no longer open'';
+\item ``original prompt set behind earlier versions \ldots{} no longer exists'';
+\item ``a runtime that was never recorded'';
+\item ``predates the reconstruction'';
+\item ``the three-point reading it supersedes'';
+\item ``first annotation round \ldots{} versions have since moved''.
+\end{itemize}
+
+\textbf{Artifact- and workflow-tied phrasing.} Examples:
+\begin{itemize}
+\item ``single table-fill pass rather than typed in'';
+\item ``artifact default \ldots{} runs on unpacking'', which also appears as a Table~4 row label;
+\item ``Two harness details belong on record \ldots{} unlisted local tag'';
+\item ``released records still label as NER-only masking'';
+\item ``released lightweight policy-aware transfer runner'';
+\item ``regenerated from an empty cache on the host'';
+\item ``written to match the released implementation''.
+\end{itemize}
+
+\textbf{Defensive tics}: ``worth naming as a gap rather than leaving to be inferred'' and ``state the reason
+plainly rather than leave it to be inferred''.
+
+\textbf{Inconsistent names}:
+\begin{itemize}
+\item the proposed configurations go by five names across Table~4, Figures~2--3, Table~20 and Table~21;
+\item ``utility-constrained'', ``policy-aware balanced'', ``Generic de-identification'', ``Enterprise staged
+redaction'' and ``Hybrid rule+context'' are never defined;
+\item ``A1/A3'' and ``reader 1/2'' refer to different people.
+\end{itemize}
+
+\textbf{Acronyms used before definition}: PER, SPE and FRR. NER, OCR, PII, VLM, HSM, TEE, PHI and ECHR are
+never expanded, and RSR is defined but never reported by name.
+
+\textbf{Notation clashes}: $G$ is both the graph and the stage sequence; $K$ is both the mapping table and the
+number of stages; $E$ is used for edges, for $E(x)$ and for $E_k$; and the \S2.3 objective optimizes over
+$T_\pi$ redundantly.
+
+\textbf{Small items}:
+\begin{itemize}
+\item mixed US/UK spelling;
+\item mixed ``\S'' and ``Section'';
+\item ``slack'' should be ``Slack'';
+\item Table~16 appears before Table~15;
+\item the appendix preamble has no heading and reads as part of the bibliography;
+\item the ``Four failure modes'' list is broken by an embedded sentence;
+\item the \S D.4 heading needs \verb|\texorpdfstring|.
+\end{itemize}
+
+\textbf{Action}: one language pass that states only the current measurement, with a name table for the methods
+and annotators.
+
+\subsection*{F16 \pt{} Figures}
+\begin{itemize}
+\item Figure~4: see F9.
+\item Figure~1: see F6.
+\item Figures~2--4 use 3.3--5.0\,pt text at print size. Use at least 7\,pt, drop titles inside the plots that
+duplicate the captions, and set \src{pdf.fonttype=42} to remove the Type~3 fonts (camera-ready).
+\end{itemize}
+
+\subsection*{F17 \pt{} Ethics, Open Science and AI Use sections}
+\begin{itemize}
+\item \textbf{Ethics} reads like an audit log.
+  \begin{itemize}
+  \item Condense it.
+  \item State the raters' relationship to the authors and how consent was obtained.
+  \item Keep one short sentence on how the extension round was labelled and entered.
+  \item The IRB exemption is self-determined for five raters, one of them an author. An institutional
+  exemption determination would remove the question (D5).
+  \end{itemize}
+\item \textbf{Open Science} promises ``anonymized supplementary material'' but links nothing. Add an
+anonymous.4open.science link, and scrub the artifact of user names, local Windows paths, Chinese progress
+files and links to the public dataset and preprint.
+\item \textbf{AI Use} should also disclose AI-assisted review and agentic orchestration of experiments, and
+any AI-generated figure (D5). It should not tie results to ``the released scripts''.
+\end{itemize}
+
+\subsection*{F18 \pth{} Submission logistics}
+\begin{itemize}
+\item \textbf{Preprint.} arXiv:2604.05793v2 carries the identical title and the authors' names, and the public
+CPPB dataset links to it. This is allowed but discouraged. Do not post new versions during review, and keep the
+supplementary material free of those links.
+\item \textbf{Metadata.} The PDF dates carry a +13:00 offset, and \src{/PTEX.FileName} embeds a local Windows
+path. Use \verb|\pdfsuppressptexinfo=-1| and \verb|\pdfinfoomitdate=1| (or \src{SOURCE\_DATE\_EPOCH}), and
+strip creation dates from the figure PDFs.
+\end{itemize}
+
+\section{Revision plan}
+Effort estimates assume the records and code already in the repository.
+\begin{center}\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.0cm}Y>{\raggedright\arraybackslash}p{2.4cm}}
+\toprule
+Phase & Items & Effort \\
+\midrule
+A. Writing and record-only fixes (week 1) & F1 wording and extrapolation paragraph; F2 writing actions; F3 related work, PAAC, framing D1(a) text; F5 definitions (PER as pooled ratio, FRR wording, SPE units, abstraction convention), and ASR recomputed per span if per-span rows exist; F8; F11 wording and clustered bootstrap; F12; F13; F14; F15; F17; F18 metadata & 4--6 days, no GPU \\
+B. Small reruns and restructuring (weeks 1--2) & F4(a) Casper-style with restoration, re-judged on both agents; F4(b) relabel or substitute; F4(c) disclosure and precision column; F4(d) remove or regenerate Table~21 and TAB; F7(a,b) cut Table~3 and resolve the trigger-probe claim; F7(c) raw-value exfiltration from the AgentDojo logs; F9 per D3; F10 move compact tables and cut for slack; F16 regenerate figures & 4--6 days; about 1 GPU-day \\
+C. Decision-dependent experiments (weeks 2--5) & D2 live-stack placement experiment (F2); F6 intermediate restoration points and a recipient-aware policy, plus the F7(c) restoration-oracle attack (framing D1(b)); F7(d) LLM-paraphrase evasion; F4(e) stronger comparators; optional hosted frontier agent (D4) & 2--4 weeks; 3--5 GPU-days \\
+D. Freeze and checks (from 15 November) & Rebuild; page limit with slack; byte-level anonymity; re-fetch the venue pages in the final week; artifact link and scrub; attach the TOPS review & 3--4 days \\
+\bottomrule
+\end{tabularx}
+\end{center}
+Phases A and B alone make the paper correct and honest, and should move it to a defensible
+measurement-study submission. Phase C is what could move it from major revision towards acceptance.
 
 \section{Decisions required from the authors}
 \begin{enumerate}[label=D\arabic*.]
-\item \textbf{Human annotation extension (F6c).} The model rater is validated and reported; it
-cannot substitute. \emph{Recommended:} ask the two recruited readers for roughly 40 items per method;
-if that is not possible by mid-October, restate ordinally.
-\item \textbf{GPU session for the true early arm (F1c).} \emph{Recommended:} one session, about an
-hour, before 15 November; the paper is correct without it once A1 is applied, and stronger with it.
-\item \textbf{Builders or narrowed sentence (F3).} \emph{Recommended:} builders.
-\item \textbf{Preprint (V1).} \emph{Recommended:} do not post before notification.
+\item \textbf{Framing (F3).} (a) A measurement study of ingress mediation in agents plus instrument validity
+(recommended: fully supported by existing evidence), or (b) a PET contribution built on recipient-aware
+restoration (needs Phase~C).
+\item \textbf{Live-stack placement experiment (F2).} Run it (2--3 person-weeks, a GPU host from about
+20 October), or narrow the claims to what the reference agent supports. Recommended: run it if a host is
+available by 20 October; otherwise narrow the claims.
+\item \textbf{CPPB (F9).} Remove the result tables and Figure~4 (recommended), or regenerate them fully.
+\item \textbf{Hosted frontier agent (optional).} Running one hosted agent on the 200 PrivacyLens cases answers
+the limitation that every evaluated model is open-weight. The data are synthetic, so there is no ethical
+barrier. It needs an API key and well under USD~100.
+\item \textbf{Confirmations.}
+  \begin{itemize}
+  \item No submission to PoPETs 2027 Issue~2.
+  \item No reviewed version at any venue other than ACM TOPS.
+  \item Whether Figure~1 was made with an image model.
+  \item Whether an institutional ethics-exemption determination can be obtained before 30 November.
+  \end{itemize}
 \end{enumerate}
 
-\section*{What is already strong and should not be disturbed}
+\section{Limits of this review}
 \begin{itemize}
-\item \textbf{Form.} Single PDF, body on page~12, template byte-verified, anonymity clean, mandatory
-sections present. The venue has nothing to desk-reject.
-\item \textbf{Every table value traced to a record.} Downstream, injection, propagation, attribute
-recovery, judge agreement, evasion---all matched. The two values this review changed were produced
-outside the artifact and are now produced inside it.
-\item \textbf{Instruments held to the paper's own standard}, now including a frontier-model rater
-that was validated before use and reported as what it is.
-\item \textbf{The restoration-timing result itself.} Its direction survives every correction in F1
-and F2, on both agents, and the helpfulness correction moves in the paper's favour.
-\item \textbf{The bibliography.} Fifty entries resolved; the AI-use section says so.
+\item The bibliography was resolved for 32 of 50 entries. The remaining 18 were checked only for existence of
+the key.
+\item Code was read for every reported pipeline. Helper functions inherited from the benchmarks were read only
+where a finding depended on them.
+\item The scientific assessment reflects one demanding reviewer's reading. PoPETs reviewers differ in how much
+weight they give a measurement contribution relative to a mechanism.
+\item Venue requirements were fetched on 9 October 2026. Re-check them in the final week before submission.
 \end{itemize}
 
-\section{Resolution log (7 October 2026)}
-To be completed as the cycle closes. Executed at the time of writing: the template MD5 check
-(V2 of the previous review, closed); the model-rater validation and its three records (F6a, with
-the manuscript integration pending); \src{restoration\_timing\_paired\_tests.py} and its two records
-(F2); the \src{symbolic\_fullearly} condition (F1c, run pending a host); the appendix consistency
-items F9--F13 (edits on disk, verification in progress); the canonicalization suite (F7, in progress).
-
-\paragraph{8 October 2026.} F3 is closed by the recommended route. Builders for the five typed
-tables (\src{tab:downstream}, \src{tab:inject}, \src{tab:portability}, \src{tab:pljudge},
-\src{tab:contextattack}) and for three further record-backed appendix tables (\src{tab:propints},
-\src{tab:judgecap}, \src{tab:canon}) are registered, 36 labels in all. Each was checked against the
-committed manuscript by substitution, and every one reproduces its table byte for byte; the only
-table the pass changes is \src{tab:canon}, which gains its transformer column. The tables still
-without a builder are descriptive (threat map, prior-work comparison, model roster, examples,
-policy rules and profiles, mapping surface) and carry no measured value. The \S5.1 sentence is
-restored to the strong form: every results table is rendered by the pass, and both result figures
-are plotted from the same records.
-
-The same check found a regression the review had not anticipated: three \emph{older} builders
-(\src{tab:measprop}, \src{tab:attrrecovery}, \src{tab:attrcap}) lagged behind hand fixes made in
-the manuscript earlier (the configuration label of the heuristic row; the column-width layout of the
-two recovery tables; the bold cells), so any rerun of the pass silently reverted them. That is what
-had happened in the manuscript working copy, where a rerun had left those reversions uncommitted;
-they were reproduced exactly from the pre-fix script, discarded rather than committed, and the
-builders were corrected so that the pass now reproduces the committed tables. A rerun of the full
-pass on both files is a no-op apart from the intended \src{tab:canon} column.
-
-F7 is complete: the transformer detector's run finished, and the canonicalizer closes the three
-byte-level families for all five detectors (transformer: zero-width $38.2\rightarrow0.0$, fullwidth
-$76.9\rightarrow0.0$; residual exposure under zero-width $90.9\%\rightarrow37.2\%$ against $37.3\%$
-clean), at no cost on clean text, and leaves the five token-level families unchanged. The appendix
-text now reports all five. Open: F6c (human annotation, author decision D1) and F1c (GPU session,
-D2); D4 and the preprint are unchanged.
-
-The optional items. F16 is applied: the provenance sentence repeated in four appendix captions is
-stated once in the preamble of the controlled-surface appendix. F17 is measured rather than
-asserted: \src{attribute\_recovery\_parse\_audit.py} reads every recorded reply of the three
-attackers. Between 233 and 249 replies per attacker (about one in twenty) mention a second in-range
-option number, and every one of them opens with its answer, so the first-number rule reads the
-answer. The only parsed replies that do not open with their answer are four 70B Casper-style
-replies that reject every option and then name option~1; treating them as unparsed or as failures
-moves that cell from 48.5\% to 48.7\% or 48.4\%. One sentence in the attribute-recovery appendix
-now says so. F15 is not actionable: Figure~1 has no vector source in the repository, and a redraw
-would again be raster.
-
-\paragraph{8 October 2026, afternoon: a defect this review did not find.} Preparing F1c exposed a
-bug in symbolic restoration that every earlier review, this one included, read past.
-\src{restore\_symbolic} replaced tokens with \texttt{str.replace} in insertion order, and
-\texttt{BPSMAP-<ns>-1} is a prefix of \texttt{-10} to \texttt{-19}: from the tenth value on, a token
-came back as the first value plus a digit. On the 200-case subset, 166 mappings hold ten or more
-values. An audit that replays every recorded field from the generation cache (all 200 cases match on
-both agents) finds that the late arm's restored action, which the judge scores, changed in 54 cases
-on the 32B agent and 35 on the 70B, and that the trajectory the early arm's agent read changed in 166
-on each. The restoration-timing result therefore rested on a late arm scored partly on wrong values
-and an early arm that did not measure what it was named for. The fix matches the mapping's own tokens
-longest first; render-then-restore is now the identity. AgentDojo is unaffected (its mappings never
-exceed five values).
-
-Following the authors' decision, the trajectory-only early arm is retired and replaced by the true
-early arm (F1c). Its agent prompt is the no-protection prompt byte for byte on all 200 cases, and
-replayed cache-only it generated no call on either agent: restoring before planning is, for the
-agent, no mediation at all, with released-context exposure 100\%. The late arm is being rerun with
-corrected restoration (agent replies replayed with no generation; 217 and 132 judge calls
-regenerated, exactly the ones the audit predicted), and a control regenerating the true early arm
-from an empty cache is queued. The late arm itself barely moved; the comparison did. Deferral against
-true early restoration cuts the identifiers the agent writes by $-11.0$ points [$-13.3$, $-8.7$]
-($-11.0$ [$-13.7$, $-8.6$] on the 70B), against $-2.1$ before, and helpfulness now moves the other
-way: $-0.13$ [$-0.31$, $+0.04$] and $-0.25$ [$-0.40$, $-0.12$]. The abstract, contribution list and
-conclusion no longer say ``at no cost in helpfulness''; Section~6.4, Table~4 and the portability
-table are revised; Holm correction runs over the seven conditions actually tested. One further
-sentence in the portability appendix, that late restoration was the cheapest condition on both agents,
-was untrue on the 32B before the fix (the LLM sanitizer cost less) and is corrected.
-
-\paragraph{8 October 2026, evening: the control falsified a reproducibility claim.} The 32B half of
-the control finished: the true early arm regenerated from an empty cache on the recording host, same
-model digests and decoding settings. Every one of its 200 agent prompts hits a recorded cache key, as
-it must, but only 48 replies come back byte for byte; of 812 judge calls, 254 have a recorded prompt
-and 114 of those reproduce. Per case, the leak verdict agrees on 172 of 200 and helpfulness on 143.
-Pooled, the arm moves by at most a point (leak 38.0 to 37.0, helpfulness 2.42 to 2.38), and the timing
-contrast holds against either record: pre-restoration identifiers $-11.0$ replayed and $-11.5$
-[$-13.9$, $-9.3$] regenerated; helpfulness $-0.13$ and $-0.09$ [$-0.26$, $+0.07$], unresolved both
-times. The finding is about the manuscript, not the arm: Section~5 stated that decoding ``is
-deterministic throughout \ldots\ so repeating a run reproduces it'', and it does not. That sentence
-now says decoding is not bitwise reproducible across runs; Section~6.4 says the early row reuses the
-no-protection generations and reports the regenerated contrast; the CPPB appendix no longer calls its
-run a deterministic pass. The 70B half is queued behind other work on the host and will be added to
-the same sentence when it completes. Main body still ends on page 12.
-
-\paragraph{8 October 2026, late: the 70B half, and a helpfulness claim withdrawn.} The 70B
-control finished on the same host. Its replies reproduce less often than the 32B's (32 of 200 byte
-for byte; judge 92 of 204 recurring prompts), the leak verdict agrees on 167 of 200 cases and
-helpfulness on 141, and pooled helpfulness falls from 2.46 replayed to 2.27 regenerated while leak
-(35.0 to 34.5) and identifier exposure (13.1 to 13.7) barely move. Against the regenerated arm the
-identifier contrast is $-11.5$ [$-14.3$, $-9.0$] and the leak contrast $-9.0$ [$-15.0$, $-3.5$], both
-within a point of the replayed values, but the helpfulness contrast is $-0.07$ [$-0.25$, $+0.09$]
-against $-0.25$ [$-0.40$, $-0.12$] replayed. The resolved helpfulness cost the manuscript reported on
-the 70B is therefore within run-to-run variation. Section~6.4 now reports both runs and calls the cost
-small and unresolved; the contribution list gives the range $0.07$--$0.25$; the portability appendix
-no longer ranks late restoration as the cheapest and most stable condition (its margins, 0.10 and
-0.12, are inside the variation) and gains a paragraph reporting the control in full. Differences of
-0.5 helpfulness points or more (Casper-style, the learned detector on the 70B) are unaffected. Main
-body still ends on page 12; the table-fill pass leaves both files unchanged.
-
-\paragraph{9 October 2026: D1 taken, F6c under way.} The authors took the recommended route and
-confirmed that the extension readers are the same annotators 1 and 3 who rated round one, each again
-from a blank sheet. Two separate blank pages carry the same 138 new items (23 per method, taking each
-method from 17 items to 40), with storage, browser keys and export names kept apart so that neither
-reader can see the other's answers; reader A is annotator 1 and reader B is annotator 3. Because the
-readers are unchanged, each one's extension labels pool with that reader's own round-one labels, and
-annotator~1 against annotator~3 can be re-estimated as an independent reliability figure on all 240
-items rather than 102 (it is 0.739 on round one). \src{semantic\_inferability\_agreement.py} now
-scores the extension on its own and, when told which reader is annotator~1, writes the pooled
-per-method rates; it was checked on synthetic exports, and no result file has been written. Labels
-are due back by mid-November; nothing in the manuscript changes until they are.
-
-\paragraph{9 October 2026, later: F6c closed.} Both readers returned all 138 items. The page records
-show the answers entered in batches of eight, about a second apart, which is not a reading pace; the
-authors explained that the readers could not reach the pages, labelled the items offline on the
-blank sheet at roughly three minutes an item, and the authors entered the returned files. The
-entered labels match those files item for item, and the entry timestamps are kept with the record.
-Pooled with their own round-one labels, each reader has 240 items, 40 per method. The two readers
-agree at $\kappa=0.849$ (92.5\%) on all 240, against $0.739$ on the first 102, and at $0.927$ on the
-extension alone. Annotator~1's rates fall monotonically from 97.5\% unprotected to 50.0\% for
-Presidio, 40.0\% Casper-style, 32.5\% for the learned detector and 25.0\% for the heuristic; every
-mediated method sits below the control by an interval clear of zero ($-47.5$ [$-65.0$, $-32.5$] to
-$-72.5$ [$-87.5$, $-57.5$]), and annotator~3's labels give the same picture. The reported judge
-reaches $\kappa=0.163$ and the lexical measure $0.221$, so the finding that neither proxy can carry
-the claim stands, now on a sample large enough to show it. The abstract, contributions, setup,
-\S5 semantic section, Figure~3, limitations, conclusion, ethics and AI-use statements, and three
-appendix passages report the 240-item figures; the judge-capacity table stays on the first 102 items,
-the only ones every judge answered, and says so. The main body still ends on page 12. With F6c closed,
-every item this review opened is resolved or recorded as blocked on an external resource.
-
-\section*{Limits of this review}
-\begin{itemize}
-\item \textbf{The bibliography was not re-sampled.} It was fully audited 26 days ago and the file
-is unchanged; a reviewer who finds a defect there finds one this review did not look for.
-\item \textbf{Metric code was read for every reported pipeline, but not every helper.} The findings
-rest on the files named; parsing helpers inherited from the benchmarks (judge output parsing,
-post-processing) were read where a finding depended on them and not otherwise.
-\item \textbf{The model rater is one rater.} Its agreement is a property of one model under one
-harness with no decoding control, on 102 items. It bounds what such a rater can do here; it does not
-bound what a different model, or the same model under a scripted protocol, would do.
-\item \textbf{Venue requirements were fetched on 7 October 2026.} Re-check in the final week.
-\end{itemize}
+\section{Resolution log}
+Entries are added here as items are closed, each with the date, what changed, and where.
 
 \end{document}
