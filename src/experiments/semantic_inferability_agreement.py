@@ -152,6 +152,38 @@ def _rate(flags: list[int]) -> str:
     return f"{100.0 * sum(flags) / len(flags):.1f} [{lo:.1f}, {hi:.1f}]"
 
 
+def _write_vs_control(path: Path, labelled: list[tuple[str, int]], key_rows: dict[str, dict],
+                      control: str = "no_protection", iterations: int = 10000,
+                      seed: int = 17) -> None:
+    """Each method's human rate minus the unprotected control's, with a bootstrap CI.
+
+    Methods are sampled independently (different items), so the two groups are
+    resampled independently on each draw.
+    """
+    methods: dict[str, list[int]] = {}
+    for item, label in labelled:
+        methods.setdefault(key_rows[item]["method_key"], []).append(label)
+    base = methods[control]
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["method_key", "items", "control_items", "difference_points", "ci_low", "ci_high"])
+        for method, flags in methods.items():
+            if method == control:
+                continue
+            rng = random.Random(seed)
+            draws = []
+            for _ in range(iterations):
+                a = sum(flags[rng.randrange(len(flags))] for _ in flags) / len(flags)
+                b = sum(base[rng.randrange(len(base))] for _ in base) / len(base)
+                draws.append(100.0 * (a - b))
+            draws.sort()
+            point = 100.0 * (sum(flags) / len(flags) - sum(base) / len(base))
+            writer.writerow([method, len(flags), len(base), f"{point:.1f}",
+                             f"{draws[int(0.025 * iterations)]:.1f}",
+                             f"{draws[min(int(0.975 * iterations), iterations - 1)]:.1f}"])
+    print(f"[agreement] wrote {path.name}")
+
+
 def run_round2(round2: Path, key: Path, out: Path, by_method: Path) -> None:
     """Score the second annotator's review pass against round one and the proxies."""
     with round2.open(encoding="utf-8", newline="") as handle:
@@ -391,9 +423,11 @@ def run_extend(readers: dict[str, Path], ext_key: Path, round1_sheet: Path,
                     _kappa_row(writer, f"{proxy}_vs_pooled_annotator{annotator}", len(items),
                                result, f"annotator {annotator}'s round-one labels pooled with "
                                f"extension reader {reader}'s, declared to be the same person")
-                _write_by_method(
-                    by_method_stem.with_name(f"{by_method_stem.name}_pooled_annotator{annotator}.csv"),
-                    [(i, pooled[annotator][i]) for i in items], merged_key)
+                stem = f"{by_method_stem.name}_pooled_annotator{annotator}"
+                _write_by_method(by_method_stem.with_name(f"{stem}.csv"),
+                                 [(i, pooled[annotator][i]) for i in items], merged_key)
+                _write_vs_control(by_method_stem.with_name(f"{stem}_vs_control.csv"),
+                                  [(i, pooled[annotator][i]) for i in items], merged_key)
             if 1 in pooled and 3 in pooled:
                 shared = sorted(set(pooled[1]) & set(pooled[3]), key=int)
                 result = _kappa([(pooled[1][i], pooled[3][i]) for i in shared])

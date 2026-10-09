@@ -34,13 +34,11 @@ def _manuscript_figures(out_dir, tag):
     from figures.propagation_and_fact_gap import plot as plot_propagation
     plot_propagation(os.path.join(out_dir, "propagation_and_fact_gap.pdf"), "a")
 
-    from figures.fact_retention_vs_inferability import plot as plot_inferability, _kappas
-    suffix = f"_{tag}" if tag else ""
-    judge_k, lex_k = _kappas(os.path.join(
-        EXPERIMENTS_DIR, f"semantic_inferability_agreement{suffix}.csv"))
-    plot_inferability(
-        os.path.join(EXPERIMENTS_DIR, f"semantic_inferability_human_by_method{suffix}.csv"),
-        os.path.join(out_dir, "fact_retention_vs_inferability.pdf"), judge_k, lex_k)
+    from figures.fact_retention_vs_inferability import plot as plot_inferability, _kappas, inputs
+    by_method, agreement = inputs(tag)
+    judge_k, lex_k = _kappas(agreement)
+    plot_inferability(by_method, os.path.join(out_dir, "fact_retention_vs_inferability.pdf"),
+                      judge_k, lex_k)
 
     # This one writes the PDF the manuscript includes beside the PNG it is asked
     # for, so the .png path is the one to pass.

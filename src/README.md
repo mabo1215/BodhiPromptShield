@@ -37,7 +37,7 @@ number against its record.
 | `tab:propints` — the same table with intervals on every column | `aggregate_paper_results.py` |
 | `tab:downstream` — PrivacyLens downstream leakage and helpfulness | `privacylens_downstream_suite.py` |
 | `tab:inject` — AgentDojo under prompt injection | `agentdojo_restoration_suite.py` |
-| `fig:inferability` — surface form against factual inferability | `figures/fact_retention_vs_inferability.py` |
+| `fig:inferability` — surface form against factual inferability | `figures/fact_retention_vs_inferability.py`, reading the 240-item records written by `semantic_inferability_agreement.py --extend-a semantic_inferability_extend40_collected_A_vgpu3090.csv --extend-b semantic_inferability_extend40_collected_B_vgpu3090.csv --pool-with-round1 A` (reader A is annotator 1, reader B annotator 3; also writes each method's difference from the control) |
 | `tab:judgecap` — judge agreement with human labels across model capacity | `semantic_inferability_judge_capacity.py`; the human labels and the two automated proxies are scored by `semantic_inferability_agreement.py` |
 | `tab:contextattack` — case-identifiability control | `privacylens_context_inference_attack.py` |
 | `tab:attrrecovery` — attribute recovery against the released surface | `privacylens_attribute_recovery_attack.py`; `--score-only` rebuilds the summary and the paired differences from the shipped rows without calling a model |

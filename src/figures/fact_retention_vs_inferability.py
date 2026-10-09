@@ -16,7 +16,8 @@ table rather than written here, so the legend cannot drift from the data. The fi
 human numbers and treats the proxies as failed instruments.
 
 Reads the per-method table written by the annotation analysis; recomputes
-nothing.
+nothing. The labels are annotator 1's on the full 240-item subset (40 per
+method): the first 102 items pooled with the same reader's extension round.
 """
 import argparse
 import csv
@@ -61,13 +62,22 @@ def _bounds(cell):
     return (nums[0], nums[1], nums[2]) if len(nums) >= 3 else (nums[0], nums[0], nums[0])
 
 
-def _kappas(path):
+def inputs(tag):
+    """The per-method table and agreement table the figure reads, for one tag."""
+    suffix = f"_{tag}" if tag else ""
+    return (os.path.join(EXPERIMENTS_DIR,
+                         f"semantic_inferability_human_by_method_extend40{suffix}_pooled_annotator1.csv"),
+            os.path.join(EXPERIMENTS_DIR, f"semantic_inferability_agreement_extend40{suffix}.csv"))
+
+
+def _kappas(path, judge_row="judge_vs_pooled_annotator1",
+            lexical_row="lexical_vs_pooled_annotator1"):
     """Read the two kappas from the agreement table beside the per-method one."""
     out = {}
     with open(path, encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle):
             out[row["comparison"]] = float(row["cohens_kappa"])
-    return out.get("judge_vs_human"), out.get("lexical_vs_human")
+    return out[judge_row], out[lexical_row]
 
 
 def plot(path, out_path, judge_k, lex_k):
@@ -135,11 +145,9 @@ def main():
     parser.add_argument("--out", default=os.path.join(
         SRC_DIR, os.pardir, "paper", "figs", "fact_retention_vs_inferability.pdf"))
     args = parser.parse_args()
-    suffix = f"_{args.tag}" if args.tag else ""
-    judge_k, lex_k = _kappas(os.path.join(
-        EXPERIMENTS_DIR, f"semantic_inferability_agreement{suffix}.csv"))
-    plot(os.path.join(EXPERIMENTS_DIR, f"semantic_inferability_human_by_method{suffix}.csv"),
-         os.path.abspath(args.out), judge_k, lex_k)
+    by_method, agreement = inputs(args.tag)
+    judge_k, lex_k = _kappas(agreement)
+    plot(by_method, os.path.abspath(args.out), judge_k, lex_k)
 
 
 if __name__ == "__main__":
