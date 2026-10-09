@@ -833,6 +833,15 @@ _DOWNSTREAM_ORDER = (
 )
 
 
+# Conditions run under PrivacyLens's privacy-enhanced agent prompt, on the reported agent only.
+# They are appended to the downstream table when present and never enter the two-agent
+# portability table.
+_DOWNSTREAM_PRIVACY_PROMPT = (
+    ("pe/no_protection", "Privacy-enhanced prompt"),
+    ("pe/placeholder:learned_lr", "Privacy-enhanced prompt + placeholder (learned)"),
+)
+
+
 def _downstream_summary(agent: str) -> dict[str, dict[str, str]]:
     return {r["condition"]: r for r in _read_csv(f"privacylens_downstream_summary_{agent}_pooled.csv")}
 
@@ -877,6 +886,7 @@ def build_downstream_table() -> str:
     by_cond = _downstream_summary(_DOWNSTREAM_AGENT)
     denominators = _downstream_protected_values(_DOWNSTREAM_AGENT)
     rows = [(label, _downstream_row(by_cond, key)) for key, label in _DOWNSTREAM_ORDER]
+    rows += [(label, by_cond[key]) for key, label in _DOWNSTREAM_PRIVACY_PROMPT if key in by_cond]
     defined = [r for _, r in rows if denominators.get(r["condition"], 0) > 0]
     best = min(float(_ci_point(r["boundary_leak_percent"])) for r in defined) if defined else None
 

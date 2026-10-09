@@ -48,6 +48,18 @@ DEFAULT_MODELS = ["qwen3_32b-q4km-hf", "llama3.3_70b-q4km-hf"]
 # hypothesis, and counting it in the Holm family would only change the family.
 IDENTICAL_TO_CONTROL = frozenset({"symbolic_fullearly:gliner_pii"})
 
+# Conditions run under PrivacyLens's privacy-enhanced agent prompt ("pe/<condition>") ask a
+# different question from the mediation family, so they are kept out of it (adding them would
+# only change its Holm adjustment) and tested as their own family below.
+PRIVACY_PROMPT_PREFIX = "pe/"
+# (treated, reference): does the prompt alone help; does it add to placeholders; does mediation
+# add to the prompt.
+PRIVACY_PROMPT_TESTS = (
+    ("pe/no_protection", "no_protection"),
+    ("pe/placeholder:learned_lr", "placeholder:learned_lr"),
+    ("pe/placeholder:learned_lr", "pe/no_protection"),
+)
+
 # Pairs of mediated conditions compared directly in the text, as (treated, reference).
 HEAD_TO_HEAD = (
     ("placeholder:learned_lr", "casper_style"),
@@ -172,7 +184,7 @@ def paired_tests(agent_model: str) -> Path:
     raw_p: list[float] = []
 
     for cond in order:
-        if cond == CONTROL or cond in IDENTICAL_TO_CONTROL:
+        if cond == CONTROL or cond in IDENTICAL_TO_CONTROL or cond.startswith(PRIVACY_PROMPT_PREFIX):
             continue
         result = _compare(by_condition[cond], control)
         if result is None:
@@ -198,6 +210,29 @@ def paired_tests(agent_model: str) -> Path:
     return path
 
 
+def privacy_prompt_tests(agent_model: str) -> Path | None:
+    """The privacy-enhanced-prompt comparisons, Holm-corrected as their own family."""
+    by_condition, _ = _by_condition(agent_model)
+    out: list[dict] = []
+    raw_p: list[float] = []
+    for treated, reference in PRIVACY_PROMPT_TESTS:
+        if treated not in by_condition or reference not in by_condition:
+            continue
+        result = _compare(by_condition[treated], by_condition[reference])
+        if result is None:
+            continue
+        cells, p = result
+        raw_p.append(p)
+        out.append({"condition": treated, "reference": reference, **cells, "mcnemar_p_holm": ""})
+    if not out:
+        return None
+    for row, adj in zip(out, holm(raw_p)):
+        row["mcnemar_p_holm"] = f"{adj:.4f}"
+    path = EXPERIMENTS_DIR / f"downstream_privacy_prompt_tests_{agent_model}.csv"
+    _write(path, out)
+    return path
+
+
 def head_to_head_tests(agent_model: str) -> Path:
     """The same paired tests on the named pairs of mediated conditions (treated minus reference)."""
     by_condition, _ = _by_condition(agent_model)
@@ -218,6 +253,7 @@ def main(argv: list[str]) -> int:
         print(f"\n=== {model} (control: {CONTROL}) ===")
         paired_tests(model)
         head_to_head_tests(model)
+        privacy_prompt_tests(model)
     return 0
 
 
