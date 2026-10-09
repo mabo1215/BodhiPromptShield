@@ -1,6 +1,6 @@
 # 论文进度
 
-## 2026-10-09（晚）vGPU 3090 开跑；PRO 6000 无卡模式备好 D2 后关机（当前最新）
+## 2026-10-09（晚）vGPU 3090 开跑（含 D2 自动接力）；PRO 6000 无卡模式备好后关机（当前最新）
 
 **你的回答（2026-10-09）**：
 - D4 跳过（没有 API key）。局限性已写明"只测了两个开源权重 agent，商用端点未测"，不需要再改。
@@ -14,6 +14,17 @@
 - **AgentDojo 修正后重跑**：6 个臂并行（最初是两条串行队列，GPU 只用到 49%，17:08 改为并行，已写入的行保留并跳过）。实测每次运行约 7–8 分钟，222 次预计 6–10 小时。
 - **每个 agent 的 judge 调用拆分**：已完成（CPU）。32B 重新生成 812 次、254 次对得上原 key、114 次逐字节相同；70B 是 812/204/92。与附录 Run-to-run variation 段的数字一致，论文不用改。结果已拉回入库。
 - 记录：`ollama show qwen3:32b-q4km-hf --parameters` 为空，模型文件没有设任何采样参数。旧 AgentDojo 注入运行的清单显示它们是在 vGPU 3090 上用 Ollama 0.32.15 跑的（Python 3.10.12、内核 5.15.0-119）。查了 0.32.15 的源码（`openai/openai.go`）：OpenAI 兼容接口在请求不带 temperature 时设 **temperature = 1.0**、**top_p = 1.0**；AgentDojo 0.1.35 也没有发 seed。所以旧运行是 temperature 1.0 的随机采样。§6.5 和 tab:inject 会随重跑整段替换；如果还要提旧运行，就照这个数写。这次重跑用的是 Ollama 0.33.3，换主机和版本都已记录。
+
+**D2 改在 vGPU 3090 上跑（你 2026-10-09 说尽量用 vGPU，因为便宜）**：
+- vGPU 上的接力脚本 `/root/autodl-tmp/bps_live_stack_v3090/d2_chain.sh`（会话 `d2chain`，17:56 起等待）依次做：
+  1. 等 AgentDojo 6 个臂和 casper_restored 都跑完；
+  2. 核对 AgentDojo 每个臂的完整性（banking 32 对、slack 42 对）；
+  3. 重启 Ollama，改成 32k 上下文 × 4 槽、KV 缓存 q8_0。f16 的 4 槽要约 52 GB，超过 48 GB 显存；q8_0 约 36 GB；
+  4. 试跑 10 个 workspace 任务，自动检查：无报错、确实调用了工具、最长 prompt 低于上下文的 95%；
+  5. 通过后开 4 个分片，每个分片先跑 learned 臂，再跑 Presidio 臂。Presidio 臂不加保护的那组从缓存回放。
+- 服务器设置（含 KV q8_0）通过新参数 `--server-config` 写进清单（`4ec0764`）。所有臂用同一设置，不影响位置对比；论文写方法时照实写。
+- 预计：AgentDojo 跑完后开始，3090 上两臂约 10–16 小时。
+- PRO 6000 继续关机，上面备好的东西保留不动，以后要用随时能接上。
 
 **PRO 6000（无卡模式，0.5 核）：D2 已备好，已关机**（17:10 执行 `shutdown -h now`，随后 ssh 实际重连被拒，确认已停）：
 - 代码快进到 `3eb0a85`。挡路的 51 个未跟踪文件里，50 个与仓库版本只差换行符，1 个是 `restoration_control_compare.py` 的旧草稿；全部移到 `/root/autodl-tmp/bps_host_untracked_20261009/`，没有删除。
