@@ -130,9 +130,11 @@ def pool_propagation(source: str) -> Path:
 # regenerated where the corrected restoration changed the action. "fullearly"
 # is the true early arm (every value restored before planning).
 # "casper_restored" adds the Casper-style arm with its dummy->original map
-# applied at the boundary; it replaces no canonical condition. A missing record
-# is skipped.
-DOWNSTREAM_SUPERSEDING = ("restorefix", "fullearly", "casper_restored")
+# applied at the boundary; it replaces no canonical condition. "privacy_prompt"
+# adds conditions run under PrivacyLens's privacy-enhanced agent prompt
+# ("pe/<condition>"), and "iterative_anonymizer" the adversarial-feedback
+# anonymizer; neither replaces a canonical condition. A missing record is skipped.
+DOWNSTREAM_SUPERSEDING = ("restorefix", "fullearly", "casper_restored", "privacy_prompt", "iterative_anonymizer")
 # Conditions kept as records but not reported: the restoration bug changed the
 # trajectory the agent read in 166 of 200 cases on each agent, so these rows do
 # not measure the arm they are named for.
