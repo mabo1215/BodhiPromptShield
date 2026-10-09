@@ -706,4 +706,19 @@ which now points to its sections rather than restating them. The main body ends 
 leaving about 0.85 of a page for the live-stack results; the third-of-a-page slack target is no longer met
 once those are added, and further room has to come from the cuts F10 lists for \S2.3 or Figure~2.
 
+\paragraph{10 October 2026, morning: the live-stack placement experiment (D2) closed.} A 32B agent ran AgentDojo's
+executable banking, Slack and workspace tools with a BM25 index, a note store and an application log; 154 cases
+(77 tasks, each as published and with the account holder's identifiers added) under six placements, with the
+learned detector and Presidio as two arms on the same cases (923 and 924 trajectories; one learned-arm trajectory
+filled the generation limit inside a tool call and is excluded). Findings shared by both arms: mediating the
+prompt alone leaves 68.0 and 61.0\% of reference mid-trajectory values in the model context (72.3\% unprotected),
+and 22.9 and 20.6\% of ingress values return through tool outputs; mediating every read edge removes a further
+56.6 [$-68.4$, $-41.8$] and 44.6 [$-55.4$, $-30.7$] points of non-authorized exposure; restoration recovers 19.0
+and 20.8 points of the utility that placement costs without moving exposure by more than 1.6 points. The utility
+cost of read-edge against ingress mediation, both restored, is resolved on one arm only ($-13.7$ and $-3.9$) and is
+reported as a bound. The live agent rarely used the index and almost never wrote memory, so its exposure sat in the
+model context and the log. A new subsection and table report this, and the abstract, first contribution,
+limitations and conclusion narrow the identifier claim to read-edge mediation. The main body ends on page 12
+with about eight lines to spare.
+
 \end{document}
