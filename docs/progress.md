@@ -1,6 +1,32 @@
 # 论文进度
 
-## 2026-10-09（晚）vGPU 3090 开跑（含 D2 自动接力）；PRO 6000 无卡模式备好后关机（当前最新）
+## 2026-10-10 01:40 本机重启前交接（当前最新）
+
+**状态**：代码、论文、记录全部已提交推送，两个仓库工作区干净。主仓工作分支与 `main` 同步，paper 子模块在 `main@a0e24f9`。本机重启不影响主机上的实验。
+
+**vGPU 3090 正在跑 D2**（01:29:55 启动；会话 `d2_0`–`d2_3` 和 `ollama`；接力脚本 `d2chain` 已完成使命并退出）：
+- 01:37 进度：89/1,848 条轨迹，0 报错，约 19 秒/条（4 片并行），最长 prompt 3,626 token，没有接近 32k 上限的。预计 04:00–05:30 完成。
+- 每个分片先跑 learned 臂，再跑 Presidio 臂。日志里的完成标记：`run_logs/live_stack_learned_v1_shard{i}.out` 的 `LEARNED_SHARD_DONE`，`run_logs/live_stack_presidio_v1_shard{i}.out` 的 `PRESIDIO_SHARD_DONE`。
+- 结果行：`src/experiments/live_stack_placement_rows_qwen3_32b-q4km-hf_{learned_lr,presidio}_v1_shard{i}of4.csv`。
+- Ollama 配置：0.33.3，32k 上下文 × 4 槽，KV q8_0，flash attention。这些已通过 `--server-config` 写进清单。
+
+**重启后接着做**：
+1. 重新挂巡检。本机 scratchpad 里的登录辅助脚本会随重启丢失，按 `.claude/rules/host-login.md` 从 `C:\source\.env` 的 vGPU 3090 块重建，不要把密码写进任何文件记录。
+2. D2 跑完后在主机上汇总（命令见 `src/README.md`）：
+   - 每个臂各跑一次 `--summarize-only --rows-glob …_{detector}_v1_shard*of4.csv --output-tag v1_pooled`；
+   - 再跑一次 `--detector presidio --versus-detector learned_lr`，`--rows-glob` 用 `…_*_v1_shard*of4.csv`。
+3. 拉回 rows / summary / paired / detector_contrast / manifest 入库。artifacts、app_log、memory 三个 jsonl 先看大小再决定是否入库。核对 0 报错、每臂 924 条。
+4. 写 D2 结果节，并顺带做 F10（把精简的属性恢复表和规避表挪进正文；正文现在止于第 11 页，约有 1 页余量）。位置结论只写两个检测器臂都一致的部分。
+5. 结果拉回并核对后关掉 vGPU 3090（你说过尽量用 vGPU 省钱，用完即关）。
+
+**主机上的留存（都没删）**：
+- vGPU 3090：旧版 Ollama 0.32.15 备份在 `/root/autodl-tmp/ollama-0.32.15-backup/`；D2 冒烟测试在 `/root/autodl-tmp/bps_live_stack_v3090/`。
+- 共享盘 `/autodl-fs/data/bps_transfer_20261009/`：缓存副本 7 个文件，加 Ollama 0.33.3 的 tar（2.1 GB）。D2 后可以清理，**删除前会先问你**。
+- PRO 6000（已关机）：`/root/autodl-tmp/bps_live_stack_prep_20261009/`（D2 启动脚本和冒烟结果）、`bps_host_untracked_20261009/`（移开的 51 个文件）。
+
+**可选**：项目 `.venv` 缺 `agentdojo` 和 `pypdf`；要统一环境的话可以装进去，目前 AgentDojo 冒烟测试用 WSL 的 `~/.venvs/bps`。
+
+## 2026-10-09（晚）vGPU 3090 开跑（含 D2 自动接力）；PRO 6000 无卡模式备好后关机
 
 **你的回答（2026-10-09）**：
 - D4 跳过（没有 API key）。局限性已写明"只测了两个开源权重 agent，商用端点未测"，不需要再改。
