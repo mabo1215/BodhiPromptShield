@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 import re
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -64,6 +65,9 @@ class CachedOllamaChat:
                         self.cache[row["key"]] = row["response"]
         self.generated = 0
         self.failures = 0
+        # Callers may issue requests from several threads; the cache file and
+        # counters are the only shared state.
+        self._lock = threading.Lock()
 
     def _key(self, messages: list[dict[str, str]], options: dict[str, Any]) -> str:
         blob = json.dumps({"model": self.model, "messages": messages, "options": options, "think": self.think},
@@ -92,17 +96,19 @@ class CachedOllamaChat:
                 with urllib.request.urlopen(request, timeout=self.timeout) as response:
                     body = json.loads(response.read().decode("utf-8"))
                 text = str(body.get("message", {}).get("content", ""))
-                self.generated += 1
-                self.cache[key] = text
-                with self.cache_path.open("a", encoding="utf-8") as handle:
-                    handle.write(json.dumps({"key": key, "model": self.model, "response": text}, ensure_ascii=False) + "\n")
-                    handle.flush()
-                    os.fsync(handle.fileno())
+                with self._lock:
+                    self.generated += 1
+                    self.cache[key] = text
+                    with self.cache_path.open("a", encoding="utf-8") as handle:
+                        handle.write(json.dumps({"key": key, "model": self.model, "response": text}, ensure_ascii=False) + "\n")
+                        handle.flush()
+                        os.fsync(handle.fileno())
                 return text
             except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
                 last = exc
                 time.sleep(2 ** attempt)
-        self.failures += 1
+        with self._lock:
+            self.failures += 1
         print(f"[ollama_client] {self.model}: generation failed after {self.retries} attempts: {last}")
         return None
 
