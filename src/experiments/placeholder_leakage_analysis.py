@@ -21,7 +21,9 @@ The *signature* of a release is what an observer learns from the tokens alone:
 for typed placeholders the count of mentions per label, for symbolic tokens the
 sorted occurrence counts of the distinct tokens. The summary reports how many
 cases share each signature: a signature held by one case alone singles that
-case out among the 493 to anyone who sees only the tokens.
+case out among the 493 to anyone who sees only the tokens. Longer cases carry
+more mentions, so the same share is also reported for the mention count alone;
+the difference is what the labels or the repetition pattern add.
 
 The symbolic namespace in these runs is a hash of the case identifier, kept so
 that runs are reproducible; it is excluded from the signature here because a
@@ -51,7 +53,7 @@ SUMMARY_PATH = EXPERIMENTS_DIR / "placeholder_leakage_summary.csv"
 DEFAULT_CONDITIONS = "placeholder:presidio,placeholder:learned_lr,placeholder:gliner_pii,symbolic_late:gliner_pii"
 ROW_FIELDS = ["condition", "case", "mentions", "labels", "distinct_tokens", "recurring_tokens", "signature"]
 SUMMARY_FIELDS = ["condition", "cases", "cases_with_tokens", "mean_mentions", "distinct_signatures",
-                  "unique_signature_cases", "unique_signature_percent", "median_anonymity_set",
+                  "unique_signature_cases", "unique_signature_percent", "median_anonymity_set", "count_only_unique_percent",
                   "cases_with_recurring_token", "recurring_token_percent", "label_counts"]
 
 PLACEHOLDER_RE = re.compile(r"<([A-Z]+)_(\d+)>")
@@ -83,6 +85,8 @@ def summarize(rows: list[dict[str, str]]) -> list[dict[str, str]]:
         for r in sub:
             if r["labels"]:
                 labels.update(json.loads(r["labels"]))
+        counts = collections.Counter(r["mentions"] for r in sub)
+        count_unique = sum(1 for r in sub if counts[r["mentions"]] == 1)
         recurring = [r for r in sub if r["recurring_tokens"] not in ("", "0")]
         symbolic = cond.startswith("symbolic")
         out.append({
@@ -93,6 +97,7 @@ def summarize(rows: list[dict[str, str]]) -> list[dict[str, str]]:
             "unique_signature_cases": str(unique),
             "unique_signature_percent": f"{100.0 * unique / len(sub):.1f}",
             "median_anonymity_set": f"{statistics.median(anonymity):g}",
+            "count_only_unique_percent": f"{100.0 * count_unique / len(sub):.1f}",
             "cases_with_recurring_token": str(len(recurring)) if symbolic else "",
             "recurring_token_percent": f"{100.0 * len(recurring) / len(sub):.1f}" if symbolic else "",
             "label_counts": json.dumps(dict(labels.most_common())),
@@ -147,7 +152,7 @@ def main() -> int:
     for s in summary:
         print(f"  {s['condition']:28s} cases {s['cases']}, with tokens {s['cases_with_tokens']}, "
               f"mentions {s['mean_mentions']}, unique signature {s['unique_signature_percent']}% "
-              f"(median anonymity set {s['median_anonymity_set']}), recurring token {s['recurring_token_percent'] or '-'}%")
+              f"(median anonymity set {s['median_anonymity_set']}; count alone {s['count_only_unique_percent']}%), recurring token {s['recurring_token_percent'] or '-'}%")
     return 0
 
 

@@ -1,0 +1,5 @@
+condition,cases,cases_with_tokens,mean_mentions,distinct_signatures,unique_signature_cases,unique_signature_percent,median_anonymity_set,count_only_unique_percent,cases_with_recurring_token,recurring_token_percent,label_counts
+placeholder:presidio,493,493,23.93,477,463,93.9,1,2.0,,,"{""DATE"": 4883, ""PERSON"": 3629, ""ORG"": 1472, ""PROTECTED"": 1038, ""EMAIL"": 572, ""LOCATION"": 178, ""PHONE"": 21, ""ACCOUNT"": 2, ""MEDICAL"": 1}"
+placeholder:learned_lr,493,493,85.38,146,46,9.3,5,9.3,,,"{""PROTECTED"": 42092}"
+placeholder:gliner_pii,493,493,23.56,488,484,98.2,1,1.0,,,"{""PERSON"": 4317, ""PROTECTED"": 2503, ""ORG"": 1747, ""DATE"": 1515, ""EMAIL"": 1255, ""MEDICAL"": 157, ""ADDRESS"": 70, ""ACCOUNT"": 28, ""PHONE"": 22}"
+symbolic_late:gliner_pii,493,493,26.98,433,389,78.9,1,2.2,487,98.8,{}
