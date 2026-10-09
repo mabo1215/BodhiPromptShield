@@ -721,4 +721,15 @@ model context and the log. A new subsection and table report this, and the abstr
 limitations and conclusion narrow the identifier claim to read-edge mediation. The main body ends on page 12
 with about eight lines to spare.
 
+\paragraph{10 October 2026, morning: F7(d) closed.} A language-model attacker (Qwen3-32B) rewrote each gold span of
+the 200-document slice in place so that a person can still read the exact value, with up to two further rounds
+telling it which rewrites a detector still flagged or had lost the value; a rewrite counts only if its letters and
+digits still spell the original or a separate decoding call recovers it. Value-preserving attack success after
+three rounds is 27.1\% (heuristic), 3.7\% [2.4, 5.1] (learned), 39.1\% (Presidio), and 14.9\% (transformer). The
+attacker mostly changes punctuation or spacing and rarely spells digits out, so fixed digit spell-out (28.2\%)
+remains the stronger attack on the learned detector. Two rows are added to the main-text evasion table and the
+protocol to the attack appendix. A first pilot exposed three scoring defects (explanations inserted as rewrites,
+the decoder misreading undisguised identifiers, re-formatted dates counted as lost), which were fixed before the
+reported run. The placeholder-leakage analysis named in F7(d) is not done.
+
 \end{document}
