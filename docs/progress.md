@@ -13,7 +13,7 @@
 - **casper_restored**：32B（judge num_ctx 12288，按原运行）跑完接 70B（7168/10240），agent 只读缓存。实测约 50 秒/例，两个 agent 合计约 5–6 小时。
 - **AgentDojo 修正后重跑**：6 个臂并行（最初是两条串行队列，GPU 只用到 49%，17:08 改为并行，已写入的行保留并跳过）。实测每次运行约 7–8 分钟，222 次预计 6–10 小时。
 - **每个 agent 的 judge 调用拆分**：已完成（CPU）。32B 重新生成 812 次、254 次对得上原 key、114 次逐字节相同；70B 是 812/204/92。与附录 Run-to-run variation 段的数字一致，论文不用改。结果已拉回入库。
-- 记录：`ollama show qwen3:32b-q4km-hf --parameters` 为空，模型文件没有设任何采样参数，所以旧 AgentDojo 运行用的是 Ollama 服务器默认温度。具体数值待查 Ollama 0.33.3 的 OpenAI 兼容层，再写进论文。
+- 记录：`ollama show qwen3:32b-q4km-hf --parameters` 为空，模型文件没有设任何采样参数。旧 AgentDojo 注入运行的清单显示它们是在 vGPU 3090 上用 Ollama 0.32.15 跑的（Python 3.10.12、内核 5.15.0-119）。查了 0.32.15 的源码（`openai/openai.go`）：OpenAI 兼容接口在请求不带 temperature 时设 **temperature = 1.0**、**top_p = 1.0**；AgentDojo 0.1.35 也没有发 seed。所以旧运行是 temperature 1.0 的随机采样。§6.5 和 tab:inject 会随重跑整段替换；如果还要提旧运行，就照这个数写。这次重跑用的是 Ollama 0.33.3，换主机和版本都已记录。
 
 **PRO 6000（无卡模式，0.5 核）：D2 已备好，已关机**（17:10 执行 `shutdown -h now`，随后 ssh 实际重连被拒，确认已停）：
 - 代码快进到 `3eb0a85`。挡路的 51 个未跟踪文件里，50 个与仓库版本只差换行符，1 个是 `restoration_control_compare.py` 的旧草稿；全部移到 `/root/autodl-tmp/bps_host_untracked_20261009/`，没有删除。
