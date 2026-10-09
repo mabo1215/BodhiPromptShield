@@ -33,6 +33,15 @@ AGENTDOJO_NEW_FIELDS = [
     "tokens_emitted_in_tool_args", "restored_in_tool_args", "unrestored_tokens",
     "refused_unscoped_restorations", "raw_in_tool_outputs", "tool_calls", "error",
 ]
+# The repaired harness (output tags ending in "_fixed") adds the visibility of
+# raw values in tool-call arguments and the classification of what the
+# attacker-directed calls carried.
+AGENTDOJO_FIXED_FIELDS = AGENTDOJO_NEW_FIELDS + [
+    "llm_calls", "raw_visible_in_tool_call_args", "attacker_calls", "attacker_raw_values",
+    "attacker_raw_restored", "attacker_tokens", "exfil_class",
+]
+AGENTDOJO_EXFIL_CLASSES = ["raw_protected_value", "tokens_only", "unprotected_only", "no_protected_value",
+                           "no_attacker_call"]
 
 
 def _ci(rows: list[dict], num: str, den: str | None, scale: float, digits: int) -> str:
@@ -192,7 +201,9 @@ def _read_agentdojo_mixed(path: Path) -> list[dict]:
         for fields in csv.reader(handle):
             if not fields or fields[0] == "suite":
                 continue
-            if len(fields) == len(AGENTDOJO_NEW_FIELDS):
+            if len(fields) == len(AGENTDOJO_FIXED_FIELDS):
+                rows.append(dict(zip(AGENTDOJO_FIXED_FIELDS, fields)))
+            elif len(fields) == len(AGENTDOJO_NEW_FIELDS):
                 rows.append(dict(zip(AGENTDOJO_NEW_FIELDS, fields)))
             elif len(fields) == len(AGENTDOJO_OLD_FIELDS):
                 row = dict(zip(AGENTDOJO_OLD_FIELDS, fields))
@@ -288,7 +299,7 @@ def pool_agentdojo_suites(agent_model: str = "qwen3_32b-q4km-hf",
 
 
 def pool_agentdojo_injections(agent_model: str = "qwen3_32b-q4km-hf",
-                              suites: tuple[str, ...] = ("banking", "slack")) -> Path | None:
+                              suites: tuple[str, ...] = ("banking", "slack"), suffix: str = "") -> Path | None:
     """Pool the injection arms across suites.
 
     The reported injection result is banking alone: 32 task/injection pairs,
@@ -308,6 +319,12 @@ def pool_agentdojo_injections(agent_model: str = "qwen3_32b-q4km-hf",
     (1,000 resamples, seed 17) rather than task/injection pairs.  The paired
     difference also carries an exact task-level sign-flip permutation p-value,
     which does not depend on resampling noise.
+
+    ``suffix="_fixed"`` pools the rerun with the repaired harness instead
+    (temperature and seed sent, restoration applied to an executed copy only,
+    attacker-call payloads classified).  Its arms all have their own files, and
+    its summary adds the exact share of pairs whose attacker-directed calls
+    carried a raw protected value, by payload class.
     """
     arms = {"unprotected": [], "unrestricted": [], "user_directed": []}
     present: dict[str, list[str]] = {k: [] for k in arms}
@@ -324,11 +341,12 @@ def pool_agentdojo_injections(agent_model: str = "qwen3_32b-q4km-hf",
 
     for suite in suites:
         base = EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}.csv"
-        add("unprotected", EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}_inj_none.csv", suite)
-        if not (EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}_inj_none.csv").exists():
+        none_path = EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}_inj_none{suffix}.csv"
+        add("unprotected", none_path, suite)
+        if not none_path.exists() and not suffix:
             add("unprotected", base, suite, baseline=True)
-        add("unrestricted", EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}_inj_all.csv", suite)
-        add("user_directed", EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}_inj_scoped.csv", suite)
+        add("unrestricted", EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}_inj_all{suffix}.csv", suite)
+        add("user_directed", EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{agent_model}_inj_scoped{suffix}.csv", suite)
 
     if not any(arms.values()):
         print("pool_agentdojo_injections: no injection rows found; skipping")
@@ -349,6 +367,19 @@ def pool_agentdojo_injections(agent_model: str = "qwen3_32b-q4km-hf",
             "utility_percent": _task_ci(rows, "utility", None, 100.0, 1),
             "boundary_leak_percent": _task_ci(protected, "raw_visible_before_tool", "protected_values", 100.0, 1) if protected else "n/a",
         })
+        if all("exfil_class" in r for r in rows):
+            row = out[-1]
+            for r in rows:
+                r["_raw_exfil"] = "1" if r["exfil_class"] == "raw_protected_value" else "0"
+                r["_raw_exfil_success"] = "1" if r["_raw_exfil"] == "1" and r["security"] == "1" else "0"
+            row["raw_value_exfil_percent"] = _task_ci(rows, "_raw_exfil", None, 100.0, 1)
+            row["raw_value_exfil_successful_percent"] = _task_ci(rows, "_raw_exfil_success", None, 100.0, 1)
+            row["raw_visible_in_call_args_percent"] = (
+                _task_ci(protected, "raw_visible_in_tool_call_args", "protected_values", 100.0, 1) if protected else "n/a")
+            successful = [r for r in rows if r["security"] == "1"]
+            for cls in AGENTDOJO_EXFIL_CLASSES:
+                row[f"successful_{cls}"] = str(sum(1 for r in successful if r["exfil_class"] == cls))
+            row["successful_attacks"] = str(len(successful))
     # The arms run the same task/injection pairs, so a paired test is the
     # right comparison: it removes between-pair variance that the independent
     # intervals above carry, and it is what decides whether the ordering of
@@ -374,7 +405,7 @@ def pool_agentdojo_injections(agent_model: str = "qwen3_32b-q4km-hf",
         row["paired_tasks"] = str(len(clusters))
         row["paired_task_signflip_p"] = f"{_signflip_p([v[0] for v in clusters.values()]):.3f}"
         row["paired_asr_delta_vs_unprotected"] = f"{point:+.1f} [{lo:+.1f}, {hi:+.1f}]"
-        row["paired_significant"] = "yes" if (lo > 0) == (hi > 0) else "no"
+        row["paired_significant"] = "yes" if lo > 0 or hi < 0 else "no"
     for row in out:
         row.setdefault("paired_n", "")
         row.setdefault("paired_tasks", "")
@@ -382,7 +413,9 @@ def pool_agentdojo_injections(agent_model: str = "qwen3_32b-q4km-hf",
         row.setdefault("paired_asr_delta_vs_unprotected", "")
         row.setdefault("paired_significant", "")
 
-    path = EXPERIMENTS_DIR / f"agentdojo_injection_summary_pooled_{agent_model}.csv"
+    keys = list(dict.fromkeys(k for row in out for k in row))
+    out = [{k: row.get(k, "") for k in keys} for row in out]
+    path = EXPERIMENTS_DIR / f"agentdojo_injection_summary_pooled_{agent_model}{suffix}.csv"
     _write(path, out)
     return path
 
@@ -395,6 +428,7 @@ def main() -> int:
     rebuild_agentdojo_injection_baseline()
     pool_agentdojo_suites()
     pool_agentdojo_injections()
+    pool_agentdojo_injections(suffix="_fixed")
     return 0
 
 
