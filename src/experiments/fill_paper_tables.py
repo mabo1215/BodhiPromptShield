@@ -1334,9 +1334,34 @@ def build_evasion_table() -> str:
         + "\n".join(_line(f) for f in _CANON_BYTE_LEVEL) + "\n"
         + "\\midrule\n"
         + "\n".join(_line(f) for f in _CANON_TOKEN_LEVEL) + "\n"
+        + _llm_rewrite_rows()
         + "\\bottomrule\n"
         + "\\end{tabularx}"
     )
+
+
+_LLM_REWRITE_RESULTS = "llm_rewrite_evasion_results_qwen3_32b-q4km-hf.csv"
+# (round, label): the detector-blind first rewrite, and the last adaptive round.
+_LLM_REWRITE_ROUNDS = (("1", "LLM rewrite, blind"), ("3", "LLM rewrite, adaptive"))
+
+
+def _llm_rewrite_rows() -> str:
+    """Value-preserving ASR of the LLM-rewrite attacker, when its record exists.
+
+    Only rewrites whose value a separate decoder recovers exactly count, so a
+    rewrite that destroys the value is not scored as an evasion.
+    """
+    try:
+        rows = _read_csv(_LLM_REWRITE_RESULTS)
+    except FileNotFoundError:
+        return ""
+    by_key = {(r["detector_key"], r["round"]): r for r in rows}
+    lines = []
+    for rnd, label in _LLM_REWRITE_ROUNDS:
+        cells = [_fmt_float(by_key[(k, rnd)]["asr_preserving"]) if (k, rnd) in by_key else "---"
+                 for k, _ in _EVASION_DETECTORS]
+        lines.append(label + " & " + " & ".join(cells) + " \\\\")
+    return "\\midrule\n" + "\n".join(lines) + "\n"
 
 
 # The live-stack placement experiment: one pooled summary per detector arm.
