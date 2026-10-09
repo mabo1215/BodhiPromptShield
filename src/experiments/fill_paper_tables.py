@@ -1273,6 +1273,131 @@ def build_canon_table() -> str:
     )
 
 
+def build_attrcompact_table() -> str:
+    """Main-text digest of the attribute-recovery result.
+
+    Value presence comes from the reported 32B run (it is a property of the
+    release, so every attacker shares it); the last three columns are recovery
+    on the questions whose value was removed, for each attacker capacity.
+    """
+    wanted = ("no_protection", "placeholder:presidio", "casper_style", "placeholder:learned_lr")
+    labels = {"no_protection": "No protection", "placeholder:presidio": "Presidio placeholder",
+              "casper_style": "Casper-style", "placeholder:learned_lr": "Learned placeholder"}
+    reported = {r["condition"]: r for r in _read_csv("privacylens_attribute_recovery_summary_qwen3_32b-q4km-hf.csv")}
+    by_attacker = [{r["condition"]: r for r in _read_csv(f"privacylens_attribute_recovery_summary_{tag}.csv")}
+                   for tag, _ in _ATTACKER_CAPACITY]
+    body = "\n".join(
+        f"{labels[c]} & {_ci_point(reported[c]['value_survives_release_percent'])} & "
+        + " & ".join(_ci_point(a[c]["recovery_when_value_absent_percent"]) for a in by_attacker)
+        + " \\\\"
+        for c in wanted
+    )
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccc}\n"
+        + "\\toprule\n"
+        + "& & \\multicolumn{3}{c}{Recovered when absent (\\%)} \\\\\n"
+        + "\\cmidrule(lr){3-5}\n"
+        + "Condition & Present (\\%) & 8B & 32B & 70B \\\\\n"
+        + "\\midrule\n"
+        + body + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+# Main-text labels for the evasion digest; the byte-level rows carry the dagger
+# the caption uses for "closed by canonicalization".
+_EVASION_LABELS = {
+    "Homoglyph substitution": "Homoglyph$^\\dagger$",
+    "Zero-width insertion": "Zero-width insertion$^\\dagger$",
+    "Mixed-language fullwidth": "Fullwidth (mixed language)$^\\dagger$",
+    "Paraphrase (digit spell-out)": "Digit spell-out",
+}
+_EVASION_DETECTORS = (("heuristic_mediator", "Heur."), ("gliner_pii", "Transf."),
+                      ("learned_lr", "Learned"), ("presidio", "Presidio"))
+
+
+def build_evasion_table() -> str:
+    """Main-text digest of surface-form evasion: plain ASR for four detectors."""
+    cells = {(r["detector_key"], r["attack_family"]): r["attack_success_rate"]
+             for r in _read_csv("canonicalization_hardening_asr_span_results.csv") if r["variant"] == "plain"}
+
+    def _line(family: str) -> str:
+        label = _EVASION_LABELS.get(family, _tex_escape(family))
+        return label + " & " + " & ".join(_fmt_float(cells[(k, family)]) for k, _ in _EVASION_DETECTORS) + " \\\\"
+
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccc}\n"
+        + "\\toprule\n"
+        + "Attack family & " + " & ".join(label for _, label in _EVASION_DETECTORS) + " \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(_line(f) for f in _CANON_BYTE_LEVEL) + "\n"
+        + "\\midrule\n"
+        + "\n".join(_line(f) for f in _CANON_TOKEN_LEVEL) + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+# The live-stack placement experiment: one pooled summary per detector arm.
+_LIVE_STACK_MODEL = "qwen3_32b-q4km-hf"
+_LIVE_STACK_ARMS = (("learned_lr", "Learned detector"), ("presidio", "Presidio"))
+_LIVE_STACK_PLACEMENTS = (
+    ("no_mediation", "No mediation"),
+    ("ingress_only", "Ingress only"),
+    ("egress_only", "Egress only (at write)"),
+    ("per_edge", "Every read edge"),
+    ("ingress_only_plus_restore", "Ingress only, restored"),
+    ("per_edge_plus_restore", "Every read edge, restored"),
+)
+_LIVE_STACK_COLUMNS = (
+    ("utility_percent", False),
+    ("model_context.in.value_percent", False),
+    ("model_context.mid.value_percent", False),
+    ("nonauthorized_exposure_percent", True),
+)
+
+
+def _live_stack_summary(detector: str) -> dict[tuple[str, str], dict[str, str]]:
+    rows = _read_csv(f"live_stack_placement_summary_{_LIVE_STACK_MODEL}_{detector}_v1_pooled.csv")
+    return {(r["condition"], r["metric"]): r for r in rows}
+
+
+def build_livestack_table() -> str:
+    """Placement in a live agent stack, both detector arms side by side.
+
+    Utility, the share of ingress and of reference mid-trajectory values the
+    model endpoint saw, and the share of all gold values reaching any
+    non-authorized boundary (index, memory, tool arguments as written, log,
+    final answer). Only the last column carries its interval, for width.
+    """
+    arms = [(_live_stack_summary(k), label) for k, label in _LIVE_STACK_ARMS]
+
+    def _cell(summary: dict, cond: str, metric: str, with_ci: bool) -> str:
+        r = summary.get((cond, metric))
+        if not r or r["point"] == "":
+            return "---"
+        point = f"{float(r['point']):.1f}"
+        return f"{point} [{float(r['lo']):.1f}, {float(r['hi']):.1f}]" if with_ci else point
+
+    body = "\n".join(
+        label + " & " + " & ".join(_cell(s, cond, m, ci) for s, _ in arms for m, ci in _LIVE_STACK_COLUMNS) + " \\\\"
+        for cond, label in _LIVE_STACK_PLACEMENTS
+    )
+    sub = "Util. & Ctx in & Ctx mid & Non-auth."
+    return (
+        "\\begin{tabular}{l" + "cccc" * len(arms) + "}\n"
+        + "\\toprule\n"
+        + "& " + " & ".join(f"\\multicolumn{{4}}{{c}}{{\\emph{{{label}}}}}" for _, label in arms) + " \\\\\n"
+        + "".join(f"\\cmidrule(lr){{{2 + 4 * i}-{5 + 4 * i}}}" for i in range(len(arms))) + "\n"
+        + "Placement & " + " & ".join(sub for _ in arms) + " \\\\\n"
+        + "\\midrule\n"
+        + body + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabular}"
+    )
+
+
 TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:propagation": build_propagation_table,
     "tab:latency": build_latency_table,
@@ -1303,6 +1428,9 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:propints": build_propints_table,
     "tab:judgecap": build_judgecap_table,
     "tab:canon": build_canon_table,
+    "tab:attrcompact": build_attrcompact_table,
+    "tab:evasion": build_evasion_table,
+    "tab:livestack": build_livestack_table,
 }
 
 
