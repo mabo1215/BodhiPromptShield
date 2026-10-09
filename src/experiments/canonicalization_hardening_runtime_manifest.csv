@@ -7,7 +7,7 @@ canonicalizer_rule_1,"drop Unicode format characters (general category Cf: U+200
 canonicalizer_rule_2,"NFKC-normalize each remaining character on its own (fullwidth forms to ASCII, ideographic space to space; an expansion maps every produced character to the same original index)"
 canonicalizer_rule_3,"fold Latin-lookalike Cyrillic and Greek letters to Latin with an explicit table; case, ordinary spaces, punctuation and digits are left unchanged"
 confusable_table_size,48
-asr_definition,Fraction of previously-caught applicable spans pushed to evade by the attack
+asr_definition,"Per span: among applicable spans caught on clean text, the fraction not caught after the attack (evaded / caught_clean); spans caught only after the attack do not offset evasions"
 pipeline,"Deterministic reference agent (retrieval=first half, memory=verbatim, tool=structured fields)"
 measurement,PER and SPE of the mutated gold spans after mediation of the mutated document
 bootstrap,"1000 document-level percentile resamples, 95% CI, seed 17"
@@ -25,10 +25,10 @@ presidio.spacy_model,en_core_web_lg
 detector.spacy_ner,spaCy NER masking
 spacy_ner.spacy,3.8.16
 spacy_ner.spacy_model,en_core_web_lg
-wall_seconds.asr.heuristic_mediator,3.9
-wall_seconds.asr.learned_lr,3.7
-wall_seconds.asr.presidio,34.4
-wall_seconds.asr.spacy_ner,26.6
+wall_seconds.asr.heuristic_mediator,3.4
+wall_seconds.asr.learned_lr,3.8
+wall_seconds.asr.presidio,32.7
+wall_seconds.asr.spacy_ner,24.5
 wall_seconds.propagation.heuristic_mediator,4.4
 wall_seconds.propagation.learned_lr,4.4
 wall_seconds.propagation.presidio,4.7
@@ -36,5 +36,7 @@ wall_seconds.propagation.spacy_ner,4.7
 detector.gliner_pii,Proposed (transformer PII detector)
 gliner_pii.gliner,0.2.28
 gliner_pii.gliner_model,urchade/gliner_multi_pii-v1
-wall_seconds.asr.gliner_pii,551.8
+wall_seconds.asr.gliner_pii,477.7
 wall_seconds.propagation.gliner_pii,10.3
+asr_records,canonicalization_hardening_asr_span_documents.csv; canonicalization_hardening_asr_span_results.csv
+asr_superseded_records,canonicalization_hardening_asr_documents.csv; canonicalization_hardening_asr_results.csv (marginal counts only; ASR reported as net recall drop clipped at zero)

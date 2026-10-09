@@ -1,0 +1,17 @@
+detector,attack_family,documents,applicable_spans,clean_recall,attacked_recall,caught_clean_spans,evaded_spans,newly_caught_spans,attack_success_rate,attack_success_lo,attack_success_hi,net_recall_drop
+Released heuristic detector,Homoglyph substitution,171,893,0.33,0.11,295,198,5,67.1,59.6,74.1,65.4
+Released heuristic detector,Zero-width insertion,171,893,0.33,0.00,295,294,0,99.7,98.9,100.0,99.7
+Released heuristic detector,Intra-token spacing,171,893,0.33,0.17,295,235,96,79.7,72.7,85.9,47.1
+Released heuristic detector,Case inversion,171,893,0.33,0.27,295,112,59,38.0,30.0,45.1,18.0
+Released heuristic detector,Leetspeak,171,893,0.33,0.22,295,114,15,38.6,31.8,44.5,33.6
+Released heuristic detector,Separator injection (ids),142,472,0.56,0.57,264,93,97,35.2,29.1,42.7,-1.5
+Released heuristic detector,Mixed-language fullwidth,176,1165,0.41,0.20,476,281,40,59.0,52.9,64.9,50.6
+Released heuristic detector,Paraphrase (digit spell-out),142,472,0.56,0.19,264,205,31,77.7,70.5,83.9,65.9
+Learned detector,Homoglyph substitution,171,893,0.95,0.95,847,2,0,0.2,0.0,0.6,0.2
+Learned detector,Zero-width insertion,171,893,0.95,0.94,847,9,2,1.1,0.4,2.0,0.8
+Learned detector,Intra-token spacing,171,893,0.95,0.96,847,3,11,0.4,0.0,0.8,-0.9
+Learned detector,Case inversion,171,893,0.95,0.77,847,166,10,19.6,14.7,24.6,18.4
+Learned detector,Leetspeak,171,893,0.95,0.99,847,0,40,0.0,0.0,0.0,-4.7
+Learned detector,Separator injection (ids),142,472,1.00,1.00,472,0,0,0.0,0.0,0.0,0.0
+Learned detector,Mixed-language fullwidth,176,1165,0.96,0.95,1119,11,1,1.0,0.4,1.6,0.9
+Learned detector,Paraphrase (digit spell-out),142,472,1.00,0.72,472,133,0,28.2,21.1,35.6,28.2

@@ -14,7 +14,7 @@ Usage:
 from __future__ import annotations
 
 import csv
-import random
+import itertools
 from pathlib import Path
 
 from mediation_baselines import PAPER_LABELS, bootstrap_ratio_ci
@@ -39,6 +39,38 @@ def _ci(rows: list[dict], num: str, den: str | None, scale: float, digits: int) 
     pairs = [(float(r[num]), float(r[den]) if den else 1.0) for r in rows]
     point, lo, hi = bootstrap_ratio_ci(pairs, n_boot=N_BOOT, scale=scale)
     return f"{point:.{digits}f} [{lo:.{digits}f}, {hi:.{digits}f}]"
+
+
+def _task_ci(rows: list[dict], num: str, den: str | None, scale: float, digits: int) -> str:
+    """Like ``_ci`` but resampling whole AgentDojo user tasks.
+
+    Each user task is run under several injection tasks, so the rows of one
+    task are not independent; they are summed into one (numerator,
+    denominator) cluster per (suite, task) before the bootstrap.
+    """
+    clusters: dict[tuple[str, str], list[float]] = {}
+    for r in rows:
+        acc = clusters.setdefault((r["suite"], r["task"]), [0.0, 0.0])
+        acc[0] += float(r[num])
+        acc[1] += float(r[den]) if den else 1.0
+    point, lo, hi = bootstrap_ratio_ci([tuple(v) for v in clusters.values()], n_boot=N_BOOT, scale=scale)
+    return f"{point:.{digits}f} [{lo:.{digits}f}, {hi:.{digits}f}]"
+
+
+def _signflip_p(cluster_sums: list[float]) -> float:
+    """Exact two-sided sign-flip permutation p-value for a sum of per-cluster paired differences.
+
+    Under the null each cluster's difference is symmetric about zero, so every
+    sign assignment of the nonzero cluster sums is equally likely; the p-value
+    is the share of assignments whose |sum| reaches the observed |sum|.
+    """
+    nonzero = [c for c in cluster_sums if c != 0]
+    observed = abs(sum(nonzero))
+    if len(nonzero) > 22:
+        raise ValueError("too many nonzero clusters for exact enumeration")
+    hits = sum(1 for signs in itertools.product((1, -1), repeat=len(nonzero))
+               if abs(sum(s * c for s, c in zip(signs, nonzero))) >= observed - 1e-12)
+    return hits / 2 ** len(nonzero)
 
 
 def _read_shards(pattern: str) -> list[dict]:
@@ -88,7 +120,10 @@ def pool_propagation(source: str) -> Path:
 # was fixed: agent replies replayed from the recorded cache, judge verdicts
 # regenerated where the corrected restoration changed the action. "fullearly"
 # is the true early arm (every value restored before planning).
-DOWNSTREAM_SUPERSEDING = ("restorefix", "fullearly")
+# "casper_restored" adds the Casper-style arm with its dummy->original map
+# applied at the boundary; it replaces no canonical condition. A missing record
+# is skipped.
+DOWNSTREAM_SUPERSEDING = ("restorefix", "fullearly", "casper_restored")
 # Conditions kept as records but not reported: the restoration bug changed the
 # trajectory the agent read in 166 of 200 cases on each agent, so these rows do
 # not measure the arm they are named for.
@@ -267,6 +302,12 @@ def pool_agentdojo_injections(agent_model: str = "qwen3_32b-q4km-hf",
     slack injections send a link or invite a user and carry no user data, so a
     data-plane layer cannot affect them by construction and mixing them in
     would dilute the comparison rather than sharpen it.
+
+    Every user task appears once per injection task, so every interval here,
+    the paired difference included, resamples whole (suite, task) clusters
+    (1,000 resamples, seed 17) rather than task/injection pairs.  The paired
+    difference also carries an exact task-level sign-flip permutation p-value,
+    which does not depend on resampling noise.
     """
     arms = {"unprotected": [], "unrestricted": [], "user_directed": []}
     present: dict[str, list[str]] = {k: [] for k in arms}
@@ -302,10 +343,11 @@ def pool_agentdojo_injections(agent_model: str = "qwen3_32b-q4km-hf",
             "arm": arm,
             "suites": ";".join(present[arm]),
             "pairs": str(len(rows)),
+            "tasks": str(len({(r["suite"], r["task"]) for r in rows})),
             "pairs_with_protected_values": str(len(protected)),
-            "attack_success_percent": _ci(rows, "security", None, 100.0, 1),
-            "utility_percent": _ci(rows, "utility", None, 100.0, 1),
-            "boundary_leak_percent": _ci(protected, "raw_visible_before_tool", "protected_values", 100.0, 1) if protected else "n/a",
+            "attack_success_percent": _task_ci(rows, "security", None, 100.0, 1),
+            "utility_percent": _task_ci(rows, "utility", None, 100.0, 1),
+            "boundary_leak_percent": _task_ci(protected, "raw_visible_before_tool", "protected_values", 100.0, 1) if protected else "n/a",
         })
     # The arms run the same task/injection pairs, so a paired test is the
     # right comparison: it removes between-pair variance that the independent
@@ -320,18 +362,23 @@ def pool_agentdojo_injections(agent_model: str = "qwen3_32b-q4km-hf",
         shared = sorted(set(baseline) & set(other))
         if not shared:
             continue
-        diffs = [other[k] - baseline[k] for k in shared]
-        point = 100.0 * sum(diffs) / len(diffs)
-        rng = random.Random(17)
-        samples = sorted(100.0 * sum(rng.choice(diffs) for _ in diffs) / len(diffs)
-                         for _ in range(N_BOOT))
-        lo, hi = samples[int(0.025 * N_BOOT)], samples[int(0.975 * N_BOOT)]
+        # Paired differences summed per (suite, task) cluster, then whole tasks resampled.
+        clusters: dict[tuple[str, str], list[float]] = {}
+        for k in shared:
+            acc = clusters.setdefault(k[:2], [0.0, 0.0])
+            acc[0] += other[k] - baseline[k]
+            acc[1] += 1.0
+        point, lo, hi = bootstrap_ratio_ci([tuple(v) for v in clusters.values()], n_boot=N_BOOT, scale=100.0)
         row = next(r for r in out if r["arm"] == arm)
         row["paired_n"] = str(len(shared))
+        row["paired_tasks"] = str(len(clusters))
+        row["paired_task_signflip_p"] = f"{_signflip_p([v[0] for v in clusters.values()]):.3f}"
         row["paired_asr_delta_vs_unprotected"] = f"{point:+.1f} [{lo:+.1f}, {hi:+.1f}]"
         row["paired_significant"] = "yes" if (lo > 0) == (hi > 0) else "no"
     for row in out:
         row.setdefault("paired_n", "")
+        row.setdefault("paired_tasks", "")
+        row.setdefault("paired_task_signflip_p", "")
         row.setdefault("paired_asr_delta_vs_unprotected", "")
         row.setdefault("paired_significant", "")
 

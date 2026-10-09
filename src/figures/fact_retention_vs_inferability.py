@@ -3,8 +3,8 @@
 Three measures of the same quantity disagree, and the disagreement is the
 point. The lexical Fact Retention Rate counts whether a fact's content words
 survive. An LLM judge, shown only the released surface, is asked whether a
-reader would still learn the fact. A person, blind both to which method
-produced an item and to the judge's verdict, answers that same question on a
+reader would still learn the fact. A person, not told which method produced
+an item and not shown the judge's verdict, answers that same question on a
 stratified subset of the same judgments.
 
 The two automated measures report a roughly flat line: whatever the method,
@@ -18,6 +18,12 @@ human numbers and treats the proxies as failed instruments.
 Reads the per-method table written by the annotation analysis; recomputes
 nothing. The labels are annotator 1's on the full 240-item subset (40 per
 method): the first 102 items pooled with the same reader's extension round.
+The human intervals are that table's document-clustered bootstrap intervals.
+
+The figure is drawn at the one-column width it is printed at and saved
+without cropping, so every font size is its printed size (none under 7 pt).
+Point labels carry one decimal, since a 40-item rate moves in steps of 2.5.
+Fonts are embedded as TrueType (Type 42) and the PDF carries no creation date.
 """
 import argparse
 import csv
@@ -29,6 +35,13 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+
+plt.rcParams["pdf.fonttype"] = 42
+plt.rcParams["ps.fonttype"] = 42
+
+# Printed one-column width in the manuscript's layout (acmart sigconf).
+COLUMN_WIDTH_IN = (506.295 - 24.0) / 2 / 72.27
+MIN_PT = 7.0
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.dirname(SCRIPT_DIR)
@@ -48,8 +61,8 @@ LABELS = {
     "regex_only": "Regex-only",
     "presidio": "Presidio",
     "casper_style": "Casper-style",
-    "learned_lr": "Ours (learned)",
-    "heuristic_mediator": "Ours (heuristic)",
+    "learned_lr": "Prop. (learned)",
+    "heuristic_mediator": "Prop. (heuristic)",
 }
 
 
@@ -86,7 +99,7 @@ def plot(path, out_path, judge_k, lex_k):
     rows.sort(key=lambda r: -_point(r["human_inferable"]))
     y = np.arange(len(rows), dtype=float)
 
-    fig, ax = plt.subplots(figsize=(5.5, 0.44 * len(rows) + 1.15))
+    fig, ax = plt.subplots(figsize=(COLUMN_WIDTH_IN, 0.3 * len(rows) + 0.95), layout="constrained")
     fig.patch.set_facecolor(SURFACE)
     ax.set_facecolor(SURFACE)
 
@@ -95,22 +108,25 @@ def plot(path, out_path, judge_k, lex_k):
         # the heavier mark; the proxies sit behind it as small hollow markers.
         h, lo, hi = _bounds(row["human_inferable"])
         ax.plot([lo, hi], [i, i], color=HUMAN, linewidth=1.1, alpha=0.45, zorder=2)
-        ax.plot(_point(row["judge_inferable"]), i, marker="s", markersize=5.4,
-                markerfacecolor="none", markeredgecolor=JUDGE, markeredgewidth=1.4, zorder=3)
-        ax.plot(_point(row["lexical_retained"]), i, marker="^", markersize=5.6,
-                markerfacecolor="none", markeredgecolor=LEXICAL, markeredgewidth=1.4, zorder=3)
-        ax.plot(h, i, marker="o", markersize=7, color=HUMAN, zorder=4,
-                markeredgecolor=SURFACE, markeredgewidth=1.1)
-        ax.annotate(f"{h:.0f}", (h, i), textcoords="offset points", xytext=(0, 9),
-                    ha="center", fontsize=6.8, color=HUMAN, fontweight="bold")
+        ax.plot(_point(row["judge_inferable"]), i, marker="s", markersize=4.6,
+                markerfacecolor="none", markeredgecolor=JUDGE, markeredgewidth=1.2, zorder=3)
+        ax.plot(_point(row["lexical_retained"]), i, marker="^", markersize=4.8,
+                markerfacecolor="none", markeredgecolor=LEXICAL, markeredgewidth=1.2, zorder=3)
+        ax.plot(h, i, marker="o", markersize=5.6, color=HUMAN, zorder=4,
+                markeredgecolor=SURFACE, markeredgewidth=1.0)
+        # One decimal: rates over 40 items are multiples of 2.5, and a rounded
+        # integer label would print 32.5 as 32 (round-half-even).
+        ax.annotate(f"{h:.1f}", (h, i), textcoords="offset points", xytext=(0, 5.5),
+                    ha="center", fontsize=MIN_PT, color=TEXT_PRIMARY)
 
     ax.set_yticks(y)
-    ax.set_yticklabels([LABELS.get(r["method_key"], r["method_key"]) for r in rows], fontsize=7.8)
-    ax.set_ylim(-0.8, len(rows) - 0.25)
+    ax.set_yticklabels([LABELS.get(r["method_key"], r["method_key"]) for r in rows], fontsize=MIN_PT)
+    ax.set_ylim(-0.75, len(rows) - 0.4)
     ax.invert_yaxis()
-    ax.set_xlabel("Sensitive facts still inferable (%)", fontsize=8, color=TEXT_PRIMARY)
-    ax.set_xlim(0, 108)
-    ax.tick_params(axis="x", labelsize=7, colors=TEXT_SECONDARY, length=0)
+    ax.set_xlabel("Sensitive facts still inferable (%)", fontsize=7.5, color=TEXT_PRIMARY)
+    ax.set_xlim(0, 105)
+    ax.set_xticks([0, 25, 50, 75, 100])
+    ax.tick_params(axis="x", labelsize=MIN_PT, colors=TEXT_SECONDARY, length=0)
     ax.tick_params(axis="y", colors=TEXT_PRIMARY, length=0)
     ax.grid(axis="x", color=GRID, linewidth=0.5, zorder=0)
     ax.set_axisbelow(True)
@@ -120,21 +136,21 @@ def plot(path, out_path, judge_k, lex_k):
     ax.spines["bottom"].set_linewidth(0.6)
 
     handles = [
-        plt.Line2D([], [], marker="o", linestyle="none", markersize=7, color=HUMAN,
-                   markeredgecolor=SURFACE, label="Human (blind), 95% CI"),
-        plt.Line2D([], [], marker="s", linestyle="none", markersize=5.4, markerfacecolor="none",
-                   markeredgecolor=JUDGE, markeredgewidth=1.4,
+        plt.Line2D([], [], marker="o", linestyle="none", markersize=5.6, color=HUMAN,
+                   markeredgecolor=SURFACE, label="Human, 95% CI"),
+        plt.Line2D([], [], marker="s", linestyle="none", markersize=4.6, markerfacecolor="none",
+                   markeredgecolor=JUDGE, markeredgewidth=1.2,
                    label=f"LLM judge, $\\kappa$={judge_k:.2f}"),
-        plt.Line2D([], [], marker="^", linestyle="none", markersize=5.6, markerfacecolor="none",
-                   markeredgecolor=LEXICAL, markeredgewidth=1.4,
+        plt.Line2D([], [], marker="^", linestyle="none", markersize=4.8, markerfacecolor="none",
+                   markeredgecolor=LEXICAL, markeredgewidth=1.2,
                    label=f"Lexical, $\\kappa$={lex_k:.2f}"),
     ]
-    ax.legend(handles=handles, frameon=False, fontsize=6.9, loc="lower center",
-              bbox_to_anchor=(0.5, 1.0), ncol=3, handlelength=1.0,
-              labelcolor=TEXT_SECONDARY, columnspacing=1.0)
+    fig.legend(handles=handles, frameon=False, fontsize=MIN_PT, loc="outside upper center",
+               ncol=3, handlelength=0.8, handletextpad=0.3, labelcolor=TEXT_SECONDARY,
+               columnspacing=0.7)
 
-    fig.tight_layout()
-    fig.savefig(out_path, dpi=400, bbox_inches="tight", facecolor=SURFACE)
+    fig.get_layout_engine().set(w_pad=0.02, h_pad=0.02)
+    fig.savefig(out_path, dpi=400, facecolor=SURFACE, metadata={"CreationDate": None})
     plt.close(fig)
     print(f"wrote {out_path}")
 

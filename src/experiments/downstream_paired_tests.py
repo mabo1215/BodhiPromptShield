@@ -17,6 +17,11 @@ no_protection, and reports
 Helpfulness and exact-identifier exposure get the same paired bootstrap so that
 a privacy change and its utility cost are read off the same resamples.
 
+A second record, ``downstream_head_to_head_tests_<agent>.csv``, applies the
+same tests to the pre-specified pairs of mediated conditions the manuscript
+compares directly (``HEAD_TO_HEAD``), e.g. learned typed placeholders against
+Casper-style; these are single named comparisons and are not Holm-adjusted.
+
 Usage:
     python downstream_paired_tests.py [agent_model ...]
 """
@@ -42,6 +47,15 @@ DEFAULT_MODELS = ["qwen3_32b-q4km-hf", "llama3.3_70b-q4km-hf"]
 # no-protection prompt byte for byte; comparing it with the control tests no
 # hypothesis, and counting it in the Holm family would only change the family.
 IDENTICAL_TO_CONTROL = frozenset({"symbolic_fullearly:gliner_pii"})
+
+# Pairs of mediated conditions compared directly in the text, as (treated, reference).
+HEAD_TO_HEAD = (
+    ("placeholder:learned_lr", "casper_style"),
+    ("placeholder:presidio", "casper_style"),
+    # Present once the restored Casper-style arm has been run; skipped until then.
+    ("casper_restored", "casper_style"),
+    ("placeholder:learned_lr", "casper_restored"),
+)
 
 
 def mcnemar_exact_p(b: int, c: int) -> float:
@@ -104,12 +118,10 @@ def _fmt(point: float, lo: float, hi: float, digits: int) -> str:
     return f"{point:+.{digits}f} [{lo:+.{digits}f}, {hi:+.{digits}f}]"
 
 
-def paired_tests(agent_model: str) -> Path:
-    """Compare every mediated condition with no_protection on matched cases."""
+def _by_condition(agent_model: str) -> tuple[dict[str, dict[str, dict]], list[str]]:
     rows = read_downstream_rows(agent_model)
     if not rows:
         raise SystemExit(f"no downstream shards found for {agent_model}")
-
     by_condition: dict[str, dict[str, dict]] = {}
     order: list[str] = []
     for row in rows:
@@ -118,6 +130,40 @@ def paired_tests(agent_model: str) -> Path:
             by_condition[cond] = {}
             order.append(cond)
         by_condition[cond][row["case"]] = row
+    return by_condition, order
+
+
+def _compare(treated: dict[str, dict], control: dict[str, dict]) -> tuple[dict, float] | None:
+    """McNemar on the leak verdict plus paired bootstraps of leak, identifiers and helpfulness."""
+    cases = sorted(set(treated) & set(control))
+    if not cases:
+        return None
+    # Judge's binary leak verdict: b and c are the pairs that disagree.
+    b = sum(1 for k in cases if int(treated[k]["leak_any"]) == 0 and int(control[k]["leak_any"]) == 1)
+    c = sum(1 for k in cases if int(treated[k]["leak_any"]) == 1 and int(control[k]["leak_any"]) == 0)
+    p = mcnemar_exact_p(b, c)
+    leak = paired_bootstrap_diff(
+        [(float(treated[k]["leak_any"]), 1.0, float(control[k]["leak_any"]), 1.0) for k in cases],
+        scale=100.0)
+    ids = paired_bootstrap_diff(
+        [(float(treated[k]["ids_in_final_action"]), float(treated[k]["ids_total"]),
+          float(control[k]["ids_in_final_action"]), float(control[k]["ids_total"])) for k in cases],
+        scale=100.0)
+    helpful = paired_bootstrap_diff(
+        [(float(treated[k]["helpfulness"]), 1.0, float(control[k]["helpfulness"]), 1.0) for k in cases])
+    return {
+        "paired_cases": str(len(cases)),
+        "leak_rate_diff_points": _fmt(*leak, 1),
+        "mcnemar_discordant_b_c": f"{b}/{c}",
+        "mcnemar_p": f"{p:.4f}",
+        "exact_id_exposure_diff_points": _fmt(*ids, 1),
+        "helpfulness_diff": _fmt(*helpful, 2),
+    }, p
+
+
+def paired_tests(agent_model: str) -> Path:
+    """Compare every mediated condition with no_protection on matched cases."""
+    by_condition, order = _by_condition(agent_model)
     if CONTROL not in by_condition:
         raise SystemExit(f"{agent_model}: no {CONTROL} rows to compare against")
 
@@ -128,36 +174,20 @@ def paired_tests(agent_model: str) -> Path:
     for cond in order:
         if cond == CONTROL or cond in IDENTICAL_TO_CONTROL:
             continue
-        treated = by_condition[cond]
-        cases = sorted(set(treated) & set(control))
-        if not cases:
+        result = _compare(by_condition[cond], control)
+        if result is None:
             continue
-
-        # Judge's binary leak verdict: b and c are the pairs that disagree.
-        b = sum(1 for k in cases if int(treated[k]["leak_any"]) == 0 and int(control[k]["leak_any"]) == 1)
-        c = sum(1 for k in cases if int(treated[k]["leak_any"]) == 1 and int(control[k]["leak_any"]) == 0)
-        p = mcnemar_exact_p(b, c)
+        cells, p = result
         raw_p.append(p)
-
-        leak = paired_bootstrap_diff(
-            [(float(treated[k]["leak_any"]), 1.0, float(control[k]["leak_any"]), 1.0) for k in cases],
-            scale=100.0)
-        ids = paired_bootstrap_diff(
-            [(float(treated[k]["ids_in_final_action"]), float(treated[k]["ids_total"]),
-              float(control[k]["ids_in_final_action"]), float(control[k]["ids_total"])) for k in cases],
-            scale=100.0)
-        helpful = paired_bootstrap_diff(
-            [(float(treated[k]["helpfulness"]), 1.0, float(control[k]["helpfulness"]), 1.0) for k in cases])
-
         out.append({
             "condition": cond,
-            "paired_cases": str(len(cases)),
-            "leak_rate_diff_points": _fmt(*leak, 1),
-            "mcnemar_discordant_b_c": f"{b}/{c}",
-            "mcnemar_p": f"{p:.4f}",
+            "paired_cases": cells["paired_cases"],
+            "leak_rate_diff_points": cells["leak_rate_diff_points"],
+            "mcnemar_discordant_b_c": cells["mcnemar_discordant_b_c"],
+            "mcnemar_p": cells["mcnemar_p"],
             "mcnemar_p_holm": "",
-            "exact_id_exposure_diff_points": _fmt(*ids, 1),
-            "helpfulness_diff": _fmt(*helpful, 2),
+            "exact_id_exposure_diff_points": cells["exact_id_exposure_diff_points"],
+            "helpfulness_diff": cells["helpfulness_diff"],
         })
 
     for row, adj in zip(out, holm(raw_p)):
@@ -168,10 +198,26 @@ def paired_tests(agent_model: str) -> Path:
     return path
 
 
+def head_to_head_tests(agent_model: str) -> Path:
+    """The same paired tests on the named pairs of mediated conditions (treated minus reference)."""
+    by_condition, _ = _by_condition(agent_model)
+    out: list[dict] = []
+    for treated, reference in HEAD_TO_HEAD:
+        if treated not in by_condition or reference not in by_condition:
+            continue
+        result = _compare(by_condition[treated], by_condition[reference])
+        if result is not None:
+            out.append({"condition": treated, "reference": reference, **result[0]})
+    path = EXPERIMENTS_DIR / f"downstream_head_to_head_tests_{agent_model}.csv"
+    _write(path, out)
+    return path
+
+
 def main(argv: list[str]) -> int:
     for model in (argv[1:] or DEFAULT_MODELS):
         print(f"\n=== {model} (control: {CONTROL}) ===")
         paired_tests(model)
+        head_to_head_tests(model)
     return 0
 
 

@@ -31,6 +31,16 @@ round-one labels into 240 items, 40 per method, and annotator 1 against
 annotator 3 can be re-estimated on all 240. ``--pool-with-round1 A`` (the
 assignment used: A is annotator 1, B is annotator 3) states which reader is
 which and writes the pooled rates; without it nothing is pooled.
+
+Intervals.  Every per-method rate (human, judge and lexical) and every
+method-minus-control difference carries a 95% percentile bootstrap interval
+that resamples documents, not items: items drawn from the same PrivacyLens
+document share their context, so within each method the item set is grouped
+by the key file's ``doc_id`` and whole documents are drawn with replacement
+(as many as the method has), 10,000 resamples, seed 17.  For a difference the
+method's and the control's documents are resampled independently on each
+draw, because the two arms are different items.  Point estimates are plain
+item-level rates and do not depend on the resampling.
 """
 from __future__ import annotations
 
@@ -81,19 +91,21 @@ def _interpret(kappa: float) -> str:
 
 
 def _write_by_method(path: Path, labelled: list[tuple[str, int]], key_rows: dict[str, dict]) -> None:
-    """Per-method rates in the shape the inferability figure reads."""
+    """Per-method rates in the shape the inferability figure reads, document-clustered CIs."""
     methods: dict[str, list[tuple[int, str]]] = {}
     for item, label in labelled:
         methods.setdefault(key_rows[item]["method_key"], []).append((label, item))
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(["method_key", "items", "human_inferable",
-                         "judge_inferable", "lexical_retained"])
+                         "judge_inferable", "lexical_retained", "documents"])
         for method, pairs in methods.items():
             ids = [i for _, i in pairs]
-            writer.writerow([method, len(pairs), _rate([v for v, _ in pairs]),
-                             _rate([int(key_rows[i]["judge_inferable"]) for i in ids]),
-                             _rate([int(key_rows[i]["lexical_retained"]) for i in ids])])
+            docs = [key_rows[i]["doc_id"] for i in ids]
+            writer.writerow([method, len(pairs), _rate([v for v, _ in pairs], docs),
+                             _rate([int(key_rows[i]["judge_inferable"]) for i in ids], docs),
+                             _rate([int(key_rows[i]["lexical_retained"]) for i in ids], docs),
+                             len(set(docs))])
     print(f"[agreement] wrote {path.name}")
 
 
@@ -133,22 +145,37 @@ def run(sheet: Path, key: Path, out: Path, by_method: Path) -> None:
     _write_by_method(by_method, [(i, human[i]) for i in annotated], key_rows)
 
 
-def _bootstrap_ci(flags: list[int], iterations: int = 10000, seed: int = 17) -> tuple[float, float]:
-    """Percentile bootstrap CI for the rate of 1s, on the same seed as the run."""
-    rng = random.Random(seed)
-    n = len(flags)
-    if n == 0:
+def _clusters(flags: list[int], docs: list[str]) -> list[tuple[int, int]]:
+    """(positives, items) per document, in first-seen document order."""
+    grouped: dict[str, list[int]] = {}
+    for flag, doc in zip(flags, docs):
+        grouped.setdefault(doc, []).append(flag)
+    return [(sum(v), len(v)) for v in grouped.values()]
+
+
+def _draw_rate(rng: random.Random, clusters: list[tuple[int, int]]) -> float:
+    """One document-clustered resample: draw whole documents, return the pooled rate."""
+    pos = items = 0
+    for _ in clusters:
+        a, b = clusters[rng.randrange(len(clusters))]
+        pos += a
+        items += b
+    return pos / items
+
+
+def _bootstrap_ci(flags: list[int], docs: list[str], iterations: int = 10000,
+                  seed: int = 17) -> tuple[float, float]:
+    """Document-clustered percentile bootstrap CI for the rate of 1s."""
+    if not flags:
         return 0.0, 0.0
-    rates = []
-    for _ in range(iterations):
-        draw = sum(flags[rng.randrange(n)] for _ in range(n))
-        rates.append(100.0 * draw / n)
-    rates.sort()
+    rng = random.Random(seed)
+    clusters = _clusters(flags, docs)
+    rates = sorted(100.0 * _draw_rate(rng, clusters) for _ in range(iterations))
     return rates[int(0.025 * iterations)], rates[min(int(0.975 * iterations), iterations - 1)]
 
 
-def _rate(flags: list[int]) -> str:
-    lo, hi = _bootstrap_ci(flags)
+def _rate(flags: list[int], docs: list[str]) -> str:
+    lo, hi = _bootstrap_ci(flags, docs)
     return f"{100.0 * sum(flags) / len(flags):.1f} [{lo:.1f}, {hi:.1f}]"
 
 
@@ -158,29 +185,31 @@ def _write_vs_control(path: Path, labelled: list[tuple[str, int]], key_rows: dic
     """Each method's human rate minus the unprotected control's, with a bootstrap CI.
 
     Methods are sampled independently (different items), so the two groups are
-    resampled independently on each draw.
+    resampled independently on each draw, each by whole documents.
     """
-    methods: dict[str, list[int]] = {}
+    methods: dict[str, tuple[list[int], list[str]]] = {}
     for item, label in labelled:
-        methods.setdefault(key_rows[item]["method_key"], []).append(label)
-    base = methods[control]
+        flags, docs = methods.setdefault(key_rows[item]["method_key"], ([], []))
+        flags.append(label)
+        docs.append(key_rows[item]["doc_id"])
+    base, base_docs = methods[control]
+    base_clusters = _clusters(base, base_docs)
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["method_key", "items", "control_items", "difference_points", "ci_low", "ci_high"])
-        for method, flags in methods.items():
+        writer.writerow(["method_key", "items", "control_items", "difference_points", "ci_low", "ci_high",
+                         "documents", "control_documents"])
+        for method, (flags, docs) in methods.items():
             if method == control:
                 continue
             rng = random.Random(seed)
-            draws = []
-            for _ in range(iterations):
-                a = sum(flags[rng.randrange(len(flags))] for _ in flags) / len(flags)
-                b = sum(base[rng.randrange(len(base))] for _ in base) / len(base)
-                draws.append(100.0 * (a - b))
-            draws.sort()
+            clusters = _clusters(flags, docs)
+            draws = sorted(100.0 * (_draw_rate(rng, clusters) - _draw_rate(rng, base_clusters))
+                           for _ in range(iterations))
             point = 100.0 * (sum(flags) / len(flags) - sum(base) / len(base))
             writer.writerow([method, len(flags), len(base), f"{point:.1f}",
                              f"{draws[int(0.025 * iterations)]:.1f}",
-                             f"{draws[min(int(0.975 * iterations), iterations - 1)]:.1f}"])
+                             f"{draws[min(int(0.975 * iterations), iterations - 1)]:.1f}",
+                             len(clusters), len(base_clusters)])
     print(f"[agreement] wrote {path.name}")
 
 

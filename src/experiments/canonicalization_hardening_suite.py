@@ -9,8 +9,10 @@ every detector in the registry, and both adversary measurements are repeated
 for the plain and the canonicalized variant of each detector:
 
 * attack success rate (ASR) per attack family, defined exactly as in the
-  measured adaptive adversary: the fraction of previously-caught applicable
-  gold spans that the attack pushes to evade;
+  measured adaptive adversary and counted per span: among the applicable gold
+  spans caught on the clean text, the fraction not caught after the attack
+  (spans caught only after the attack are recorded separately and do not
+  offset evasions);
 * post-propagation exposure (PER) and stage-wise surface survival (SPE) of the
   mutated gold spans through the deterministic reference agent, defined
   exactly as in the adversary propagation suite, plus the clean row.
@@ -39,7 +41,11 @@ Records
 -------
 Per-document rows are appended one at a time with flush+fsync and are resumable
 by (attack, method_key, variant, doc_id); ``method_key`` is the base detector
-key and ``variant`` is ``plain`` or ``canonical``.  The summary tables are
+key and ``variant`` is ``plain`` or ``canonical``.  ASR rows carry the per-span
+joint outcome counts (``evaded``, ``newly_caught``) and are written to the
+``_span`` record files; the earlier ASR records without that tag hold only
+marginal counts and reported a net recall drop clipped at zero, and are left
+in place as superseded.  The summary tables are
 rebuilt from every row of the current slice on each invocation, so detectors
 may be run in separate invocations (the transformer detector is run last on
 its own).  Within an invocation each base detector memoizes its output per
@@ -60,15 +66,16 @@ from pathlib import Path
 
 from adversary_propagation_suite import RESULT_FIELDS as PROPAGATION_FIELDS, _measure, _train_learned_detector
 from ai4privacy_matched_baseline_suite import _load_records, _merge_spans
-from measured_adaptive_adversary import ATTACKS, HOMOGLYPH, N_BOOT, _build_mutation, _covered
+from measured_adaptive_adversary import ATTACKS, HOMOGLYPH, N_BOOT, _build_mutation, span_outcomes
 from measured_agent_propagation import MARKER, _sanitize
 from mediation_baselines import PAPER_LABELS, Detector, TypedSpan, bootstrap_ratio_ci, build_detectors
 from propagation_suite import AI4_PATH, AI4_SPLIT
 
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
-ASR_ROWS_PATH = EXPERIMENTS_DIR / "canonicalization_hardening_asr_documents.csv"
-ASR_RESULTS_PATH = EXPERIMENTS_DIR / "canonicalization_hardening_asr_results.csv"
+# Per-span ASR records; the files without the _span tag are the superseded net-drop records.
+ASR_ROWS_PATH = EXPERIMENTS_DIR / "canonicalization_hardening_asr_span_documents.csv"
+ASR_RESULTS_PATH = EXPERIMENTS_DIR / "canonicalization_hardening_asr_span_results.csv"
 PROPAGATION_ROWS_PATH = EXPERIMENTS_DIR / "canonicalization_hardening_documents.csv"
 PROPAGATION_RESULTS_PATH = EXPERIMENTS_DIR / "canonicalization_hardening_propagation_results.csv"
 MANIFEST_PATH = EXPERIMENTS_DIR / "canonicalization_hardening_runtime_manifest.csv"
@@ -84,9 +91,11 @@ CANONICALIZER_RULES = [
     "fold Latin-lookalike Cyrillic and Greek letters to Latin with an explicit table; case, ordinary spaces, "
     "punctuation and digits are left unchanged",
 ]
-ASR_ROW_FIELDS = ["attack", "method_key", "variant", "doc_id", "applicable", "caught_clean", "caught_attacked"]
+ASR_ROW_FIELDS = ["attack", "method_key", "variant", "doc_id", "applicable", "caught_clean", "caught_attacked",
+                  "evaded", "newly_caught"]
 ASR_RESULT_FIELDS = ["detector_key", "detector", "variant", "attack_family", "documents", "applicable_spans",
-                     "clean_recall", "attacked_recall", "attack_success_rate", "attack_success_lo", "attack_success_hi"]
+                     "clean_recall", "attacked_recall", "caught_clean_spans", "evaded_spans", "newly_caught_spans",
+                     "attack_success_rate", "attack_success_lo", "attack_success_hi", "net_recall_drop"]
 PROPAGATION_ROW_FIELDS = ["attack", "method_key", "variant", "doc_id", "ret_s", "ret_t", "mem_s", "mem_t",
                           "tool_s", "tool_t", "res_chars", "sens_chars"]
 PROPAGATION_RESULT_FIELDS = PROPAGATION_FIELDS[:3] + ["variant"] + PROPAGATION_FIELDS[3:]
@@ -326,12 +335,8 @@ def run_asr(docs: list[Doc], pairs: list[DetectorPair], done: dict[RowKey, dict[
                     app_idx = [i for i, (a, b) in enumerate(gold) if applies(text[a:b])]
                     if not app_idx:
                         continue
-                    det_clean = det(text)
-                    caught_clean = sum(1 for i in app_idx if _covered(gold[i], det_clean))
                     mut_text, new_spans = _build_mutation(text, gold, mutate, applies)
-                    det_mut = det(mut_text)
-                    caught_attacked = sum(1 for i in app_idx if _covered(new_spans[i], det_mut))
-                    counts = {"applicable": len(app_idx), "caught_clean": caught_clean, "caught_attacked": caught_attacked}
+                    counts = span_outcomes(gold, new_spans, det(text), det(mut_text), app_idx)
                     rows.append({"attack": attack, "method_key": key, "variant": variant, "doc_id": doc_id, **counts})
                     done[row_key] = counts
             print(f"  asr {key:20s} {attack:28s} done ({time.perf_counter() - started:7.1f} s)", flush=True)
@@ -351,16 +356,22 @@ def _summarize_asr(done: dict[RowKey, dict[str, int]], doc_index: dict[str, int]
                 applicable = sum(c["applicable"] for c in counts)
                 caught_clean = sum(c["caught_clean"] for c in counts)
                 caught_attacked = sum(c["caught_attacked"] for c in counts)
-                asr = max(0.0, (caught_clean - caught_attacked) / caught_clean) if caught_clean else 0.0
-                doc_pairs = [(float(c["caught_clean"] - c["caught_attacked"]), float(c["caught_clean"])) for c in counts]
+                evaded = sum(c["evaded"] for c in counts)
+                newly_caught = sum(c["newly_caught"] for c in counts)
+                asr = evaded / caught_clean if caught_clean else 0.0
+                net_drop = (caught_clean - caught_attacked) / caught_clean if caught_clean else 0.0
+                doc_pairs = [(float(c["evaded"]), float(c["caught_clean"])) for c in counts]
                 _, lo, hi = bootstrap_ratio_ci(doc_pairs, n_boot=n_boot, scale=100.0)
                 results.append({
                     "detector_key": key, "detector": _label(key, variant), "variant": variant, "attack_family": attack,
                     "documents": str(len(counts)), "applicable_spans": str(applicable),
                     "clean_recall": f"{caught_clean / applicable if applicable else 0.0:.2f}",
                     "attacked_recall": f"{caught_attacked / applicable if applicable else 0.0:.2f}",
+                    "caught_clean_spans": str(caught_clean), "evaded_spans": str(evaded),
+                    "newly_caught_spans": str(newly_caught),
                     "attack_success_rate": f"{100.0 * asr:.1f}",
-                    "attack_success_lo": f"{max(0.0, lo):.1f}", "attack_success_hi": f"{max(0.0, hi):.1f}",
+                    "attack_success_lo": f"{lo:.1f}", "attack_success_hi": f"{hi:.1f}",
+                    "net_recall_drop": f"{100.0 * net_drop:.1f}",
                 })
     return results
 
@@ -468,7 +479,11 @@ def run(method_keys: list[str], *, max_docs: int, n_boot: int, do_asr: bool, do_
         "variants": "plain (detector as released); canonical (same detector behind the canonicalizer, spans mapped back)",
         **{f"canonicalizer_rule_{i}": rule for i, rule in enumerate(CANONICALIZER_RULES, 1)},
         "confusable_table_size": str(len(CONFUSABLES)),
-        "asr_definition": "Fraction of previously-caught applicable spans pushed to evade by the attack",
+        "asr_definition": ("Per span: among applicable spans caught on clean text, the fraction not caught after the "
+                           "attack (evaded / caught_clean); spans caught only after the attack do not offset evasions"),
+        "asr_records": f"{ASR_ROWS_PATH.name}; {ASR_RESULTS_PATH.name}",
+        "asr_superseded_records": ("canonicalization_hardening_asr_documents.csv; canonicalization_hardening_asr_results.csv "
+                                   "(marginal counts only; ASR reported as net recall drop clipped at zero)"),
         "pipeline": "Deterministic reference agent (retrieval=first half, memory=verbatim, tool=structured fields)",
         "measurement": "PER and SPE of the mutated gold spans after mediation of the mutated document",
         "bootstrap": f"{n_boot} document-level percentile resamples, 95% CI, seed 17",

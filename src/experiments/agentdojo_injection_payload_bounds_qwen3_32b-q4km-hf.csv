@@ -1,0 +1,10 @@
+arm,suite,pairs,successful_attacks,no_protected_value,raw_impossible,raw_possible,raw_possible_visible,raw_possible_restored_only,successful_with_tokens_in_tool_args,successful_with_refused_restoration,raw_exfiltration_upper_bound_percent,placeholder_or_unprotected_lower_bound_percent
+unprotected,banking,32,20,10,0,10,10,0,0,0,50.0,50.0
+unprotected,slack,42,35,31,0,4,4,0,0,0,11.4,88.6
+unprotected,pooled,74,55,41,0,14,14,0,0,0,25.5,74.5
+unrestricted,banking,32,19,9,3,7,0,7,7,0,36.8,63.2
+unrestricted,slack,42,32,29,1,2,1,1,1,0,6.2,93.8
+unrestricted,pooled,74,51,38,4,9,1,8,8,0,17.6,82.4
+user_directed,banking,32,18,9,4,5,1,4,6,3,27.8,72.2
+user_directed,slack,42,29,26,1,2,2,0,0,0,6.9,93.1
+user_directed,pooled,74,47,35,5,7,3,4,6,3,14.9,85.1

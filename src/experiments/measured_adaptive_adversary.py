@@ -23,13 +23,20 @@ Metrics (measured, per attack family x detector)
 ------------------------------------------------
 * clean_recall    : fraction of applicable spans the detector catches unmutated.
 * attacked_recall : fraction of mutated applicable spans still caught.
-* attack_success_rate (ASR) : fraction of *previously-caught* spans the attack
-  pushes to evade = max(0, (caught_clean - caught_attacked) / caught_clean).
+* attack_success_rate (ASR) : counted per span.  Among the applicable spans the
+  detector catches on the clean text, the fraction it does NOT catch once the
+  span is mutated: ASR = evaded / caught_clean, where a span is ``evaded`` when
+  it is caught clean and missed attacked.  Spans caught only after the attack
+  (``newly_caught``) are reported separately and do not offset evasions.
+* net_recall_drop : the unclipped net change (caught_clean - caught_attacked) /
+  caught_clean, kept for comparison with the earlier record, which reported
+  this quantity clipped at zero as ASR
+  (measured_adaptive_adversary_results.csv, superseded and left in place).
 
 ASR is a ratio of sums over spans that are clustered inside documents, so its
-uncertainty is reported as a document-level percentile bootstrap over the same
-(numerator, denominator) pairs, using the shared helper and the fixed seed the
-other propagation tables use.
+uncertainty is reported as a document-level percentile bootstrap over the
+per-document (evaded, caught_clean) pairs, using the shared helper, 1,000
+resamples and the fixed seed 17 the other propagation tables use.
 """
 from __future__ import annotations
 
@@ -46,8 +53,24 @@ from mediation_baselines import bootstrap_ratio_ci
 
 EXPERIMENTS_DIR = Path(__file__).resolve().parent
 DEFAULT_INPUT_PATH = EXPERIMENTS_DIR / "ai4privacy_pii300k_english_export.jsonl"
-RESULTS_PATH = EXPERIMENTS_DIR / "measured_adaptive_adversary_results.csv"
-RUNTIME_PATH = EXPERIMENTS_DIR / "measured_adaptive_adversary_runtime_manifest.csv"
+# Per-span ASR records; the net-recall-drop records without the _span tag are superseded.
+RESULTS_PATH = EXPERIMENTS_DIR / "measured_adaptive_adversary_span_results.csv"
+RUNTIME_PATH = EXPERIMENTS_DIR / "measured_adaptive_adversary_span_runtime_manifest.csv"
+RESULT_FIELDS = [
+    "detector",
+    "attack_family",
+    "documents",
+    "applicable_spans",
+    "clean_recall",
+    "attacked_recall",
+    "caught_clean_spans",
+    "evaded_spans",
+    "newly_caught_spans",
+    "attack_success_rate",
+    "attack_success_lo",
+    "attack_success_hi",
+    "net_recall_drop",
+]
 
 SPLIT = "ai4privacy-test"
 MAX_DOCS = 200
@@ -145,6 +168,31 @@ def _covered(span: tuple[int, int], detected: list[tuple[int, int]]) -> bool:
     return False
 
 
+def span_outcomes(
+    clean_spans: list[tuple[int, int]],
+    attacked_spans: list[tuple[int, int]],
+    det_clean: list[tuple[int, int]],
+    det_attacked: list[tuple[int, int]],
+    indices: list[int],
+) -> dict[str, int]:
+    """Per-span joint outcome counts over the applicable span ``indices``.
+
+    ``evaded`` counts spans caught on the clean text and missed on the attacked
+    text; ``newly_caught`` counts the reverse.  Per-span ASR is
+    ``evaded / caught_clean``.
+    """
+    caught_clean = caught_attacked = evaded = newly_caught = 0
+    for i in indices:
+        c = _covered(clean_spans[i], det_clean)
+        a = _covered(attacked_spans[i], det_attacked)
+        caught_clean += c
+        caught_attacked += a
+        evaded += c and not a
+        newly_caught += a and not c
+    return {"applicable": len(indices), "caught_clean": caught_clean, "caught_attacked": caught_attacked,
+            "evaded": evaded, "newly_caught": newly_caught}
+
+
 def _build_mutation(text: str, spans: list[tuple[int, int]], mutate, applies) -> tuple[str, list[tuple[int, int]]]:
     """Rebuild text with applicable spans mutated; return new text + new span ranges."""
     out = []
@@ -183,7 +231,7 @@ def evaluate(input_path: Path) -> None:
     rows = []
     for det_name, detector in detectors.items():
         for attack_name, mutate, applies in ATTACKS:
-            caught_clean = caught_attacked = applicable = 0
+            totals = {"applicable": 0, "caught_clean": 0, "caught_attacked": 0, "evaded": 0, "newly_caught": 0}
             # (evaded spans, previously-caught spans) per document, for the
             # document-level bootstrap on ASR.
             doc_pairs: list[tuple[float, float]] = []
@@ -197,26 +245,16 @@ def evaluate(input_path: Path) -> None:
                 app_idx = [i for i, (a, b) in enumerate(gold) if applies(text[a:b])]
                 if not app_idx:
                     continue
-                # Clean detection.
-                det_clean = detector(text)
-                doc_clean = 0
-                for i in app_idx:
-                    if _covered(gold[i], det_clean):
-                        caught_clean += 1
-                        doc_clean += 1
-                # Attacked detection.
                 mut_text, new_spans = _build_mutation(text, gold, mutate, applies)
-                det_mut = detector(mut_text)
-                doc_attacked = 0
-                for i in app_idx:
-                    applicable += 1
-                    if _covered(new_spans[i], det_mut):
-                        caught_attacked += 1
-                        doc_attacked += 1
-                doc_pairs.append((float(doc_clean - doc_attacked), float(doc_clean)))
+                counts = span_outcomes(gold, new_spans, detector(text), detector(mut_text), app_idx)
+                for k, v in counts.items():
+                    totals[k] += v
+                doc_pairs.append((float(counts["evaded"]), float(counts["caught_clean"])))
+            applicable, caught_clean = totals["applicable"], totals["caught_clean"]
             clean_recall = caught_clean / applicable if applicable else 0.0
-            attacked_recall = caught_attacked / applicable if applicable else 0.0
-            asr = max(0.0, (caught_clean - caught_attacked) / caught_clean) if caught_clean else 0.0
+            attacked_recall = totals["caught_attacked"] / applicable if applicable else 0.0
+            asr = totals["evaded"] / caught_clean if caught_clean else 0.0
+            net_drop = (caught_clean - totals["caught_attacked"]) / caught_clean if caught_clean else 0.0
             _, asr_lo, asr_hi = bootstrap_ratio_ci(doc_pairs, n_boot=N_BOOT, scale=100.0)
             rows.append(
                 {
@@ -226,27 +264,18 @@ def evaluate(input_path: Path) -> None:
                     "applicable_spans": str(applicable),
                     "clean_recall": f"{clean_recall:.2f}",
                     "attacked_recall": f"{attacked_recall:.2f}",
+                    "caught_clean_spans": str(caught_clean),
+                    "evaded_spans": str(totals["evaded"]),
+                    "newly_caught_spans": str(totals["newly_caught"]),
                     "attack_success_rate": f"{100.0 * asr:.1f}",
-                    "attack_success_lo": f"{max(0.0, asr_lo):.1f}",
-                    "attack_success_hi": f"{max(0.0, asr_hi):.1f}",
+                    "attack_success_lo": f"{asr_lo:.1f}",
+                    "attack_success_hi": f"{asr_hi:.1f}",
+                    "net_recall_drop": f"{100.0 * net_drop:.1f}",
                 }
             )
 
     with RESULTS_PATH.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(
-            handle,
-            fieldnames=[
-                "detector",
-                "attack_family",
-                "documents",
-                "applicable_spans",
-                "clean_recall",
-                "attacked_recall",
-                "attack_success_rate",
-                "attack_success_lo",
-                "attack_success_hi",
-            ],
-        )
+        writer = csv.DictWriter(handle, fieldnames=RESULT_FIELDS)
         writer.writeheader()
         writer.writerows(rows)
 
@@ -256,7 +285,8 @@ def evaluate(input_path: Path) -> None:
         {"field": "documents", "value": str(len(records))},
         {"field": "detectors", "value": "Released heuristic policy-aware detector; learned logistic detector"},
         {"field": "attacks", "value": "; ".join(a[0] for a in ATTACKS)},
-        {"field": "asr_definition", "value": "Fraction of previously-caught applicable spans pushed to evade by the attack"},
+        {"field": "asr_definition", "value": "Per span: among applicable spans caught on clean text, the fraction not caught after the attack (evaded / caught_clean); spans caught only after the attack are counted separately and do not offset evasions"},
+        {"field": "net_recall_drop", "value": "(caught_clean - caught_attacked) / caught_clean, unclipped; the superseded record measured_adaptive_adversary_results.csv reported it clipped at zero as ASR"},
         {"field": "ci", "value": "document-level percentile bootstrap, 95%, seed 17"},
         {"field": "bootstrap_resamples", "value": str(N_BOOT)},
         {"field": "llm_in_loop", "value": "None; measurement is exact against the real detector"},
@@ -271,7 +301,8 @@ def evaluate(input_path: Path) -> None:
     for row in rows:
         print(
             f"  {row['detector']:28s} {row['attack_family']:26s} "
-            f"clean={row['clean_recall']} atk={row['attacked_recall']} ASR={row['attack_success_rate']}%"
+            f"clean={row['clean_recall']} atk={row['attacked_recall']} ASR={row['attack_success_rate']}% "
+            f"[{row['attack_success_lo']}, {row['attack_success_hi']}] net={row['net_recall_drop']}%"
         )
 
 

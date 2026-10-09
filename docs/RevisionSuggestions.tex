@@ -637,4 +637,34 @@ self-determination with its reasons stated. D4 is pending: a hosted model must b
 recorded outputs (current Claude models accept no temperature setting), which needs an API key; the
 harness-based alternative is not a controlled benchmark and is not used.
 
+
+\paragraph{9 October 2026, evening: Phases A and B (record-only part) applied.} The paper is reframed as a
+measurement study under a title without the system name (D1). F1: ``real'' is removed for the synthetic
+sources and an extrapolation paragraph is added to \S5.1. F2: the placement sentences are withdrawn, the
+reference agent's projection rules and the PrivacyLens stage construction are stated, and \S2.3 is reduced to
+the quantities measured. F3: related work is rebuilt around information-flow control and agent data-flow
+defenses, PAAC is described correctly, and 28 verified references are added. F4: the learned detector's
+in-domain training and precision are disclosed, the exposure tables relabel the Casper-style row as its
+detector, Table~21 and the TAB slice are removed, and the downstream Casper-style claim is qualified pending
+the rerun with restoration. F5: PER is defined as the pooled ratio with effective counts; ASR is recomputed
+per span (the learned detector keeps four, not six, families below 1\%; the heuristic now ranges 35.2--99.7\%);
+FRR is no longer called a lower bound. F6: trust domains and the authorized boundary are defined and
+Figure~1 is redrawn programmatically. F7: Table~3 becomes one sentence and the trigger-probe claim is
+removed. F8: the 70B helpfulness cost and the regex-only exception are stated. F9: the CPPB result tables and
+Figure~4 are removed (D3). F11/F12: inferability intervals resample documents within method, AgentDojo
+intervals resample tasks, and the Table~4 headline margins survive Holm correction on AI4Privacy (learned
+against Casper-style and Presidio, $p=0.009$) while learned against Casper-style on PrivacyLens is not
+resolved. F13--F17: the misstated prose, bibliography, language and end-matter items are corrected. The main
+body now ends on page 11.
+
+Two further defects surfaced while preparing the live-stack experiment and were verified in the code. The
+AgentDojo harness restored values by rewriting the agent's own recorded tool call, so restored values
+re-entered its context while the visibility counter read only message text; and AgentDojo~0.1.35 drops a
+temperature of zero (\src{temperature or NOT\_GIVEN}), so those runs used the server default. The visibility
+claim is withdrawn, the ``usually a placeholder'' claim is replaced by bounds from the run counts (most
+successful attacks stole data the layer never handles), the default temperature is disclosed, and the harness
+is being fixed for a rerun. Queued for a GPU host: Casper-style with restoration on both agents (judge calls
+only), the AgentDojo rerun, the live-stack placement experiment (D2, about 924 trajectories), and the
+per-agent judge-call record.
+
 \end{document}

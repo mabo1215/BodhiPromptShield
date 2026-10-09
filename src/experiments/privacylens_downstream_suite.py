@@ -15,7 +15,15 @@ Conditions (``--conditions``):
 * ``no_protection``
 * ``placeholder:<detector>``   typed placeholders from a registry detector
   (``presidio``, ``spacy_ner``, ``learned_lr``, ``gliner_pii``, ``regex_only``)
-* ``casper_style``             rules + NER with typed dummy values
+* ``casper_style``             rules + NER with typed dummy values, not restored
+* ``casper_restored``          the same release, with Casper's client-held
+  dummy->original map applied to the emitted action at the boundary (as the
+  symbolic late arm restores its tokens).  The agent prompt is byte-identical
+  to ``casper_style``'s, so its agent replies replay from that condition's
+  cache and only judge calls on actions that carry a dummy are new.  One dummy
+  stands for every value of its type and the map keeps the first original
+  seen, instruction before trajectory, so a case with two values of one type
+  restores both to the first.
 * ``llm_sanitizer:<model>``    PII-removal rewrite by an LLM
 * ``abstraction:<model>``      semantic-abstraction rewrite by an LLM (the
   mitigation for semantic leakage)
@@ -225,16 +233,25 @@ class Condition:
         elif self.kind in DETECTOR_KINDS:
             if self.arg not in detectors:
                 raise ValueError(f"{spec}: detector '{self.arg}' not built")
-        elif self.kind not in ("no_protection", "casper_style"):
+        elif self.kind not in ("no_protection", "casper_style", "casper_restored"):
             raise ValueError(f"Unknown condition: {spec}")
 
     def apply(self, case_id: str, instr: str, traj: str) -> tuple[str, str, dict[str, str], str]:
         """Return released instruction, released trajectory, token map, restoration mode."""
         if self.kind == "no_protection":
             return instr, traj, {}, "none"
-        if self.kind == "casper_style":
+        if self.kind in ("casper_style", "casper_restored"):
             det = self.detectors["casper_style"]
-            return substitute_dummy(instr, det.typed(instr))[0], substitute_dummy(traj, det.typed(traj))[0], {}, "none"
+            instr_d, instr_map = substitute_dummy(instr, det.typed(instr))
+            traj_d, traj_map = substitute_dummy(traj, det.typed(traj))
+            if self.kind == "casper_style":
+                return instr_d, traj_d, {}, "none"
+            # One map for the action: the instruction's entries first, as the
+            # released prompt orders the two texts.
+            mapping = dict(instr_map)
+            for dummy, original in traj_map.items():
+                mapping.setdefault(dummy, original)
+            return instr_d, traj_d, mapping, "late"
         if self.kind in ("llm_sanitizer", "abstraction"):
             assert self.sanitizer is not None
             return self.sanitizer.sanitize(instr), self.sanitizer.sanitize(traj), {}, "none"
@@ -502,7 +519,7 @@ def main() -> int:
         args.output_tag = f"{args.output_tag + '_' if args.output_tag else ''}shard{i}of{n}"
     specs = [c.strip() for c in args.conditions.split(",") if c.strip()]
     needed = sorted({s.split(":", 1)[1] for s in specs if s.split(":")[0] in DETECTOR_KINDS}
-                    | ({"casper_style"} if "casper_style" in specs else set()))
+                    | ({"casper_style"} if {"casper_style", "casper_restored"} & set(specs) else set()))
     learned = _train_learned_detector() if "learned_lr" in needed else None
     detectors = {d.key: d for d in build_detectors(needed, learned_weights=learned, spacy_model=args.spacy_model,
                                                      ollama_url=f"{args.base_url}/api/generate")}

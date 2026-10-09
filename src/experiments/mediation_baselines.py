@@ -95,16 +95,19 @@ METHOD_ORDER = [
     "gliner_pii",
 ]
 
+# Labels for span-exposure records, where every method masks with one marker:
+# the Casper-style entry is its detector alone (dummy values appear only in the
+# downstream suite, which names its own conditions).
 PAPER_LABELS = {
     "no_protection": "No protection",
     "regex_only": "Regex-only",
-    "capitalization_heuristic": "Capitalization heuristic (formerly NER-only)",
+    "capitalization_heuristic": "Capitalization heuristic",
     "spacy_ner": "spaCy NER masking",
-    "presidio": "Microsoft Presidio",
-    "casper_style": "Casper-style (rules + NER, dummy values)",
-    "heuristic_mediator": "Proposed (released heuristic detector)",
+    "presidio": "Presidio",
+    "casper_style": "Casper-style detector (rules + NER)",
+    "heuristic_mediator": "Proposed (heuristic detector)",
     "learned_lr": "Proposed (learned detector)",
-    "gliner_pii": "Proposed (transformer PII detector)",
+    "gliner_pii": "Proposed (transformer detector)",
 }
 
 Span = tuple[int, int]

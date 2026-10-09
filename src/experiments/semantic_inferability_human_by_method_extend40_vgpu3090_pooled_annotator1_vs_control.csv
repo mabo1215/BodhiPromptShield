@@ -1,6 +1,6 @@
-method_key,items,control_items,difference_points,ci_low,ci_high
-heuristic_mediator,40,40,-72.5,-87.5,-57.5
-regex_only,40,40,-10.0,-22.5,0.0
-casper_style,40,40,-57.5,-72.5,-42.5
-presidio,40,40,-47.5,-65.0,-32.5
-learned_lr,40,40,-65.0,-80.0,-50.0
+method_key,items,control_items,difference_points,ci_low,ci_high,documents,control_documents
+heuristic_mediator,40,40,-72.5,-86.0,-56.4,33,37
+regex_only,40,40,-10.0,-22.0,0.2,35,37
+casper_style,40,40,-57.5,-73.7,-40.3,36,37
+presidio,40,40,-47.5,-64.1,-30.0,38,37
+learned_lr,40,40,-65.0,-81.8,-47.6,37,37

@@ -1,0 +1,12 @@
+field,value
+benchmark,"AI4Privacy PII-Masking-300K (English) test slice, real text + gold spans"
+split,ai4privacy-test
+documents,200
+detectors,Released heuristic policy-aware detector; learned logistic detector
+attacks,Homoglyph substitution; Zero-width insertion; Intra-token spacing; Case inversion; Leetspeak; Separator injection (ids); Mixed-language fullwidth; Paraphrase (digit spell-out)
+asr_definition,"Per span: among applicable spans caught on clean text, the fraction not caught after the attack (evaded / caught_clean); spans caught only after the attack are counted separately and do not offset evasions"
+net_recall_drop,"(caught_clean - caught_attacked) / caught_clean, unclipped; the superseded record measured_adaptive_adversary_results.csv reported it clipped at zero as ASR"
+ci,"document-level percentile bootstrap, 95%, seed 17"
+bootstrap_resamples,1000
+llm_in_loop,None; measurement is exact against the real detector
+dependencies,Pure Python standard library + repository detection helpers

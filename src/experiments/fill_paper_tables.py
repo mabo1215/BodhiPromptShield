@@ -2,27 +2,20 @@
 Fill code-backed empirical tables in paper/main.tex and paper/appendix.tex from CSV files under src/experiments.
 
 This script only updates tables that are directly backed by repository CSVs:
-  - tab:cppb_card        <- cppb_accounting_summary.csv
-  - tab:per              <- prompt_method_comparison_reconstructed.csv
-  - tab:utility          <- prompt_method_comparison_reconstructed.csv
-  - tab:pi_sensitivity   <- policy_sensitivity_reconstructed.csv
   - tab:propagation      <- agent_pipeline_metrics.csv
   - tab:latency          <- latency_overhead_reconstructed.csv
     - tab:catwise          <- categorywise_analysis.csv
     - tab:multimodal       <- multimodal_analysis.csv
     - tab:crossmodel       <- crossmodel_portability_results.csv
-    - tab:lightclf         <- lightweight_classifier_comparison.csv
     - tab:judge            <- cppb_privacy_judge_comparison.csv
     - tab:measprop         <- propagation_suite_{ai4privacy,privacylens}_results_pooled.csv
-    - tab:advmeas          <- measured_adaptive_adversary_results.csv
+    - tab:advmeas          <- measured_adaptive_adversary_span_results.csv (per-span ASR)
     - tab:attrrecovery     <- privacylens_attribute_recovery_summary_*.csv
     - tab:attrcap          <- privacylens_attribute_recovery_summary_*.csv (all attackers)
     - tab:mapadv           <- secure_mapping_adversary_results.csv
     - tab:hardcase         <- hardcase_analysis.csv
   - tab:restore          <- restoration_boundary_analysis.csv
   - tab:ablation         <- sanitization_mode_ablation.csv
-    - tab:multiseed        <- multiseed_method_summary.csv
-    - tab:lto              <- leavetemplateout_summary.csv
     - tab:baseline         <- external_baseline_comparison.csv
   - tab:tabtransfer      <- tab_transfer_results.csv
   - tab:ocrslice         <- {cord,funsd,sroie}_transfer_results.csv
@@ -38,7 +31,13 @@ This script only updates tables that are directly backed by repository CSVs:
   - tab:propints         <- propagation_suite_{ai4privacy,privacylens}_results_pooled.csv
   - tab:judgecap         <- semantic_inferability_{agreement,agreement_round3,capacity_agreement_*}_vgpu3090.csv
                             + semantic_inferability_llm_rater_agreement_claude_20261007.csv
-  - tab:canon            <- canonicalization_hardening_asr_results.csv
+  - tab:canon            <- canonicalization_hardening_asr_span_results.csv (per-span ASR)
+
+The CPPB card and result tables (PER, utility, policy sensitivity, multi-seed
+and leave-template-out) and the lightweight-classifier comparison were removed
+from the manuscript, so their builders are gone. A registered label that is absent
+from the target file is skipped with a printed note rather than treated as an
+error.
 
 It intentionally does NOT touch illustrative or manually curated tables such as:
   - tab:example
@@ -122,77 +121,6 @@ def _tex_escape(text: str) -> str:
     )
 
 
-def build_cppb_accounting_table() -> str:
-    rows = sorted(_read_csv("cppb_accounting_summary.csv"), key=lambda r: int(r["order"]))
-    body = "\n".join(
-        f"{_tex_escape(r['axis'])} & {_tex_escape(r['breakdown'])} \\\\" for r in rows
-    )
-    return (
-        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}p{1.65cm}X}\n"
-        "\\toprule\n"
-        "Axis & Exact accounting \\\\\n"
-        "\\midrule\n"
-        f"{body}\n"
-        "\\bottomrule\n"
-        "\\end{tabularx}"
-    )
-
-
-def build_per_table() -> str:
-    rows = _read_csv("prompt_method_comparison_reconstructed.csv")
-    body = "\n".join(
-        f"{_display_method(r['method'])} & {_fmt_float(r['per'])} \\\\" for r in rows
-    )
-    return (
-        "\\begin{tabular}{lc}\n"
-        "\\toprule\n"
-        "Method & PER (\\%) \\\\\n"
-        "\\midrule\n"
-        f"{body}\n"
-        "\\bottomrule\n"
-        "\\end{tabular}"
-    )
-
-
-def build_utility_table() -> str:
-    rows = _read_csv("prompt_method_comparison_reconstructed.csv")
-    body = "\n".join(
-        f"{_display_method(r['method'])} & {float(r['ac']):.2f} & {float(r['tsr']):.2f} \\\\"
-        for r in rows
-    )
-    return (
-        "\\begin{tabular}{lcc}\n"
-        "\\toprule\n"
-        "Method & AC & TSR \\\\\n"
-        "\\midrule\n"
-        f"{body}\n"
-        "\\bottomrule\n"
-        "\\end{tabular}"
-    )
-
-
-def build_pi_table() -> str:
-    tau_map = {"Lenient": "0.70", "Balanced": "0.55", "Strict": "0.40"}
-    rows = _read_csv("policy_sensitivity_reconstructed.csv")
-    body_lines = []
-    for r in rows:
-        profile = r["profile"]
-        tau = tau_map.get(profile, "--")
-        profile_label = f"{profile} ($\\tau={tau}$)"
-        body_lines.append(
-            f"{profile_label} & {_fmt_float(r['per'])} & {float(r['upr']):.2f} & {float(r['tsr']):.2f} \\\\"
-        )
-    return (
-        "\\begin{tabular}{lccc}\n"
-        "\\toprule\n"
-        "Policy profile & PER (\\%) & UPR & TSR \\\\\n"
-        "\\midrule\n"
-        + "\n".join(body_lines)
-        + "\n\\bottomrule\n"
-        "\\end{tabular}"
-    )
-
-
 def build_propagation_table() -> str:
     rows = _read_csv("agent_pipeline_metrics.csv")
     body = "\n".join(
@@ -210,10 +138,24 @@ def build_propagation_table() -> str:
     )
 
 
+# The latency record's pipeline names, as the manuscript names them: the
+# generic pipeline is the heuristic detector's spans behind one generic token,
+# the staged pipeline is the Presidio recognizer with typed placeholders, and
+# the balanced pipeline is the learned detector at the balanced threshold.
+LATENCY_DISPLAY_NAMES = {
+    "Raw prompting (no middleware)": "No protection",
+    "Regex-only redaction": "Regex-only",
+    "Capitalization heuristic": "Capitalization heuristic",
+    "Generic de-identification": "Heuristic detector, generic token",
+    "Enterprise staged redaction": "Presidio",
+    "Proposed (policy-aware balanced)": "Proposed (learned detector)",
+}
+
+
 def build_latency_table() -> str:
     rows = _read_csv("latency_overhead_reconstructed.csv")
     body = "\n".join(
-        f"{_display_method(r['pipeline'])} & {float(r['mean_ms']):.1f} & {float(r['p95_ms']):.1f} \\\\"
+        f"{LATENCY_DISPLAY_NAMES.get(r['pipeline'], r['pipeline'])} & {float(r['mean_ms']):.1f} & {float(r['p95_ms']):.1f} \\\\"
         for r in rows
     )
     return (
@@ -285,50 +227,18 @@ def build_crossmodel_table() -> str:
     )
 
 
-def _lightclf_short_name(method: str) -> str:
-    mapping = {
-        "Regex-only": "Regex-only",
-        "Presidio-class (NER fallback heuristic)": "Presidio-class (+NER)",
-        "Hybrid rule+context de-identification": "Hybrid rule+context de-id",
-        "Lightweight learned classifier (logistic regression)": "Lightweight learned classifier",
-        "BodhiPromptShield (released heuristic mediator)": "BodhiPromptShield (heuristic)",
-    }
-    return mapping.get(method, method)
-
-
-def build_lightclf_table() -> str:
-    rows = _read_csv("lightweight_classifier_comparison.csv")
-    header = "Method & Prec. & Rec. & Span F1 & PER (\\%) & Retention " + r"\\" + "\n"
-    body = "\n".join(
-        f"{_tex_escape(_lightclf_short_name(row['method']))} & "
-        f"{float(row['span_precision']):.2f} & {float(row['span_recall']):.2f} & "
-        f"{float(row['span_f1']):.2f} & {_fmt_float(row['per_percent'])} & "
-        f"{float(row['text_retention']):.2f} \\\\"
-        for row in rows
-    )
-    return (
-        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccccc}\n"
-        + "\\toprule\n"
-        + header
-        + "\\midrule\n"
-        f"{body}\n"
-        + "\\bottomrule\n"
-        + "\\end{tabularx}"
-    )
-
-
 MEASPROP_ORDER = [
     ("no_protection", "No protection"),
     ("regex_only", "Regex-only"),
     ("capitalization_heuristic", "Capitalization heuristic"),
     ("spacy_ner", "spaCy NER masking"),
-    ("presidio", "Microsoft Presidio"),
-    ("casper_style", "Casper-style (rules + NER, dummy values)"),
+    ("presidio", "Presidio"),
+    # The exposure suites mask every method with one marker, so this row is the
+    # Casper-style detector alone; dummy values appear only downstream.
+    ("casper_style", "Casper-style detector (rules + NER)"),
     ("llm_sanitizer", "LLM sanitizer (8B)"),
-    # The records call it the released heuristic detector; the manuscript says
-    # why the artifact ships it by default, so the row carries that role.
-    ("heuristic_mediator", "Proposed (heuristic detector, artifact default)"),
-    ("gliner_pii", "Proposed (transformer PII detector)"),
+    ("heuristic_mediator", "Proposed (heuristic detector)"),
+    ("gliner_pii", "Proposed (transformer detector)"),
     ("learned_lr", "Proposed (learned detector)"),
 ]
 
@@ -414,7 +324,7 @@ def build_measprop_table() -> str:
 
 
 def build_advmeas_table() -> str:
-    rows = _read_csv("measured_adaptive_adversary_results.csv")
+    rows = _read_csv("measured_adaptive_adversary_span_results.csv")
     by_attack: dict[str, dict[str, dict[str, str]]] = {}
     order: list[str] = []
     for row in rows:
@@ -688,72 +598,6 @@ def build_ablation_table() -> str:
     )
 
 
-def _fmt_pm(mean_key: str, std_key: str, row: dict[str, str], digits: int = 2) -> str:
-    return f"{float(row[mean_key]):.{digits}f} $\\pm$ {float(row[std_key]):.{digits}f}"
-
-
-def build_multiseed_table() -> str:
-    rows = _read_csv("multiseed_method_summary.csv")
-    display_names = {
-        "Enterprise staged redaction": "Enterprise redaction",
-        "Generic de-identification": "Generic de-id",
-        "Proposed (semantic abstraction)": "Proposed (semantic)",
-        "Proposed (utility-constrained)": "Proposed (balanced)",
-    }
-    body_lines = []
-    for row in rows:
-        body_lines.append(
-            " & ".join(
-                [
-                    display_names.get(row["setting"], row["setting"]),
-                    _fmt_pm("per_mean", "per_std", row, digits=1),
-                    _fmt_pm("ac_mean", "ac_std", row),
-                    _fmt_pm("tsr_mean", "tsr_std", row),
-                    f"{float(row['latency_mean_ms']):.1f} $\\pm$ {float(row['latency_std_ms']):.1f}",
-                ]
-            )
-            + " \\\\"
-        )
-    return (
-        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccc}\n"
-        "\\toprule\n"
-        "Setting & PER (\\%) & AC & TSR & Mean Latency (ms) \\\\\n"
-        "\\midrule\n"
-        + "\n".join(body_lines)
-        + "\n\\bottomrule\n"
-        "\\end{tabularx}"
-    )
-
-
-def build_lto_table() -> str:
-    rows = _read_csv("leavetemplateout_summary.csv")
-    display_rows = [row for row in rows if row["group"] in {"Direct requests", "Document-oriented", "Retrieval-style", "Tool-oriented agent", "Overall"}]
-    body_lines = []
-    for row in display_rows:
-        body_lines.append(
-            " & ".join(
-                [
-                    row["group"],
-                    row["held_out_prompts"],
-                    f"{float(row['span_f1_mean']):.2f}",
-                    _fmt_pm("per_mean", "per_std", row, digits=1),
-                    f"{float(row['ac_mean']):.2f}",
-                    f"{float(row['tsr_mean']):.2f}",
-                ]
-            )
-            + " \\\\"
-        )
-    return (
-        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccccc}\n"
-        "\\toprule\n"
-        "Held-out split & Prompts & Span F1 & PER (\\%) & AC & TSR \\\\\n"
-        "\\midrule\n"
-        + "\n".join(body_lines)
-        + "\n\\bottomrule\n"
-        "\\end{tabularx}"
-    )
-
-
 def build_baseline_table() -> str:
     rows = _read_csv("external_baseline_comparison.csv")
     display_names = {
@@ -794,8 +638,8 @@ OCR_METHOD_LABELS = {
     "OCR + generic de-identification": "Generic de-identification",
     "OCR + Presidio receipt de-identification": "Presidio",
     "OCR + Presidio form de-identification": "Presidio",
-    "OCR + spaCy receipt de-identification": "spaCy NER",
-    "OCR + spaCy form de-identification": "spaCy NER",
+    "OCR + spaCy receipt de-identification": "spaCy NER masking",
+    "OCR + spaCy form de-identification": "spaCy NER masking",
     "Proposed multimodal mediation": "Proposed mediation",
 }
 
@@ -804,7 +648,7 @@ OCR_METHOD_ORDER = [
     "Regex-only",
     "Generic de-identification",
     "Presidio",
-    "spaCy NER",
+    "spaCy NER masking",
     "Proposed mediation",
 ]
 
@@ -1117,10 +961,10 @@ def build_portability_table() -> str:
 # The agreement record keeps one row per comparison; the readers' row is the
 # ceiling the judge is read against and is set apart below a rule.
 _PLJUDGE_ROWS = (
-    ("judge_vs_human_overall", "Judge vs.\\ reader 1"),
-    ("judge_vs_annotator2", "Judge vs.\\ reader 2"),
+    ("judge_vs_human_overall", "Judge vs.\\ annotator 4"),
+    ("judge_vs_annotator2", "Judge vs.\\ annotator 5"),
 )
-_PLJUDGE_CEILING = ("annotator1_vs_annotator2", "Reader 1 vs.\\ reader 2")
+_PLJUDGE_CEILING = ("annotator1_vs_annotator2", "Annotator 4 vs.\\ annotator 5")
 
 
 def build_pljudge_table() -> str:
@@ -1238,20 +1082,12 @@ def build_inject_table() -> str:
 # reference, and input canonicalization against surface-form evasion.
 # ---------------------------------------------------------------------------
 
-# tab:propints is the wide companion of tab:measprop, so its rows use short labels.
-_PROPINTS_LABELS = {
-    "casper_style": "Casper-style",
-    "heuristic_mediator": "Proposed (heuristic)",
-    "gliner_pii": "Proposed (transformer)",
-    "learned_lr": "Proposed (learned)",
-}
-
-
 def build_propints_table() -> str:
     """Every propagation column with its interval, on both real sources.
 
     Degenerate intervals are kept here, unlike tab:measprop, because the point
-    of this table is that every column carries one.
+    of this table is that every column carries one.  Rows carry the same method
+    names as tab:measprop (they fit the full width at this size).
     """
     ai4 = _measprop_source("propagation_suite_ai4privacy_results_pooled.csv")
     pl = _measprop_source("propagation_suite_privacylens_results_pooled.csv")
@@ -1261,7 +1097,7 @@ def build_propints_table() -> str:
         body_lines.append(
             " & ".join(
                 [
-                    _tex_escape(_PROPINTS_LABELS.get(key, label)),
+                    _tex_escape(label),
                     a["retrieval_spe"],
                     a["memory_spe"],
                     a["tool_spe"],
@@ -1367,7 +1203,7 @@ def build_judgecap_table() -> str:
     return (
         "\\begin{tabularx}{\\columnwidth}{lcccc}\n"
         + "\\toprule\n"
-        + "Judge & Params & $\\kappa$ vs.\\ A1 & $\\kappa$ vs.\\ A3 & Calls inferable \\\\\n"
+        + "Judge & Params & $\\kappa$ vs.\\ Ann.~1 & $\\kappa$ vs.\\ Ann.~3 & Calls inferable \\\\\n"
         + "\\midrule\n"
         + body + "\n"
         + "\\midrule\n"
@@ -1406,7 +1242,7 @@ def build_canon_table() -> str:
     so the table renders whatever has finished.
     """
     cells: dict[tuple[str, str, str], str] = {}
-    for row in _read_csv("canonicalization_hardening_asr_results.csv"):
+    for row in _read_csv("canonicalization_hardening_asr_span_results.csv"):
         cells[(row["detector_key"], row["variant"], row["attack_family"])] = row["attack_success_rate"]
     detectors = [(k, label) for k, label in _CANON_DETECTORS if (k, "plain", _CANON_BYTE_LEVEL[0]) in cells]
     if not detectors:
@@ -1433,16 +1269,11 @@ def build_canon_table() -> str:
 
 
 TABLE_BUILDERS: dict[str, Callable[[], str]] = {
-    "tab:cppb_card": build_cppb_accounting_table,
-    "tab:per": build_per_table,
-    "tab:utility": build_utility_table,
-    "tab:pi_sensitivity": build_pi_table,
     "tab:propagation": build_propagation_table,
     "tab:latency": build_latency_table,
     "tab:catwise": build_catwise_table,
     "tab:multimodal": build_multimodal_table,
     "tab:crossmodel": build_crossmodel_table,
-    "tab:lightclf": build_lightclf_table,
     "tab:judge": build_judge_table,
     "tab:measprop": build_measprop_table,
     "tab:advmeas": build_advmeas_table,
@@ -1454,8 +1285,6 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:hardcase": build_hardcase_table,
     "tab:restore": build_restore_table,
     "tab:ablation": build_ablation_table,
-    "tab:multiseed": build_multiseed_table,
-    "tab:lto": build_lto_table,
     "tab:baseline": build_baseline_table,
     "tab:tabtransfer": build_tab_transfer_table,
     "tab:ocrslice": build_ocrslice_table,
@@ -1485,6 +1314,7 @@ def main() -> int:
     updated_labels = []
     for label, builder in TABLE_BUILDERS.items():
         if f"\\label{{{label}}}" not in content:
+            print(f"Skipping {label}: label not present in {args.paper}")
             continue
         content = _replace_table_block(content, label, builder())
         updated_labels.append(label)

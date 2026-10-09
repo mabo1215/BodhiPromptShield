@@ -16,6 +16,11 @@ the manuscript includes.
 
 Reads the pooled result records written by the propagation suite; no number in
 this figure is recomputed here.
+
+The figure is drawn at the width it is printed at (the full text width) and
+saved without cropping, so every font size below is its printed size; none is
+under 7 pt. The caption carries the title. Fonts are embedded as TrueType
+(Type 42) and the PDF carries no creation date, so a rebuild is byte-stable.
 """
 import argparse
 import csv
@@ -27,6 +32,13 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+
+plt.rcParams["pdf.fonttype"] = 42
+plt.rcParams["ps.fonttype"] = 42
+
+# Printed widths in the manuscript's layout (acmart sigconf).
+TEXT_WIDTH_IN = 506.295 / 72.27
+MIN_PT = 7.0
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.dirname(SCRIPT_DIR)
@@ -53,10 +65,12 @@ SHORT = {
     "capitalization_heuristic": "Capitaliz.",
     "spacy_ner": "spaCy NER",
     "presidio": "Presidio",
-    "casper_style": "Casper-style",
-    "heuristic_mediator": "Ours (heur.)",
-    "learned_lr": "Ours (learned)",
-    "gliner_pii": "Ours (transf.)",
+    # The exposure suite masks every method with one marker, so this is the
+    # Casper-style detector alone, without its dummy values.
+    "casper_style": "Casper-style det.",
+    "heuristic_mediator": "Prop. (heuristic)",
+    "learned_lr": "Prop. (learned)",
+    "gliner_pii": "Prop. (transformer)",
 }
 # Panel (b) is dense in the low-exposure corner, so it uses compact labels;
 # the caption maps them back to the full names used in panel (a).
@@ -66,10 +80,10 @@ SHORT_B = {
     "capitalization_heuristic": "Capital.",
     "spacy_ner": "spaCy",
     "presidio": "Presidio",
-    "casper_style": "Casper",
-    "heuristic_mediator": "Ours-H",
-    "learned_lr": "Ours-L",
-    "gliner_pii": "Ours-T",
+    "casper_style": "Casper det.",
+    "heuristic_mediator": "Prop.-H",
+    "learned_lr": "Prop.-L",
+    "gliner_pii": "Prop.-T",
 }
 PROPOSED_KEYS = {"heuristic_mediator", "learned_lr", "gliner_pii"}
 ORDER = [
@@ -125,7 +139,7 @@ def _rows_in_order(path):
 def _panel_a(ax, rows):
     labels = [_short(k) for k, _ in rows]
     x = np.arange(len(rows), dtype=float)
-    width = 0.26
+    width = 0.28
 
     for offset, (field, color, name) in enumerate(
         [
@@ -154,17 +168,17 @@ def _panel_a(ax, rows):
                 f"{value:.0f}",
                 ha="center",
                 va="bottom",
-                fontsize=4.6,
+                fontsize=MIN_PT,
                 color=TEXT_SECONDARY,
                 zorder=4,
             )
 
     ax.set_xticks(x)
-    ax.set_xticklabels(labels, rotation=38, ha="right", fontsize=6)
-    ax.set_ylabel("Surviving gold spans (SPE, %)", fontsize=7, color=TEXT_PRIMARY)
-    ax.set_ylim(0, 112)
+    ax.set_xticklabels(labels, rotation=30, ha="right", rotation_mode="anchor", fontsize=MIN_PT)
+    ax.set_ylabel("Surviving gold spans (SPE, %)", fontsize=7.5, color=TEXT_PRIMARY)
+    ax.set_ylim(0, 115)
     ax.set_yticks([0, 25, 50, 75, 100])
-    ax.tick_params(axis="y", labelsize=6.5, colors=TEXT_SECONDARY, length=0)
+    ax.tick_params(axis="y", labelsize=MIN_PT, colors=TEXT_SECONDARY, length=0)
     ax.tick_params(axis="x", colors=TEXT_PRIMARY, length=0)
     ax.grid(axis="y", color=GRID, linewidth=0.5, zorder=0)
     ax.set_axisbelow(True)
@@ -174,19 +188,13 @@ def _panel_a(ax, rows):
     ax.spines["bottom"].set_linewidth(0.6)
     ax.legend(
         frameon=False,
-        fontsize=6.5,
+        fontsize=7.5,
         ncol=3,
         loc="upper right",
+        bbox_to_anchor=(1.0, 1.08),
         handlelength=1.1,
         columnspacing=1.0,
         labelcolor=TEXT_SECONDARY,
-    )
-    ax.set_title(
-        "(a) Exposure at each agent boundary, AI4Privacy reference agent",
-        fontsize=7.5,
-        color=TEXT_PRIMARY,
-        pad=6,
-        loc="left",
     )
 
 
@@ -242,7 +250,7 @@ def _panel_b(ax, rows):
             (per, frr),
             textcoords="offset points",
             xytext=(dx, dy),
-            fontsize=5.6,
+            fontsize=MIN_PT,
             ha=ha,
             color=TEXT_SECONDARY,
         )
@@ -251,7 +259,7 @@ def _panel_b(ax, rows):
     ax.set_ylabel("Fact Retention Rate (FRR, %)", fontsize=7, color=TEXT_PRIMARY)
     ax.set_xlim(-13, 112)
     ax.set_ylim(30, 108)
-    ax.tick_params(labelsize=6.5, colors=TEXT_SECONDARY, length=0)
+    ax.tick_params(labelsize=MIN_PT, colors=TEXT_SECONDARY, length=0)
     ax.grid(color=GRID, linewidth=0.5, zorder=0)
     ax.set_axisbelow(True)
     for side in ("top", "right"):
@@ -266,39 +274,30 @@ def _panel_b(ax, rows):
         plt.Line2D([], [], marker="s", linestyle="none", markersize=4.6,
                    color=BASELINE_COLOR, markeredgecolor=SURFACE, label="Baselines"),
     ]
-    ax.legend(handles=handles, frameon=False, fontsize=6.5, loc="center left",
+    ax.legend(handles=handles, frameon=False, fontsize=MIN_PT, loc="center left",
               bbox_to_anchor=(0.42, 0.34), handlelength=1.0,
               labelcolor=TEXT_SECONDARY)
-    ax.set_title(
-        "(b) Surface-form vs. factual leakage, PrivacyLens trajectories",
-        fontsize=7.5,
-        color=TEXT_PRIMARY,
-        pad=6,
-        loc="left",
-    )
 
 
 def plot(out_path: str, panels: str = "a"):
     ai4 = _rows_in_order(os.path.join(EXPERIMENTS_DIR, AI4PRIVACY_POOLED))
     plens = _rows_in_order(os.path.join(EXPERIMENTS_DIR, PRIVACYLENS_POOLED))
 
+    # Drawn at the printed width and saved uncropped, so sizes are printed sizes.
     if panels == "a":
-        fig, ax = plt.subplots(1, 1, figsize=(7.1, 2.05))
+        fig, ax = plt.subplots(1, 1, figsize=(TEXT_WIDTH_IN, 2.35), layout="constrained")
         fig.patch.set_facecolor(SURFACE)
         ax.set_facecolor(SURFACE)
         _panel_a(ax, ai4)
-        ax.set_title("Exposure at each agent boundary, AI4Privacy reference agent",
-                     fontsize=7.5, color=TEXT_PRIMARY, pad=6, loc="left")
-        fig.tight_layout()
     else:
-        fig, axes = plt.subplots(1, 2, figsize=(7.1, 2.15))
+        fig, axes = plt.subplots(1, 2, figsize=(TEXT_WIDTH_IN, 2.6), layout="constrained")
         fig.patch.set_facecolor(SURFACE)
         for ax in axes:
             ax.set_facecolor(SURFACE)
         _panel_a(axes[0], ai4)
         _panel_b(axes[1], plens)
-        fig.tight_layout(w_pad=2.2)
-    fig.savefig(out_path, dpi=400, bbox_inches="tight", facecolor=SURFACE)
+    fig.get_layout_engine().set(w_pad=0.02, h_pad=0.02)
+    fig.savefig(out_path, dpi=400, facecolor=SURFACE, metadata={"CreationDate": None})
     plt.close(fig)
     print(f"wrote {out_path}")
 
