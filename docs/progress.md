@@ -30,6 +30,8 @@
   - 已合入（晚）：逐 span ASR（learned 低于 1% 的攻击族 6→4，heuristic 35.2–99.7%）；推断率区间改为按文档聚类；AgentDojo 区间按任务重抽样；主表 Holm 校正（AI4Privacy 上 learned 对 Casper/Presidio 显著，PrivacyLens 上 learned 对 Casper 未分出）；表格标签统一；图 2、图 3 重画（≥7pt、TrueType）；实景 agent 栈实验代码完成并本地冒烟通过（AgentDojo 真工具 + BM25 检索 + 记忆 + 日志，6 种中介位置，约 924 条轨迹）。
   - **新发现并已核实的两个问题**：①AgentDojo harness 还原时改写了 agent 自己的历史工具调用，原值会回到其上下文，而可见性计数只读消息正文——§6.5 的"24 个值仅 2 个可见"已删除；②AgentDojo 0.1.35 把 temperature=0 当成未设置（`temperature or NOT_GIVEN`），那几次运行实际用的是服务器默认温度——已在正文披露。"偷到的通常是占位符"无证据，已改为基于计数的上界（多数成功攻击偷的是中介层根本不处理的数据）。harness 正在修，待重跑。
   - **待 GPU 主机**：Casper-style 补还原（32B+70B，只需 judge）；AgentDojo 修正后重跑；D2 实景实验（建议加一个 Presidio 检测器臂）；每个 agent 的 judge 调用拆分记录（主机上纯 CPU）。
+  - AgentDojo harness 已修好并推送（`1b3847d`）：显式发送 temperature=0 与 seed；还原只作用于执行副本、历史保持 token 化；可见性计数含工具调用参数；每次运行的工具调用存 JSONL 并直接分类原值外泄。重跑共 222 次运行（banking 每臂 32、slack 每臂 42），输出标签 `*_fixed`，不会覆盖旧记录。
+  - 重跑后要做：更新 `aggregate_paper_results._read_agentdojo_mixed` 与 `agentdojo_payload_bounds.py`，让它们读取新的 25 列行和 `_fixed` 标签；用新数字替换 tab:inject 和 §6.5 的上界说法；在主机上用 `ollama show qwen3:32b-q4km-hf --parameters` 记录旧运行实际用的默认温度。
   - 还没做：F10 把精简属性恢复表/规避表挪进正文（等 D2 结果一起排版，正文目前止于第 11 页）。
 - **匿名（2026-10-09）**：你已把 GitHub 仓库 `mabo1215/BodhiPromptShield` 设为私有。arXiv 2604.05793 与 HF 数据集 `mabo1215/CPPB` 仍公开且互链；论文标题已改为不含系统名。投稿前用 anonymous.4open.science 生成匿名代码链接（支持私有仓库，需 GitHub 授权），放进 Open Science 一节（阶段 D）。
 - **你的决策（2026-10-09）**：D1 定位为测量研究；D2 做实景 agent 栈实验；D3 删掉 CPPB 结果表与图 4；D5 未投 PoPETs Issue 2、除 TOPS 外无其他评审、图 1 是图像模型生成的（必须重画并在 AI Use 披露旧图来源不再适用）、已毕业无需学校伦理认定。D4 待定（需要 API key，见 `# 遗留问题` 第 1 条）。
