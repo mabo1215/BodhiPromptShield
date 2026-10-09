@@ -1,6 +1,27 @@
 # 论文进度
 
-## 2026-10-09 第八轮：独立评审重置（PoPETs 2027 Issue 3）（当前最新）
+## 2026-10-09（晚）vGPU 3090 开跑；PRO 6000 无卡模式备好 D2 后关机（当前最新）
+
+**你的回答（2026-10-09）**：
+- D4 跳过（没有 API key）。局限性已写明"只测了两个开源权重 agent，商用端点未测"，不需要再改。
+- 评分者：四位非作者是**网上招募的志愿者，没有报酬**；开始前**书面和口头**都告知过标签的用途和会公开发布。（你先写了"雇佣关系"，随后更正为志愿者。）论文伦理一节已补一句（paper `5b7e82e`）：the four non-authors were volunteers recruited online, and before labeling each was told, in writing and orally, how the labels would be used and that they would be released。正文仍止于第 11 页。
+- 主机：vGPU 3090 有卡，先用它；PRO 6000 无卡模式只做准备，准备完关机。
+
+**vGPU 3090（RTX 3090 48 GB，12 核）在跑的**（16:58 起）：
+- 环境：代码快进到 `3eb0a85`；Ollama 从 0.32.15 换成与 PRO 6000 相同的 0.33.3（旧版移到 `/root/autodl-tmp/ollama-0.32.15-backup/`，可恢复）；32B agent（`cdf6a2e00f0e`）和 Mistral judge（`79c08d3519c6`）的 digest 与原运行一致；spaCy 3.8.16 / Presidio 2.2.364 / en_core_web_lg 3.8.0 / AgentDojo 0.1.35 两台主机相同。
+- 缓存：PRO 6000 的 `ollama_cache`（4 个文件）和 `bps_regen_cache`（3 个）经共享盘 `/autodl-fs/data/bps_transfer_20261009/` 直传 vGPU，md5 7/7 一致（没有经过本机）。
+- **casper_restored**：32B（judge num_ctx 12288，按原运行）跑完接 70B（7168/10240），agent 只读缓存。实测约 50 秒/例，两个 agent 合计约 5–6 小时。
+- **AgentDojo 修正后重跑**：6 个臂并行（最初是两条串行队列，GPU 只用到 49%，17:08 改为并行，已写入的行保留并跳过）。实测每次运行约 7–8 分钟，222 次预计 6–10 小时。
+- **每个 agent 的 judge 调用拆分**：已完成（CPU）。32B 重新生成 812 次、254 次对得上原 key、114 次逐字节相同；70B 是 812/204/92。与附录 Run-to-run variation 段的数字一致，论文不用改。结果已拉回入库。
+- 记录：`ollama show qwen3:32b-q4km-hf --parameters` 为空，模型文件没有设任何采样参数，所以旧 AgentDojo 运行用的是 Ollama 服务器默认温度。具体数值待查 Ollama 0.33.3 的 OpenAI 兼容层，再写进论文。
+
+**PRO 6000（无卡模式，0.5 核）：D2 已备好，已关机**（17:10 执行 `shutdown -h now`，随后 ssh 实际重连被拒，确认已停）：
+- 代码快进到 `3eb0a85`。挡路的 51 个未跟踪文件里，50 个与仓库版本只差换行符，1 个是 `restoration_control_compare.py` 的旧草稿；全部移到 `/root/autodl-tmp/bps_host_untracked_20261009/`，没有删除。
+- 两个检测器臂的 `--plan` 都通过（154 例、77 个任务簇、各 924 条轨迹）；桩模型冒烟 144 条轨迹、跨检测器比较 354 行全部通过；Presidio 用的是 en_core_web_lg。磁盘剩 51 GB，inode 充足。
+- 启动脚本：`/root/autodl-tmp/bps_live_stack_prep_20261009/launch_d2.sh`，按 `ollama` → `pilot` → `full` → `presidio_nomed` 顺序执行。Ollama 设为 32k 上下文 × 8 槽，约 84 GB。开卡后约 10 分钟能出 pilot 结果，两臂合计约 4–5 小时。
+- **D2 为什么放 PRO 6000**：32k 上下文下，3090 48 GB 只放得下 2 个槽位（4 个要约 54 GB）；按实测的 3090 吞吐，两臂约 1.15 万次调用要 16 小时以上，而且得等 vGPU 上现有任务跑完。
+
+## 2026-10-09 第八轮：独立评审重置（PoPETs 2027 Issue 3）
 
 按你的指令"重新开始评审并生成评审修改意见"执行。`docs/RevisionSuggestions.tex` 已**整份重写**（英文 LaTeX，编译通过），不参考任何旧评审与进度记录。
 四路独立审稿：①数字对账（约 900 个数值、21 张表逐字节复现）；②以 PoPETs 审稿人视角审科学质量；③文献核查（32 条对照原始记录）；④格式合规与官网要求（9 Oct 抓取 cfp27 / authors-2027 / 官方模板包）。
@@ -3044,24 +3065,7 @@ F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条
 
 **2026-10-09 第八轮评审的决策（D1–D5，原文在 `docs/RevisionSuggestions.tex` 第 7 节）**
 
-1. **D4 托管前沿 agent：需要你的 API key。** 你问能否用 LLaVA 或 Claude cloud 模式（2026-10-09）：
-   - LLaVA 不行：开源权重、本地跑，回应不了"只测了开源模型"；而且是视觉语言模型，工具调用弱。
-   - Claude 可以，但必须走 Anthropic API 脚本调用。交互界面（含 cloud 模式）无法控制解码，审稿人不认。现行 Claude 模型不再接受 temperature 参数，可复现性靠存档每条原始输出，论文如实写明。
-   - 估算用 `claude-opus-5-5`：每个条件 200 条约 10 美元，5 个条件约 50 美元；judge 仍在本地 GPU。
-   需要你提供/决策：
-   1. 有没有（或愿不愿意开）Anthropic API key？有的话在本机 `export ANTHROPIC_API_KEY=...` 或运行 `ant auth login`，告诉我即可；没有就跳过 D4，局限性保持如实写明。
-   A:
-3. **伦理一节：评分者与作者的关系、知情同意。** PoPETs 要求写清伦理依据。现在只写了"五人自愿、无报酬、未收集任何评分者信息"。
-   需要你提供/决策：
-   1. 四位非作者评分者（标注者 2、3 和验证 judge 的 4、5）和作者是什么关系（同学、同事、朋友……）？
-   A:
-   2. 开始前是否告诉过他们标签会怎么用、会公开发布（口头或书面都算）？
-   A:
-
-4. **阶段 B/C 需要一台 GPU 主机。** Casper-style 补还原后重新打分（32B + 70B agent + PrivacyLens judge）、AgentDojo 重跑、D2 实景栈实验（learned 臂 + Presidio 臂）都要；合计挂钟约 9–15 小时，可以并行压缩。
-   需要你提供/决策：
-   1. 开哪台（PRO 6000 最合适，96 GB 能放 70B）？开好后照常说"XXX GPU 已开"。
-   A:
+（2026-10-09 已全部答复：D4 跳过；评分者是网上招募的志愿者、无报酬、书面和口头都告知过用途与公开发布；GPU 先用 vGPU 3090，PRO 6000 无卡模式已备好 D2 并关机。处理记录见文件顶部。）
 
 **2026-10-07 第五轮评审的决策（D1--D4，原文在 `docs/RevisionSuggestions.tex`）**
 
