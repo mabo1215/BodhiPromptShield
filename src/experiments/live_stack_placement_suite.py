@@ -1038,6 +1038,9 @@ def main() -> int:
     parser.add_argument("--max-tokens", type=int, default=1024)
     parser.add_argument("--context-length", type=int, default=32768,
                         help="The server's context window (OLLAMA_CONTEXT_LENGTH); only used to flag trajectories near it")
+    parser.add_argument("--server-config", default="",
+                        help="Server settings the endpoint cannot report itself (e.g. KV cache type, parallel slots); "
+                             "recorded verbatim in the manifest")
     parser.add_argument("--timeout", type=int, default=900)
     parser.add_argument("--mock-llm", action="store_true", help="Replace the model with a deterministic stub (CPU smoke test)")
     parser.add_argument("--dry-run", action="store_true", help="Mock model on two tasks per suite")
@@ -1221,6 +1224,7 @@ def main() -> int:
                  + ("" if not args.no_given_names else ", given names excluded")),
         ("agent_model", model_name), ("endpoint", "mock" if args.mock_llm else f"{args.base_url}/v1/chat/completions"),
         ("server_context_length_declared", str(args.context_length)),
+        ("server_config_declared", args.server_config or "not declared"),
         ("max_prompt_tokens_observed", str(max((int(r.get("max_prompt_tokens") or 0) for r in rows), default=0))),
         ("decoding", f"temperature {args.temperature}, seed {args.seed}, max_tokens {args.max_tokens}, "
                      + ("/no_think appended" if args.no_think else "thinking allowed")),
