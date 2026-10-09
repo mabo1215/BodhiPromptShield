@@ -225,14 +225,30 @@ done
 
 # Pool the shards into one summary and one set of paired contrasts.
 python src/experiments/live_stack_placement_suite.py --agent-model $MODEL --summarize-only \
-    --rows-glob "src/experiments/live_stack_placement_rows_${MODEL//[:\/]/_}_v1_shard*of4.csv" --output-tag v1_pooled
+    --rows-glob "src/experiments/live_stack_placement_rows_${MODEL//[:\/]/_}_learned_lr_v1_shard*of4.csv" --output-tag v1_pooled
+
+# Second detector arm (Presidio, en_core_web_lg) after the first arm has finished.
+# The completion cache is shared per model, so no_mediation replays without model calls.
+for i in 0 1 2 3; do
+  screen -dmS livep$i bash -lc "python src/experiments/live_stack_placement_suite.py --detector presidio \
+      --agent-model $MODEL --shard $i/4 --output-tag v1 >> src/experiments/live_stack_placement_presidio_v1_shard$i.out 2>&1"
+done
+python src/experiments/live_stack_placement_suite.py --agent-model $MODEL --summarize-only --detector presidio \
+    --rows-glob "src/experiments/live_stack_placement_rows_${MODEL//[:\/]/_}_presidio_v1_shard*of4.csv" --output-tag v1_pooled
+
+# Per placement, Presidio minus the learned detector on the same cases.
+python src/experiments/live_stack_placement_suite.py --agent-model $MODEL --summarize-only --detector presidio \
+    --versus-detector learned_lr --output-tag v1_pooled \
+    --rows-glob "src/experiments/live_stack_placement_rows_${MODEL//[:\/]/_}_*_v1_shard*of4.csv"
 ```
 
-The pooling command assumes that the model tag's `:` and `/` characters become
-`_` in file names.
+The pooling commands assume that the model tag's `:` and `/` characters become
+`_` in file names. Output names carry the model and the detector; the
+completion cache carries only the model. A rows file that already holds another
+detector's rows is refused rather than resumed.
 
 **Outputs.** The run writes these files under `experiments/`, each carrying the
-model name and tag:
+model name, detector and tag:
 
 - `live_stack_placement_rows_*.csv`, one row per case and condition.
 - `live_stack_placement_summary_*.csv` and `live_stack_placement_paired_*.csv`.
@@ -240,6 +256,7 @@ model name and tag:
 - `live_stack_placement_artifacts_*.jsonl`, the texts behind every row.
 - `live_stack_placement_app_log_*.jsonl` and `live_stack_placement_memory_*.jsonl`,
   the stack's own log and memory.
+- `live_stack_placement_detector_contrast_*.csv`, from `--versus-detector`.
 - `ollama_cache/livestack__<model>.jsonl`, the completion cache.
 
 **Size.** 154 cases × 6 conditions gives 924 trajectories. That comes to about
@@ -250,4 +267,6 @@ assumption, so measure it on the pilot. With four shards on
 about 20 GB of weights plus about 4 GB of KV cache per 16k-token slot. Disk is
 under 0.5 GB across about ten files. Adding `--suites
 banking,slack,workspace,travel` gives 194 cases and 1,164 trajectories, about
-12 GPU-hours serial.
+12 GPU-hours serial. The Presidio arm adds 770 trajectories that need the model
+(its 154 `no_mediation` trajectories replay from the cache), about 7 GPU-hours
+serial or 2.5–5 hours with four shards.

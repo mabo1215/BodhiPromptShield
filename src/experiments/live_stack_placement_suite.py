@@ -918,6 +918,27 @@ def summarize(rows: list[dict], conditions: list[str], contrasts: list[tuple[str
     return summary, paired
 
 
+def detector_contrasts(rows: list[dict], conditions: list[str], a: str, b: str, n_boot: int,
+                       seed: int) -> list[dict]:
+    """Per placement, detector ``a`` minus detector ``b`` on the same cases (cluster bootstrap)."""
+    out: list[dict] = []
+    for cond in conditions:
+        ra = {r["case"]: r for r in rows if r["condition"] == cond and r["detector"] == a}
+        rb = {r["case"]: r for r in rows if r["condition"] == cond and r["detector"] == b}
+        shared = sorted(set(ra) & set(rb))
+        if not shared:
+            continue
+        for name, num, den, scale in _metric_specs():
+            units = [(ra[c]["cluster"], float(ra[c][num]), float(ra[c][den]) if den else 1.0,
+                      float(rb[c][num]), float(rb[c][den]) if den else 1.0) for c in shared]
+            ci = paired_cluster_diff_ci(units, n_boot=n_boot, seed=seed, scale=scale)
+            out.append({"condition": cond, "contrast": f"{a} - {b}", "metric": name, "pairs": len(shared),
+                        "clusters": len({ra[c]["cluster"] for c in shared}),
+                        "diff": "" if ci is None else f"{ci[0]:+.2f}", "lo": "" if ci is None else f"{ci[1]:+.2f}",
+                        "hi": "" if ci is None else f"{ci[2]:+.2f}"})
+    return out
+
+
 def _print_headline(summary: list[dict], conditions: list[str]) -> None:
     get = {(s["condition"], s["metric"]): s for s in summary}
 
@@ -1034,6 +1055,9 @@ def main() -> int:
                         help="Do not keep the full model context in the per-run artifact records")
     parser.add_argument("--summarize-only", action="store_true", help="Rebuild summaries from existing rows without running")
     parser.add_argument("--rows-glob", help="With --summarize-only: pool every rows file matching this glob (e.g. all shards)")
+    parser.add_argument("--versus-detector",
+                        help="With --summarize-only: also write per-placement contrasts of --detector minus this "
+                             "detector on shared cases (the glob must match both detectors' rows)")
     args = parser.parse_args()
 
     if args.dry_run:
@@ -1048,6 +1072,9 @@ def main() -> int:
 
     model_name = "mock-llm" if args.mock_llm else args.agent_model
     safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", model_name)
+    # Outputs are per model and detector; the completion cache is per model only, so a second
+    # detector arm replays every request whose mediated text coincides (all of no_mediation).
+    stem = f"{safe}_{re.sub(r'[^A-Za-z0-9_.-]+', '_', args.detector)}"
     tag = args.output_tag
     if args.shard:
         i, n = (int(x) for x in args.shard.split("/"))
@@ -1055,23 +1082,34 @@ def main() -> int:
     out = args.out_dir
     out.mkdir(parents=True, exist_ok=True)
     paths = {
-        "rows": _with_tag(out / f"live_stack_placement_rows_{safe}.csv", tag),
-        "summary": _with_tag(out / f"live_stack_placement_summary_{safe}.csv", tag),
-        "paired": _with_tag(out / f"live_stack_placement_paired_{safe}.csv", tag),
-        "manifest": _with_tag(out / f"live_stack_placement_runtime_manifest_{safe}.csv", tag),
-        "artifacts": _with_tag(out / f"live_stack_placement_artifacts_{safe}.jsonl", tag),
-        "log": _with_tag(out / f"live_stack_placement_app_log_{safe}.jsonl", tag),
-        "memory": _with_tag(out / f"live_stack_placement_memory_{safe}.jsonl", tag),
+        "rows": _with_tag(out / f"live_stack_placement_rows_{stem}.csv", tag),
+        "summary": _with_tag(out / f"live_stack_placement_summary_{stem}.csv", tag),
+        "paired": _with_tag(out / f"live_stack_placement_paired_{stem}.csv", tag),
+        "manifest": _with_tag(out / f"live_stack_placement_runtime_manifest_{stem}.csv", tag),
+        "artifacts": _with_tag(out / f"live_stack_placement_artifacts_{stem}.jsonl", tag),
+        "log": _with_tag(out / f"live_stack_placement_app_log_{stem}.jsonl", tag),
+        "memory": _with_tag(out / f"live_stack_placement_memory_{stem}.jsonl", tag),
     }
 
     if args.summarize_only:
         files = [Path(p) for p in sorted(glob.glob(args.rows_glob))] if args.rows_glob else [paths["rows"]]
-        rows = [r for r in _read_rows(files) if r["condition"] in conditions]
+        rows = [r for r in _read_rows(files) if r["condition"] in conditions and r["detector"] == args.detector]
+        other = sorted({r["detector"] for r in _read_rows(files)} - {args.detector})
+        if other:
+            print(f"[note] ignored rows of other detector(s) {other}; pass --detector to summarize those")
         summary, paired = summarize(rows, conditions, contrasts, args.bootstrap, args.bootstrap_seed)
         _write_csv(paths["summary"], summary)
         _write_csv(paths["paired"], paired)
         _print_headline(summary, conditions)
         print(f"Pooled {len(rows)} rows from {len(files)} file(s)\nSummary: {paths['summary']}\nPaired: {paths['paired']}")
+        if args.versus_detector:
+            versus = detector_contrasts(_read_rows(files), conditions, args.detector, args.versus_detector,
+                                        args.bootstrap, args.bootstrap_seed)
+            vs_path = _with_tag(out / f"live_stack_placement_detector_contrast_{stem}_vs_"
+                                      f"{re.sub(r'[^A-Za-z0-9_.-]+', '_', args.versus_detector)}.csv", tag)
+            _write_csv(vs_path, versus)
+            print(f"Detector contrast ({len(versus)} rows): {vs_path}" if versus
+                  else f"[warn] no shared cases between {args.detector} and {args.versus_detector} in the glob")
         return 0
 
     print("[setup] building cases (environments, gold lexicons, reference trajectories, indexes)")
@@ -1084,7 +1122,13 @@ def main() -> int:
             print(f"[error] {paths['rows'].name} has a different schema ({len(header)} columns, this build writes "
                   f"{len(ROW_FIELDS)}); appending would misalign rows. Use a new --output-tag.")
             return 1
-        done = {(r["case"], r["condition"]) for r in _read_rows([paths["rows"]])}
+        existing = _read_rows([paths["rows"]])
+        foreign = sorted({r["detector"] for r in existing} - {args.detector})
+        if foreign:
+            print(f"[error] {paths['rows'].name} holds rows of detector(s) {foreign}; resuming would mark this "
+                  f"detector's cases done. Use a new --output-tag.")
+            return 1
+        done = {(r["case"], r["condition"]) for r in existing}
     pending = [(c, cond) for cond in conditions for c in cases if (c.case_id, cond) not in done]
     plan = _plan(cases, conditions, len(pending), args.sec_per_call)
     print("[plan] " + ", ".join(f"{k}={v}" for k, v in plan.items()))
@@ -1147,7 +1191,8 @@ def main() -> int:
     finally:
         handle.close()
 
-    rows = [r for r in _read_rows([paths["rows"]]) if r["condition"] in conditions and r["agent_model"] == model_name]
+    rows = [r for r in _read_rows([paths["rows"]])
+            if r["condition"] in conditions and r["agent_model"] == model_name and r["detector"] == detector.key]
     near_limit = [r for r in rows if int(r.get("max_prompt_tokens") or 0) >= 0.95 * args.context_length]
     if near_limit:
         print(f"[warn] {len(near_limit)} trajectories reached >=95% of the {args.context_length}-token context; the server "

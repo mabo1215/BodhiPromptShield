@@ -667,4 +667,12 @@ is being fixed for a rerun. Queued for a GPU host: Casper-style with restoration
 only), the AgentDojo rerun, the live-stack placement experiment (D2, about 924 trajectories), and the
 per-agent judge-call record.
 
+\paragraph{9 October 2026, late: a second detector arm for D2.} The live-stack experiment holds the detector
+fixed, so on its own it cannot separate a placement effect from the learned detector's recall on AgentDojo
+tool outputs, which differ from its AI4Privacy training text. A Presidio arm is added over the same 154 cases
+and six placements. Outputs are now keyed by model and detector, the completion cache by model only, so the
+arm's unmediated trajectories replay without model calls (770 new trajectories), and a resumed rows file that
+holds another detector's rows is refused. Per-placement contrasts of the two detectors on shared cases are
+written with the same task-clustered bootstrap. The placement claim will be stated only where both arms agree.
+
 \end{document}

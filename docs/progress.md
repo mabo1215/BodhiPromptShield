@@ -29,7 +29,12 @@
   - 正文现止于第 11 页（原第 12 页满），全文 22 页；编译无错、无未定义引用。
   - 已合入（晚）：逐 span ASR（learned 低于 1% 的攻击族 6→4，heuristic 35.2–99.7%）；推断率区间改为按文档聚类；AgentDojo 区间按任务重抽样；主表 Holm 校正（AI4Privacy 上 learned 对 Casper/Presidio 显著，PrivacyLens 上 learned 对 Casper 未分出）；表格标签统一；图 2、图 3 重画（≥7pt、TrueType）；实景 agent 栈实验代码完成并本地冒烟通过（AgentDojo 真工具 + BM25 检索 + 记忆 + 日志，6 种中介位置，约 924 条轨迹）。
   - **新发现并已核实的两个问题**：①AgentDojo harness 还原时改写了 agent 自己的历史工具调用，原值会回到其上下文，而可见性计数只读消息正文——§6.5 的"24 个值仅 2 个可见"已删除；②AgentDojo 0.1.35 把 temperature=0 当成未设置（`temperature or NOT_GIVEN`），那几次运行实际用的是服务器默认温度——已在正文披露。"偷到的通常是占位符"无证据，已改为基于计数的上界（多数成功攻击偷的是中介层根本不处理的数据）。harness 正在修，待重跑。
-  - **待 GPU 主机**：Casper-style 补还原（32B+70B，只需 judge）；AgentDojo 修正后重跑；D2 实景实验（建议加一个 Presidio 检测器臂）；每个 agent 的 judge 调用拆分记录（主机上纯 CPU）。
+  - **待 GPU 主机**：Casper-style 补还原（32B+70B，只需 judge）；AgentDojo 修正后重跑；D2 实景实验（learned 臂 + Presidio 臂）；每个 agent 的 judge 调用拆分记录（主机上纯 CPU）。
+  - **D2 加 Presidio 检测器臂：已决定加（2026-10-09 晚），代码已就绪。**
+    - 理由：实景实验固定一个检测器，单靠它分不清"中介位置的效应"和"learned 检测器在 AgentDojo 工具输出上的召回"。learned 是在 AI4Privacy 上域内训练的，而 AgentDojo 的 IBAN、邮箱、客户记录和训练文本不一样。加一个部署最广的 Presidio 臂后，位置结论只在两个臂一致时才写进论文。
+    - 代价：多 770 条轨迹。154 条无保护轨迹从缓存回放，不调模型。约 7 GPU 小时串行，4 分片约 2.5–5 小时。排在 learned 臂之后，时间不够就先保住 learned 臂。
+    - 顺带修掉一个会让这组对照白跑的问题：原来输出文件名和"已完成"判断都不区分检测器，直接加 `--detector presidio` 会把所有 case 当成已完成而全部跳过。现在输出按"模型 + 检测器"命名，缓存只按模型共用；结果文件里混进别的检测器的行会拒绝续跑；新增 `--versus-detector`，按位置输出两个检测器在同一批 case 上的配对差（按任务聚类 bootstrap）。
+    - 本地桩模型冒烟测试通过（两臂各 72 条，跨检测器比较 354 行，混行保护按预期报错）。主机上需要 `en_core_web_lg`（本机只有 sm，冒烟用的 sm）。
   - AgentDojo harness 已修好并推送（`1b3847d`）：显式发送 temperature=0 与 seed；还原只作用于执行副本、历史保持 token 化；可见性计数含工具调用参数；每次运行的工具调用存 JSONL 并直接分类原值外泄。重跑共 222 次运行（banking 每臂 32、slack 每臂 42），输出标签 `*_fixed`，不会覆盖旧记录。
   - 重跑后要做：更新 `aggregate_paper_results._read_agentdojo_mixed` 与 `agentdojo_payload_bounds.py`，让它们读取新的 25 列行和 `_fixed` 标签；用新数字替换 tab:inject 和 §6.5 的上界说法；在主机上用 `ollama show qwen3:32b-q4km-hf --parameters` 记录旧运行实际用的默认温度。
   - 还没做：F10 把精简属性恢复表/规避表挪进正文（等 D2 结果一起排版，正文目前止于第 11 页）。
@@ -3053,7 +3058,7 @@ F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条
    2. 开始前是否告诉过他们标签会怎么用、会公开发布（口头或书面都算）？
    A:
 
-4. **阶段 B/C 需要一台 GPU 主机。** Casper-style 补还原后重新打分（32B + 70B agent + PrivacyLens judge）与 D2 实景栈实验都要。
+4. **阶段 B/C 需要一台 GPU 主机。** Casper-style 补还原后重新打分（32B + 70B agent + PrivacyLens judge）、AgentDojo 重跑、D2 实景栈实验（learned 臂 + Presidio 臂）都要；合计挂钟约 9–15 小时，可以并行压缩。
    需要你提供/决策：
    1. 开哪台（PRO 6000 最合适，96 GB 能放 70B）？开好后照常说"XXX GPU 已开"。
    A:
