@@ -1,0 +1,31 @@
+field,value
+benchmark,"AgentDojo v1 suites banking,slack,workspace, no injections, variants task,profile"
+agentdojo,0.1.35
+cases,39
+clusters,39
+conditions,no_mediation;ingress_only;egress_only;per_edge;ingress_only_plus_restore;per_edge_plus_restore
+placements,"no_mediation=Placement(ingress=False, reads=False, egress=False, restore=False); ingress_only=Placement(ingress=True, reads=False, egress=False, restore=False); egress_only=Placement(ingress=False, reads=False, egress=True, restore=False); per_edge=Placement(ingress=True, reads=True, egress=False, restore=False); ingress_only_plus_restore=Placement(ingress=True, reads=False, egress=False, restore=True); per_edge_plus_restore=Placement(ingress=True, reads=True, egress=False, restore=True)"
+detector,learned_lr
+mediation_operator,"secure symbolic mapping, one token table per case session, letter namespace; span edges trimmed of punctuation"
+recipient_check,provenance
+max_steps,15
+tool_scoping,suites with more than 14 tools expose the tool families the ground truth touches
+retrieval_index,"Okapi BM25 k1=1.5 b=0.75 over environment documents, top_k 3, never mediated at ingestion"
+memory,append-only per-session note store persisted to JSONL
+log,"JSONL: system, user, assistant, tool_call, tool_result lines"
+gold,"rule-derived lexicon from the environment (structured identifiers, personal fields, derived names)"
+agent_model,qwen3:32b-q4km-hf
+endpoint,http://127.0.0.1:11434/v1/chat/completions
+server_context_length_declared,32768
+server_config_declared,Ollama 0.33.3; OLLAMA_CONTEXT_LENGTH=32768; OLLAMA_NUM_PARALLEL=4; OLLAMA_KV_CACHE_TYPE=q8_0; flash attention on; one RTX 3090 48 GB
+max_prompt_tokens_observed,31714
+decoding,"temperature 0.0, seed 17, max_tokens 1024, /no_think appended"
+bootstrap,"1000 cluster (task) resamples, seed 17, 95% percentile; paired by case"
+generated_calls_this_invocation,638
+replayed_calls_this_invocation,361
+python,3.10.12
+platform,Linux-5.15.0-119-generic-x86_64-with-glibc2.35
+agent.model_digest,cdf6a2e00f0eccc3b7ea5c916f6e254cf17ec6008ae4861d5ff1ee7c6818943a
+agent.model_family,qwen3
+agent.model_parameter_size,32.8B
+agent.model_quantization,Q4_K_M
