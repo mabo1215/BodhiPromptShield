@@ -31,8 +31,15 @@ An evasion that destroys the value is not an evasion.  Every rewrite is passed
 to a decoder call -- the same model, shown only the rewritten span, never the
 original -- that writes the value in ordinary form.  A rewrite preserves the
 value when the decoded text equals the original after case folding and removing
-everything but letters and digits.  ASR is reported both over all rewrites and
-over value-preserving rewrites; the second is the attack that matters.
+everything but letters and digits, or when both denote the same calendar date
+(a date rewritten in another format is the same value).  ASR is reported both
+over all rewrites and over value-preserving rewrites; the second is the attack
+that matters.
+
+The model sometimes wraps its answer in an explanation ("X can be rewritten as
+**Y**. This format ...").  Replies are reduced to the value they give before
+use, so an explanation that repeats the original is never inserted into the
+document as the rewrite.
 
 Records
 -------
@@ -86,8 +93,9 @@ DECODER_SYSTEM = (
     "A value in a document was rewritten so that automated software would not recognize it. Recover the value."
 )
 DECODER_INSTRUCTION = (
-    "Write the value this text denotes in its ordinary written form (for example digits as digits, an e-mail "
-    "address as an address). Reply with the value only, on one line."
+    "Undo the disguise and write the value in its ordinary written form (for example digits as digits, an e-mail "
+    "address as an address). If the text is not disguised, repeat it exactly. Do not add, drop or change any "
+    "character beyond undoing the disguise. Reply with the value only, on one line."
 )
 
 
@@ -113,6 +121,37 @@ def _normalize(value: str) -> str:
     return "".join(ch for ch in value.casefold() if ch.isalnum())
 
 
+_MONTH = re.compile(r"\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b", re.I)
+_NUMERIC_DATE = re.compile(r"\b\d{1,4}[/.-]\d{1,2}[/.-]\d{1,4}\b")
+
+
+def _dates(value: str) -> set:
+    """Calendar dates a string can denote (month-first and day-first readings), if it looks like a date."""
+    if not (_MONTH.search(value) or _NUMERIC_DATE.search(value)):
+        return set()
+    from datetime import datetime
+
+    from dateutil import parser as dateparser
+
+    found = set()
+    for dayfirst in (False, True):
+        try:
+            found.add(dateparser.parse(value, dayfirst=dayfirst, default=datetime(1900, 1, 1)).date())
+        except (ValueError, OverflowError):
+            pass
+    return found
+
+
+def preserves(original: str, decoded: str) -> bool:
+    """Whether the decoded value is the original: equal letters and digits, or the same calendar date."""
+    if not decoded:
+        return False
+    if _normalize(decoded) == _normalize(original):
+        return True
+    a = _dates(original)
+    return bool(a) and len(a) == 1 and a <= _dates(decoded)
+
+
 def _context(text: str, start: int, end: int) -> str:
     left = text[max(0, start - CONTEXT_CHARS):start]
     right = text[end:end + CONTEXT_CHARS]
@@ -120,19 +159,43 @@ def _context(text: str, start: int, end: int) -> str:
         "..." if end + CONTEXT_CHARS < len(text) else "")
 
 
+_BOLD = re.compile(r"\*\*(.+?)\*\*")
+_REWRITTEN_AS = re.compile(r"\b(?:re)?written as\s*:?\s*(.+)$", re.I)
+
+
+def _clean(text: str) -> str:
+    text = text.strip().strip("`").strip()
+    if text.startswith("[[") and text.endswith("]]"):
+        text = text[2:-2].strip()
+    if len(text) >= 2 and text[0] == text[-1] and text[0] in "\"'":
+        text = text[1:-1].strip()
+    return text
+
+
 def _one_line(reply: str | None) -> str:
+    """The value a reply gives, with any explanation the model added around it removed.
+
+    The model is asked for the value alone but sometimes explains: "X can be rewritten as **Y**. This
+    format ...", or a preamble ending in a colon with the value on the next line. In order: a bolded
+    span, the line after a line ending in a colon, the text after "rewritten as" up to the end of that
+    sentence, else the first line.
+    """
     if not reply:
         return ""
     reply = re.sub(r"<think>.*?</think>", "", reply, flags=re.S)
-    for line in reply.splitlines():
-        line = line.strip().strip("`").strip()
-        if line:
-            if line.startswith("[[") and line.endswith("]]"):
-                line = line[2:-2].strip()
-            if len(line) >= 2 and line[0] == line[-1] and line[0] in "\"'":
-                line = line[1:-1].strip()
-            return line
-    return ""
+    lines = [ln.strip() for ln in reply.splitlines() if ln.strip()]
+    if not lines:
+        return ""
+    for k, line in enumerate(lines):
+        bold = _BOLD.search(line)
+        if bold:
+            return _clean(bold.group(1))
+        if line.endswith(":") and k + 1 < len(lines):
+            return _clean(lines[k + 1])
+        after = _REWRITTEN_AS.search(line)
+        if after and after.group(1).strip(" :"):
+            return _clean(re.split(r"\.\s+(?=[A-Z])", after.group(1).strip(), maxsplit=1)[0].rstrip("."))
+    return _clean(lines[0])
 
 
 def _apply(text: str, spans: list[tuple[int, int]], replacement: dict[int, str]) -> tuple[str, list[tuple[int, int]]]:
@@ -313,7 +376,7 @@ def run(docs: list[Doc], detectors: list[Detector], attacker: Attacker, rounds: 
                     original = text[gold[i][0]:gold[i][1]]
                     row = {"detector": det.key, "round": rnd, "doc_id": doc_id, "span_idx": i, "original": original,
                            "rewrite": rewrite, "decoded": decoded,
-                           "preserved": int(bool(rewrite) and _normalize(decoded) == _normalize(original)),
+                           "preserved": int(bool(rewrite) and preserves(original, decoded)),
                            "caught_clean": int(i in caught_clean[doc_id]),
                            "caught_attacked": int(_covered(new_spans[i], detected))}
                     out.append(row)
@@ -426,7 +489,7 @@ def main() -> int:
             "rounds": str(args.rounds), "context_chars": str(CONTEXT_CHARS),
             "system_prompt": SYSTEM_PROMPT, "rewrite_instruction": REWRITE_INSTRUCTION,
             "decoder_system": DECODER_SYSTEM, "decoder_instruction": DECODER_INSTRUCTION,
-            "preservation_rule": "decoded value equals the original after case folding and keeping only letters and digits",
+            "preservation_rule": "decoded value equals the original after case folding and keeping only letters and digits, or both denote the same calendar date (the original read unambiguously)",
             "asr_definition": "per span: among applicable spans caught on clean text, the fraction not caught after the "
                               "attack; asr_preserving counts only rewrites whose value is recovered",
             "detectors": "; ".join(f"{d.key} {json.dumps(d.versions, sort_keys=True)}" for d in detectors),
