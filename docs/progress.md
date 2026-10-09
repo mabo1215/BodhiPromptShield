@@ -23,6 +23,11 @@
 - 论文（paper `2d2589a`）：tab:downstream 和 tab:portability 各加一行 "Casper-style, restored"（填表脚本新增该条件）。§6.3 效用段重写。70B 的 Holm 族从 7 个条件变成 8 个，"six of the seven" 改为 "seven of the eight"（正文、附录、表注三处）。附录攻击段的 "0.73 helpfulness" 改为"不还原 0.73、还原后 0.12"。正文写明还原臂新增的 judge 调用是在另一张卡上生成的（模型 digest 相同），helpfulness 增幅是运行间波动的三倍。编译 22 页、0 undefined，正文仍止于第 11 页。
 - 32B 的 Holm 校正结论不变：casper_style 和 learned 校正后都不显著（0.075、0.156）。
 
+**匿名泄露已修（2026-10-09 22:10，paper 提交见下）**：PDF 里嵌入了模板许可图片的本机路径 `C:/source/BodhiPromptShield/paper/template/cc-by-4.pdf`（`PTEX.FileName`），**带着系统名**。标题去掉系统名就是为了不和公开的预印本、HF 数据集对上，这一处会让审稿人直接对上。另外创建时间带 +13:00 时区，也透露了所在地区。
+- 修法：导言区加 `\pdfsuppressptexinfo=-1`、`\pdfinfoomitdate=1`、`\pdftrailerid{}`。
+- 复查：PTEX 字段、路径、"Bodhi"、时间戳、时区、文件 ID 全部为 0；正文文本里搜不到作者姓名、单位、预印本编号、CPPB。只剩一个通用的 Producer（MiKTeX-pdfTeX）。
+- 这一条原本排在阶段 D（PDF 元数据），提前做完了。投稿前最后一周仍要再查一遍。
+
 **vGPU 3090（RTX 3090 48 GB，12 核）在跑的**（16:58 起）：
 - 环境：代码快进到 `3eb0a85`；Ollama 从 0.32.15 换成与 PRO 6000 相同的 0.33.3（旧版移到 `/root/autodl-tmp/ollama-0.32.15-backup/`，可恢复）；32B agent（`cdf6a2e00f0e`）和 Mistral judge（`79c08d3519c6`）的 digest 与原运行一致；spaCy 3.8.16 / Presidio 2.2.364 / en_core_web_lg 3.8.0 / AgentDojo 0.1.35 两台主机相同。
 - 缓存：PRO 6000 的 `ollama_cache`（4 个文件）和 `bps_regen_cache`（3 个）经共享盘 `/autodl-fs/data/bps_transfer_20261009/` 直传 vGPU，md5 7/7 一致（没有经过本机）。
