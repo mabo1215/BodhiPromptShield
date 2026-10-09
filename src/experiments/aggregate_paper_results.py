@@ -372,6 +372,7 @@ def pool_agentdojo_injections(agent_model: str = "qwen3_32b-q4km-hf",
             for r in rows:
                 r["_raw_exfil"] = "1" if r["exfil_class"] == "raw_protected_value" else "0"
                 r["_raw_exfil_success"] = "1" if r["_raw_exfil"] == "1" and r["security"] == "1" else "0"
+            row["raw_value_exfil_pairs"] = str(sum(int(r["_raw_exfil"]) for r in rows))
             row["raw_value_exfil_percent"] = _task_ci(rows, "_raw_exfil", None, 100.0, 1)
             row["raw_value_exfil_successful_percent"] = _task_ci(rows, "_raw_exfil_success", None, 100.0, 1)
             row["raw_visible_in_call_args_percent"] = (

@@ -23,7 +23,7 @@ This script only updates tables that are directly backed by repository CSVs:
   - tab:blindutilitytemplate <- data/cppb_blind_utility_by_template.csv
   - tab:downstream       <- privacylens_downstream_summary_qwen3_32b-q4km-hf_pooled.csv
                             (RCE shown only where the per-case shards record a mapping)
-  - tab:inject           <- agentdojo_injection_summary_pooled_qwen3_32b-q4km-hf.csv
+  - tab:inject           <- agentdojo_injection_summary_pooled_qwen3_32b-q4km-hf_fixed.csv
   - tab:portability      <- privacylens_downstream_summary_{qwen3_32b,llama3.3_70b}-q4km-hf_pooled.csv
                             + downstream_paired_tests_llama3.3_70b-q4km-hf.csv
   - tab:pljudge          <- privacylens_judge_agreement.csv
@@ -1052,7 +1052,9 @@ def _signed_ci(cell: str) -> str:
 
 
 def build_inject_table() -> str:
-    by_arm = {r["arm"]: r for r in _read_csv(f"agentdojo_injection_summary_pooled_{_DOWNSTREAM_AGENT}.csv")}
+    # The rerun with the repaired harness (temperature and seed sent, restoration on an
+    # executed copy, attacker-call payloads classified) supersedes the earlier pass.
+    by_arm = {r["arm"]: r for r in _read_csv(f"agentdojo_injection_summary_pooled_{_DOWNSTREAM_AGENT}_fixed.csv")}
     body_lines = []
     for arm, label in _INJECT_ARMS:
         row = by_arm[arm]
@@ -1064,14 +1066,15 @@ def build_inject_table() -> str:
                     row["attack_success_percent"],
                     row["utility_percent"],
                     _signed_ci(delta) if delta else "---",
+                    f"{row['raw_value_exfil_pairs']}/{row['pairs']}",
                 ]
             )
             + " \\\\"
         )
     return (
-        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccc}\n"
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccc}\n"
         + "\\toprule\n"
-        + "Condition & ASR (\\%) & Util.\\ (\\%) & Paired $\\Delta$ ASR (pts) \\\\\n"
+        + "Condition & ASR (\\%) & Util.\\ (\\%) & Paired $\\Delta$ ASR (pts) & Raw \\\\\n"
         + "\\midrule\n"
         + "\n".join(body_lines)
         + "\n\\bottomrule\n"
