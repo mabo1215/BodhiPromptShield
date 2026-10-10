@@ -12,6 +12,14 @@
 - **匿名 artifact**（`8ea8aa0`）：`src/package_artifact.py` 改为只打包已跟踪的文件；把旧系统名、本机仓库路径、私网 IP 改写掉，任何一个残留就拒绝打包；排除论文已不用的 CPPB（整个 `data/` 和所有 cppb 文件）以及标注员用的界面和中文翻译辅助文件。产物 `submit/prompt_mediation_artifact_anonymous.zip`：622 个文件、11 MB；独立扫描 0 处标识信息，唯一的中文是攻击者模型自己写出的改写。`src/README.md` 里的"论文对象 → 脚本"对照表已按现在的论文重写。
 - **F7(c) 还原预言机**：修好后的 AgentDojo 重跑已经回答了这个问题（不限范围还原时，边界把 token 还原进攻击者的调用；只按用户指示还原时拒绝）。专门的攻击不另跑。
 
+**上传包已备好（2026-10-11，按你的要求）**：`submit/popets2027_issue3/`（submit/ 被 gitignore，只在本机）里正好三个要上传的文件，外加清单和校验和：
+- `paper.pdf`：24 页投稿 PDF（正文 12 页，后面是三个必填节、参考文献、附录）。
+- `summary_of_changes_and_prior_review.pdf`：4 页。修改说明、逐条回应 TOPS 的 AE，最后原样附上 TOPS 拒稿信和 AE 意见。PoPETs 没说之前的评审放在哪个上传项，所以合成一个 PDF，两个要求都满足。
+- `supplementary_material.zip`：11 MB 匿名 artifact。
+- `UPLOAD.md`（每个文件传到哪一栏、表单怎么填、已做过的检查、如果表单没有 supplementary 一栏怎么办）和 `SHA256SUMS.txt`（`sha256sum -c` 已通过）。
+- 三个文件都重新扫过：paper.pdf 和 zip 里没有任何标识信息；修改说明里旧系统名和 CPPB 只出现在原样附上的 TOPS 拒稿信里（PoPETs 要求原样附上）。
+- **不要上传** `submit/` 里其他文件（旧的 `BodhiPromptShield_*` zip 和预印本 PDF 都带系统名）。我没有删它们。
+
 **需要你**
 1. 投稿时上传：`submit/prompt_mediation_artifact_anonymous.zip`（作为 supplementary，或推到一个新的 GitHub 仓库后用 anonymous.4open.science 生成链接，需要你授权 GitHub）；`docs/build/SummaryOfChanges.pdf`；TOPS 的拒稿信和 AE 意见（`docs/AESuggestion.txt`）。注意：拒稿信里有旧标题 "BodhiPromptShield…"，和公开的预印本能对上，但 PoPETs 要求原样附上，没法回避。
 2. 审稿期间不要更新 arXiv 预印本。
