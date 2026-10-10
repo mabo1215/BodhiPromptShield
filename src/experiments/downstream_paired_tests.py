@@ -28,6 +28,7 @@ Usage:
 
 from __future__ import annotations
 
+import csv
 import random
 import sys
 from math import comb
@@ -233,6 +234,45 @@ def privacy_prompt_tests(agent_model: str) -> Path | None:
     return path
 
 
+# A same-batch control: no_protection regenerated beside the pe/ conditions, on the same host and
+# server, with every call generated afresh. Its rows are kept out of the pooled record (the tag is
+# not a superseding one) and read only here.
+SAME_BATCH_TAG = "pe_samebatch"
+
+
+def same_batch_tests(agent_model: str) -> Path | None:
+    """The privacy prompt against the same-batch control, and that control against the canonical one."""
+    path = EXPERIMENTS_DIR / f"privacylens_downstream_rows_{agent_model}_{SAME_BATCH_TAG}.csv"
+    if not path.exists():
+        return None
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        batch = {r["case"]: r for r in csv.DictReader(handle) if r["condition"] == CONTROL}
+    by_condition, _ = _by_condition(agent_model)
+    out: list[dict] = []
+    for label, treated, reference in (
+        ("pe/no_protection vs same-batch no_protection", by_condition.get("pe/no_protection"), batch),
+        ("same-batch no_protection vs canonical no_protection", batch, by_condition.get(CONTROL)),
+    ):
+        if not treated or not reference:
+            continue
+        result = _compare(treated, reference)
+        if result is not None:
+            out.append({"comparison": label, **result[0]})
+    # Cases on which the two no_protection runs agree on both scores, a direct read of run-to-run variation.
+    canonical = by_condition.get(CONTROL, {})
+    shared = sorted(set(batch) & set(canonical))
+    same = sum(1 for k in shared if batch[k]["leak_any"] == canonical[k]["leak_any"]
+               and batch[k]["helpfulness"] == canonical[k]["helpfulness"])
+    for row in out:
+        row["same_leak_and_helpfulness"] = (f"{same}/{len(shared)}" if row["comparison"].startswith("same-batch")
+                                            else "")
+    if not out:
+        return None
+    out_path = EXPERIMENTS_DIR / f"downstream_same_batch_tests_{agent_model}.csv"
+    _write(out_path, out)
+    return out_path
+
+
 def head_to_head_tests(agent_model: str) -> Path:
     """The same paired tests on the named pairs of mediated conditions (treated minus reference)."""
     by_condition, _ = _by_condition(agent_model)
@@ -254,6 +294,7 @@ def main(argv: list[str]) -> int:
         paired_tests(model)
         head_to_head_tests(model)
         privacy_prompt_tests(model)
+        same_batch_tests(model)
     return 0
 
 
