@@ -732,4 +732,16 @@ protocol to the attack appendix. A first pilot exposed three scoring defects (ex
 the decoder misreading undisguised identifiers, re-formatted dates counted as lost), which were fixed before the
 reported run. The placeholder-leakage analysis named in F7(d) is not done.
 
+\paragraph{10 October 2026, afternoon: the rest of F7(d), part of F4(e), and F10's slack.} What the replacement tokens
+disclose was measured on the 493 PrivacyLens releases without any model call: typed placeholders' entity labels
+give 94--98\% of releases a token signature no other release shares, where the mention count alone does so for
+1--2\%; symbolic tokens reveal co-referring mentions in 98.8\% of releases. The symbolic namespace, described as a
+random nonce, is in every run a hash of the case identifier; the text now says so and that a deployment must draw it
+at random. Of F4(e), PrivacyLens's privacy-enhanced agent prompt was run on the canonical 200 cases, alone and with
+learned placeholders: alone it changes nothing (leak 37.0\% against 38.0\%, Holm $p=0.86$); with placeholders it gives
+the lowest leak rate on the 32B agent, 24.0\%, but its edge over placeholders alone is unresolved ($p=0.31$). The
+adversarial-feedback anonymizer of Staab et al.\ is implemented but was not run, at the authors' choice. At the
+authors' request the abstract is 252 words and the measured-quantities subsection is one sentence; the main body ends
+on page 12 with about eight lines to spare, short of the third of a page this review asked for.
+
 \end{document}
