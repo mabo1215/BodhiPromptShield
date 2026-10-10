@@ -29,12 +29,13 @@ import fnmatch
 import hashlib
 import re
 import shutil
+import subprocess
 import tempfile
 import zipfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PACKAGE_NAME = "BodhiPromptShield_artifact"
+PACKAGE_NAME = "prompt_mediation_artifact"
 
 # Trees copied into the package, in package-relative form.
 SOURCE_TREES = ("src", "data")
@@ -73,7 +74,16 @@ EXCLUDED_DIRS = {
 }
 
 # Individual files dropped by name, anywhere in the tree.
+_ANNOTATION_UI_REASON = (
+    "Annotator-facing tooling (a labeling page builder, a blind-review UI, and a "
+    "translation aid shown to annotators). The labels it collected are included; "
+    "the tooling is not needed to reproduce any number."
+)
 EXCLUDED_NAMES = {
+    "build_annotation_page.py": _ANNOTATION_UI_REASON,
+    "cppb_blind_review_ui.py": _ANNOTATION_UI_REASON,
+    "fact_translations_zh.json": _ANNOTATION_UI_REASON,
+    "privacylens_secret_translations_zh.json": _ANNOTATION_UI_REASON,
     "AGENTS.md": "Coding-assistant rule file; not part of the research record.",
     "package_artifact.py": (
         "The packaging script itself. It names the identifiers it scrubs, so "
@@ -82,8 +92,15 @@ EXCLUDED_NAMES = {
     ),
 }
 
-# Path globs (package-relative, posix) dropped with cause.
+# Path globs (package-relative, posix, matched case-insensitively) dropped with cause.
+_CPPB_REASON = (
+    "The constructed prompt benchmark of an earlier version of the work. The "
+    "manuscript no longer reports any result on it, and its dataset card links "
+    "to a public release, so it is left out of the anonymous package."
+)
 EXCLUDED_GLOBS = {
+    "data/*": _CPPB_REASON,
+    "*cppb*": _CPPB_REASON,
     "src/experiments/physionet_deid_relabeled_export*.jsonl": (
         "PhysioNet-derived clinical note text. PhysioNet data is obtained under "
         "a credentialed use agreement and is not ours to redistribute. The "
@@ -117,6 +134,13 @@ REDACTIONS = (
     # A rented-container hostname is an account-scoped identifier. The hardware
     # description that actually matters for provenance is a separate field.
     (re.compile(r"autodl-container-[a-z0-9]+-[a-z0-9]+"), "anonymized-gpu-host"),
+    # The system name is linked to the public preprint, so it is replaced with a
+    # neutral one; the manuscript does not use it either.
+    (re.compile(r"[A-Za-z]:/source/BodhiPromptShield"), "<repository root>"),
+    (re.compile(r"BodhiPromptShield"), "PromptMediation"),
+    (re.compile(r"bodhipromptshield"), "promptmediation"),
+    # Private-network host addresses of the machines the runs used.
+    (re.compile(r"\b10\.126\.\d{1,3}\.\d{1,3}\b"), "<private-host>"),
 )
 
 # The build fails if any of these survive staging. Kept deliberately wider than
@@ -139,6 +163,10 @@ FORBIDDEN = (
     # C:\source and shipped C:\Users\<account>\AppData in a data README.
     re.compile(r"[A-Za-z]:\\+Users\\+", re.I),
     re.compile(r"AppData\\+", re.I),
+    re.compile(r"bodhi", re.I),
+    re.compile(r"2604\.05793"),
+    re.compile(r"\b10\.126\.\d"),
+    re.compile(r"[A-Za-z]:/source/", re.I),
     # No generic /home/<user>/ rule: the PrivacyLens benchmark's synthetic
     # content contains /home/john/ and /home/jane/, and a check that fires on
     # benchmark data is a check the next person disables. The real account name
@@ -153,7 +181,7 @@ def _excluded(rel: Path) -> str | None:
             return EXCLUDED_DIRS[part]
     if rel.name in EXCLUDED_NAMES:
         return EXCLUDED_NAMES[rel.name]
-    posix = rel.as_posix()
+    posix = rel.as_posix().lower()
     for glob, reason in EXCLUDED_GLOBS.items():
         if fnmatch.fnmatch(posix, glob):
             return reason
@@ -180,7 +208,11 @@ def stage(root: Path, dest: Path) -> tuple[list[Path], int, dict[str, int]]:
         base = root / tree
         if not base.exists():
             raise SystemExit(f"missing source tree: {base}")
-        for path in sorted(base.rglob("*")):
+        # Tracked files only: caches and scratch outputs that were never
+        # committed are not part of the record and must not travel.
+        tracked = subprocess.run(["git", "ls-files", "-z", tree], cwd=root, capture_output=True, check=True).stdout
+        for name in sorted(n for n in tracked.decode("utf-8").split("\0") if n):
+            path = root / name
             if not path.is_file():
                 continue
             rel = path.relative_to(root)
@@ -308,7 +340,7 @@ def write_readme(dest: Path, staged: list[Path], skipped: dict[str, int]) -> Pat
         for reason, count in sorted(skipped.items(), key=lambda kv: -kv[1])
         if reason != "extension not shipped"
     )
-    text = f"""# Artifact for "BodhiPromptShield: Pre-Inference Prompt Mediation for Surface-Form Privacy Propagation in LLM Agent Pipelines"
+    text = f"""# Artifact for "What Prompt Mediation Stops in LLM Agent Pipelines, and How to Measure It"
 
 Anonymous supplementary material. {len(staged)} files.
 
@@ -327,13 +359,11 @@ Anonymous supplementary material. {len(staged)} files.
     src/algorithms/     Not the mediation layer: 123 lines of unrelated code from
                         an earlier project, kept only because run_all.py imports
                         them as a smoke test.
-    data/               The paper's own template-derived benchmark (CPPB) and
-                        its annotation records.
     MANIFEST.csv        Every shipped file with size and SHA-256.
 
 The tree keeps its repository-relative shape on purpose: the scripts resolve
-the project root two levels above `src/experiments` and read `data/` from
-there, so they run from an unzipped copy without path edits.
+the project root two levels above `src/experiments`, so they run from an
+unzipped copy without path edits.
 
 ## Reproducing
 
@@ -355,8 +385,9 @@ datasets remain under their own licenses and access terms.
 
 ## Anonymization
 
-Author names, the code repository URL, the preprint identifier, and the rented
-GPU container hostname were rewritten before packaging. Hardware descriptions,
+Author names, the system name used in an earlier version, the code repository
+URL, the preprint identifier, private host addresses, and the rented GPU
+container hostname were rewritten before packaging. Hardware descriptions,
 model digests, decoding settings, and seeds are untouched, so the provenance a
 reviewer needs to check a number is intact. The build refuses to produce a zip
 if any of those identifiers survives the pass.

@@ -5,7 +5,7 @@ Generate ablation table values for the paper.
 
 Usage:
   python -m experiments.prior_ablation_table
-  python -m experiments.prior_ablation_table --reaedp C:/source/REAEDP/data --out ablation_table.csv
+  python -m experiments.prior_ablation_table --reaedp <path-to-REAEDP>/data --out ablation_table.csv
 """
 from __future__ import annotations
 

@@ -33,34 +33,33 @@ number against its record.
 
 | Manuscript object | Produced by |
 | --- | --- |
-| `tab:measprop`, `fig:propagation` — cross-boundary propagation | `measured_privacylens_propagation.py`, `mediation_baselines.py`; pooled by `aggregate_paper_results.py`, drawn by `figures/propagation_and_fact_gap.py` |
+| `tab:measprop`, `fig:propagation` — identifier exposure across boundaries, with span precision and fact retention | `propagation_suite.py` (per-document records under the `v2` tag), pooled by `aggregate_paper_results.py`, drawn by `figures/propagation_and_fact_gap.py` |
 | `tab:propints` — the same table with intervals on every column | `aggregate_paper_results.py` |
-| `tab:downstream` — PrivacyLens downstream leakage and helpfulness | `privacylens_downstream_suite.py` |
+| `tab:downstream` — PrivacyLens downstream leakage and helpfulness, including the privacy-enhanced-prompt rows | `privacylens_downstream_suite.py` (`pe/` conditions for the privacy-enhanced prompt), pooled by `aggregate_paper_results.py`; paired tests by `downstream_paired_tests.py` |
+| `tab:portability` — second downstream agent | `privacylens_downstream_suite.py` with a second agent model |
+| `tab:livestack` — where mediation is applied in a live tool-using agent | `live_stack_placement_suite.py` (`--summarize-only`, `--versus-detector`) |
 | `tab:inject` — AgentDojo under prompt injection | `agentdojo_restoration_suite.py` |
-| `fig:inferability` — surface form against factual inferability | `figures/fact_retention_vs_inferability.py`, reading the 240-item records written by `semantic_inferability_agreement.py --extend-a semantic_inferability_extend40_collected_A_vgpu3090.csv --extend-b semantic_inferability_extend40_collected_B_vgpu3090.csv --pool-with-round1 A` (reader A is annotator 1, reader B annotator 3; also writes each method's difference from the control) |
+| `tab:evasion` — adaptive surface-form evasion and the language-model rewrite attacker | `canonicalization_hardening_suite.py`, `llm_rewrite_evasion_suite.py` |
+| `tab:advmeas`, `tab:canon` — evasion per detector, and canonicalization | `measured_adaptive_adversary.py`, `canonicalization_hardening_suite.py` |
+| `fig:inferability` — surface form against factual inferability | `figures/fact_retention_vs_inferability.py`, reading the 240-item records written by `semantic_inferability_agreement.py --extend-a semantic_inferability_extend40_collected_A_vgpu3090.csv --extend-b semantic_inferability_extend40_collected_B_vgpu3090.csv --pool-with-round1 A` (reader A is annotator 1, reader B annotator 3; also writes each method's difference from the control); the lexical flag is rescored by `semantic_inferability_rescore_lexical.py` |
 | `tab:judgecap` — judge agreement with human labels across model capacity | `semantic_inferability_judge_capacity.py`; the human labels and the two automated proxies are scored by `semantic_inferability_agreement.py` |
+| `tab:pljudge` — the benchmark's own judge against two annotators | the records in `privacylens_judge_agreement.csv` |
 | `tab:contextattack` — case-identifiability control | `privacylens_context_inference_attack.py` |
-| `tab:attrrecovery` — attribute recovery against the released surface | `privacylens_attribute_recovery_attack.py`; `--score-only` rebuilds the summary and the paired differences from the shipped rows without calling a model |
-| attacker-capacity comparison, reported in the same appendix section | `attribute_recovery_capacity.py`, which pairs the attacker runs on the identical seeded questions and refuses to pair them if a shared question was posed differently |
-| `tab:advmeas` — adaptive adversary against the actual detectors | `measured_adaptive_adversary.py` |
-| `tab:mapcompromise` — mapping-table compromise curve | `secure_mapping_compromise.py` |
+| `tab:attrrecovery`, `tab:attrcompact` — attribute recovery against the released surface | `privacylens_attribute_recovery_attack.py`; `--score-only` rebuilds the summary and the paired differences from the shipped rows without calling a model |
+| `tab:attrcap` — attacker capacity | `attribute_recovery_capacity.py`, which pairs the attacker runs on the identical seeded questions and refuses to pair them if a shared question was posed differently |
+| what the replacement tokens disclose, reported in prose | `placeholder_leakage_analysis.py` |
 | `tab:crossdom` — cross-domain transfer of the learned detector | `cross_domain_detector.py` |
-| `tab:lightclf` — learned-baseline slice on AI4Privacy | `ai4privacy_lightweight_classifier_baseline.py` |
-| TAB external transfer, reported in prose | `tab_matched_baseline_suite.py` |
 | `tab:ocrslice` — OCR-mediated slice | `cord_ocr_transfer_suite.py`, `funsd_ocr_transfer_suite.py`, `sroie_ocr_transfer_suite.py` |
-| `tab:portability` — second downstream model | `privacylens_downstream_suite.py` with a second agent model |
-| `tab:cppb_card` — controlled-benchmark accounting | `build_cppb_manifest.py` |
-| `tab:per`, `tab:utility`, `tab:pi_sensitivity`, `tab:latency` — the controlled-benchmark appendix, re-measured on the reconstructed surface | `cppb_reconstructed_paper_tables.py`; the execution environment behind the latency table is in `latency_host_manifest.csv` |
-| `fig:operating_points` — policy operating points | `policy_threshold_sweep.py`, `figures/prompt_privacy_operating_points.py` |
+| `tab:latency` — middleware latency | `latency_overhead_reconstructed.csv`; the execution environment is in `latency_host_manifest.csv` |
+| `fig:workflow` — the architecture figure | `figures/mediation_architecture.py` (drawn programmatically, no data) |
 
 `fill_paper_tables.py` writes the tables it has records for back into the
 manuscript source. It carries builders for labels the manuscript no longer
 uses; a builder with no matching label in the `.tex` does nothing.
 
-`fig:workflow` is a drawn diagram, not a generated one. `tab:threat_map`,
-`tab:pi_rules`, `tab:prior_comparison`, `tab:mapping_surface`, `tab:models` and
-`tab:app-examples` are expository and have no record behind them; they are not
-claimed as reproduced output.
+`tab:threat_map`, `tab:prior_comparison`, `tab:pi_rules`, `tab:pi_profiles`,
+`tab:mapping_surface` and `tab:models` are expository and have no record behind
+them; they are not claimed as reproduced output.
 
 ## Commands
 

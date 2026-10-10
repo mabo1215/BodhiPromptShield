@@ -1,5 +1,8 @@
 # Experiment records behind the paper
 
+<!-- retired-labels: tab:cppb_card, tab:per, tab:utility, tab:pi_sensitivity, tab:lightclf, tab:app-examples, tab:app-regimes -->
+
+
 This directory holds the experiment scripts, the result records they wrote, and
 the script that writes those records back into the manuscript source. The
 per-file inventory below maps each record to the manuscript object it supports.
