@@ -17,6 +17,9 @@ if errorlevel 1 goto :fail
 call :build_one RevisionSuggestions
 if errorlevel 1 goto :fail
 
+call :build_one SummaryOfChanges
+if errorlevel 1 goto :fail
+
 echo [INFO] Documentation build finished.
 popd >nul
 exit /b 0

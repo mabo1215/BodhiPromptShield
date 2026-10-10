@@ -1,0 +1,125 @@
+\documentclass[10pt]{article}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{pdfauthor={Anonymous}, pdftitle={Summary of changes and response to the prior review}}
+\pdfinfoomitdate=1
+\pdfsuppressptexinfo=-1
+\pdftrailerid{}
+\setlist{nosep,leftmargin=1.4em}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+
+\title{Summary of Changes and Response to the Prior Review\\[0.3em]
+\large Submission: ``What Prompt Mediation Stops in LLM Agent Pipelines, and How to Measure It''}
+\author{Anonymous submission}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Prior review}
+An earlier version of this work was submitted to ACM Transactions on Privacy and Security (submission
+TOPS-2026-06-0395) under a different title and was rejected on the Associate Editor's recommendation. As the
+PoPETs submission guidelines require, the decision letter and the Associate Editor's comments are attached
+unchanged, and this document summarizes what changed and answers each comment. Section numbers refer to the
+present submission; appendix sections are named by title.
+
+\section*{Overview of the changes}
+The paper has been rebuilt rather than revised. It no longer presents a new privacy mechanism. It is now a
+measurement study of what ingress prompt mediation can and cannot stop in LLM agent pipelines, together with a
+validation of the instruments used to score leakage. In particular:
+\begin{itemize}
+\item \textbf{Framing and title.} The contribution is the measurement (\S1): identifier exposure across agent
+  boundaries under one protocol against installed baselines; where mediation is applied in a live tool-using
+  agent; factual leakage measured with an adversary and with blind human labels; and the agreement of automated
+  leakage measures with people. Replacement with restoration is stated as prior art (\S3).
+\item \textbf{The constructed benchmark is gone.} All results built on the 256-prompt benchmark of the earlier
+  version, and its figures, have been removed. Every reported result now uses public benchmarks (AI4Privacy,
+  PrivacyLens, AgentDojo) or public real-text transfer slices, and \S5.1 carries the extrapolation paragraph the
+  call requires for synthetic evaluations.
+\item \textbf{Real agents.} Two open-weight agents produce the downstream actions (\S6.3); a live tool-using
+  stack, in which the agent itself writes every boundary artifact, varies where mediation is applied (\S6.5); and
+  AgentDojo tools execute against their sandboxed environments under prompt injection (\S6.6).
+\item \textbf{Strong baselines.} Installed Presidio, a Casper-style sanitizer with its restoration map, a one-shot
+  LLM sanitizer, and PrivacyLens's own privacy-enhanced agent prompt, all run under the same protocol.
+\item \textbf{Realistic attacks.} Adaptive surface-form evasion against the deployed detectors, including a
+  language-model attacker with detector feedback (\S6.6); an attribute-recovery attack on the released surface at
+  three attacker sizes (\S6.2); prompt injection against a live agent (\S6.6); and an analysis of what the
+  replacement tokens themselves disclose (\S4).
+\item \textbf{Utility and statistics.} The custom utility rubric is gone. Utility is each benchmark's own score,
+  and the benchmark's leakage judge is validated against two annotators. Paired tests use Holm correction,
+  intervals resample the evaluation unit, and run-to-run variation is measured (appendix ``Portability to a
+  Second Downstream Agent'').
+\item \textbf{Reproducibility.} Every table and figure is generated from released per-unit records; the model
+  roster gives every model's quantization and digest; per-run manifests record decoding settings, seeds, library
+  versions, server settings and hardware.
+\end{itemize}
+
+\section*{Response to the Associate Editor's comments}
+
+\paragraph{1. Prior work (PrivacyRestore, Casper) and novelty.}
+We agree, and the paper no longer claims a new mechanism. \S3 now covers the closest prompt sanitizers with
+restoration (Hide-and-Seek, Casper, PrivacyRestore, PromptGraph, PAAC, Pr$\varepsilon\varepsilon$mpt), model-based
+rewriting (PAPILLON, Rescriber, LLM anonymizers), and information-flow control and agent data-flow defenses
+(Denning, JIF, TaintDroid, CaMeL, AirGapAgent), and states that replacement with restoration, and deferring
+restoration in an agent loop, are prior art. Casper's mechanism is reimplemented and compared under our protocol,
+including its client-held restoration map (Table~5); PrivacyRestore is discussed but not run, because it steers
+activations inside the serving model, whereas the layer studied here sits in front of a black-box model. The
+contribution is the measurement listed above.
+
+\paragraph{2. The 256-prompt benchmark from 32 templates.}
+Removed. No result of the paper rests on it. The learned detector is trained on the AI4Privacy training split and
+evaluated on 300 held-out documents; that it is evaluated in domain there, and out of domain on PrivacyLens, is
+stated in \S5.3 and the Limitations, together with the fact that its margin over the Casper-style detector
+disappears out of domain.
+
+\paragraph{3. The deterministic reference agent, and contextual disclosure.}
+Both concerns are now addressed by measurements rather than argument. Agent behavior is measured where a model
+writes the artifact: identifiers in the final action of two agents (\S6.3), and a live tool-using agent with a
+retrieval index, a note store and an application log, under six mediation placements and two detector arms
+(\S6.5). There, mediating only the prompt leaves 61--68\% of the values that tools return in the agent's context;
+only mediating every read edge keeps them out. Contextual disclosure is measured directly (\S6.2): an adversary
+choosing among four same-kind candidates recovers 64\% of the values the strongest detector removed (chance 25\%),
+at every attacker size tested, and blind human labels on 240 items, checked by a second reader at
+$\kappa=0.849$, show what remains inferable. The paper states that SPE measures literal survival only, and its
+central result is precisely the gap between literal and factual leakage.
+
+\paragraph{4. Enterprise redaction, AC/TSR, and the custom utility rubric.}
+The comparison and the rubric are removed. Utility is now each benchmark's own instrument: PrivacyLens's
+helpfulness score from its original judge and verbatim prompts, and AgentDojo's state-checked task success. The
+benchmark's leakage judge is validated against two annotators (appendix ``Validating the Benchmark's Own
+Judge''). Utility costs are reported where they are large, including a helpfulness drop from 2.46 to 1.40 for
+the learned detector on the 70B agent, and differences below run-to-run variation are reported as unresolved.
+
+\paragraph{5. Detector precision, model identities, OCR and runtime records.}
+Precision is now a column of the exposure table (Table~3): the learned detector's span precision is 0.35,
+against 0.66--0.78 for the transformer, Casper-style and Presidio detectors, and the retention column
+prices its over-redaction. The model roster names every model with its parameter count, quantization and digest,
+and per-run manifests record decoding parameters, seeds, library versions, server settings and hardware. The OCR
+transfer slices report their provenance, and the released records regenerate every reported number.
+
+\paragraph{6. The span-level LDP analysis.}
+Removed. \S2 now states that the evaluated pipeline is deterministic and provides no end-to-end formal guarantee,
+and that all reported quantities are empirical measurements with explicit scope.
+
+\paragraph{Closing recommendation: real agent stacks, strong baselines, realistic attacks.}
+See the overview: the live-stack placement experiment, AgentDojo with executing tools, two downstream agents,
+installed and reimplemented baselines including a prompt-only defense, and adaptive, attribute-recovery and
+injection attacks.
+
+\section*{Other substantive changes}
+\begin{itemize}
+\item Trust domains, the trusted computing base and the authorized boundary are defined (\S2), and the
+  architecture figure is redrawn programmatically to match the text.
+\item Metric definitions match the code that computes them: PER is a pooled ratio with effective counts, attack
+  success is counted per span, fact retention matches whole words and is described as a permissive lexical
+  measure.
+\item The restoration-timing contrast is described for what it is: deferral against restoring before planning.
+\item Every bibliographic entry was checked against its canonical record.
+\item The ethics, open-science and AI-use sections follow the PoPETs 2027 guidelines.
+\end{itemize}
+
+\end{document}
