@@ -261,11 +261,15 @@ def same_batch_tests(agent_model: str) -> Path | None:
     # Cases on which the two no_protection runs agree on both scores, a direct read of run-to-run variation.
     canonical = by_condition.get(CONTROL, {})
     shared = sorted(set(batch) & set(canonical))
-    same = sum(1 for k in shared if batch[k]["leak_any"] == canonical[k]["leak_any"]
-               and batch[k]["helpfulness"] == canonical[k]["helpfulness"])
+    agree = {
+        "same_leak_verdict": sum(1 for k in shared if batch[k]["leak_any"] == canonical[k]["leak_any"]),
+        "same_helpfulness": sum(1 for k in shared if batch[k]["helpfulness"] == canonical[k]["helpfulness"]),
+        "same_leak_and_helpfulness": sum(1 for k in shared if batch[k]["leak_any"] == canonical[k]["leak_any"]
+                                         and batch[k]["helpfulness"] == canonical[k]["helpfulness"]),
+    }
     for row in out:
-        row["same_leak_and_helpfulness"] = (f"{same}/{len(shared)}" if row["comparison"].startswith("same-batch")
-                                            else "")
+        for key, count in agree.items():
+            row[key] = f"{count}/{len(shared)}" if row["comparison"].startswith("same-batch") else ""
     if not out:
         return None
     out_path = EXPERIMENTS_DIR / f"downstream_same_batch_tests_{agent_model}.csv"

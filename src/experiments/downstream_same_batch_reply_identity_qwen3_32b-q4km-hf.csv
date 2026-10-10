@@ -1,0 +1,3 @@
+model,role,same_batch_calls,also_in_canonical_cache,byte_identical,note
+qwen3:32b-q4km-hf,agent,200,200,52,"same-batch no_protection replies against the canonical run's cached replies to the identical request (same cache key); computed on the run host from the two completion caches, which are not released"
+mistral:7b-instruct-v0.2-q4km-hf,judge,812,306,142,"judge calls whose request (secret or helpfulness prompt on the agent's action) recurred in the canonical cache, and how many returned the same text"
