@@ -89,7 +89,7 @@ def _semantic_residue(trajectory: str, items: list[str], detector) -> tuple[int,
         if not words:
             continue
         total += 1
-        present = sum(1 for w in words if w in released)
+        present = sum(1 for w in words if w in set(re.findall(r"[a-z]+", released)))  # whole words
         if present >= max(1, len(words) // 2):
             survived += 1
     return survived, total

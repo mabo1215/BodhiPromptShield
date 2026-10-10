@@ -1,5 +1,5 @@
-item_id,method_key,doc_id,fact_index,judge_inferable,lexical_retained
-96,no_protection,main212,0,1,1
-97,regex_only,main324,0,1,1
-98,heuristic_mediator,main46,5,0,1
-99,learned_lr,main96,0,1,1
+item_id,method_key,doc_id,fact_index,judge_inferable,lexical_retained,lexical_retained_substring
+96,no_protection,main212,0,1,1,1
+97,regex_only,main324,0,1,1,1
+98,heuristic_mediator,main46,5,0,1,1
+99,learned_lr,main96,0,1,1,1

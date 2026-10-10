@@ -1,0 +1,20 @@
+field,value
+source,ai4privacy
+documents,100
+methods,no_protection;regex_only;capitalization_heuristic;spacy_ner;presidio;casper_style;llm_sanitizer:qwen3:8b-q4km-hf;heuristic_mediator;gliner_pii;learned_lr
+bootstrap_resamples,1000
+ci,"document-level percentile bootstrap, 95%, seed 17"
+stages,"AI4Privacy: retrieval=first half, memory=verbatim, tool=structured fields; PrivacyLens: retrieval=user_instruction, memory=executable_trajectory, tool=final_action"
+measurement,"exact gold surface survival (SPE), char-coverage PER/retention, content-word fact retention matched as whole words (PrivacyLens), span precision against gold (AI4Privacy)"
+python,3.13.14
+platform,Windows-11-10.0.26300-SP0
+spacy_ner.spacy,3.8.16
+spacy_ner.spacy_model,en_core_web_lg
+presidio.presidio_analyzer,2.2.364
+presidio.spacy,3.8.16
+presidio.spacy_model,en_core_web_lg
+casper_style.spacy_model,en_core_web_lg
+llm_sanitizer:qwen3:8b-q4km-hf.model_name,qwen3:8b-q4km-hf
+llm_sanitizer:qwen3:8b-q4km-hf.model_digest,
+gliner_pii.gliner,0.2.28
+gliner_pii.gliner_model,urchade/gliner_multi_pii-v1

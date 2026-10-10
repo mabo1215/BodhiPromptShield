@@ -298,6 +298,9 @@ def build_measprop_table() -> str:
                     _ci_point(a["memory_spe"]),
                     _per(a, "ai4"),
                     f"{float(_ci_point(a['text_retention'])):.2f}",
+                    # Span precision against gold; undefined where nothing is detected.
+                    "---" if key == "no_protection" or not a.get("span_precision")
+                    else f"{float(_ci_point(a['span_precision'])):.2f}",
                     _ci_point(p["memory_spe"]),
                     _per(p, "pl"),
                     f"{float(_ci_point(p['text_retention'])):.2f}",
@@ -310,12 +313,12 @@ def build_measprop_table() -> str:
     n_ai4 = next(iter(ai4.values()))["documents"]
     n_pl = next(iter(pl.values()))["documents"]
     return (
-        "\\begin{tabular}{lccccccc}\n"
+        "\\begin{tabular}{lcccccccc}\n"
         + "\\toprule\n"
-        + "& \\multicolumn{3}{c}{\\emph{AI4Privacy text, reference agent "
+        + "& \\multicolumn{4}{c}{\\emph{AI4Privacy text, reference agent "
         + f"({n_ai4} docs)}}}} & \\multicolumn{{4}}{{c}}{{\\emph{{PrivacyLens agent trajectories ({n_pl} tasks)}}}} \\\\\n"
-        + "\\cmidrule(lr){2-4}\\cmidrule(lr){5-8}\n"
-        + "Method & Mem.\\ SPE & PER & Ret. & Mem.\\ SPE & PER & Ret. & FRR \\\\\n"
+        + "\\cmidrule(lr){2-5}\\cmidrule(lr){6-9}\n"
+        + "Method & Mem.\\ SPE & PER & Ret. & Prec. & Mem.\\ SPE & PER & Ret. & FRR \\\\\n"
         + "\\midrule\n"
         + "\n".join(body_lines)
         + "\n\\bottomrule\n"

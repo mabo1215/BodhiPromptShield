@@ -82,12 +82,10 @@ Then give one short sentence of justification."""
 
 
 def _lexical_retained(released: str, fact: str) -> bool:
-    """The FRR criterion from propagation_suite, evaluated per fact."""
-    low = released.lower()
-    words = [w for w in re.findall(r"[a-zA-Z]{4,}", fact.lower()) if w not in STOP]
-    if not words:
-        return False
-    return sum(1 for w in words if w in low) >= max(1, len(words) // 2)
+    """The FRR criterion from propagation_suite (content words matched as whole words), per fact."""
+    from propagation_suite import fact_retained
+
+    return fact_retained(released, fact)
 
 
 def _chat(url: str, model: str, prompt: str, timeout: int) -> str:

@@ -317,7 +317,10 @@ class LLMSanitizer:
                 for line in handle:
                     if line.strip():
                         row = json.loads(line)
-                        self.cache[row["key"]] = row["sanitized"]
+                        # First record wins. Shards that ran concurrently sometimes generated the same
+                        # text twice and both appended; the recorded runs used the first, and keeping
+                        # the last made a replay differ from them on 50 PrivacyLens texts.
+                        self.cache.setdefault(row["key"], row["sanitized"])
         self.failures = 0
         self.generated = 0
 

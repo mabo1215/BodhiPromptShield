@@ -92,9 +92,14 @@ def _read_shards(pattern: str) -> list[dict]:
     return rows
 
 
+PROPAGATION_TAG = "v2"
+
+
 def pool_propagation(source: str) -> Path:
     """Pool per-document propagation counts across shards and recompute CIs."""
-    docs = _read_shards(f"propagation_suite_{source}_documents_shard*.csv")
+    # v2: fact retention matched as whole words, and span precision recorded; the earlier shards
+    # (substring matching, no precision) are kept as superseded records.
+    docs = _read_shards(f"propagation_suite_{source}_documents_{PROPAGATION_TAG}_shard*.csv")
     if not docs:
         raise SystemExit(f"no document shards found for {source}")
 
@@ -116,6 +121,7 @@ def pool_propagation(source: str) -> Path:
             "per_percent": _ci(sub, "res_chars", "sens_chars", 100.0, 1),
             "text_retention": _ci(sub, "kept_nonsens", "nonsens_chars", 1.0, 2),
             "semantic_residue": _ci(sub, "sem_s", "sem_t", 100.0, 1),
+            "span_precision": _ci(sub, "span_tp", "span_pred", 1.0, 2) if source == "ai4privacy" else "",
         })
 
     path = EXPERIMENTS_DIR / f"propagation_suite_{source}_results_pooled.csv"

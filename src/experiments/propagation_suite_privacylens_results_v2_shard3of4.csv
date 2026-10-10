@@ -1,0 +1,11 @@
+method,method_key,documents,mentions,retrieval_spe,retrieval_spe_lo,retrieval_spe_hi,memory_spe,memory_spe_lo,memory_spe_hi,tool_spe,tool_spe_lo,tool_spe_hi,per_percent,per_lo,per_hi,text_retention,retention_lo,retention_hi,semantic_residue,semantic_lo,semantic_hi
+No protection,no_protection,123,0,100.0,100.0,100.0,100.0,100.0,100.0,0.0,0.0,0.0,100.0,100.0,100.0,1.00,1.00,1.00,99.0,97.5,100.0
+Regex-only,regex_only,123,0,0.0,0.0,0.0,11.4,8.6,15.2,0.0,0.0,0.0,10.6,8.0,14.3,0.99,0.98,0.99,98.8,97.1,99.8
+Capitalization heuristic,capitalization_heuristic,123,0,100.0,100.0,100.0,98.9,98.1,99.5,0.0,0.0,0.0,99.0,98.3,99.5,0.84,0.83,0.85,89.2,82.8,94.6
+spaCy NER masking,spacy_ner,123,0,100.0,100.0,100.0,64.1,57.1,69.4,0.0,0.0,0.0,66.5,60.2,71.3,0.92,0.91,0.93,92.0,86.2,96.6
+Presidio,presidio,123,0,0.0,0.0,0.0,11.2,8.6,14.2,0.0,0.0,0.0,10.9,8.4,13.7,0.93,0.92,0.93,91.2,85.1,96.0
+Casper-style detector (rules + NER),casper_style,123,0,0.0,0.0,0.0,1.5,0.9,2.3,0.0,0.0,0.0,1.4,0.8,2.1,0.91,0.90,0.92,91.0,85.5,95.6
+LLM sanitizer (qwen3:8b-q4km-hf),llm_sanitizer:qwen3:8b-q4km-hf,123,0,27.4,18.0,38.2,57.3,49.7,65.2,0.0,0.0,0.0,55.0,48.1,61.8,0.92,0.89,0.94,91.0,84.0,96.4
+Proposed (heuristic detector),heuristic_mediator,123,0,0.0,0.0,0.0,10.2,7.4,13.8,0.0,0.0,0.0,10.0,7.4,13.3,0.58,0.56,0.60,27.8,21.5,34.4
+Proposed (transformer detector),gliner_pii,123,0,9.3,3.0,16.8,31.4,25.2,37.5,0.0,0.0,0.0,29.6,24.0,35.3,0.92,0.91,0.92,89.2,83.3,94.1
+Proposed (learned detector),learned_lr,123,0,0.0,0.0,0.0,1.8,1.2,2.4,0.0,0.0,0.0,1.6,1.1,2.2,0.75,0.74,0.77,81.0,73.0,88.2

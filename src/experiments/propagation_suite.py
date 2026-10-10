@@ -31,7 +31,7 @@ import re
 import sys
 from pathlib import Path
 
-from ai4privacy_matched_baseline_suite import _char_coverage, _load_records, _merge_spans
+from ai4privacy_matched_baseline_suite import _char_coverage, _load_records, _merge_spans, _span_counts
 import ai4privacy_lightweight_classifier_baseline as clf
 from measured_agent_propagation import MARKER, _memory_write, _retrieval_query, _sanitize, _tool_call
 from measured_privacylens_propagation import _gold_spans as _pl_gold_spans
@@ -58,6 +58,8 @@ RESULT_FIELDS = [
 DOC_FIELDS = [
     "method_key", "doc_id", "ret_s", "ret_t", "mem_s", "mem_t", "tool_s", "tool_t",
     "res_chars", "sens_chars", "kept_nonsens", "nonsens_chars", "sem_s", "sem_t",
+    # Span-level detection counts against gold (AI4Privacy only), scored as in the matched baseline suite.
+    "span_tp", "span_pred",
 ]
 
 
@@ -102,24 +104,44 @@ def _survival(stage_text: str, gold_texts: list[str]) -> tuple[int, int]:
     return sum(1 for g in gold_texts if g and g in stage_text), len(gold_texts)
 
 
+def fact_content_words(fact: str) -> list[str]:
+    """Content words of a fact: alphabetic runs of four or more letters, stop words removed."""
+    return [w for w in re.findall(r"[a-zA-Z]{4,}", fact.lower()) if w not in STOP]
+
+
+def fact_retained(released: str, fact: str, *, whole_words: bool = True) -> bool:
+    """The FRR criterion: at least half of the fact's content words (and never fewer than one) occur in
+    the released text. Words are matched as whole words; ``whole_words=False`` reproduces the earlier
+    substring match, kept only to check that a rebuilt release equals the one originally scored."""
+    words = fact_content_words(fact)
+    if not words:
+        return False
+    low = released.lower()
+    if whole_words:
+        tokens = set(re.findall(r"[a-z]+", low))
+        hits = sum(1 for w in words if w in tokens)
+    else:
+        hits = sum(1 for w in words if w in low)
+    return hits >= max(1, len(words) // 2)
+
+
 def _semantic_residue(released: str, items: list[str]) -> tuple[int, int]:
-    """Items whose content words mostly survive in the released text (PrivacyLens)."""
-    released = released.lower()
+    """Items whose content words mostly survive, as whole words, in the released text (PrivacyLens)."""
     survived = total = 0
     for item in items:
-        words = [w for w in re.findall(r"[a-zA-Z]{4,}", item.lower()) if w not in STOP]
-        if not words:
+        if not fact_content_words(item):
             continue
         total += 1
-        if sum(1 for w in words if w in released) >= max(1, len(words) // 2):
-            survived += 1
+        survived += int(fact_retained(released, item))
     return survived, total
 
 
 def _measure_ai4privacy(doc: dict, detector: Detector) -> dict[str, int]:
     text, gold = doc["text"], doc["gold"]
     gold_texts = [text[a:b] for a, b in gold]
-    released = _sanitize(text, detector(text))
+    spans = detector(text)
+    released = _sanitize(text, spans)
+    tp, _fp, _fn = _span_counts(spans, gold)
     ret_s, ret_t = _survival(_retrieval_query(released), gold_texts)
     mem_s, mem_t = _survival(_memory_write(released), gold_texts)
     tool_s, tool_t = _survival(_tool_call(released), gold_texts)
@@ -128,7 +150,8 @@ def _measure_ai4privacy(doc: dict, detector: Detector) -> dict[str, int]:
     non = set(range(len(text))) - gold_chars
     kept = sum(1 for i in non if i < len(released) and released[i] == text[i])
     return {"ret_s": ret_s, "ret_t": ret_t, "mem_s": mem_s, "mem_t": mem_t, "tool_s": tool_s, "tool_t": tool_t,
-            "res_chars": res, "sens_chars": len(gold_chars), "kept_nonsens": kept, "nonsens_chars": len(non), "sem_s": 0, "sem_t": 0}
+            "res_chars": res, "sens_chars": len(gold_chars), "kept_nonsens": kept, "nonsens_chars": len(non), "sem_s": 0, "sem_t": 0,
+            "span_tp": tp, "span_pred": len(spans)}
 
 
 def _measure_privacylens(doc: dict, detector: Detector) -> dict[str, int]:
@@ -169,6 +192,7 @@ def _measure_privacylens(doc: dict, detector: Detector) -> dict[str, int]:
     counts["nonsens_chars"] = len(non)
     counts["kept_nonsens"] = sum(1 for i in non if i < len(released) and released[i] == combined[i])
     counts["sem_s"], counts["sem_t"] = _semantic_residue(released_traj, doc["items"])
+    counts["span_tp"], counts["span_pred"] = 0, 0
     return counts
 
 
@@ -257,7 +281,7 @@ def run(source: str, method_keys: list[str], *, max_docs: int | None, spacy_mode
         {"field": "bootstrap_resamples", "value": str(n_boot)},
         {"field": "ci", "value": "document-level percentile bootstrap, 95%, seed 17"},
         {"field": "stages", "value": "AI4Privacy: retrieval=first half, memory=verbatim, tool=structured fields; PrivacyLens: retrieval=user_instruction, memory=executable_trajectory, tool=final_action"},
-        {"field": "measurement", "value": "exact gold surface survival (SPE), char-coverage PER/retention, content-word semantic residue (PrivacyLens)"},
+        {"field": "measurement", "value": "exact gold surface survival (SPE), char-coverage PER/retention, content-word fact retention matched as whole words (PrivacyLens), span precision against gold (AI4Privacy)"},
         {"field": "python", "value": platform.python_version()},
         {"field": "platform", "value": platform.platform()},
     ]

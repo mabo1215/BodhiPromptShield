@@ -1,11 +1,11 @@
 comparison,n,cohens_kappa,interpretation,raw_agreement,cell_no_no,cell_no_yes,cell_yes_no,cell_yes_yes,note
 readerA_vs_readerB_independent,138,0.927,almost perfect,0.964,63,1,4,70,both readers labelled the extension items on separate blank pages; an inter-rater reliability estimate
 judge_vs_readerA,138,0.220,fair,0.630,16,48,3,71,
-lexical_vs_readerA,138,0.202,slight,0.623,14,50,2,72,
+lexical_vs_readerA,138,0.204,slight,0.623,15,49,3,71,
 judge_vs_readerB,138,0.230,fair,0.623,17,50,2,69,
-lexical_vs_readerB,138,0.185,slight,0.601,14,53,2,69,
+lexical_vs_readerB,138,0.185,slight,0.601,15,52,3,68,
 judge_vs_pooled_annotator1,240,0.163,slight,0.613,26,81,12,121,"annotator 1's round-one labels pooled with extension reader A's, declared to be the same person"
-lexical_vs_pooled_annotator1,240,0.221,fair,0.642,26,81,5,128,"annotator 1's round-one labels pooled with extension reader A's, declared to be the same person"
+lexical_vs_pooled_annotator1,240,0.222,fair,0.642,27,80,6,127,"annotator 1's round-one labels pooled with extension reader A's, declared to be the same person"
 judge_vs_pooled_annotator3,240,0.183,slight,0.613,28,83,10,119,"annotator 3's round-one labels pooled with extension reader B's, declared to be the same person"
-lexical_vs_pooled_annotator3,240,0.206,slight,0.625,26,85,5,124,"annotator 3's round-one labels pooled with extension reader B's, declared to be the same person"
+lexical_vs_pooled_annotator3,240,0.207,slight,0.625,27,84,6,123,"annotator 3's round-one labels pooled with extension reader B's, declared to be the same person"
 pooled_annotator1_vs_annotator3_independent,240,0.849,almost perfect,0.925,100,7,11,122,"round one plus extension; both readers worked from blank sheets in both rounds, so this is an inter-rater reliability estimate"
