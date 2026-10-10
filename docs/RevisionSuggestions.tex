@@ -760,4 +760,14 @@ recomputed), and Table~3 has no precision column (the precision of the learned d
 PrivacyLens the gold covers only identity, e-mail and digit identifiers, so precision there would count correct
 detections of other PII as errors).
 
+\paragraph{10 October 2026, late night: F5(c) and F4(c) closed.} Fact retention now matches content words as whole
+words, through one function shared by every script that computes it. The exposure records were rebuilt; every
+column but fact retention reproduces the earlier records cell for cell, after a sanitizer-cache defect (concurrent
+shards had stored two rewrites for 50 texts and the loader kept the wrong one) was found and fixed in the process.
+Fact retention falls by 0.4 to 4.1 points per method on PrivacyLens (80.5--98.4\% for methods that leave usable text),
+and the lexical measure's agreement with the human labels moves from 0.221 to 0.222 and from 0.206 to 0.207; Figure~3
+is redrawn. The exposure table gains span precision on AI4Privacy (learned detector 0.35, against 0.66--0.78 for the
+transformer, Casper-style and Presidio detectors); it is not given on PrivacyLens, whose gold covers only three
+identifier kinds.
+
 \end{document}
