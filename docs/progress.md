@@ -1,6 +1,23 @@
 # 论文进度
 
-## 2026-10-10 深夜：F5(c) FRR 改整词匹配、F4(c) 表 3 加精度列，两项完成（当前最新）
+## 2026-10-11：余量达标、投稿前检查做完、PoPETs 要求的修改说明和匿名 artifact 已备好（当前最新）
+
+**F10 余量达标**（paper `fe8a27d`）：框架一节（§4）删掉重复：抽取一节不再重写 §2 的定义，信号列表并成一句；两个公式并成行内定义；概述、模式选择、集成三小节压紧；删掉一段重复 §6 还原时机结论的话。没有删任何测量或结论。你要求补回的三处都没动。正文止于第 12 页右栏 1/4 处，**余量约 1/3 页**，达到评审要求。顺带把 learned 的"recall 0.95"去掉（那个数来自全量测试集，和表 3 的 300 篇不是一个口径），只引用精度 0.35。
+
+**阶段 D 能做的已做**
+- **官网要求重新核对**（10-11 抓取 cfp27、authors-2027）：12 页正文、三个必填节、首页写明与真实隐私应用的关系、合成数据的外推段，都满足。
+- **模板 MD5**：下载官方 2027 投稿模板，`acmart.cls`、`popets.sty`、bst/bbx/cbx、`cc-by-4.pdf` 六个文件与我们的**逐字节一致**。
+- **逐字节匿名检查**：PDF（含解压后的流和元数据）里没有作者名、单位、邮箱、系统名、预印本编号、CPPB、本机路径或日期。只剩第三方链接（Presidio 的 GitHub、AI4Privacy 数据集）。
+- **重投要求**：PoPETs 要求被别处拒过的稿件**附上之前的评审意见**，并附一份**匿名的修改说明 PDF**。已写好 `docs/SummaryOfChanges.tex`（由 `docs/build.bat` 编译成 3 页 PDF；PDF 被 gitignore，和其他生成文档一样）：说明 TOPS 拒稿经过和整体重构，逐条回应 AE 的 6 条意见和结尾建议，都指到现在论文的章节、表和数字。PDF 无作者、无路径、无日期。`docs/ae_response.txt` 和 `cover_letter.txt` 描述的是旧版本，已被它取代。
+- **匿名 artifact**（`8ea8aa0`）：`src/package_artifact.py` 改为只打包已跟踪的文件；把旧系统名、本机仓库路径、私网 IP 改写掉，任何一个残留就拒绝打包；排除论文已不用的 CPPB（整个 `data/` 和所有 cppb 文件）以及标注员用的界面和中文翻译辅助文件。产物 `submit/prompt_mediation_artifact_anonymous.zip`：622 个文件、11 MB；独立扫描 0 处标识信息，唯一的中文是攻击者模型自己写出的改写。`src/README.md` 里的"论文对象 → 脚本"对照表已按现在的论文重写。
+- **F7(c) 还原预言机**：修好后的 AgentDojo 重跑已经回答了这个问题（不限范围还原时，边界把 token 还原进攻击者的调用；只按用户指示还原时拒绝）。专门的攻击不另跑。
+
+**需要你**
+1. 投稿时上传：`submit/prompt_mediation_artifact_anonymous.zip`（作为 supplementary，或推到一个新的 GitHub 仓库后用 anonymous.4open.science 生成链接，需要你授权 GitHub）；`docs/build/SummaryOfChanges.pdf`；TOPS 的拒稿信和 AE 意见（`docs/AESuggestion.txt`）。注意：拒稿信里有旧标题 "BodhiPromptShield…"，和公开的预印本能对上，但 PoPETs 要求原样附上，没法回避。
+2. 审稿期间不要更新 arXiv 预印本。
+3. 可选的 F6 中间还原点（在 PrivacyLens 上）需要 GPU；两台主机都已交给 HKVLM，要做的话再开一台。
+
+## 2026-10-10 深夜：F5(c) FRR 改整词匹配、F4(c) 表 3 加精度列，两项完成
 
 **F5(c) FRR 改成整词匹配**（`4f2e452`，paper `a557f96`）
 - 三处复制的判定规则合并成一个共享函数，统一按整词匹配。
