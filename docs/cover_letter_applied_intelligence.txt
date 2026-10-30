@@ -1,0 +1,27 @@
+Dear Editor-in-Chief,
+
+We submit the manuscript "What Prompt Mediation Stops in LLM Agent Pipelines, and How to Measure It" for consideration as a research article in Applied Intelligence.
+
+Large language model (LLM) agents are now deployed as applied intelligent systems that read user documents, query retrieval indexes, keep persistent memory, and call tools that act on real services. User content that enters such an agent does not stay in one model call: it is copied into retrieval queries, memory entries, tool arguments, and logs. The most widely deployed defense mediates the prompt at ingress, replacing detected sensitive spans with placeholders and restoring exact values only where an authorized tool needs them. This paper measures what that defense actually stops when it is placed in front of a working agent.
+
+The study compares Microsoft Presidio, a Casper-style sanitizer, an LLM sanitizer, and our mediation layer with three detectors under one protocol, on public benchmarks (AI4Privacy, PrivacyLens, AgentDojo) scored with each benchmark's own instruments and run with open-weight agents. Its main findings are:
+
+1. The detector sets identifier exposure. Residual exposure falls to 7.4% on AI4Privacy with an in-domain detector, against 46.7-52.2% for the strongest baselines, and identifiers in a live agent's final action fall from 13.7% to 2.7-3.1% under typed placeholders.
+2. Deferring restoration to the authorized tool boundary keeps identifiers out of what the agent writes (-11.0 points, 95% CI [-13.3, -8.7]), at a small helpfulness cost.
+3. In a live tool-using agent, mediating the prompt alone leaves most values that tools return in the agent's context; only mediating every read edge keeps them out, at a measured utility cost that restoration partly recovers.
+4. Facts survive where identifiers do not: an adversary recovers 64% of the values the strongest detector removed (chance 25%), and mediation does not stop prompt injection.
+5. Measuring semantic leakage needs human validation. Blind human labels show inferability falling from 98% to 25-50% under mediation, while an LLM judge and a word-overlap metric both disagree with them (Cohen's kappa 0.16 and 0.22; two human readers agree at 0.85).
+
+We believe the work fits the scope of Applied Intelligence because it is an empirical study of a privacy-protection component inside deployed LLM agent systems, with practical guidance on where such a component must sit and what it cannot do. Every reported number carries a bootstrap confidence interval and can be regenerated from the released per-unit records; the code and records are publicly available, as stated in the Declarations.
+
+Preprint disclosure. An earlier version of this work is available as an arXiv preprint (arXiv:2604.05793) under the title "BodhiPromptShield: Pre-Inference Prompt Mediation for Suppressing Privacy Propagation in LLM/VLM Agents". The present manuscript substantially revises that version: the evaluation has been rebuilt on public agent benchmarks and live tool execution, and several of its claims have been re-measured. No other part of the manuscript has been published, and no previously published figures, tables, or text are reused.
+
+This manuscript is original, is not under consideration by any other journal or conference, and has been approved by all authors. The authors declare no competing interests [authors to confirm].
+
+Sincerely,
+
+Bo Ma (corresponding author)
+Auckland University of Technology, Auckland, New Zealand
+rcn4743@aut.ac.nz
+
+on behalf of Bo Ma, Jinsong Wu, and Weiqi Yan

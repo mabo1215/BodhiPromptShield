@@ -288,10 +288,13 @@ def build_measprop_table() -> str:
             return "\\textbf{" + cell + "}"
         return cell
 
-    body_lines = []
+    # The two sources are stacked as panels sharing one tabular: side by side
+    # the nine columns do not fit a single-column journal page.
+    ai4_lines = []
+    pl_lines = []
     for key, label in MEASPROP_ORDER:
         a, p = ai4[key], pl[key]
-        body_lines.append(
+        ai4_lines.append(
             " & ".join(
                 [
                     _tex_escape(label),
@@ -301,6 +304,14 @@ def build_measprop_table() -> str:
                     # Span precision against gold; undefined where nothing is detected.
                     "---" if key == "no_protection" or not a.get("span_precision")
                     else f"{float(_ci_point(a['span_precision'])):.2f}",
+                ]
+            )
+            + " \\\\"
+        )
+        pl_lines.append(
+            " & ".join(
+                [
+                    _tex_escape(label),
                     _ci_point(p["memory_spe"]),
                     _per(p, "pl"),
                     f"{float(_ci_point(p['text_retention'])):.2f}",
@@ -313,14 +324,19 @@ def build_measprop_table() -> str:
     n_ai4 = next(iter(ai4.values()))["documents"]
     n_pl = next(iter(pl.values()))["documents"]
     return (
-        "\\begin{tabular}{lcccccccc}\n"
+        "\\begin{tabular}{@{}lcccc@{}}\n"
         + "\\toprule\n"
-        + "& \\multicolumn{4}{c}{\\emph{AI4Privacy text, reference agent "
-        + f"({n_ai4} docs)}}}} & \\multicolumn{{4}}{{c}}{{\\emph{{PrivacyLens agent trajectories ({n_pl} tasks)}}}} \\\\\n"
-        + "\\cmidrule(lr){2-5}\\cmidrule(lr){6-9}\n"
-        + "Method & Mem.\\ SPE & PER & Ret. & Prec. & Mem.\\ SPE & PER & Ret. & FRR \\\\\n"
+        + f"\\multicolumn{{5}}{{@{{}}l}}{{\\emph{{(a) AI4Privacy text, reference agent ({n_ai4} docs)}}}} \\\\\n"
         + "\\midrule\n"
-        + "\n".join(body_lines)
+        + "Method & Mem.\\ SPE & PER & Ret. & Prec. \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(ai4_lines)
+        + "\n\\midrule\n"
+        + f"\\multicolumn{{5}}{{@{{}}l}}{{\\emph{{(b) PrivacyLens agent trajectories ({n_pl} tasks)}}}} \\\\\n"
+        + "\\midrule\n"
+        + "Method & Mem.\\ SPE & PER & Ret. & FRR \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(pl_lines)
         + "\n\\bottomrule\n"
         + "\\end{tabular}"
     )
@@ -915,7 +931,7 @@ def build_downstream_table() -> str:
             + " \\\\"
         )
     return (
-        "\\begin{tabular}{lccccc}\n"
+        "\\begin{tabular}{@{}lccccc@{}}\n"
         + "\\toprule\n"
         + "Condition & Leak (\\%) & Secret (\\%) & Help.\\ (0--3) & ID exp.\\ (\\%) & RCE (\\%) \\\\\n"
         + "\\midrule\n"
@@ -1105,14 +1121,17 @@ def build_propints_table() -> str:
 
     Degenerate intervals are kept here, unlike tab:measprop, because the point
     of this table is that every column carries one.  Rows carry the same method
-    names as tab:measprop (they fit the full width at this size).
+    names as tab:measprop.  With an interval in every cell the ten columns do
+    not fit a single-column journal page even when rotated, so the two sources
+    are stacked as panels that share one tabular.
     """
     ai4 = _measprop_source("propagation_suite_ai4privacy_results_pooled.csv")
     pl = _measprop_source("propagation_suite_privacylens_results_pooled.csv")
-    body_lines = []
+    ai4_lines = []
+    pl_lines = []
     for key, label in MEASPROP_ORDER:
         a, p = ai4[key], pl[key]
-        body_lines.append(
+        ai4_lines.append(
             " & ".join(
                 [
                     _tex_escape(label),
@@ -1121,10 +1140,19 @@ def build_propints_table() -> str:
                     a["tool_spe"],
                     a["per_percent"],
                     a["text_retention"],
+                ]
+            )
+            + " \\\\"
+        )
+        pl_lines.append(
+            " & ".join(
+                [
+                    _tex_escape(label),
                     p["memory_spe"],
                     p["per_percent"],
                     p["text_retention"],
                     p["semantic_residue"],
+                    "",
                 ]
             )
             + " \\\\"
@@ -1132,16 +1160,21 @@ def build_propints_table() -> str:
     n_ai4 = next(iter(ai4.values()))["documents"]
     n_pl = next(iter(pl.values()))["documents"]
     return (
-        "\\begin{tabular}{@{}lccccccccc@{}}\n"
+        "\\begin{tabular}{@{}lccccc@{}}\n"
         + "\\toprule\n"
-        + f"& \\multicolumn{{5}}{{c}}{{\\emph{{AI4Privacy text, reference agent ({n_ai4} docs)}}}} "
-        + f"& \\multicolumn{{4}}{{c}}{{\\emph{{PrivacyLens agent trajectories ({n_pl} tasks)}}}} \\\\\n"
-        + "\\cmidrule(lr){2-6}\\cmidrule(lr){7-10}\n"
-        + "& \\multicolumn{3}{c}{SPE} & & & SPE & & & \\\\\n"
-        + "\\cmidrule(lr){2-4}\\cmidrule(lr){7-7}\n"
-        + "Method & Retrieval & Memory & Tool & PER & Ret. & Memory & PER & Ret. & FRR \\\\\n"
+        + f"\\multicolumn{{6}}{{@{{}}l}}{{\\emph{{(a) AI4Privacy text, reference agent ({n_ai4} docs)}}}} \\\\\n"
         + "\\midrule\n"
-        + "\n".join(body_lines)
+        + "& \\multicolumn{3}{c}{SPE} & & \\\\\n"
+        + "\\cmidrule(lr){2-4}\n"
+        + "Method & Retrieval & Memory & Tool & PER & Ret. \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(ai4_lines)
+        + "\n\\midrule\n"
+        + f"\\multicolumn{{6}}{{@{{}}l}}{{\\emph{{(b) PrivacyLens agent trajectories ({n_pl} tasks)}}}} \\\\\n"
+        + "\\midrule\n"
+        + "Method & Memory SPE & PER & Ret. & FRR & \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(pl_lines)
         + "\n\\bottomrule\n"
         + "\\end{tabular}"
     )
@@ -1402,12 +1435,14 @@ def _live_stack_summary(detector: str) -> dict[tuple[str, str], dict[str, str]]:
 
 
 def build_livestack_table() -> str:
-    """Placement in a live agent stack, both detector arms side by side.
+    """Placement in a live agent stack, one panel per detector arm.
 
     Utility, the share of ingress and of reference mid-trajectory values the
     model endpoint saw, and the share of all gold values reaching any
     non-authorized boundary (index, memory, tool arguments as written, log,
-    final answer). Only the last column carries its interval, for width.
+    final answer). Only the last column carries its interval, for width. The
+    arms are stacked rather than set side by side so that the table fits a
+    single-column journal page.
     """
     arms = [(_live_stack_summary(k), label) for k, label in _LIVE_STACK_ARMS]
 
@@ -1418,19 +1453,23 @@ def build_livestack_table() -> str:
         point = f"{float(r['point']):.1f}"
         return f"{point} [{float(r['lo']):.1f}, {float(r['hi']):.1f}]" if with_ci else point
 
-    body = "\n".join(
-        label + " & " + " & ".join(_cell(s, cond, m, ci) for s, _ in arms for m, ci in _LIVE_STACK_COLUMNS) + " \\\\"
-        for cond, label in _LIVE_STACK_PLACEMENTS
-    )
-    sub = "Util. & Ctx in & Ctx mid & Non-auth."
+    panels = []
+    for i, (s, arm_label) in enumerate(arms):
+        body = "\n".join(
+            label + " & " + " & ".join(_cell(s, cond, m, ci) for m, ci in _LIVE_STACK_COLUMNS) + " \\\\"
+            for cond, label in _LIVE_STACK_PLACEMENTS
+        )
+        panels.append(
+            f"\\multicolumn{{5}}{{@{{}}l}}{{\\emph{{({chr(ord('a') + i)}) {arm_label}}}}} \\\\\n"
+            + "\\midrule\n"
+            + "Placement & Util. & Ctx in & Ctx mid & Non-auth. \\\\\n"
+            + "\\midrule\n"
+            + body + "\n"
+        )
     return (
-        "\\begin{tabular}{l" + "cccc" * len(arms) + "}\n"
+        "\\begin{tabular}{@{}lcccc@{}}\n"
         + "\\toprule\n"
-        + "& " + " & ".join(f"\\multicolumn{{4}}{{c}}{{\\emph{{{label}}}}}" for _, label in arms) + " \\\\\n"
-        + "".join(f"\\cmidrule(lr){{{2 + 4 * i}-{5 + 4 * i}}}" for i in range(len(arms))) + "\n"
-        + "Placement & " + " & ".join(sub for _ in arms) + " \\\\\n"
-        + "\\midrule\n"
-        + body + "\n"
+        + "\\midrule\n".join(panels)
         + "\\bottomrule\n"
         + "\\end{tabular}"
     )

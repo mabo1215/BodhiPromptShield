@@ -1,6 +1,33 @@
 # 论文进度
 
-## 2026-10-11：余量达标、投稿前检查做完、PoPETs 要求的修改说明和匿名 artifact 已备好（当前最新）
+## 2026-10-31：改投 Applied Intelligence（Springer），稿件已转成 Springer Nature 模板（当前最新）
+
+**选刊**：按你"转投 SCI 1–3 区、最好 Springer Nature"的要求，核对了 Cybersecurity、IJIS、JKSUCIS、SCIS、Applied Intelligence、Scientific Reports 后，你选定 **Applied Intelligence**（Springer，SCIE，中科院 2025 升级版计算机科学 3 区、小类人工智能 4 区，JCR Q2，混合期刊，走订阅路线不交版面费）。`USAGE.md` 的目标 venue 行已改。中科院已宣布 2026 年起不再更新分区表，2025 升级版是最后一版官方表；第三方 2026"新锐表"结论相同。PoPETs 2027 Issue 3 不再投。
+
+**官网要求（2026-10-31 抓取 Applied Intelligence submission guidelines）**：LaTeX 用 Springer Nature 模板；参考文献数字编号、方括号；摘要 150–250 词；关键词 4–6 个；必须有 Statements and Declarations（利益冲突、数据可用性必填）；LLM 不能署名，使用 LLM 要在方法或其他合适位置说明；没有页数或字数上限。模板本身要求投稿源文件是**单个 .tex、不能有子文件夹**。
+
+**论文改动**（paper 子模块）
+- 文档类从 `acmart`+`popets.sty`（匿名、双栏）换成 `sn-jnl`（Springer Nature 官方模板 Version 3.1，2024-12，从 springernature.com 下载，未改动），`[pdflatex,sn-basic,Numbered]`。`sn-jnl.cls`、`sn-basic.bst` 放进 `paper/template/`；旧的 ACM 文件留着没删，`build.bat` 不用改。
+- 恢复署名：Bo Ma（通讯作者，暂定）、Jinsong Wu、Weiqi Yan，单位与邮箱沿用 PoPETs 前的版本。
+- 摘要从 252 词压到 247 词（首次出现补全 "Large language model (LLM)"，几处措辞收紧，没删任何数字或结论）；关键词从 8 个减到 6 个。
+- 后置部分改成 Springer 格式：Acknowledgements + Declarations（Funding、Competing interests、Ethics approval and consent to participate、Consent for publication、Data availability、Materials availability、Code availability、Use of large language models、Author contribution）。伦理和 AI 使用两段沿用 PoPETs 版原文；开放科学一段拆成数据与代码两条，代码给出公开仓库地址。**Funding、Competing interests、Author contribution 三处用红字标出，等你确认**（见 `# 遗留问题`）。
+- 附录放进 `appendices` 环境，位于声明之后、参考文献之前（模板规定的顺序）。
+- 表格：单栏版心只有 372pt，原来双栏通栏的宽表放不下。表 3（measprop）和表 6（livestack）改成上下两个面板；表 5（downstream）和附录 H11（propints）改成横排页；OCR 迁移表和第二个智能体对照表缩小字号。注意 `sn-jnl` 里 `\scriptsize` 是 9pt、比 `\footnotesize`（7pt）还大，表内字号已按原意重新对应。**所有数字都由 `fill_paper_tables.py` 重新渲染，与改前逐位一致**（diff 已核对）。
+- ACM 专用的图片 alt 文本 `\Description` 保留在源码里，但不再排版。
+
+**构建结果**：`build.bat` 编译通过，52 页单栏（正文到第 24 页，接着是声明、附录和参考文献），0 个未定义引用或文献，只剩一处 1.2pt 的轻微溢出。
+
+**投稿包**（`submit/` 被 gitignore，只在本机）
+- 新脚本 `src/package_journal_submission.py`：把 `appendix.tex` 内联进单个 `manuscript.tex`，图片路径去掉 `figs/`，只拷贝实际引用的 3 张图，再拷贝 cls、bst、bib、上次构建的 `.bbl` 和 PDF；如果 PDF 比源文件旧就拒绝打包。
+- 产物：`submit/applied_intelligence/`（9 个文件）和 `submit/applied_intelligence_latex_source.zip`（不含 PDF）。扁平化后的源文件在独立目录里单独编译通过（52 页），重新跑 BibTeX 生成的 `.bbl` 与打包的逐字节一致。
+- Cover letter：`docs/cover_letter_applied_intelligence.txt`（英文）。说明了选题与期刊范围的契合，披露了 arXiv 预印本（2604.05793，旧标题），声明未在别处审稿。利益冲突一句等你确认。
+
+**需要你**（详见 `# 遗留问题`）：确认基金、利益冲突、作者贡献、通讯作者、代码链接；确认 PoPETs 没投或已撤稿；按 Editorial Manager 要求准备推荐审稿人。
+
+**建议的下一步**：Applied Intelligence 偏应用型 AI，而现在的论文是按 PoPETs（隐私安全测量）写的。建议按 Applied Intelligence 的标准做一轮独立评审（触发词："按 Applied Intelligence 要求评审当前论文"），重点看引言和贡献的表述是否贴合"智能系统应用"的读者，再决定要不要改写。这一轮只做了格式和投稿合规，没动论文的科学内容。
+
+
+## 2026-10-11：余量达标、投稿前检查做完、PoPETs 要求的修改说明和匿名 artifact 已备好（已被 10-31 改投取代）
 
 **F10 余量达标**（paper `fe8a27d`）：框架一节（§4）删掉重复：抽取一节不再重写 §2 的定义，信号列表并成一句；两个公式并成行内定义；概述、模式选择、集成三小节压紧；删掉一段重复 §6 还原时机结论的话。没有删任何测量或结论。你要求补回的三处都没动。正文止于第 12 页右栏 1/4 处，**余量约 1/3 页**，达到评审要求。顺带把 learned 的"recall 0.95"去掉（那个数来自全量测试集，和表 3 的 300 篇不是一个口径），只引用精度 0.35。
 
@@ -3277,6 +3304,11 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
     - 录入时间戳审计（留档）：读者 A 8 分 51 秒、读者 B 6 分 38 秒录完 138 条；每 8 条一组，B 组内 128 个间隔全在 1010–1036 ms。经作者说明为离线标注后的批量录入（标注约 3 分钟/条）。
     - 论文全部改为 240 条口径，正文仍止于第 12 页。
 
+22. **改投 Applied Intelligence 的格式转换（2026-10-31）**：详见本文件顶部"2026-10-31"一节。要点：
+    - 模板换成 Springer Nature `sn-jnl`（sn-basic，数字编号），恢复署名，摘要 247 词、关键词 6 个，后置部分改成 Springer 的 Declarations。
+    - 宽表改成上下面板或横排页，数字由脚本重新渲染、与改前逐位一致；编译 52 页，无未定义引用。
+    - 新增 `src/package_journal_submission.py` 生成单文件、无子目录的投稿源文件包，已单独编译验证；cover letter 写在 `docs/cover_letter_applied_intelligence.txt`。
+
 # 未修改或部分修改
 
 只列仍然开着、且还值得做的项。已完成的在 `# 已全部修改`；已被取代、资产不可恢复、
@@ -3294,8 +3326,10 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
   - 不需要你决定；如果以后想补，开卡即可跑。
 - **阶段 C 的其余可选项**：F6 中间还原点 + 还原预言机攻击；F7(d) LLM 改写规避；F4(e) 更强对照。
   - 不需要你现在决定。D2 写完后我按剩余版面和时间评估做哪几项，再在这里列出来。
-- **阶段 D（11-15 起，投稿前一周）**：用 anonymous.4open.science 生成匿名代码链接，放进 Open Science 一节；重新抓取 PoPETs 官网要求再核一遍；PDF 元数据再查一遍；模板 MD5 核对。
-  - 需要你：到时用 GitHub 授权 anonymous.4open.science（仓库是私有的）。
+- ~~阶段 D（PoPETs 投稿前检查）~~：2026-10-31 改投 Applied Intelligence，PoPETs 专用的匿名链接、模板 MD5 等检查不再需要。
+- **Applied Intelligence 投稿前收尾**【进行中】：格式转换和投稿包已完成（见文件顶部）。还差：
+  - 需要你确认：基金、利益冲突、作者贡献、通讯作者、代码链接（论文里三处红字），见 `# 遗留问题` 第 1–5 条。
+  - 需要你决定：要不要先按 Applied Intelligence 标准做一轮独立评审，再决定是否改写引言和贡献的表述（见 `# 遗留问题` 第 7 条）。
 
 **第五轮评审（2026-10-07，细节见 `docs/RevisionSuggestions.tex`）开出、尚未闭合的项**
 
@@ -3313,6 +3347,26 @@ F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条
 # 遗留问题
 
 需要你提供/决策。答完一条即可就地删掉该条。
+
+**2026-10-31 改投 Applied Intelligence 前需要你确认**（论文里对应位置是红字，答完我替换）
+
+需要你提供/决策：
+1. 基金：有没有资助？有的话写资助方和项目编号；没有就写 "No funding was received for conducting this study."
+   A:
+2. 利益冲突：论文和 cover letter 暂写 "The authors have no competing interests to declare..."，对吗？
+   A:
+3. 作者贡献（CRediT）：我按惯例起了草稿——Bo Ma 负责构思、方法、软件、实验、数据整理、分析、可视化、初稿；Jinsong Wu 负责构思、指导、审改；Weiqi Yan 负责指导、方法、审改。请改成实际分工。
+   A:
+4. 通讯作者：暂定 Bo Ma（rcn4743@aut.ac.nz）。是否改成 Weiqi Yan 或 Jinsong Wu？各作者有 ORCID 的话也请给我（期刊建议填写）。
+   A:
+5. 代码链接：Code availability 写的是 https://github.com/mabo1215/BodhiPromptShield（Apache 2.0）。这个仓库是公开的吗？里面还有 `.claude/` 规则、中文进度文件和已不用的 CPPB。要直接用它，还是另建一个干净的公开仓库或 Zenodo 存档？
+   A:
+6. PoPETs：请确认 PoPETs 2027 Issue 3 没有提交，或者已经撤稿。同时投两处属于一稿多投，cover letter 里写了"未在别处审稿"。
+   A:
+7. 是否先按 Applied Intelligence 标准做一轮独立评审（会覆盖重写 `docs/RevisionSuggestions.tex`，然后进入新一轮修改）？
+   A:
+8. 推荐审稿人：Editorial Manager 通常要填 3–5 位，需要独立于作者、有机构邮箱。要不要我从相关工作的作者里列一份候选名单给你挑？
+   A:
 
 **2026-10-09 第八轮评审的决策（D1–D5，原文在 `docs/RevisionSuggestions.tex` 第 7 节）**
 
