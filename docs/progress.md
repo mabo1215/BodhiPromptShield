@@ -22,7 +22,7 @@
 - 产物：`submit/applied_intelligence/`（9 个文件）和 `submit/applied_intelligence_latex_source.zip`（不含 PDF）。扁平化后的源文件在独立目录里单独编译通过（52 页），重新跑 BibTeX 生成的 `.bbl` 与打包的逐字节一致。
 - Cover letter：`docs/cover_letter_applied_intelligence.txt`（英文）。说明了选题与期刊范围的契合，披露了 arXiv 预印本（2604.05793，旧标题），声明未在别处审稿。利益冲突一句等你确认。
 
-**需要你**（详见 `# 遗留问题`）：确认基金、利益冲突、作者贡献、通讯作者、代码链接；确认 PoPETs 没投或已撤稿；按 Editorial Manager 要求准备推荐审稿人。
+**需要你**（详见 `# 遗留问题`）：确认基金、利益冲突、作者贡献、通讯作者、代码链接；按 Editorial Manager 要求准备推荐审稿人。（PoPETs：你 10-31 确认没有提交过，不存在一稿多投问题，cover letter 的"未在别处审稿"成立。）
 
 **建议的下一步**：Applied Intelligence 偏应用型 AI，而现在的论文是按 PoPETs（隐私安全测量）写的。建议按 Applied Intelligence 的标准做一轮独立评审（触发词："按 Applied Intelligence 要求评审当前论文"），重点看引言和贡献的表述是否贴合"智能系统应用"的读者，再决定要不要改写。这一轮只做了格式和投稿合规，没动论文的科学内容。
 
@@ -3329,7 +3329,7 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 - ~~阶段 D（PoPETs 投稿前检查）~~：2026-10-31 改投 Applied Intelligence，PoPETs 专用的匿名链接、模板 MD5 等检查不再需要。
 - **Applied Intelligence 投稿前收尾**【进行中】：格式转换和投稿包已完成（见文件顶部）。还差：
   - 需要你确认：基金、利益冲突、作者贡献、通讯作者、代码链接（论文里三处红字），见 `# 遗留问题` 第 1–5 条。
-  - 需要你决定：要不要先按 Applied Intelligence 标准做一轮独立评审，再决定是否改写引言和贡献的表述（见 `# 遗留问题` 第 7 条）。
+  - 需要你决定：要不要先按 Applied Intelligence 标准做一轮独立评审，再决定是否改写引言和贡献的表述（见 `# 遗留问题` 第 6 条）。
 
 **第五轮评审（2026-10-07，细节见 `docs/RevisionSuggestions.tex`）开出、尚未闭合的项**
 
@@ -3361,11 +3361,9 @@ F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条
    A:
 5. 代码链接：Code availability 写的是 https://github.com/mabo1215/BodhiPromptShield（Apache 2.0）。这个仓库是公开的吗？里面还有 `.claude/` 规则、中文进度文件和已不用的 CPPB。要直接用它，还是另建一个干净的公开仓库或 Zenodo 存档？
    A:
-6. PoPETs：请确认 PoPETs 2027 Issue 3 没有提交，或者已经撤稿。同时投两处属于一稿多投，cover letter 里写了"未在别处审稿"。
+6. 是否先按 Applied Intelligence 标准做一轮独立评审（会覆盖重写 `docs/RevisionSuggestions.tex`，然后进入新一轮修改）？
    A:
-7. 是否先按 Applied Intelligence 标准做一轮独立评审（会覆盖重写 `docs/RevisionSuggestions.tex`，然后进入新一轮修改）？
-   A:
-8. 推荐审稿人：Editorial Manager 通常要填 3–5 位，需要独立于作者、有机构邮箱。要不要我从相关工作的作者里列一份候选名单给你挑？
+7. 推荐审稿人：Editorial Manager 通常要填 3–5 位，需要独立于作者、有机构邮箱。要不要我从相关工作的作者里列一份候选名单给你挑？
    A:
 
 **2026-10-09 第八轮评审的决策（D1–D5，原文在 `docs/RevisionSuggestions.tex` 第 7 节）**
