@@ -1,31 +1,35 @@
-"""Stage the LaTeX source set that a Springer Nature journal submission needs.
+"""Stage the files an Elsevier (Computers & Security) submission needs.
 
-The manuscript is kept as ``paper/main.tex`` plus ``paper/appendix.tex`` with
-figures under ``paper/figs/`` and the class and style files under
-``paper/template/``. Springer Nature's Editorial Manager builds the PDF itself
-from the uploaded source, and the template states the constraints that layout
-violates: the manuscript must be a single ``.tex`` file (no ``\\input``), and
-the source files must not sit in subfolders. This script turns the working
-layout into a flat, self-contained source set:
+The manuscript is kept as ``paper/main.tex``, with figures under ``paper/figs/``
+and the class and style files under ``paper/template/``. The appendix is
+submitted as a separate Supplementary Material PDF built from
+``paper/supplementary.tex`` (which wraps ``paper/appendix.tex``). The two
+documents reference each other through the ``xr`` package, which reads the
+other document's ``.aux`` file at build time. The journal's system builds the
+manuscript PDF from the uploaded LaTeX source and has no ``.aux`` for the
+supplement, so this script turns the working layout into a flat,
+self-contained source set:
 
-1. ``\\input{appendix}`` is replaced by the appendix text, so there is one
-   ``.tex`` file.
+1. Every main-text reference into the supplement (``\\ref{S-...}``) is replaced
+   by the literal number recorded in ``paper/build/supplementary.aux``, and the
+   ``xr`` preamble is removed, so the manuscript no longer depends on another
+   document.
 2. Figure paths lose their ``figs/`` prefix and the referenced figures are
    copied next to the ``.tex`` file; unreferenced figures are left out.
 3. The class file, the bibliography style, the ``.bib`` database, and the
    ``.bbl`` from the last local build are copied alongside, so the source
    compiles whether or not the submission system runs BibTeX.
-4. The compiled PDF from the last local build is copied as the reference PDF
-   that the journal asks for next to the source.
+4. The compiled manuscript PDF, the Supplementary Material PDF, and the
+   highlights file are copied as the separate uploads the journal asks for.
 
-The build fails if the flattened file still includes another file, references a
-figure that does not exist, or if the local PDF is older than the sources it
-was built from, so the staged PDF and the staged source cannot silently drift
-apart.
+The build fails if the manuscript includes another file, references a figure
+that does not exist, references a supplement label the supplement does not
+define, or if either local PDF is older than the sources it was built from, so
+the staged PDFs and the staged source cannot silently drift apart.
 
 Usage:
   python src/package_journal_submission.py
-  python src/package_journal_submission.py --out submit/applied_intelligence
+  python src/package_journal_submission.py --out submit/computers_and_security
 """
 from __future__ import annotations
 
@@ -37,27 +41,60 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PAPER = REPO_ROOT / "paper"
-DEFAULT_OUT = REPO_ROOT / "submit" / "applied_intelligence"
+BUILD = PAPER / "build"
+DEFAULT_OUT = REPO_ROOT / "submit" / "computers_and_security"
 
 MANUSCRIPT_NAME = "manuscript"
-CLASS_FILES = ("sn-jnl.cls", "sn-basic.bst")
+SUPPLEMENT_NAME = "supplementary_material"
+CLASS_FILES = ("elsarticle.cls", "elsarticle-num.bst")
+HIGHLIGHTS = PAPER / "highlights.txt"
 
+SUPP_PREFIX = "S-"
 INPUT_RE = re.compile(r"\\(?:input|include)\{([^}]+)\}")
 GRAPHICS_RE = re.compile(r"(\\includegraphics(?:\[[^\]]*\])?\{)([^}]+)(\})")
+SUPP_REF_RE = re.compile(r"\\ref\{" + re.escape(SUPP_PREFIX) + r"([^}]+)\}")
+NEWLABEL_RE = re.compile(r"^\\newlabel\{([^}]+)\}\{\{([^}]*)\}")
+# The preamble block that loads xr: its comment lines and the two commands.
+XR_BLOCK_RE = re.compile(
+    r"(?:%%[^\n]*\n)*?\\usepackage\{xr\}\n\\externaldocument(?:\[[^\]]*\])*\{supplementary\}\n"
+)
 
 
-def _inline_inputs(text: str) -> str:
-    """Replace every \\input{name} with the content of paper/name.tex."""
+def _supplement_labels(aux: Path) -> dict[str, str]:
+    """Map each label the supplement defines to the number it printed."""
+    labels: dict[str, str] = {}
+    for line in aux.read_text(encoding="utf-8", errors="replace").splitlines():
+        match = NEWLABEL_RE.match(line)
+        if match:
+            labels[match.group(1)] = match.group(2)
+    return labels
+
+
+def _resolve_supplement_refs(text: str, labels: dict[str, str]) -> str:
+    """Replace \\ref{S-label} with the supplement's literal number."""
+    missing: set[str] = set()
 
     def _sub(match: re.Match[str]) -> str:
-        name = match.group(1)
-        path = PAPER / (name if name.endswith(".tex") else name + ".tex")
-        if not path.exists():
-            raise SystemExit(f"\\input target not found: {path}")
-        body = path.read_text(encoding="utf-8")
-        return f"%% ---- begin inlined {path.name} ----\n{body.rstrip()}\n%% ---- end inlined {path.name} ----"
+        key = match.group(1)
+        if key not in labels:
+            missing.add(key)
+            return match.group(0)
+        return labels[key]
 
-    return INPUT_RE.sub(_sub, text)
+    resolved = SUPP_REF_RE.sub(_sub, text)
+    if missing:
+        raise SystemExit(f"Supplement labels not defined in supplementary.aux: {sorted(missing)}")
+    block = XR_BLOCK_RE.search(resolved)
+    if block is None:
+        raise SystemExit("Could not find the xr preamble block in main.tex.")
+    note = (
+        "%% References to the Supplementary Material are written as literal numbers\n"
+        "%% (Supplementary Section S1, Table S1, ...); it is uploaded as a separate file.\n"
+    )
+    resolved = resolved[: block.start()] + note + resolved[block.end():]
+    if "\\externaldocument" in resolved or "\\usepackage{xr}" in resolved:
+        raise SystemExit("The flattened manuscript still loads xr.")
+    return resolved
 
 
 def _flatten_graphics(text: str) -> tuple[str, list[Path]]:
@@ -96,18 +133,27 @@ def main() -> int:
     out: Path = args.out.resolve()
 
     main_tex = PAPER / "main.tex"
-    bbl = PAPER / "build" / "main.bbl"
-    pdf = PAPER / "build" / "main.pdf"
-    for required in (main_tex, bbl, pdf, PAPER / "ref.bib", *(PAPER / "template" / c for c in CLASS_FILES)):
+    supp_sources = [PAPER / "supplementary.tex", PAPER / "appendix.tex"]
+    bbl = BUILD / "main.bbl"
+    pdf = BUILD / "main.pdf"
+    supp_aux = BUILD / "supplementary.aux"
+    supp_pdf = BUILD / "supplementary.pdf"
+    for required in (
+        main_tex, *supp_sources, bbl, pdf, supp_aux, supp_pdf, HIGHLIGHTS, PAPER / "ref.bib",
+        *(PAPER / "template" / c for c in CLASS_FILES),
+    ):
         if not required.exists():
             raise SystemExit(f"Missing {required}; build the paper first.")
 
-    text = _inline_inputs(main_tex.read_text(encoding="utf-8"))
+    text = main_tex.read_text(encoding="utf-8")
     if INPUT_RE.search(text):
-        raise SystemExit("The flattened manuscript still includes another file.")
+        raise SystemExit("main.tex includes another file; the manuscript must be a single .tex file.")
+    text = _resolve_supplement_refs(text, _supplement_labels(supp_aux))
     text, figures = _flatten_graphics(text)
 
-    _check_pdf_is_current(pdf, [main_tex, PAPER / "appendix.tex", PAPER / "ref.bib", *figures])
+    # The manuscript prints supplement numbers, so it must be newer than the supplement too.
+    _check_pdf_is_current(pdf, [main_tex, *supp_sources, PAPER / "ref.bib", *figures])
+    _check_pdf_is_current(supp_pdf, [*supp_sources, main_tex, PAPER / "ref.bib"])
 
     if out.exists():
         shutil.rmtree(out)
@@ -121,21 +167,25 @@ def main() -> int:
     for fig in figures:
         shutil.copy2(fig, out / fig.name)
     shutil.copy2(pdf, out / f"{MANUSCRIPT_NAME}.pdf")
+    shutil.copy2(supp_pdf, out / f"{SUPPLEMENT_NAME}.pdf")
+    shutil.copy2(HIGHLIGHTS, out / HIGHLIGHTS.name)
 
     staged = sorted(p for p in out.iterdir() if p.is_file())
     if any(p.is_dir() for p in out.iterdir()):
         raise SystemExit("The staged source set must not contain subfolders.")
 
+    # The LaTeX source archive holds only what the manuscript build needs.
+    source_suffixes = {".tex", ".bbl", ".bib", ".cls", ".bst", ".pdf", ".png", ".jpg", ".eps"}
     archive = out.parent / f"{out.name}_latex_source.zip"
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
         for p in staged:
-            if p.suffix != ".pdf":
+            if p.suffix in source_suffixes and p.name not in {f"{MANUSCRIPT_NAME}.pdf", f"{SUPPLEMENT_NAME}.pdf"}:
                 zf.write(p, p.name)
 
     print(f"Staged {len(staged)} files in {out}:")
     for p in staged:
         print(f"  {p.name} ({p.stat().st_size:,} bytes)")
-    print(f"LaTeX source archive (no PDF): {archive}")
+    print(f"LaTeX source archive (no compiled PDFs): {archive}")
     return 0
 
 

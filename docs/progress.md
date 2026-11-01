@@ -1,6 +1,45 @@
 # 论文进度
 
-## 2026-10-31：改投 Applied Intelligence（Springer），稿件已转成 Springer Nature 模板（当前最新）
+## 2026-11-01：改投 Computers & Security（Elsevier），稿件已转成 elsarticle 模板（当前最新）
+
+**选刊**：你要求 IF 3.0 以上，我推荐 **Computers & Security**，你同意了（Elsevier；SCIE；中科院 2025 升级版计算机科学 2 区、小类信息系统 2 区；JCR Q1；JIF 6.8（JCR 2025，2026 年 6 月发布，第三方汇总网站数据）；CCF B；混合期刊，走订阅路线不交版面费）。比 Applied Intelligence（JIF 3.5，3 区）高一档，而且论文是按隐私安全测量写的，题材正对口。`USAGE.md` 的目标 venue 行已改。Applied Intelligence 的投稿包（`submit/applied_intelligence/`）原样保留，作备选。
+
+**官网要求（2026-11-01 核对 Guide for Authors；ScienceDirect 页面拒绝自动抓取，内容通过搜索引擎读取，投稿前请登录再看一眼）**：
+- 单盲评审（single anonymized），**稿件保留作者信息**。
+- **全文上限 12,000 词，摘要、正文、参考文献和附录都算在内。**
+- 摘要不超过 250 词；关键词 5–10 个，避免泛化词和复数。
+- Highlights 可选但鼓励：3–5 条，每条不超过 85 字符（含空格），单独一个可编辑文件，文件名里要有 "highlights"。Graphical abstract 也鼓励，可选。
+- "Your Paper Your Way"：投稿时参考文献格式不限，只要前后一致。
+- 必须有：CRediT 作者贡献声明、利益冲突声明、数据可用性声明、生成式 AI 使用声明。
+
+**最关键的一条是字数**：附录还在正文 PDF 里时，全文约 18,800 词（正文约 9,200、附录约 7,100、参考文献约 2,500），超了。所以**附录改成单独的 Supplementary Material 文件**（Elsevier 支持在线补充材料，原样发布），科学内容一字未删。拆出来后：
+- 按 texcount 算，正文文字 + 标题 + 图表标题（含摘要，不含表格内数字和公式）是 9,723 词，加参考文献约 1,940 词，**共约 11,660 词，在 12,000 以内**。
+- 如果把 PDF 里每个词都算上（表格里的数字、作者信息、声明），是 13,289 词。期刊没说表格算不算，这点有风险，见 `# 遗留问题` 第 8 条。
+
+**论文改动**（paper 子模块）
+- 文档类从 `sn-jnl` 换成 Elsevier `elsarticle`（v3.5，2026-01-09，来自本机 MiKTeX，与 CTAN 一致，未改动），用 `[preprint,12pt]`，参考文献用 `elsarticle-num`（数字编号）。`elsarticle.cls`、`elsarticle-num.bst` 已放进 `paper/template/`；Springer 和 ACM 的旧文件都留着。页边距设成 A4、2.5cm（只影响投稿版排版，录用后期刊会重排），宽表放得下。
+- 字体改用 Latin Modern：原来的 T1 编码配 Computer Modern，PDF 里嵌的是 Type 3 位图字体，有的投稿系统会拒。现在两个 PDF 全是矢量字体。
+- 前置部分改成 elsarticle 格式（`frontmatter`、`\affiliation`、`\cortext`），作者、单位、邮箱不变；关键词改成 elsarticle 的 `keyword` 环境，第一个由复数改单数（"Large language model agent"），按指南要求避免复数。摘要 247 词不变。
+- 后置部分按 Elsevier 要求重写：Ethics statement、CRediT authorship contribution statement、Declaration of competing interest、Funding、Data availability（原 Code availability 并进来）、Declaration of generative AI and AI-assisted technologies、Acknowledgements。删掉了 Springer 才要的 "Consent for publication" 和 "Materials availability"（两条都是 Not applicable）。**红字待你确认的有四处**：CRediT、利益冲突、基金、AI 工具名称。
+- **附录变成补充材料**：新增 `paper/supplementary.tex`，把 `appendix.tex` 包成独立文档，节、表、图、算法编号都带 S 前缀（S1、Table S14……），有自己的参考文献列表。正文里 24 处 "Appendix X" 改成 "Supplementary Section SX"，两处附录表改成 "Supplementary Table SX"。两个文档用 `xr` 宏包互相引用（标签分别加 `S-`/`M-` 前缀，避免旋转表格的内部标签和文献编号撞名）。补充材料里原来写 "recorded in the supplementary material" 的三处（指的是公开的运行记录），改成 "released run manifests/records"，避免自己指自己。
+- `build.bat` 改成按"补充材料 → 正文 → 补充材料"的顺序编译，让双向引用都解析。
+- 排版修整：表 2（相关系统对比）和补充材料两张设计表的首列加宽；横排的表 5 改用 `\small`；§4.6 一句含不可断行连字符的话改了措辞（意思不变）。
+
+**构建结果**：`build.bat` 编译通过。正文 29 页，补充材料 21 页，两边都是 0 个未定义引用、0 处 overfull、0 个重复标签。
+
+**投稿包**（`submit/` 被 gitignore，只在本机）
+- `src/package_journal_submission.py` 改成面向 Elsevier：把正文里所有指向补充材料的引用替换成固定编号（投稿系统没有补充材料的 `.aux`），去掉 `xr`，图片路径扁平化，再拷贝 cls、bst、bib、`.bbl`、正文 PDF、补充材料 PDF 和 highlights；任一 PDF 比源文件旧都会拒绝打包。
+- 产物：`submit/computers_and_security/`（11 个文件）和 `submit/computers_and_security_latex_source.zip`（只含编译源文件，不含两个 PDF）。解压后单独编译通过，提取出的文字与本地构建的 PDF **完全一致**。
+- Highlights：`paper/highlights.txt`，5 条，每条 74–85 字符，数字都取自摘要。
+- Cover letter：`docs/cover_letter_computers_and_security.txt`（英文）。从安全测量的角度写了与期刊范围的契合，披露了 arXiv 预印本，说明了补充材料和 highlights，声明未在别处审稿。利益冲突一句等你确认。
+- 我做独立编译检查时留下了一个临时目录 `submit/_check_cose/`。它在 gitignore 里，没有影响；当时它是工作目录，删除被安全检查拦下了，请你手动删掉。
+
+**需要你**（详见 `# 遗留问题`）：确认红字四处、通讯作者、代码链接、Applied Intelligence 确实没投；决定字数的保险做法；推荐审稿人。
+
+**建议的下一步**：按 Computers & Security 的标准做一轮独立评审（触发词："重新开始评审并生成评审修改意见"）。重点看两点：一是能不能放心说在 12,000 词以内；二是要不要补引几篇 C&S 上相关的论文（现在参考文献里一篇都没有，编辑通常会看这个）。这一轮只做了格式和投稿合规，没动科学内容。
+
+
+## 2026-10-31：改投 Applied Intelligence（Springer），稿件已转成 Springer Nature 模板（已被 11-01 改投 Computers & Security 取代，投稿包留作备选）
 
 **选刊**：按你"转投 SCI 1–3 区、最好 Springer Nature"的要求，核对了 Cybersecurity、IJIS、JKSUCIS、SCIS、Applied Intelligence、Scientific Reports 后，你选定 **Applied Intelligence**（Springer，SCIE，中科院 2025 升级版计算机科学 3 区、小类人工智能 4 区，JCR Q2，混合期刊，走订阅路线不交版面费）。`USAGE.md` 的目标 venue 行已改。中科院已宣布 2026 年起不再更新分区表，2025 升级版是最后一版官方表；第三方 2026"新锐表"结论相同。PoPETs 2027 Issue 3 不再投。
 
@@ -3309,6 +3348,11 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
     - 宽表改成上下面板或横排页，数字由脚本重新渲染、与改前逐位一致；编译 52 页，无未定义引用。
     - 新增 `src/package_journal_submission.py` 生成单文件、无子目录的投稿源文件包，已单独编译验证；cover letter 写在 `docs/cover_letter_applied_intelligence.txt`。
 
+23. **改投 Computers & Security 的格式转换（2026-11-01）**：详见本文件顶部"2026-11-01"一节。要点：
+    - 模板换成 Elsevier `elsarticle`（preprint，12pt，elsarticle-num），字体改 Latin Modern（去掉 Type 3 位图字体）；后置部分改成 Elsevier 要求的 CRediT、利益冲突、基金、数据可用性、生成式 AI 声明。
+    - 附录拆成独立的 Supplementary Material（S 编号，`xr` 双向引用），正文约 11,660 词（texcount 口径，含参考文献），在 12,000 词上限以内；科学内容未删。
+    - 打包脚本改成面向 Elsevier，引用固定成编号；投稿包单独编译后与本地 PDF 文字完全一致。新增 highlights 和 C&S 的 cover letter。
+
 # 未修改或部分修改
 
 只列仍然开着、且还值得做的项。已完成的在 `# 已全部修改`；已被取代、资产不可恢复、
@@ -3327,9 +3371,11 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 - **阶段 C 的其余可选项**：F6 中间还原点 + 还原预言机攻击；F7(d) LLM 改写规避；F4(e) 更强对照。
   - 不需要你现在决定。D2 写完后我按剩余版面和时间评估做哪几项，再在这里列出来。
 - ~~阶段 D（PoPETs 投稿前检查）~~：2026-10-31 改投 Applied Intelligence，PoPETs 专用的匿名链接、模板 MD5 等检查不再需要。
-- **Applied Intelligence 投稿前收尾**【进行中】：格式转换和投稿包已完成（见文件顶部）。还差：
-  - 需要你确认：基金、利益冲突、作者贡献、通讯作者、代码链接（论文里三处红字），见 `# 遗留问题` 第 1–5 条。
-  - 需要你决定：要不要先按 Applied Intelligence 标准做一轮独立评审，再决定是否改写引言和贡献的表述（见 `# 遗留问题` 第 6 条）。
+- ~~Applied Intelligence 投稿前收尾~~：2026-11-01 改投 Computers & Security，Applied Intelligence 的投稿包留作备选，不再推进。
+- **Computers & Security 投稿前收尾**【进行中】：格式转换、补充材料拆分和投稿包已完成（见文件顶部）。还差：
+  - 需要你确认：基金、利益冲突、作者贡献、AI 工具名称（论文里四处红字），以及通讯作者、代码链接，见 `# 遗留问题` 第 1–5 条。
+  - 需要你确认：Applied Intelligence 确实没有投出去（第 9 条）。
+  - 需要你决定：字数怎么保险（第 8 条）；要不要先按 C&S 标准做一轮独立评审（第 6 条）。
 
 **第五轮评审（2026-10-07，细节见 `docs/RevisionSuggestions.tex`）开出、尚未闭合的项**
 
@@ -3348,22 +3394,28 @@ F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条
 
 需要你提供/决策。答完一条即可就地删掉该条。
 
-**2026-10-31 改投 Applied Intelligence 前需要你确认**（论文里对应位置是红字，答完我替换）
+**2026-11-01 改投 Computers & Security 前需要你确认**（论文里对应位置是红字，答完我替换）
 
 需要你提供/决策：
-1. 基金：有没有资助？有的话写资助方和项目编号；没有就写 "No funding was received for conducting this study."
+1. 基金：有没有资助？有的话写资助方和项目编号；没有就用 Elsevier 的标准句 "This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors."
    A:
-2. 利益冲突：论文和 cover letter 暂写 "The authors have no competing interests to declare..."，对吗？
+2. 利益冲突：论文和 cover letter 暂写 Elsevier 的标准句 "The authors declare that they have no known competing financial interests or personal relationships..."，对吗？
    A:
-3. 作者贡献（CRediT）：我按惯例起了草稿——Bo Ma 负责构思、方法、软件、实验、数据整理、分析、可视化、初稿；Jinsong Wu 负责构思、指导、审改；Weiqi Yan 负责指导、方法、审改。请改成实际分工。
+3. 作者贡献（CRediT）：草稿是 Bo Ma 负责 Conceptualization、Methodology、Software、Investigation、Data curation、Formal analysis、Visualization、Writing – original draft；Jinsong Wu 负责 Conceptualization、Supervision、Writing – review & editing；Weiqi Yan 负责 Methodology、Supervision、Writing – review & editing。请改成实际分工。
    A:
-4. 通讯作者：暂定 Bo Ma（rcn4743@aut.ac.nz）。是否改成 Weiqi Yan 或 Jinsong Wu？各作者有 ORCID 的话也请给我（期刊建议填写）。
+4. 通讯作者：暂定 Bo Ma（rcn4743@aut.ac.nz）。是否改成 Weiqi Yan 或 Jinsong Wu？各作者有 ORCID 的话也请给我（投稿系统会让填）。
    A:
-5. 代码链接：Code availability 写的是 https://github.com/mabo1215/BodhiPromptShield（Apache 2.0）。这个仓库是公开的吗？里面还有 `.claude/` 规则、中文进度文件和已不用的 CPPB。要直接用它，还是另建一个干净的公开仓库或 Zenodo 存档？
+5. 代码链接：Data availability 写的是 https://github.com/mabo1215/BodhiPromptShield（Apache 2.0）。这个仓库现在是公开的吗？（10-09 记录里你设成了私有。）里面还有 `.claude/` 规则、中文进度文件和已不用的 CPPB。是直接用它，还是另建一个干净的公开仓库或 Zenodo 存档？
    A:
-6. 是否先按 Applied Intelligence 标准做一轮独立评审（会覆盖重写 `docs/RevisionSuggestions.tex`，然后进入新一轮修改）？
+6. 是否先按 Computers & Security 标准做一轮独立评审（会覆盖重写 `docs/RevisionSuggestions.tex`，然后进入新一轮修改）？
    A:
-7. 推荐审稿人：Editorial Manager 通常要填 3–5 位，需要独立于作者、有机构邮箱。要不要我从相关工作的作者里列一份候选名单给你挑？
+7. 推荐审稿人：Elsevier 的投稿系统通常要填 3–5 位，需要独立于作者、有机构邮箱。要不要我从相关工作的作者里列一份候选名单给你挑？
+   A:
+8. 字数上限 12,000 词：按通常口径（正文文字 + 图表标题 + 参考文献，不算表格里的数字）约 11,660 词，在线内；如果期刊把表格里的每个数字和声明也算进去，是约 13,300 词。三个选项：(a) 照现在投，在 cover letter 里不提字数；(b) 再把一两张正文表格（比如表 1 威胁映射、表 2 相关系统对比）挪进补充材料，留出更多余量；(c) 压缩正文文字约 1,000 词。我推荐 (a)，如果评审前想保险就 (b)。
+   A:
+9. Applied Intelligence 那份投稿包（10-31 备好）确认**没有**投出去吧？如果已经投了，必须先撤稿，拿到确认后才能投 C&S，否则算一稿两投。
+   A:
+10. 生成式 AI 声明里要写出具体工具名。我暂写了 "Claude Code (Anthropic), OpenAI Codex, and GitHub Copilot"（仓库里有这三套 agent 的规则文件）。实际用了哪些？
    A:
 
 **2026-10-09 第八轮评审的决策（D1–D5，原文在 `docs/RevisionSuggestions.tex` 第 7 节）**
