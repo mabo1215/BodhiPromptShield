@@ -49,6 +49,26 @@ NO - the document does not convey the fact; a reader could not determine it.
 
 Then give one short sentence of justification."""
 
+# Whether the disagreement is about the prompt rather than the judge. Each variant keeps
+# the reply format and the items, and changes one thing: the bar for "inferable", or
+# the framing around an audit of a privacy system.
+_SPECIFIC_BAR = JUDGE_PROMPT.replace(
+    "would a reader learn this sensitive fact, or be able to infer it with high confidence?",
+    "does it state the specific content of this fact, or imply it so that a reader could state "
+    "that content without guessing? Knowing the general topic is not enough.")
+_PLAIN_READER = JUDGE_PROMPT.replace(
+    "You are auditing whether a privacy-protection system removed a sensitive fact from a document.\n\n"
+    "DOCUMENT (after privacy protection):",
+    "Here is a document and a statement.\n\nDOCUMENT:").replace(
+    "SENSITIVE FACT: {fact}", "STATEMENT: {fact}").replace(
+    "would a reader learn this sensitive fact, or be able to infer it with high confidence?",
+    "could a reader tell that this statement is true?").replace(
+    "YES - the document states the fact, or makes it clearly inferable.",
+    "YES - a reader could tell that it is true.").replace(
+    "NO - the document does not convey the fact; a reader could not determine it.",
+    "NO - a reader could not tell.")
+PROMPTS = {"reported": JUDGE_PROMPT, "specific_bar": _SPECIFIC_BAR, "plain_reader": _PLAIN_READER}
+
 ROW_FIELDS = ["item_id", "method_key", "judge_inferable", "judge_raw", "released_chars", "latency_ms"]
 
 YES = {"yes", "y", "1", "true"}
@@ -231,16 +251,20 @@ def main() -> int:
     parser.add_argument("--num-predict", type=int, default=160)
     parser.add_argument("--limit", type=int, default=0, help="smoke test: judge only the first N items")
     parser.add_argument("--score-only", action="store_true")
+    parser.add_argument("--prompt-variant", default="reported", choices=sorted(PROMPTS))
+    parser.add_argument("--output-tag", default="", help="keeps a rerun on other hardware apart from the recorded rows")
     args = parser.parse_args()
 
     suffix = f"_{args.tag}" if args.tag else ""
+    variant = "" if args.prompt_variant == "reported" else f"_prompt_{args.prompt_variant}"
+    variant += f"_{args.output_tag}" if args.output_tag else ""
     sheet = EXPERIMENTS_DIR / f"semantic_inferability_human_sheet{suffix}.csv"
     key = EXPERIMENTS_DIR / f"semantic_inferability_human_key{suffix}.csv"
     round3 = EXPERIMENTS_DIR / f"semantic_inferability_round3_annotations{suffix}.csv"
     safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", args.judge_model)
-    rows_path = EXPERIMENTS_DIR / f"semantic_inferability_capacity_rows_{safe}{suffix}.csv"
-    manifest = EXPERIMENTS_DIR / f"semantic_inferability_capacity_manifest_{safe}{suffix}.csv"
-    agreement = EXPERIMENTS_DIR / f"semantic_inferability_capacity_agreement_{safe}{suffix}.csv"
+    rows_path = EXPERIMENTS_DIR / f"semantic_inferability_capacity_rows_{safe}{suffix}{variant}.csv"
+    manifest = EXPERIMENTS_DIR / f"semantic_inferability_capacity_manifest_{safe}{suffix}{variant}.csv"
+    agreement = EXPERIMENTS_DIR / f"semantic_inferability_capacity_agreement_{safe}{suffix}{variant}.csv"
 
     items = _load_items(sheet, key)
     if args.limit:
@@ -264,7 +288,7 @@ def main() -> int:
     started = time.time()
 
     def judge_one(item: dict[str, str]) -> None:
-        prompt = JUDGE_PROMPT.format(released=item["released"], fact=item["fact"])
+        prompt = PROMPTS[args.prompt_variant].format(released=item["released"], fact=item["fact"])
         t0 = time.time()
         try:
             raw = _chat(args.ollama_url, args.judge_model, prompt, args.timeout, args.num_predict,
@@ -318,7 +342,8 @@ def main() -> int:
         for field, value in [
             ("judge_model", args.judge_model),
             *card.items(),
-            ("prompt", "verbatim from semantic_inferability_judge.py JUDGE_PROMPT"),
+            ("prompt", "verbatim from semantic_inferability_judge.py JUDGE_PROMPT"
+             if args.prompt_variant == "reported" else f"variant {args.prompt_variant}: {PROMPTS[args.prompt_variant]}"),
             ("surfaces", f"read from {sheet.name}; not regenerated"),
             ("decoding", f"temperature 0, top_p 1, seed 17, num_predict {args.num_predict}, "
                          f"num_ctx {args.num_ctx}, think false"),

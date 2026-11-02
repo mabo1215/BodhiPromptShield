@@ -1,0 +1,54 @@
+[capacity] qwen3:8b-q4km-hf: 102 of 102 items to judge (0 already done)
+  10/102 at 0.24/s
+  20/102 at 0.26/s
+  30/102 at 0.28/s
+  40/102 at 0.29/s
+  50/102 at 0.30/s
+  60/102 at 0.30/s
+  70/102 at 0.31/s
+  80/102 at 0.31/s
+  90/102 at 0.31/s
+  100/102 at 0.31/s
+[capacity] wrote semantic_inferability_capacity_rows_qwen3_8b-q4km-hf_vgpu3090_local.csv and semantic_inferability_capacity_manifest_qwen3_8b-q4km-hf_vgpu3090_local.csv
+[capacity] qwen3:8b-q4km-hf: 99 scored, 3 unparsed
+  vs annotator1: kappa 0.333 (fair), raw 0.657, n=99
+  vs annotator3: kappa 0.311 (fair), raw 0.646, n=99
+  vs recorded_judge_gemma2_27b: kappa 0.067 (slight), raw 0.465, n=99
+[capacity] wrote semantic_inferability_capacity_agreement_qwen3_8b-q4km-hf_vgpu3090_local.csv
+[capacity] qwen3:8b-q4km-hf: 102 of 102 items to judge (0 already done)
+  10/102 at 0.34/s
+  20/102 at 0.33/s
+  30/102 at 0.33/s
+  40/102 at 0.33/s
+  50/102 at 0.33/s
+  60/102 at 0.32/s
+  70/102 at 0.32/s
+  80/102 at 0.32/s
+  90/102 at 0.32/s
+  100/102 at 0.32/s
+[capacity] wrote semantic_inferability_capacity_rows_qwen3_8b-q4km-hf_vgpu3090_prompt_specific_bar_local.csv and semantic_inferability_capacity_manifest_qwen3_8b-q4km-hf_vgpu3090_prompt_specific_bar_local.csv
+[capacity] qwen3:8b-q4km-hf: 99 scored, 3 unparsed
+  vs annotator1: kappa -0.015 (worse than chance), raw 0.566, n=99
+  vs annotator3: kappa -0.065 (worse than chance), raw 0.535, n=99
+  vs recorded_judge_gemma2_27b: kappa 0.122 (slight), raw 0.788, n=99
+[capacity] wrote semantic_inferability_capacity_agreement_qwen3_8b-q4km-hf_vgpu3090_prompt_specific_bar_local.csv
+[capacity] qwen3:8b-q4km-hf: 102 of 102 items to judge (0 already done)
+  10/102 at 0.32/s
+  20/102 at 0.31/s
+  30/102 at 0.32/s
+  40/102 at 0.32/s
+  50/102 at 0.32/s
+  60/102 at 0.32/s
+  70/102 at 0.32/s
+  80/102 at 0.31/s
+  90/102 at 0.32/s
+  100/102 at 0.32/s
+[capacity] wrote semantic_inferability_capacity_rows_qwen3_8b-q4km-hf_vgpu3090_prompt_plain_reader_local.csv and semantic_inferability_capacity_manifest_qwen3_8b-q4km-hf_vgpu3090_prompt_plain_reader_local.csv
+[capacity] qwen3:8b-q4km-hf: 89 scored, 13 unparsed
+  vs annotator1: kappa 0.219 (fair), raw 0.674, n=89
+  vs annotator3: kappa 0.219 (fair), raw 0.674, n=89
+  vs recorded_judge_gemma2_27b: kappa 0.128 (slight), raw 0.730, n=89
+[capacity] wrote semantic_inferability_capacity_agreement_qwen3_8b-q4km-hf_vgpu3090_prompt_plain_reader_local.csv
+JUDGE_DONE
+[attack] 1237 questions, 250 facts dropped for lack of a maskable value or a same-kind pool
+[no_document] 0 done, 1237 to run

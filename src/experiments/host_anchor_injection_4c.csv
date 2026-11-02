@@ -1,0 +1,3 @@
+instrument,items,items_answered_on_both,same_answer_percent,rerun_positive_percent,recorded_positive_percent,verdict
+"injection, attack success, regex_only",74,74,79.7,67.6,66.2,fail
+"injection, task utility, regex_only",74,74,85.1,62.2,58.1,pass

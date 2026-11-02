@@ -1,0 +1,17 @@
+field,value
+judge_model,qwen3:8b-q4km-hf
+judge_digest,a0a5ad8024dd21401f07634d0c71393b9c9d37aa57a6b594e02b86ab72c450b4
+judge_family,qwen3
+judge_parameter_size,8.2B
+judge_quantization,Q4_K_M
+prompt,verbatim from semantic_inferability_judge.py JUDGE_PROMPT
+surfaces,read from semantic_inferability_human_sheet_vgpu3090.csv; not regenerated
+decoding,"temperature 0, top_p 1, seed 17, num_predict 160, num_ctx 4096, think false"
+items,102
+judged_this_run,102
+unparsed_this_run,0
+workers,1
+python,3.10.12
+platform,Linux-5.15.0-198-generic-x86_64-with-glibc2.35
+host,ubuntu-4card
+timestamp,2026-11-02T03:36:13+0000

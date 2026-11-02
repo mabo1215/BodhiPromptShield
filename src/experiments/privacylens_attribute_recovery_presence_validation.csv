@@ -1,0 +1,13 @@
+attacker,condition,questions,regenerated_matches_recorded_flag,disagreements
+qwen3_8b-q4km-hf,no_protection,1237,1237,0
+qwen3_8b-q4km-hf,placeholder:presidio,1237,1237,0
+qwen3_8b-q4km-hf,casper_style,1237,1237,0
+qwen3_8b-q4km-hf,placeholder:learned_lr,1237,1237,0
+qwen3_32b-q4km-hf,no_protection,1237,1237,0
+qwen3_32b-q4km-hf,placeholder:presidio,1237,1237,0
+qwen3_32b-q4km-hf,casper_style,1237,1237,0
+qwen3_32b-q4km-hf,placeholder:learned_lr,1237,1237,0
+llama3.3_70b-q4km-hf,no_protection,1237,1237,0
+llama3.3_70b-q4km-hf,placeholder:presidio,1237,1237,0
+llama3.3_70b-q4km-hf,casper_style,1237,1237,0
+llama3.3_70b-q4km-hf,placeholder:learned_lr,1237,1237,0

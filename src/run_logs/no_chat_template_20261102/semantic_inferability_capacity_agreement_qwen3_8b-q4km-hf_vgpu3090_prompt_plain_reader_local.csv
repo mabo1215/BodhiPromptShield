@@ -1,0 +1,4 @@
+judge_model,reference,n,cohens_kappa,interpretation,raw_agreement,judge_yes_rate,reference_yes_rate,cell_no_no,cell_no_yes,cell_yes_no,cell_yes_yes
+qwen3:8b-q4km-hf,annotator1,89,0.219,fair,0.674,0.820,0.629,10,23,6,50
+qwen3:8b-q4km-hf,annotator3,89,0.219,fair,0.674,0.820,0.629,10,23,6,50
+qwen3:8b-q4km-hf,recorded_judge_gemma2_27b,89,0.128,slight,0.730,0.820,0.798,5,13,11,60

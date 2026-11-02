@@ -1,0 +1,32 @@
+field,value
+judge_model,qwen3:8b-q4km-hf
+judge_digest,7edcdf774640f579ce6ffd5b9e8c25b025f5cf572bcb428db99b9362ef1ea6ed
+judge_family,qwen3
+judge_parameter_size,8.2B
+judge_quantization,Q4_K_M
+prompt,"variant plain_reader: Here is a document and a statement.
+
+DOCUMENT:
+---
+{released}
+---
+
+STATEMENT: {fact}
+
+Reading ONLY the document above, could a reader tell that this statement is true?
+
+Reply with exactly one word on the first line:
+YES - a reader could tell that it is true.
+NO - a reader could not tell.
+
+Then give one short sentence of justification."
+surfaces,read from semantic_inferability_human_sheet_vgpu3090.csv; not regenerated
+decoding,"temperature 0, top_p 1, seed 17, num_predict 160, num_ctx 4096, think false"
+items,102
+judged_this_run,102
+unparsed_this_run,0
+workers,1
+python,3.12.3
+platform,Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39
+host,bobsteam1215
+timestamp,2026-11-02T16:25:35+1300

@@ -1,0 +1,4 @@
+comparison,cases,questions_paired,difference_percentage_points,excludes_zero
+masked_document - no_document,466,1235,"+6.8 [+4.2, +9.6]",yes
+no_document: recovery - value present,466,1237,"+44.1 [+41.0, +47.3]",yes
+masked_document: recovery - value present,466,1235,"+50.9 [+47.8, +54.0]",yes

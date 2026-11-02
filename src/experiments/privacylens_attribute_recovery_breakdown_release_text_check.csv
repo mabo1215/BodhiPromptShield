@@ -1,0 +1,13 @@
+attacker,condition,questions,cases,questions_with_released_text,cases_with_released_text,exact_rule_agrees_with_survives_release,exact_rule_disagrees
+qwen3_8b-q4km-hf,no_protection,1237,466,1237,466,1237,0
+qwen3_8b-q4km-hf,placeholder:presidio,1237,466,0,0,0,0
+qwen3_8b-q4km-hf,casper_style,1237,466,525,193,525,0
+qwen3_8b-q4km-hf,placeholder:learned_lr,1237,466,525,193,525,0
+qwen3_32b-q4km-hf,no_protection,1237,466,1237,466,1237,0
+qwen3_32b-q4km-hf,placeholder:presidio,1237,466,0,0,0,0
+qwen3_32b-q4km-hf,casper_style,1237,466,525,193,525,0
+qwen3_32b-q4km-hf,placeholder:learned_lr,1237,466,525,193,525,0
+llama3.3_70b-q4km-hf,no_protection,1237,466,1237,466,1237,0
+llama3.3_70b-q4km-hf,placeholder:presidio,1237,466,0,0,0,0
+llama3.3_70b-q4km-hf,casper_style,1237,466,525,193,525,0
+llama3.3_70b-q4km-hf,placeholder:learned_lr,1237,466,525,193,525,0

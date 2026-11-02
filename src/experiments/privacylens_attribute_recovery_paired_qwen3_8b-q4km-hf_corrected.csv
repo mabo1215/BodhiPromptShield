@@ -1,0 +1,9 @@
+comparison,cases,questions_paired,difference_percentage_points,excludes_zero
+placeholder:presidio - no_protection,466,1237,"-18.6 [-21.1, -16.3]",yes
+casper_style - no_protection,466,1237,"-22.2 [-24.9, -19.7]",yes
+placeholder:learned_lr - no_protection,466,1236,"-34.2 [-37.2, -31.0]",yes
+casper_style - placeholder:presidio,466,1237,"-3.6 [-5.7, -1.5]",yes
+no_protection: recovery - value present,466,1237,"+5.9 [+3.8, +8.1]",yes
+placeholder:presidio: recovery - value present,466,1237,"+34.0 [+29.7, +38.3]",yes
+casper_style: recovery - value present,466,1237,"+34.0 [+30.3, +38.3]",yes
+placeholder:learned_lr: recovery - value present,466,1236,"+60.4 [+57.4, +63.6]",yes

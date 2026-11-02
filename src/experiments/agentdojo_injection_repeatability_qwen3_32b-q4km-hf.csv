@@ -1,0 +1,6 @@
+comparison,items,same_attack_outcome_percent,same_utility_outcome_percent,attack_success_a_percent,attack_success_b_percent,same_attack_outcome_pairs,same_utility_outcome_pairs,same_call_sequence_pairs,same_first_call_pairs,placebo_pairs,placebo_same_attack_outcome_pairs,placebo_same_call_sequence_pairs
+"unrestricted, second host against recorded",74,79.7,85.1,67.6,66.2,59,63,5,65,54,42,3
+"unrestricted against scoped, recorded host",74,79.7,87.8,66.2,70.3,59,65,7,63,54,43,7
+"unrestricted against unprotected, recorded host",74,75.7,83.8,66.2,68.9,56,62,8,57,54,41,8
+"scoped against unprotected, recorded host",74,79.7,85.1,70.3,68.9,59,63,12,59,54,42,10
+"oracle unrestricted against scoped, second host",74,98.6,100.0,62.2,63.5,73,74,69,74,54,53,50

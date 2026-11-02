@@ -2,7 +2,8 @@
 
 This tree holds the mediation implementation, every experiment that produced a
 number in the manuscript, and the records those numbers were read from. It is
-not a training pipeline: nothing here trains a language model. The heavy runs
+not a training pipeline: the only model it trains is a small DistilBERT token
+classifier, fine-tuned in minutes for one comparison. The heavy runs
 call an OpenAI-compatible local endpoint (`http://127.0.0.1:11434` by default)
 serving the open-weight models named in the run manifests.
 
@@ -45,12 +46,23 @@ number against its record.
 | `tab:judgecap` — judge agreement with human labels across model capacity | `semantic_inferability_judge_capacity.py`; the human labels and the two automated proxies are scored by `semantic_inferability_agreement.py` |
 | `tab:pljudge` — the benchmark's own judge against two annotators | the records in `privacylens_judge_agreement.csv` |
 | `tab:contextattack` — case-identifiability control | `privacylens_context_inference_attack.py` |
-| `tab:attrrecovery`, `tab:attrcompact` — attribute recovery against the released surface | `privacylens_attribute_recovery_attack.py`; `--score-only` rebuilds the summary and the paired differences from the shipped rows without calling a model |
+| `tab:attrrecovery`, `tab:attrcompact` — attribute recovery against the released surface | `privacylens_attribute_recovery_attack.py` for the attacker rows; `attribute_recovery_presence_audit.py` regenerates the releases without a model, corrects the value-present flag, and writes the `*_corrected.csv` rows and summaries the tables read. `attribute_recovery_breakdown.py` gives the per-kind and candidate-shape figures |
+| Injection payload accounting per suite (supplement) | `agentdojo_injection_per_suite.py` |
+| Composition of the language-model rewrites (supplement) | `llm_rewrite_composition.py` |
+| Judge against the lexical measure (main text) | `semantic_inferability_judge_vs_lexical.py` |
+| `tab:matchedret` — exposure at matched retention | `ai4privacy_operating_points.py`, which sweeps detector thresholds on the held-out documents and refuses to write a summary unless its default-threshold counts equal the exposure records; `ai4privacy_parity_tagger.py` for the column with the transformer tagger trained on the same documents, and its transfer to clinical notes |
+| Third-party person names as a second PrivacyLens gold set (supplement) | `privacylens_third_party_gold.py`, which refuses to summarize unless its identifier-gold counts equal the exposure records |
+| `tab:controls`, `tab:controlkind` — release-free controls for the forced-choice value-recovery attack (the paper's name for the attribute-recovery instrument) | `privacylens_attribute_recovery_attack.py --conditions no_document,masked_document`, scored by `attribute_recovery_controls.py`; the supplement's finer subsets by `attribute_recovery_control_subsets.py` |
+| `tab:judgeprompts` — judge agreement under three prompts | `semantic_inferability_judge_capacity.py --prompt-variant {reported,specific_bar,plain_reader} --output-tag 4c` |
+| `tab:livestackints` — the live-stack result with intervals, three detector arms | `live_stack_placement_suite.py` (`--summarize-only`, `--versus-detector`) |
+| Injection against the transformer detector, the attack written for the restoration boundary, and how far one attack outcome repeats | `agentdojo_restoration_suite.py --attack {important_instructions,restoration_oracle}`, summarized by `agentdojo_injection_extensions.py` |
+| `tab:hostanchor` — recorded prompts rerun on the second host | `host_anchor.py`, with the steps `anchor8`, `anchor32`, `anchor27`, `anchorlive`, and `anchorinj` of `remaining_gpu_queue.sh` |
+| Experiments that need a larger card, in priority order | `remaining_gpu_queue.sh` |
 | `tab:attrcap` — attacker capacity | `attribute_recovery_capacity.py`, which pairs the attacker runs on the identical seeded questions and refuses to pair them if a shared question was posed differently |
 | what the replacement tokens disclose, reported in prose | `placeholder_leakage_analysis.py` |
 | `tab:crossdom` — cross-domain transfer of the learned detector | `cross_domain_detector.py` |
 | `tab:ocrslice` — OCR-mediated slice | `cord_ocr_transfer_suite.py`, `funsd_ocr_transfer_suite.py`, `sroie_ocr_transfer_suite.py` |
-| `tab:latency` — middleware latency | `latency_overhead_reconstructed.csv`; the execution environment is in `latency_host_manifest.csv` |
+| `tab:latency` — middleware latency | `latency_overhead_reconstructed.csv`; the execution environment is in `cppb_reconstructed_runtime_manifest_*.csv` (`latency_host_manifest.csv` describes an older local snapshot and is not the source of this table) |
 | `fig:workflow` — the architecture figure | `figures/mediation_architecture.py` (drawn programmatically, no data) |
 
 `fill_paper_tables.py` writes the tables it has records for back into the

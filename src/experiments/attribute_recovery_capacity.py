@@ -36,7 +36,7 @@ CONDITIONS = ("no_protection", "placeholder:presidio", "casper_style", "placehol
 
 
 def _rows(tag: str) -> list[dict[str, str]] | None:
-    path = EXPERIMENTS_DIR / f"privacylens_attribute_recovery_rows_{tag}.csv"
+    path = EXPERIMENTS_DIR / f"privacylens_attribute_recovery_rows_{tag}_corrected.csv"
     if not path.exists():
         return None
     with path.open(encoding="utf-8", newline="") as handle:

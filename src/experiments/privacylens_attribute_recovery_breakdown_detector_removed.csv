@@ -1,0 +1,64 @@
+attacker,condition,span_kind,questions_present_unprotected_absent_here,cases,recovery_percent_detector_removed,questions_strict,recovery_percent_detector_removed_unparsed_as_failure,questions_absent_unprotected_and_here,cases_absent_both,recovery_percent_absent_both,questions_present_unprotected_all_tokens_removed_here,recovery_percent_all_tokens_removed
+qwen3_8b-q4km-hf,placeholder:presidio,all,578,292,"63.0 [58.4, 67.4]",578,"63.0 [58.4, 67.4]",111,72,"76.6 [67.9, 84.5]",,
+qwen3_8b-q4km-hf,placeholder:presidio,identifier,50,30,"74.0 [59.6, 88.5]",50,"74.0 [59.6, 88.5]",2,2,"50.0 [0.0, 100.0]",,
+qwen3_8b-q4km-hf,placeholder:presidio,identifier:user_name,26,17,"88.5 [71.4, 100.0]",26,"88.5 [71.4, 100.0]",1,1,"0.0 [0.0, 0.0]",,
+qwen3_8b-q4km-hf,placeholder:presidio,identifier:email,5,2,"60.0 [50.0, 100.0]",5,"60.0 [50.0, 100.0]",0,0,,,
+qwen3_8b-q4km-hf,placeholder:presidio,identifier:digit_run,19,12,"57.9 [38.9, 85.7]",19,"57.9 [38.9, 85.7]",1,1,"100.0 [100.0, 100.0]",,
+qwen3_8b-q4km-hf,placeholder:presidio,number,75,53,"77.3 [67.5, 86.2]",75,"77.3 [67.5, 86.2]",21,12,"85.7 [73.9, 100.0]",,
+qwen3_8b-q4km-hf,placeholder:presidio,entity,453,236,"59.4 [54.4, 64.3]",453,"59.4 [54.4, 64.3]",88,59,"75.0 [64.4, 84.4]",,
+qwen3_8b-q4km-hf,casper_style,all,623,309,"57.1 [52.9, 61.2]",623,"57.1 [52.9, 61.2]",111,72,"78.4 [69.8, 85.6]",228,"52.2 [45.7, 59.0]"
+qwen3_8b-q4km-hf,casper_style,identifier,62,36,"46.8 [34.6, 58.6]",62,"46.8 [34.6, 58.6]",2,2,"100.0 [100.0, 100.0]",28,"32.1 [13.3, 50.0]"
+qwen3_8b-q4km-hf,casper_style,identifier:user_name,26,17,"53.8 [32.0, 73.9]",26,"53.8 [32.0, 73.9]",1,1,"100.0 [100.0, 100.0]",11,"27.3 [0.0, 55.6]"
+qwen3_8b-q4km-hf,casper_style,identifier:email,5,2,"60.0 [50.0, 100.0]",5,"60.0 [50.0, 100.0]",0,0,,1,"100.0 [100.0, 100.0]"
+qwen3_8b-q4km-hf,casper_style,identifier:digit_run,31,19,"38.7 [22.2, 54.5]",31,"38.7 [22.2, 54.5]",1,1,"100.0 [100.0, 100.0]",16,"31.2 [6.7, 57.1]"
+qwen3_8b-q4km-hf,casper_style,number,105,70,"68.6 [59.6, 77.3]",105,"68.6 [59.6, 77.3]",21,12,"85.7 [75.0, 100.0]",30,"60.0 [40.9, 75.8]"
+qwen3_8b-q4km-hf,casper_style,entity,456,237,"55.9 [51.2, 60.8]",456,"55.9 [51.2, 60.8]",88,59,"76.1 [65.8, 84.6]",170,"54.1 [46.3, 61.8]"
+qwen3_8b-q4km-hf,placeholder:learned_lr,all,1097,433,"61.2 [57.9, 64.7]",1098,"61.1 [57.8, 64.6]",111,72,"70.3 [60.5, 78.6]",394,"60.4 [54.7, 66.3]"
+qwen3_8b-q4km-hf,placeholder:learned_lr,identifier,68,41,"70.6 [57.1, 83.6]",68,"70.6 [57.1, 83.6]",2,2,"50.0 [0.0, 100.0]",31,"74.2 [55.6, 91.2]"
+qwen3_8b-q4km-hf,placeholder:learned_lr,identifier:user_name,32,22,"90.6 [78.6, 100.0]",32,"90.6 [78.6, 100.0]",1,1,"0.0 [0.0, 0.0]",14,"78.6 [54.5, 100.0]"
+qwen3_8b-q4km-hf,placeholder:learned_lr,identifier:email,5,2,"80.0 [75.0, 100.0]",5,"80.0 [75.0, 100.0]",0,0,,1,"100.0 [100.0, 100.0]"
+qwen3_8b-q4km-hf,placeholder:learned_lr,identifier:digit_run,31,19,"48.4 [30.3, 69.2]",31,"48.4 [30.3, 69.2]",1,1,"100.0 [100.0, 100.0]",16,"68.8 [41.2, 100.0]"
+qwen3_8b-q4km-hf,placeholder:learned_lr,number,313,154,"56.5 [50.5, 62.7]",314,"56.4 [50.5, 62.6]",21,12,"81.0 [67.9, 100.0]",87,"52.9 [40.6, 68.3]"
+qwen3_8b-q4km-hf,placeholder:learned_lr,entity,716,321,"62.3 [58.3, 66.3]",716,"62.3 [58.3, 66.3]",88,59,"68.2 [55.3, 79.5]",276,"61.2 [54.4, 67.3]"
+qwen3_32b-q4km-hf,placeholder:presidio,all,577,292,"65.0 [60.8, 68.9]",578,"64.9 [60.7, 68.9]",111,72,"71.2 [62.0, 80.0]",,
+qwen3_32b-q4km-hf,placeholder:presidio,identifier,50,30,"80.0 [66.7, 93.3]",50,"80.0 [66.7, 93.3]",2,2,"50.0 [0.0, 100.0]",,
+qwen3_32b-q4km-hf,placeholder:presidio,identifier:user_name,26,17,"88.5 [73.9, 100.0]",26,"88.5 [73.9, 100.0]",1,1,"0.0 [0.0, 0.0]",,
+qwen3_32b-q4km-hf,placeholder:presidio,identifier:email,5,2,"40.0 [25.0, 100.0]",5,"40.0 [25.0, 100.0]",0,0,,,
+qwen3_32b-q4km-hf,placeholder:presidio,identifier:digit_run,19,12,"78.9 [56.0, 100.0]",19,"78.9 [56.0, 100.0]",1,1,"100.0 [100.0, 100.0]",,
+qwen3_32b-q4km-hf,placeholder:presidio,number,75,53,"80.0 [70.1, 89.1]",75,"80.0 [70.1, 89.1]",21,12,"61.9 [44.4, 83.3]",,
+qwen3_32b-q4km-hf,placeholder:presidio,entity,452,236,"60.8 [56.2, 65.7]",453,"60.7 [56.1, 65.6]",88,59,"73.9 [61.9, 83.9]",,
+qwen3_32b-q4km-hf,casper_style,all,623,309,"57.8 [53.5, 62.1]",623,"57.8 [53.5, 62.1]",111,72,"77.5 [67.9, 86.0]",228,"52.6 [46.0, 59.2]"
+qwen3_32b-q4km-hf,casper_style,identifier,62,36,"59.7 [47.8, 71.4]",62,"59.7 [47.8, 71.4]",2,2,"100.0 [100.0, 100.0]",28,"46.4 [30.0, 64.0]"
+qwen3_32b-q4km-hf,casper_style,identifier:user_name,26,17,"73.1 [52.4, 89.3]",26,"73.1 [52.4, 89.3]",1,1,"100.0 [100.0, 100.0]",11,"54.5 [25.0, 84.6]"
+qwen3_32b-q4km-hf,casper_style,identifier:email,5,2,"60.0 [50.0, 100.0]",5,"60.0 [50.0, 100.0]",0,0,,1,"100.0 [100.0, 100.0]"
+qwen3_32b-q4km-hf,casper_style,identifier:digit_run,31,19,"48.4 [30.0, 63.6]",31,"48.4 [30.0, 63.6]",1,1,"100.0 [100.0, 100.0]",16,"37.5 [17.6, 61.5]"
+qwen3_32b-q4km-hf,casper_style,number,105,70,"74.3 [65.3, 82.4]",105,"74.3 [65.3, 82.4]",21,12,"81.0 [64.7, 95.0]",30,"73.3 [50.0, 89.5]"
+qwen3_32b-q4km-hf,casper_style,entity,456,237,"53.7 [48.8, 59.1]",456,"53.7 [48.8, 59.1]",88,59,"76.1 [63.7, 85.7]",170,"50.0 [43.0, 58.1]"
+qwen3_32b-q4km-hf,placeholder:learned_lr,all,1098,433,"64.9 [61.9, 67.8]",1098,"64.9 [61.9, 67.8]",111,72,"62.2 [52.1, 71.8]",395,"61.3 [56.0, 66.4]"
+qwen3_32b-q4km-hf,placeholder:learned_lr,identifier,68,41,"75.0 [61.1, 88.1]",68,"75.0 [61.1, 88.1]",2,2,"50.0 [0.0, 100.0]",31,"80.6 [66.7, 93.3]"
+qwen3_32b-q4km-hf,placeholder:learned_lr,identifier:user_name,32,22,"87.5 [75.9, 97.0]",32,"87.5 [75.9, 97.0]",1,1,"0.0 [0.0, 0.0]",14,"78.6 [53.8, 95.0]"
+qwen3_32b-q4km-hf,placeholder:learned_lr,identifier:email,5,2,"20.0 [0.0, 100.0]",5,"20.0 [0.0, 100.0]",0,0,,1,"100.0 [100.0, 100.0]"
+qwen3_32b-q4km-hf,placeholder:learned_lr,identifier:digit_run,31,19,"71.0 [55.6, 85.2]",31,"71.0 [55.6, 85.2]",1,1,"100.0 [100.0, 100.0]",16,"81.2 [62.5, 100.0]"
+qwen3_32b-q4km-hf,placeholder:learned_lr,number,314,154,"66.9 [61.3, 72.4]",314,"66.9 [61.3, 72.4]",21,12,"61.9 [43.8, 80.0]",88,"61.4 [52.8, 73.7]"
+qwen3_32b-q4km-hf,placeholder:learned_lr,entity,716,321,"63.1 [59.1, 67.1]",716,"63.1 [59.1, 67.1]",88,59,"62.5 [50.0, 73.8]",276,"59.1 [52.6, 65.2]"
+llama3.3_70b-q4km-hf,placeholder:presidio,all,574,291,"63.1 [59.2, 67.2]",578,"62.6 [58.3, 66.7]",110,71,"70.9 [60.4, 81.0]",,
+llama3.3_70b-q4km-hf,placeholder:presidio,identifier,48,30,"83.3 [65.2, 97.8]",50,"80.0 [62.5, 97.6]",2,2,"50.0 [0.0, 100.0]",,
+llama3.3_70b-q4km-hf,placeholder:presidio,identifier:user_name,26,17,"96.2 [86.2, 100.0]",26,"96.2 [86.2, 100.0]",1,1,"0.0 [0.0, 0.0]",,
+llama3.3_70b-q4km-hf,placeholder:presidio,identifier:email,5,2,"20.0 [0.0, 100.0]",5,"20.0 [0.0, 100.0]",0,0,,,
+llama3.3_70b-q4km-hf,placeholder:presidio,identifier:digit_run,17,12,"82.4 [60.0, 100.0]",19,"73.7 [51.9, 100.0]",1,1,"100.0 [100.0, 100.0]",,
+llama3.3_70b-q4km-hf,placeholder:presidio,number,75,53,"73.3 [64.7, 81.9]",75,"73.3 [64.7, 81.9]",21,12,"71.4 [47.4, 88.9]",,
+llama3.3_70b-q4km-hf,placeholder:presidio,entity,451,235,"59.2 [54.2, 63.7]",453,"58.9 [53.8, 63.8]",87,58,"71.3 [59.6, 81.5]",,
+llama3.3_70b-q4km-hf,casper_style,all,606,304,"48.5 [43.6, 53.0]",623,"47.2 [42.1, 51.9]",110,71,"73.6 [63.8, 82.9]",223,"45.7 [38.2, 52.6]"
+llama3.3_70b-q4km-hf,casper_style,identifier,53,34,"50.9 [34.0, 70.7]",62,"43.5 [29.9, 62.0]",2,2,"100.0 [100.0, 100.0]",24,"58.3 [38.5, 81.8]"
+llama3.3_70b-q4km-hf,casper_style,identifier:user_name,26,17,"65.4 [46.2, 84.0]",26,"65.4 [46.2, 84.0]",1,1,"100.0 [100.0, 100.0]",11,"54.5 [25.0, 83.3]"
+llama3.3_70b-q4km-hf,casper_style,identifier:email,5,2,"20.0 [0.0, 100.0]",5,"20.0 [0.0, 100.0]",0,0,,1,"100.0 [100.0, 100.0]"
+llama3.3_70b-q4km-hf,casper_style,identifier:digit_run,22,17,"40.9 [20.7, 66.7]",31,"29.0 [13.9, 50.0]",1,1,"100.0 [100.0, 100.0]",12,"58.3 [26.7, 100.0]"
+llama3.3_70b-q4km-hf,casper_style,number,98,64,"72.4 [63.6, 80.9]",105,"67.6 [58.0, 76.4]",21,12,"81.0 [64.7, 95.0]",29,"69.0 [45.8, 84.6]"
+llama3.3_70b-q4km-hf,casper_style,entity,455,236,"43.1 [37.9, 48.5]",456,"43.0 [37.7, 48.4]",87,58,"71.3 [58.2, 82.4]",170,"40.0 [32.1, 48.7]"
+llama3.3_70b-q4km-hf,placeholder:learned_lr,all,1096,433,"64.7 [61.8, 67.4]",1098,"64.6 [61.7, 67.4]",111,72,"65.8 [55.6, 75.6]",394,"61.7 [55.9, 67.6]"
+llama3.3_70b-q4km-hf,placeholder:learned_lr,identifier,68,41,"82.4 [67.3, 95.4]",68,"82.4 [67.3, 95.4]",2,2,"100.0 [100.0, 100.0]",31,"87.1 [72.4, 100.0]"
+llama3.3_70b-q4km-hf,placeholder:learned_lr,identifier:user_name,32,22,"93.8 [83.3, 100.0]",32,"93.8 [83.3, 100.0]",1,1,"100.0 [100.0, 100.0]",14,"85.7 [61.5, 100.0]"
+llama3.3_70b-q4km-hf,placeholder:learned_lr,identifier:email,5,2,"20.0 [0.0, 100.0]",5,"20.0 [0.0, 100.0]",0,0,,1,"100.0 [100.0, 100.0]"
+llama3.3_70b-q4km-hf,placeholder:learned_lr,identifier:digit_run,31,19,"80.6 [65.9, 95.5]",31,"80.6 [65.9, 95.5]",1,1,"100.0 [100.0, 100.0]",16,"87.5 [66.7, 100.0]"
+llama3.3_70b-q4km-hf,placeholder:learned_lr,number,314,154,"67.2 [62.0, 72.0]",314,"67.2 [62.0, 72.0]",21,12,"66.7 [41.2, 85.7]",88,"60.2 [51.0, 71.3]"
+llama3.3_70b-q4km-hf,placeholder:learned_lr,entity,714,321,"61.9 [57.8, 65.8]",716,"61.7 [57.6, 65.6]",88,59,"64.8 [52.7, 74.7]",275,"59.3 [52.0, 65.8]"

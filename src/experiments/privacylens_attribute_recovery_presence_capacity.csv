@@ -1,0 +1,25 @@
+comparison,condition,rule,questions_paired,cases,difference_percentage_points,excludes_zero
+32B - 8B,no_protection,substring_rule,103,69,"+1.0 [-6.9, +9.0]",no
+32B - 8B,no_protection,whole_word,159,95,"+1.3 [-4.5, +6.7]",no
+32B - 8B,no_protection,any_token_whole_word,111,72,"-0.9 [-8.5, +6.7]",no
+32B - 8B,placeholder:presidio,substring_rule,662,328,"+1.5 [-2.1, +5.5]",no
+32B - 8B,placeholder:presidio,whole_word,752,350,"+1.2 [-2.1, +4.9]",no
+32B - 8B,placeholder:presidio,any_token_whole_word,688,338,"+0.9 [-2.8, +4.6]",no
+32B - 8B,casper_style,substring_rule,687,337,"+1.0 [-3.1, +4.8]",no
+32B - 8B,casper_style,whole_word,796,366,"+1.0 [-2.4, +4.8]",no
+32B - 8B,casper_style,any_token_whole_word,734,354,"+0.4 [-3.4, +4.0]",no
+32B - 8B,placeholder:learned_lr,substring_rule,1048,432,"+2.3 [-1.2, +5.5]",no
+32B - 8B,placeholder:learned_lr,whole_word,1226,464,"+2.8 [-0.2, +5.7]",no
+32B - 8B,placeholder:learned_lr,any_token_whole_word,1208,460,"+2.7 [-0.5, +5.5]",no
+70B - 32B,no_protection,substring_rule,102,68,"-4.9 [-11.2, +0.0]",no
+70B - 32B,no_protection,whole_word,158,94,"-3.8 [-8.4, +0.0]",no
+70B - 32B,no_protection,any_token_whole_word,110,71,"-4.5 [-10.2, +0.0]",no
+70B - 32B,placeholder:presidio,substring_rule,656,326,"-2.9 [-6.7, +0.6]",no
+70B - 32B,placeholder:presidio,whole_word,746,348,"-2.1 [-5.3, +1.2]",no
+70B - 32B,placeholder:presidio,any_token_whole_word,683,336,"-1.8 [-5.1, +1.8]",no
+70B - 32B,casper_style,substring_rule,672,332,"-11.5 [-15.8, -7.5]",yes
+70B - 32B,casper_style,whole_word,778,360,"-9.8 [-13.4, -6.1]",yes
+70B - 32B,casper_style,any_token_whole_word,716,348,"-8.8 [-12.7, -4.8]",yes
+70B - 32B,placeholder:learned_lr,substring_rule,1047,432,"-0.3 [-3.1, +2.5]",no
+70B - 32B,placeholder:learned_lr,whole_word,1225,464,"+0.0 [-2.8, +2.6]",no
+70B - 32B,placeholder:learned_lr,any_token_whole_word,1207,460,"+0.0 [-2.5, +2.7]",no

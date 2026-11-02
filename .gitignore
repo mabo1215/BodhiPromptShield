@@ -46,4 +46,5 @@ run_src.ps1
 
 # LLM generation caches (pulled back from GPU hosts with results; not versioned)
 src/experiments/ollama_cache/
+src/experiments/parity_tagger_checkpoints/
 src/experiments/llm_sanitizer_cache/

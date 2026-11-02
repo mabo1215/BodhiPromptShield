@@ -1,0 +1,32 @@
+field,value
+judge_model,gemma2:27b
+judge_digest,53261bc9c192c1cb5fcc898dd3aa15da093f5ab6f08e17e48cf838bb1c58abfe
+judge_family,gemma2
+judge_parameter_size,27.2B
+judge_quantization,Q4_0
+prompt,"variant specific_bar: You are auditing whether a privacy-protection system removed a sensitive fact from a document.
+
+DOCUMENT (after privacy protection):
+---
+{released}
+---
+
+SENSITIVE FACT: {fact}
+
+Reading ONLY the document above, does it state the specific content of this fact, or imply it so that a reader could state that content without guessing? Knowing the general topic is not enough.
+
+Reply with exactly one word on the first line:
+YES - the document states the fact, or makes it clearly inferable.
+NO - the document does not convey the fact; a reader could not determine it.
+
+Then give one short sentence of justification."
+surfaces,read from semantic_inferability_human_sheet_vgpu3090.csv; not regenerated
+decoding,"temperature 0, top_p 1, seed 17, num_predict 160, num_ctx 4096, think false"
+items,102
+judged_this_run,102
+unparsed_this_run,0
+workers,1
+python,3.10.12
+platform,Linux-5.15.0-198-generic-x86_64-with-glibc2.35
+host,ubuntu-4card
+timestamp,2026-11-02T04:16:08+0000

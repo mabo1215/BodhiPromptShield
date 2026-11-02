@@ -4,7 +4,7 @@ Draw the architecture overview of prompt-privacy mediation as a vector figure.
 The drawing follows the manuscript's system description rather than a generic
 middleware picture:
 
-* User input (typed text, optionally OCR-extracted text from an image) enters
+* User input (text) enters
   a trusted mediation layer: span detection, then sanitization under a policy
   profile pi (typed placeholder, semantic abstraction, or symbolic token),
   which emits the sanitized prompt x~.
@@ -37,15 +37,15 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
 DEFAULT_OUT = os.path.join(REPO_DIR, "paper", "figs", "mediation_architecture.pdf")
 
-# Printed size: the figure is included at 0.95 of the ACM two-column text
-# width, about 6.7 in; the height stays below that of the figure it replaces.
+# Canvas in inches; the figure is included at the full text width, which scales it
+# by about 0.8, so the font sizes below are chosen to print at about 7 pt.
 WIDTH_IN = 6.7
 HEIGHT_IN = 2.0
 
-# Font sizes in points at printed size (minimum 7 pt after scaling).
-FS_TEXT = 7.5
-FS_SMALL = 7.2
-FS_HEAD = 7.8
+# Font sizes in points on the canvas.
+FS_TEXT = 8.8
+FS_SMALL = 8.6
+FS_HEAD = 9.0
 
 # Muted, colorblind-safe palette (blue / orange contrast for trust domains;
 # blue and vermillion for the two restoration edges, also told apart by dash).
@@ -153,11 +153,8 @@ def build_figure():
     ux, uy, uw, uh = 0.02, 0.10, 0.90, 0.72
     _rounded(ax, ux, uy, uw, uh, ec=EDGE)
     _text(ax, ux + uw / 2, uy + uh - 0.10, r"User input $x$", weight="bold", size=FS_HEAD)
-    _rounded(ax, ux + 0.06, 0.47, uw - 0.12, 0.17, ec=TEXT_MUTED, lw=0.6, pad=0.025)
-    _text(ax, ux + uw / 2, 0.555, "typed text", size=FS_SMALL)
-    _rounded(ax, ux + 0.06, 0.16, uw - 0.12, 0.27, ec=TEXT_MUTED, lw=0.6, pad=0.025)
-    _text(ax, ux + uw / 2, 0.355, "image → OCR", size=FS_SMALL)
-    _text(ax, ux + uw / 2, 0.235, "text (optional)", size=FS_SMALL)
+    _rounded(ax, ux + 0.06, 0.16, uw - 0.12, 0.48, ec=TEXT_MUTED, lw=0.6, pad=0.025)
+    _text(ax, ux + uw / 2, 0.40, "prompt text", size=FS_SMALL)
 
     # ------------------------------------------------------------------
     # Mediation layer: span detection -> sanitization under pi.
@@ -199,7 +196,7 @@ def build_figure():
     # ------------------------------------------------------------------
     bx, by, bw, bh = 4.66, 0.11, 1.74, 0.60
     _rounded(ax, bx, by, bw, bh, ec=KEY, lw=1.1)
-    _text(ax, bx + bw / 2, 0.598, "Authorized tool boundary", weight="bold")
+    _text(ax, bx + bw / 2, 0.598, "Authorized tool boundary", weight="bold", size=FS_TEXT - 0.6)
     _text(ax, bx + bw / 2, 0.476, r"restores exact values from $K$", size=FS_SMALL)
     _text(ax, bx + bw / 2, 0.356, "only after planning (deferred)", size=FS_SMALL)
     _text(ax, bx + bw / 2, 0.236, "then executes the tool call", size=FS_SMALL)

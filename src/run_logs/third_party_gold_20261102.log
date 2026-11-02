@@ -1,0 +1,56 @@
+[no_protection] 0 cases done, 493 to run
+  no_protection: 100/493
+  no_protection: 200/493
+  no_protection: 300/493
+  no_protection: 400/493
+[regex_only] 0 cases done, 493 to run
+  regex_only: 100/493
+  regex_only: 200/493
+  regex_only: 300/493
+  regex_only: 400/493
+[capitalization_heuristic] 0 cases done, 493 to run
+  capitalization_heuristic: 100/493
+  capitalization_heuristic: 200/493
+  capitalization_heuristic: 300/493
+  capitalization_heuristic: 400/493
+[spacy_ner] 0 cases done, 493 to run
+  spacy_ner: 100/493
+  spacy_ner: 200/493
+  spacy_ner: 300/493
+  spacy_ner: 400/493
+[presidio] 0 cases done, 493 to run
+  presidio: 100/493
+  presidio: 200/493
+  presidio: 300/493
+  presidio: 400/493
+[casper_style] 0 cases done, 493 to run
+  casper_style: 100/493
+  casper_style: 200/493
+  casper_style: 300/493
+  casper_style: 400/493
+[heuristic_mediator] 0 cases done, 493 to run
+  heuristic_mediator: 100/493
+  heuristic_mediator: 200/493
+  heuristic_mediator: 300/493
+  heuristic_mediator: 400/493
+[gliner_pii] 0 cases done, 493 to run
+C:\source\BodhiPromptShield\.venv\Lib\site-packages\huggingface_hub\utils\_validators.py:190: UserWarning: The `resume_download` argument is deprecated and ignored in `snapshot_download`. Downloads always resume whenever possible.
+  warnings.warn(
+Fetching 4 files:   0%|          | 0/4 [00:00<?, ?it/s]Fetching 4 files: 100%|¨€¨€¨€¨€¨€¨€¨€¨€¨€¨€| 4/4 [00:00<00:00, 544.73it/s]
+  gliner_pii: 100/493
+  gliner_pii: 200/493
+  gliner_pii: 300/493
+  gliner_pii: 400/493
+[learned_lr] 0 cases done, 493 to run
+  learned_lr: 100/493
+  learned_lr: 200/493
+  learned_lr: 300/493
+  learned_lr: 400/493
+[llm_sanitizer:qwen3:8b-q4km-hf] 0 cases done, 493 to run
+  llm_sanitizer:qwen3:8b-q4km-hf: 100/493
+  llm_sanitizer:qwen3:8b-q4km-hf: 200/493
+  llm_sanitizer:qwen3:8b-q4km-hf: 300/493
+  llm_sanitizer:qwen3:8b-q4km-hf: 400/493
+[parity_tagger] 493 cases done, 0 to run
+[anchor] 5423 rows against the exposure-table records: 0 mismatches
+[gold] wrote privacylens_third_party_gold_summary.csv

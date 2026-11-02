@@ -1,0 +1,2 @@
+instrument,items,items_answered_on_both,same_answer_percent,rerun_positive_percent,recorded_positive_percent,verdict
+"inferability judge, reported prompt, gemma2_27b",102,102,99.0,82.4,81.4,pass

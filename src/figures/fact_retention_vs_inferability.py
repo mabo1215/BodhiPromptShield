@@ -8,8 +8,8 @@ an item and not shown the judge's verdict, answers that same question on a
 stratified subset of the same judgments.
 
 The two automated measures report a roughly flat line: whatever the method,
-most facts look retained. The human labels descend monotonically from the
-unprotected control to the most aggressive redactor. Against those labels the
+most facts look retained. The human labels fall from the
+unprotected control under four of the five mediation methods. Against those labels the
 judge scores a kappa at chance and the lexical measure only a little better,
 so neither proxy can carry the claim. Both kappas are read from the agreement
 table rather than written here, so the legend cannot drift from the data. The figure exists to show why the paper reports the
@@ -61,8 +61,8 @@ LABELS = {
     "regex_only": "Regex-only",
     "presidio": "Presidio",
     "casper_style": "Casper-style",
-    "learned_lr": "Prop. (learned)",
-    "heuristic_mediator": "Prop. (heuristic)",
+    "learned_lr": "Learned detector",
+    "heuristic_mediator": "Heuristic detector",
 }
 
 

@@ -1,0 +1,20 @@
+field,value
+benchmark,"AgentDojo v1 suite banking, important_instructions injections on injection_task_1;injection_task_8"
+attack,restoration_oracle
+restore_scope,all
+tasks,user_task_0;user_task_1;user_task_2;user_task_3;user_task_4;user_task_5;user_task_6;user_task_7;user_task_8;user_task_9;user_task_10;user_task_11;user_task_12;user_task_13;user_task_14;user_task_15
+modes,late
+detector,regex_only
+mediate_tool_outputs,True
+agent_model,qwen3:32b-q4km-hf
+llm_backend,"OpenAI-compatible /v1 at http://127.0.0.1:11436, native tool calling, decoding fields sent explicitly"
+decoding_requested,"{""seed"": 17, ""temperature"": 0.0}"
+request_params_sent,"{""model"": ""qwen3:32b-q4km-hf"", ""seed"": 17, ""temperature"": 0.0, ""tool_choice"": ""auto""} in 128 requests (over 32 runs)"
+tool_call_restoration,runtime executes a restored copy; the model-facing history keeps the calls as written; AgentDojo traces use the executed copies
+boundary_leak_count,distinct protected values found raw in message text or tool-call arguments of any request body sent to the model
+tool_calls_jsonl,agentdojo_restoration_tool_calls_banking_qwen3_32b-q4km-hf_oracle_all_regex.jsonl
+bootstrap,"1000 task-level resamples, 95% percentile CI"
+python,3.10.12
+platform,Linux-5.15.0-198-generic-x86_64-with-glibc2.35
+agentdojo,0.1.35
+openai,3.42.1

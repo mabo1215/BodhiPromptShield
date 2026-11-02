@@ -1,0 +1,3 @@
+instrument,items_answered_on_both,same_answer_percent,workstation_positive_percent,recorded_positive_percent
+"attribute recovery, typed placeholder (learned), 8B attacker",69,49.3,42.0,56.5
+"inferability judge, reported prompt, 8B",99,71.7,38.4,14.1

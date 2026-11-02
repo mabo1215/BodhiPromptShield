@@ -10,8 +10,15 @@ This script only updates tables that are directly backed by repository CSVs:
     - tab:judge            <- cppb_privacy_judge_comparison.csv
     - tab:measprop         <- propagation_suite_{ai4privacy,privacylens}_results_pooled.csv
     - tab:advmeas          <- measured_adaptive_adversary_span_results.csv (per-span ASR)
-    - tab:attrrecovery     <- privacylens_attribute_recovery_summary_*.csv
-    - tab:attrcap          <- privacylens_attribute_recovery_summary_*.csv (all attackers)
+    - tab:attrrecovery     <- privacylens_attribute_recovery_summary_*_corrected.csv
+    - tab:attrcap          <- privacylens_attribute_recovery_summary_*_corrected.csv (all attackers)
+    - tab:matchedret       <- ai4privacy_operating_points_matched.csv + ai4privacy_parity_tagger_matched.csv
+    - tab:thirdparty       <- privacylens_third_party_gold_summary.csv
+    - tab:controls, tab:controlkind <- privacylens_attribute_recovery_controls.csv
+    - tab:judgeprompts     <- semantic_inferability_capacity_agreement_<judge>_vgpu3090[_prompt_<variant>]_4c.csv
+    - tab:hostanchor       <- host_anchor_{<model>,live,injection}_4c.csv
+    - tab:livestackints    <- live_stack_placement_summary_<model>_<detector>_v1_pooled.csv
+    - tab:readers          <- semantic_inferability_human_by_method_extend40_vgpu3090_pooled_annotator{1,3}.csv
     - tab:mapadv           <- secure_mapping_adversary_results.csv
     - tab:hardcase         <- hardcase_analysis.csv
   - tab:restore          <- restoration_boundary_analysis.csv
@@ -24,6 +31,7 @@ This script only updates tables that are directly backed by repository CSVs:
   - tab:downstream       <- privacylens_downstream_summary_qwen3_32b-q4km-hf_pooled.csv
                             (RCE shown only where the per-case shards record a mapping)
   - tab:inject           <- agentdojo_injection_summary_pooled_qwen3_32b-q4km-hf_fixed.csv
+  - tab:injectarms       <- agentdojo_injection_extensions_qwen3_32b-q4km-hf.csv
   - tab:portability      <- privacylens_downstream_summary_{qwen3_32b,llama3.3_70b}-q4km-hf_pooled.csv
                             + downstream_paired_tests_llama3.3_70b-q4km-hf.csv
   - tab:pljudge          <- privacylens_judge_agreement.csv
@@ -148,7 +156,7 @@ LATENCY_DISPLAY_NAMES = {
     "Capitalization heuristic": "Capitalization heuristic",
     "Generic de-identification": "Heuristic detector, generic token",
     "Enterprise staged redaction": "Presidio",
-    "Proposed (policy-aware balanced)": "Proposed (learned detector)",
+    "Proposed (policy-aware balanced)": "Learned detector",
 }
 
 
@@ -237,9 +245,11 @@ MEASPROP_ORDER = [
     # Casper-style detector alone; dummy values appear only downstream.
     ("casper_style", "Casper-style detector (rules + NER)"),
     ("llm_sanitizer", "LLM sanitizer (8B)"),
-    ("heuristic_mediator", "Proposed (heuristic detector)"),
-    ("gliner_pii", "Proposed (transformer detector)"),
-    ("learned_lr", "Proposed (learned detector)"),
+    # The three detectors of the layer under test, named by what they are: the
+    # paper measures them and claims none of them as a contribution.
+    ("heuristic_mediator", "Heuristic detector (rules + context)"),
+    ("gliner_pii", "Transformer detector (GLiNER-PII)"),
+    ("learned_lr", "Learned detector (LR)"),
 ]
 
 
@@ -328,13 +338,13 @@ def build_measprop_table() -> str:
         + "\\toprule\n"
         + f"\\multicolumn{{5}}{{@{{}}l}}{{\\emph{{(a) AI4Privacy text, reference agent ({n_ai4} docs)}}}} \\\\\n"
         + "\\midrule\n"
-        + "Method & Mem.\\ SPE & PER & Ret. & Prec. \\\\\n"
+        + "Method & Mem.\\ SSR & PER & Ret. & Prec. \\\\\n"
         + "\\midrule\n"
         + "\n".join(ai4_lines)
         + "\n\\midrule\n"
         + f"\\multicolumn{{5}}{{@{{}}l}}{{\\emph{{(b) PrivacyLens agent trajectories ({n_pl} tasks)}}}} \\\\\n"
         + "\\midrule\n"
-        + "Method & Mem.\\ SPE & PER & Ret. & FRR \\\\\n"
+        + "Method & Mem.\\ SSR & PER & Ret. & FRR \\\\\n"
         + "\\midrule\n"
         + "\n".join(pl_lines)
         + "\n\\bottomrule\n"
@@ -453,12 +463,12 @@ def build_attrrecovery_table() -> str:
     still literally contained. Reporting one without the other invites reading
     inference into a number that is just text that was never removed.
     """
-    rows = _read_csv("privacylens_attribute_recovery_summary_qwen3_32b-q4km-hf.csv")
+    rows = _read_csv("privacylens_attribute_recovery_summary_qwen3_32b-q4km-hf_corrected.csv")
     chance = rows[0]["chance_percent"] if rows else "25.0"
     header = ("Condition & \\makecell{Recov-\\\\ered (\\%)} & \\makecell{Value\\\\present (\\%)} & "
               "\\makecell{Recovered\\\\when absent (\\%)} " + r"\\" + "\n")
     # The value-present column is the one the text reads first: the condition
-    # that leaves the value verbatim least often is set in bold.
+    # that leaves the value readable least often is set in bold.
     least = min(float(_ci_point(r["value_survives_release_percent"])) for r in rows)
 
     def _present(row: dict[str, str]) -> str:
@@ -509,7 +519,7 @@ def build_attrcap_table() -> str:
     grid = []
     for tag, label in _ATTACKER_CAPACITY:
         try:
-            rows = _read_csv(f"privacylens_attribute_recovery_summary_{tag}.csv")
+            rows = _read_csv(f"privacylens_attribute_recovery_summary_{tag}_corrected.csv")
         except FileNotFoundError:
             continue
         by_cond = {r["condition"]: r for r in rows}
@@ -659,7 +669,7 @@ OCR_METHOD_LABELS = {
     "OCR + Presidio form de-identification": "Presidio",
     "OCR + spaCy receipt de-identification": "spaCy NER masking",
     "OCR + spaCy form de-identification": "spaCy NER masking",
-    "Proposed multimodal mediation": "Proposed mediation",
+    "Proposed multimodal mediation": "Layout heuristic",
 }
 
 OCR_METHOD_ORDER = [
@@ -668,7 +678,7 @@ OCR_METHOD_ORDER = [
     "Generic de-identification",
     "Presidio",
     "spaCy NER masking",
-    "Proposed mediation",
+    "Layout heuristic",
 ]
 
 
@@ -898,7 +908,9 @@ def _downstream_protected_values(agent: str) -> dict[str, int]:
 def build_downstream_table() -> str:
     """Task-native privacy and utility on the reported agent, with CIs.
 
-    Cells are the pooled record's own "point [lo, hi]" strings. The RCE
+    Cells are the pooled record's own "point [lo, hi]" strings. The per-secret
+    leak rate stays in the pooled record but is not printed: it moves with the
+    per-task rate and the table must fit an upright page. The RCE
     column is defined only where a mapping exists; the lowest defined rate
     is set in bold, since that column is the restoration-timing result.
     """
@@ -922,7 +934,6 @@ def build_downstream_table() -> str:
                 [
                     _tex_escape(label),
                     row["leak_rate_percent"],
-                    row["secret_leak_percent"],
                     row["helpfulness_mean"],
                     row["exact_id_exposure_percent"],
                     rce,
@@ -931,9 +942,9 @@ def build_downstream_table() -> str:
             + " \\\\"
         )
     return (
-        "\\begin{tabular}{@{}lccccc@{}}\n"
+        "\\begin{tabular}{@{}lcccc@{}}\n"
         + "\\toprule\n"
-        + "Condition & Leak (\\%) & Secret (\\%) & Help.\\ (0--3) & ID exp.\\ (\\%) & RCE (\\%) \\\\\n"
+        + "Condition & Leak (\\%) & Help.\\ (0--3) & ID exp.\\ (\\%) & RCE (\\%) \\\\\n"
         + "\\midrule\n"
         + "\n".join(body_lines)
         + "\n\\bottomrule\n"
@@ -1111,6 +1122,61 @@ def build_inject_table() -> str:
     )
 
 
+_INJECT_ARM_PANELS = (
+    ("One request at a time, second host", "reported_attack", (
+        ("unprotected_second_host", "No protection"),
+        ("regex_unrestricted_second_host", "Regex, unrestricted"),
+        ("regex_scoped_second_host", "Regex, user-directed"),
+        ("transformer_unrestricted", "Transformer, unrestricted"),
+        ("transformer_scoped", "Transformer, user-directed"))),
+    ("Attack written for the boundary, second host", "oracle_attack", (
+        ("regex_unrestricted", "Regex, unrestricted"),
+        ("regex_scoped", "Regex, user-directed"),
+        ("transformer_unrestricted", "Transformer, unrestricted"),
+        ("transformer_scoped", "Transformer, user-directed"))),
+    ("Arms sharing a server, recorded host", "reported_attack", (
+        ("unprotected", "No protection"),
+        ("regex_unrestricted", "Regex, unrestricted"),
+        ("regex_scoped", "Regex, user-directed"))),
+)
+
+
+def build_injectarms_table() -> str:
+    """Every injection arm, by serving condition. An arm with no records yet has no row."""
+    rows = {(r["experiment"], r["arm"], r["scope"]): r
+            for r in _read_csv(f"agentdojo_injection_extensions_{_DOWNSTREAM_AGENT}.csv")}
+    lines = []
+    for title, experiment, arms in _INJECT_ARM_PANELS:
+        present = [(arm, label) for arm, label in arms if (experiment, arm, "pooled") in rows]
+        if not present:
+            continue
+        lines.append(f"\\multicolumn{{10}}{{@{{}}l}}{{\\emph{{{title}}}}} \\\\")
+        for arm, label in present:
+            pooled = rows[(experiment, arm, "pooled")]
+            delta = pooled["paired_asr_delta_pp"].strip()
+            lines.append(" & ".join([
+                label,
+                pooled["attack_success_percent"],
+                pooled["attack_success_strict_percent"].split(" [")[0],
+                pooled["utility_percent"].split(" [")[0],
+                rows[(experiment, arm, "banking")]["attack_success_percent"].split(" [")[0],
+                rows[(experiment, arm, "slack")]["attack_success_percent"].split(" [")[0],
+                _signed_ci(delta) if delta else "---",
+                pooled["pairs_raw_value_at_attacker"],
+                pooled["pairs_boundary_restored_for_attacker"],
+                pooled["pairs_refused_restoration"],
+            ]) + " \\\\")
+    return (
+        "\\begin{tabularx}{\\textwidth}{@{}>{\\raggedright\\arraybackslash}Xccccccccc@{}}\n"
+        + "\\toprule\n"
+        + "Arm & ASR & Strict & Util. & Bank & Slack & Paired $\\Delta$ ASR (pts) & Raw & Rest. & Ref. \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(lines)
+        + "\n\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Propagation with intervals on every column, judge capacity against the human
 # reference, and input canonicalization against surface-form evasion.
@@ -1164,7 +1230,7 @@ def build_propints_table() -> str:
         + "\\toprule\n"
         + f"\\multicolumn{{6}}{{@{{}}l}}{{\\emph{{(a) AI4Privacy text, reference agent ({n_ai4} docs)}}}} \\\\\n"
         + "\\midrule\n"
-        + "& \\multicolumn{3}{c}{SPE} & & \\\\\n"
+        + "& \\multicolumn{3}{c}{SSR} & & \\\\\n"
         + "\\cmidrule(lr){2-4}\n"
         + "Method & Retrieval & Memory & Tool & PER & Ret. \\\\\n"
         + "\\midrule\n"
@@ -1172,7 +1238,7 @@ def build_propints_table() -> str:
         + "\n\\midrule\n"
         + f"\\multicolumn{{6}}{{@{{}}l}}{{\\emph{{(b) PrivacyLens agent trajectories ({n_pl} tasks)}}}} \\\\\n"
         + "\\midrule\n"
-        + "Method & Memory SPE & PER & Ret. & FRR & \\\\\n"
+        + "Method & Memory SSR & PER & Ret. & FRR & \\\\\n"
         + "\\midrule\n"
         + "\n".join(pl_lines)
         + "\n\\bottomrule\n"
@@ -1319,31 +1385,248 @@ def build_canon_table() -> str:
     )
 
 
-def build_attrcompact_table() -> str:
-    """Main-text digest of the attribute-recovery result.
-
-    Value presence comes from the reported 32B run (it is a property of the
-    release, so every attacker shares it); the last three columns are recovery
-    on the questions whose value was removed, for each attacker capacity.
-    """
-    wanted = ("no_protection", "placeholder:presidio", "casper_style", "placeholder:learned_lr")
-    labels = {"no_protection": "No protection", "placeholder:presidio": "Presidio placeholder",
-              "casper_style": "Casper-style", "placeholder:learned_lr": "Learned placeholder"}
-    reported = {r["condition"]: r for r in _read_csv("privacylens_attribute_recovery_summary_qwen3_32b-q4km-hf.csv")}
-    by_attacker = [{r["condition"]: r for r in _read_csv(f"privacylens_attribute_recovery_summary_{tag}.csv")}
-                   for tag, _ in _ATTACKER_CAPACITY]
-    body = "\n".join(
-        f"{labels[c]} & {_ci_point(reported[c]['value_survives_release_percent'])} & "
-        + " & ".join(_ci_point(a[c]["recovery_when_value_absent_percent"]) for a in by_attacker)
-        + " \\\\"
-        for c in wanted
-    )
+def build_readers_table() -> str:
+    """Inferability under each reader, beside both automated measures and retention."""
+    suffix = "semantic_inferability_human_by_method_extend40_vgpu3090_pooled_annotator{}.csv"
+    first = {r["method_key"]: r for r in _read_csv(suffix.format(1))}
+    second = {r["method_key"]: r for r in _read_csv(suffix.format(3))}
+    retention = {r["method_key"]: r for r in _read_csv("propagation_suite_privacylens_results_pooled.csv")}
+    labels = (("no_protection", "No protection"), ("regex_only", "Regex-only"), ("presidio", "Presidio"),
+              ("casper_style", "Casper-style"), ("learned_lr", "Learned"), ("heuristic_mediator", "Heuristic"))
+    body = []
+    for key, label in labels:
+        body.append(
+            f"{label} & {first[key]['human_inferable']} & {second[key]['human_inferable']} & "
+            f"{_ci_point(first[key]['judge_inferable'])} / {_ci_point(first[key]['lexical_retained'])} & "
+            f"{float(_ci_point(retention[key]['text_retention'])):.2f} \\\\")
     return (
         "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccc}\n"
         + "\\toprule\n"
-        + "& & \\multicolumn{3}{c}{Recovered when absent (\\%)} \\\\\n"
-        + "\\cmidrule(lr){3-5}\n"
-        + "Condition & Present (\\%) & 8B & 32B & 70B \\\\\n"
+        + "Method & Reader 1 (\\%) & Reader 2 (\\%) & Judge / lexical (\\%) & Ret. \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body) + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+def build_matchedret_table() -> str:
+    """PER at matched text retention, so over-redaction cannot pass for a better detector."""
+    rows = _read_csv("ai4privacy_operating_points_matched.csv")
+    order = ("learned_lr", "gliner_pii", "presidio")
+    levels: list[str] = []
+    for row in rows:
+        if row["retention_at_least"] not in levels:
+            levels.append(row["retention_at_least"])
+    cells = {(r["retention_at_least"], r["method_key"]): r for r in rows}
+    # The tagger given the same training data as the learned detector; first training seed.
+    parity = {r["retention_at_least"]: r for r in _read_csv("ai4privacy_parity_tagger_matched.csv") if r["seed"] == "17"}
+    body = []
+    for level in levels:
+        parts = [f"$\\geq {float(level):.2f}$"]
+        for method in order:
+            row = cells[(level, method)]
+            parts.append(f"{row['per_percent']} ({float(row['retention']):.2f})")
+            if method == "learned_lr":
+                match = parity[level]
+                parts.append(f"{match['per_percent']} ({float(match['retention']):.2f})")
+        body.append(" & ".join(parts) + " \\\\")
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccc}\n"
+        + "\\toprule\n"
+        + "Retention & Learned & DistilBERT & Transformer & Presidio \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body) + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+def build_thirdparty_table() -> str:
+    """PrivacyLens exposure under the identifier gold and under third-party person names."""
+    rows = {r["method_key"]: r for r in _read_csv("privacylens_third_party_gold_summary.csv")}
+    order = (("no_protection", "No protection"), ("regex_only", "Regex-only"),
+             ("capitalization_heuristic", "Capitalization heuristic"), ("spacy_ner", "spaCy NER masking"),
+             ("presidio", "Presidio"), ("casper_style", "Casper-style detector (rules + NER)"),
+             ("llm_sanitizer:qwen3:8b-q4km-hf", "LLM sanitizer (8B)"),
+             ("heuristic_mediator", "Heuristic detector (rules + context)"),
+             ("gliner_pii", "Transformer detector (GLiNER-PII)"), ("learned_lr", "Learned detector (LR)"),
+             ("parity_tagger", "DistilBERT tagger (trained on AI4Privacy)"))
+    body = []
+    for key, label in order:
+        row = rows[key]
+        body.append(f"{label} & {row['per_identifier_percent']} & {row['per_third_party_name_percent']} & "
+                    f"{row['per_both_percent']} & {_ci_point(row['retention'])} \\\\")
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccc}\n"
+        + "\\toprule\n"
+        + "Method & Identifier gold & Third-party names & Both & Ret. \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body) + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+_CONTROL_ATTACKERS = (("qwen3_8b-q4km-hf", "8B"), ("qwen3_32b-q4km-hf", "32B"))
+_CONTROL_LABELS = (("no_document", "No document"), ("masked_document", "Masked document"),
+                   ("no_protection", "No protection"), ("placeholder:presidio", "Presidio"),
+                   ("casper_style", "Casper-style"), ("placeholder:learned_lr", "Learned"))
+
+
+def _signed_cell(cell: str) -> str:
+    """Set each signed number of a paired difference in math mode; an empty cell is a dash."""
+    if not cell:
+        return "---"
+    return re.sub(r"[+-]\d+\.\d+", lambda m: f"${m.group(0)}$", cell)
+
+
+def _control_rows() -> dict[tuple[str, str, str], dict[str, str]]:
+    return {(r["attacker"], r["condition"], r["value_kind"]): r
+            for r in _read_csv("privacylens_attribute_recovery_controls.csv")}
+
+
+def build_controls_table() -> str:
+    """Recovery on the identical questions, with and without anything about the case in the release."""
+    rows = _control_rows()
+    body = []
+    for attacker, short in _CONTROL_ATTACKERS:
+        if body:
+            body.append("\\midrule")
+        for key, label in _CONTROL_LABELS:
+            row = rows[(attacker, key, "all")]
+            body.append(" & ".join([short, label, _ci_point(row["recovery_percent"]),
+                                    _signed_cell(row["minus_no_document_points"]),
+                                    _signed_cell(row["minus_no_document_points_value_absent"]),
+                                    _signed_cell(row["minus_masked_document_points"]),
+                                    _signed_cell(row["minus_masked_document_points_value_absent"])]) + " \\\\")
+    return (
+        "\\begin{tabularx}{\\columnwidth}{l>{\\raggedright\\arraybackslash}Xccccc}\n"
+        + "\\toprule\n"
+        + "& & & \\multicolumn{2}{c}{Above no document (points)} & \\multicolumn{2}{c}{Above masked document (points)} \\\\\n"
+        + "\\cmidrule(lr){4-5}\\cmidrule(lr){6-7}\n"
+        + "Att. & Release & Rec.\\ (\\%) & All & Value absent & All & Value absent \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body) + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+def build_controlkind_table() -> str:
+    """The same comparison by value kind, for the attacker the main text reports."""
+    rows = _control_rows()
+    attacker = "qwen3_32b-q4km-hf"
+    body = []
+    for kind, label in (("identifier", "Identifier"), ("number", "Number"), ("entity", "Named entity"), ("all", "All")):
+        learned = rows[(attacker, "placeholder:learned_lr", kind)]
+        body.append(" & ".join([label, learned["questions"],
+                                rows[(attacker, "no_document", kind)]["recovery_percent"],
+                                _ci_point(rows[(attacker, "masked_document", kind)]["recovery_percent"]),
+                                _ci_point(rows[(attacker, "no_protection", kind)]["recovery_percent"]),
+                                _ci_point(learned["recovery_percent"]),
+                                _signed_cell(learned["minus_no_document_points_value_absent"])]) + " \\\\")
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccccc}\n"
+        + "\\toprule\n"
+        + "Value kind & $n$ & No document & Masked & Unprot. & Learned & Learned above no doc., absent \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body) + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+def build_judgeprompts_table() -> str:
+    """Judge agreement with the two readers under three prompts, on one host and the 102 items."""
+    prompts = (("", "Reported"), ("_prompt_specific_bar", "Specific bar"), ("_prompt_plain_reader", "Plain reader"))
+    body = []
+    for safe, short in (("qwen3_8b-q4km-hf", "8B"), ("gemma2_27b", "27B"), ("qwen3_32b-q4km-hf", "32B")):
+        if body:
+            body.append("\\midrule")
+        for suffix, label in prompts:
+            by_ref = {r["reference"]: r
+                      for r in _read_csv(f"semantic_inferability_capacity_agreement_{safe}_vgpu3090{suffix}_4c.csv")}
+            a1, a3 = by_ref["annotator1"], by_ref["annotator3"]
+            body.append(" & ".join([short, label, a1["cohens_kappa"], a3["cohens_kappa"],
+                                    f"{float(a1['judge_yes_rate']) * 100:.1f}"]) + " \\\\")
+    return (
+        "\\begin{tabularx}{\\columnwidth}{l>{\\raggedright\\arraybackslash}Xccc}\n"
+        + "\\toprule\n"
+        + "Judge & Prompt & $\\kappa$ vs.\\ Ann.~1 & $\\kappa$ vs.\\ Ann.~3 & Calls inferable (\\%) \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body) + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+def build_hostanchor_table() -> str:
+    """Recorded prompts rerun on the second host, against the recorded answers."""
+    sources = [("8B", "host_anchor_qwen3_8b-q4km-hf_4c.csv"), ("32B", "host_anchor_qwen3_32b-q4km-hf_4c.csv"),
+               ("27B", "host_anchor_gemma2_27b_4c.csv"), ("32B", "host_anchor_live_4c.csv"),
+               ("32B", "host_anchor_injection_4c.csv")]
+    tasks = (("attribute recovery", "Value recovery"), ("inferability judge", "Judge"),
+             ("live stack, task utility", "Live stack, task success"),
+             ("live stack, any non-authorized", "Live stack, any value exposed"),
+             ("injection, attack success", "Injection, attack success"), ("injection, task utility", "Injection, task success"))
+    body = []
+    for short, name in sources:
+        if not os.path.exists(os.path.join(EXPERIMENTS_DIR, name)):
+            continue
+        for row in _read_csv(name):
+            task = next(label for prefix, label in tasks if row["instrument"].startswith(prefix))
+            body.append(" & ".join([short, task, row["items"], row["same_answer_percent"],
+                                    row["rerun_positive_percent"], row["recorded_positive_percent"]]) + " \\\\")
+    return (
+        "\\begin{tabularx}{\\columnwidth}{l>{\\raggedright\\arraybackslash}Xcccc}\n"
+        + "\\toprule\n"
+        + "Model & Task & Items & Same (\\%) & Rerun (\\%) & Recorded (\\%) \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(body) + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
+def build_attrcompact_table() -> str:
+    """Main-text digest of the forced-choice recovery result.
+
+    Overall recovery, the margin over the no-document control, and value presence
+    come from the 32B attacker (presence is a property of the release, so every
+    attacker shares it); the last three columns are recovery on the questions whose
+    value was removed, for each attacker capacity. A control's release holds no value,
+    so its overall recovery is also its recovery when absent. The 70B ran no controls.
+    """
+    wanted = ("no_protection", "placeholder:presidio", "casper_style", "placeholder:learned_lr")
+    labels = {"no_protection": "No protection", "placeholder:presidio": "Typed placeholder (Presidio)",
+              "casper_style": "Casper-style", "placeholder:learned_lr": "Typed placeholder (learned)"}
+    reported = {r["condition"]: r for r in _read_csv("privacylens_attribute_recovery_summary_qwen3_32b-q4km-hf_corrected.csv")}
+    by_attacker = [{r["condition"]: r for r in _read_csv(f"privacylens_attribute_recovery_summary_{tag}_corrected.csv")}
+                   for tag, _ in _ATTACKER_CAPACITY]
+    controls = _control_rows()
+    attacker32 = "qwen3_32b-q4km-hf"
+    lines = []
+    for key, label in (("no_document", "Control: no document"), ("masked_document", "Control: masked document")):
+        margin = controls[(attacker32, key, "all")]["minus_no_document_points"]
+        level32 = _ci_point(controls[(attacker32, key, "all")]["recovery_percent"])
+        level8 = _ci_point(controls[("qwen3_8b-q4km-hf", key, "all")]["recovery_percent"])
+        lines.append(f"{label} & {level32} & {_signed_cell(margin.split(' ')[0]) if margin else '---'} & --- & "
+                     f"{level8} & {level32} & --- \\\\")
+    lines.append("\\midrule")
+    for c in wanted:
+        margin = controls[(attacker32, c, "all")]["minus_no_document_points"].split(" ")[0]
+        lines.append(f"{labels[c]} & {_ci_point(reported[c]['recovery_percent'])} & {_signed_cell(margin)} & "
+                     f"{_ci_point(reported[c]['value_survives_release_percent'])} & "
+                     + " & ".join(_ci_point(a[c]["recovery_when_value_absent_percent"]) for a in by_attacker)
+                     + " \\\\")
+    body = "\n".join(lines)
+    return (
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccccc}\n"
+        + "\\toprule\n"
+        + "& \\multicolumn{3}{c}{All questions (32B)} & \\multicolumn{3}{c}{Recovered when absent (\\%)} \\\\\n"
+        + "\\cmidrule(lr){2-4}\\cmidrule(lr){5-7}\n"
+        + "Condition & Rec.\\ (\\%) & Margin (pts) & Present (\\%) & 8B & 32B & 70B \\\\\n"
         + "\\midrule\n"
         + body + "\n"
         + "\\bottomrule\n"
@@ -1412,7 +1695,7 @@ def _llm_rewrite_rows() -> str:
 
 # The live-stack placement experiment: one pooled summary per detector arm.
 _LIVE_STACK_MODEL = "qwen3_32b-q4km-hf"
-_LIVE_STACK_ARMS = (("learned_lr", "Learned detector"), ("presidio", "Presidio"))
+_LIVE_STACK_ARMS = (("learned_lr", "Learned detector"), ("presidio", "Presidio"), ("gliner_pii", "Zero-shot transformer"))
 _LIVE_STACK_PLACEMENTS = (
     ("no_mediation", "No mediation"),
     ("ingress_only", "Ingress only"),
@@ -1435,43 +1718,62 @@ def _live_stack_summary(detector: str) -> dict[tuple[str, str], dict[str, str]]:
 
 
 def build_livestack_table() -> str:
-    """Placement in a live agent stack, one panel per detector arm.
+    """Placement in a live agent stack: one row per placement, the detector arms side by side.
 
-    Utility, the share of ingress and of reference mid-trajectory values the
-    model endpoint saw, and the share of all gold values reaching any
-    non-authorized boundary (index, memory, tool arguments as written, log,
-    final answer). Only the last column carries its interval, for width. The
-    arms are stacked rather than set side by side so that the table fits a
-    single-column journal page.
+    Utility, the share of ingress and of reference mid-trajectory values the model
+    endpoint saw, and the share of all gold values reaching any non-authorized boundary
+    (index, memory, tool arguments as written, log, final answer). Intervals are in the
+    supplement's table, so that this one stays readable with three arms.
     """
-    arms = [(_live_stack_summary(k), label) for k, label in _LIVE_STACK_ARMS]
+    arms = [_live_stack_summary(k) for k, _ in _LIVE_STACK_ARMS]
 
-    def _cell(summary: dict, cond: str, metric: str, with_ci: bool) -> str:
+    def _cell(summary: dict, cond: str, metric: str) -> str:
+        r = summary.get((cond, metric))
+        return "---" if not r or r["point"] == "" else f"{float(r['point']):.1f}"
+
+    body = "\n".join(
+        label + " & " + " & ".join(_cell(arm, cond, m) for m, _ in _LIVE_STACK_COLUMNS for arm in arms) + " \\\\"
+        for cond, label in _LIVE_STACK_PLACEMENTS
+    )
+    return (
+        "\\begin{tabular}{@{}lcccccccccccc@{}}\n"
+        + "\\toprule\n"
+        + "& \\multicolumn{3}{c}{Util.} & \\multicolumn{3}{c}{Ctx in} & \\multicolumn{3}{c}{Ctx mid} & \\multicolumn{3}{c}{Non-auth.} \\\\\n"
+        + "\\cmidrule(lr){2-4}\\cmidrule(lr){5-7}\\cmidrule(lr){8-10}\\cmidrule(lr){11-13}\n"
+        + "Placement" + " & L & P & T" * 4 + " \\\\\n"
+        + "\\midrule\n"
+        + body + "\n"
+        + "\\bottomrule\n"
+        + "\\end{tabular}"
+    )
+
+
+def build_livestackints_table() -> str:
+    """The live-stack table with its intervals, one panel per detector arm."""
+    columns = (("utility_percent", "Util."), ("model_context.in.value_percent", "Ctx in"),
+               ("model_context.mid.value_percent", "Ctx mid"), ("nonauthorized_exposure_percent", "Non-auth."))
+
+    def _cell(summary: dict, cond: str, metric: str) -> str:
         r = summary.get((cond, metric))
         if not r or r["point"] == "":
             return "---"
-        point = f"{float(r['point']):.1f}"
-        return f"{point} [{float(r['lo']):.1f}, {float(r['hi']):.1f}]" if with_ci else point
+        return f"{float(r['point']):.1f} [{float(r['lo']):.1f}, {float(r['hi']):.1f}]"
 
     panels = []
-    for i, (s, arm_label) in enumerate(arms):
-        body = "\n".join(
-            label + " & " + " & ".join(_cell(s, cond, m, ci) for m, ci in _LIVE_STACK_COLUMNS) + " \\\\"
-            for cond, label in _LIVE_STACK_PLACEMENTS
-        )
-        panels.append(
-            f"\\multicolumn{{5}}{{@{{}}l}}{{\\emph{{({chr(ord('a') + i)}) {arm_label}}}}} \\\\\n"
-            + "\\midrule\n"
-            + "Placement & Util. & Ctx in & Ctx mid & Non-auth. \\\\\n"
-            + "\\midrule\n"
-            + body + "\n"
-        )
+    for i, (key, arm_label) in enumerate(_LIVE_STACK_ARMS):
+        summary = _live_stack_summary(key)
+        body = "\n".join(label + " & " + " & ".join(_cell(summary, cond, m) for m, _ in columns) + " \\\\"
+                         for cond, label in _LIVE_STACK_PLACEMENTS)
+        panels.append(f"\\multicolumn{{5}}{{@{{}}l}}{{\\emph{{({chr(ord('a') + i)}) {arm_label}}}}} \\\\\n"
+                      + "\\midrule\n" + body + "\n")
     return (
-        "\\begin{tabular}{@{}lcccc@{}}\n"
+        "\\begin{tabularx}{\\columnwidth}{@{}>{\\raggedright\\arraybackslash}Xcccc@{}}\n"
         + "\\toprule\n"
+        + "Placement & " + " & ".join(name for _, name in columns) + " \\\\\n"
+        + "\\midrule\n"
         + "\\midrule\n".join(panels)
         + "\\bottomrule\n"
-        + "\\end{tabular}"
+        + "\\end{tabularx}"
     )
 
 
@@ -1499,6 +1801,7 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:blindutilitytemplate": build_blind_utility_template_table,
     "tab:downstream": build_downstream_table,
     "tab:inject": build_inject_table,
+    "tab:injectarms": build_injectarms_table,
     "tab:portability": build_portability_table,
     "tab:pljudge": build_pljudge_table,
     "tab:contextattack": build_contextattack_table,
@@ -1506,6 +1809,14 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:judgecap": build_judgecap_table,
     "tab:canon": build_canon_table,
     "tab:attrcompact": build_attrcompact_table,
+    "tab:matchedret": build_matchedret_table,
+    "tab:thirdparty": build_thirdparty_table,
+    "tab:livestackints": build_livestackints_table,
+    "tab:controls": build_controls_table,
+    "tab:controlkind": build_controlkind_table,
+    "tab:judgeprompts": build_judgeprompts_table,
+    "tab:hostanchor": build_hostanchor_table,
+    "tab:readers": build_readers_table,
     "tab:evasion": build_evasion_table,
     "tab:livestack": build_livestack_table,
 }

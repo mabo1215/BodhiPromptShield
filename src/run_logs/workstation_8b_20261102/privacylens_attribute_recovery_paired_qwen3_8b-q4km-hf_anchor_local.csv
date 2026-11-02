@@ -1,0 +1,2 @@
+comparison,cases,questions_paired,difference_percentage_points,excludes_zero
+placeholder:learned_lr: recovery - value present,125,150,"+56.0 [+48.1, +64.5]",yes

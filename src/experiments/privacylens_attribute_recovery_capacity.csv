@@ -1,9 +1,9 @@
 comparison,condition,questions_paired,difference_percentage_points,excludes_zero
-Qwen3 32B - Qwen3 8B,no_protection,103,"+1.0 [-6.9, +9.0]",no
-Qwen3 32B - Qwen3 8B,placeholder:presidio,662,"+1.5 [-2.1, +5.5]",no
-Qwen3 32B - Qwen3 8B,casper_style,687,"+1.0 [-3.1, +4.8]",no
-Qwen3 32B - Qwen3 8B,placeholder:learned_lr,1048,"+2.3 [-1.2, +5.5]",no
-Llama 3.3 70B - Qwen3 32B,no_protection,102,"-4.9 [-11.2, +0.0]",no
-Llama 3.3 70B - Qwen3 32B,placeholder:presidio,656,"-2.9 [-6.7, +0.6]",no
-Llama 3.3 70B - Qwen3 32B,casper_style,672,"-11.5 [-15.8, -7.5]",yes
-Llama 3.3 70B - Qwen3 32B,placeholder:learned_lr,1047,"-0.3 [-3.1, +2.5]",no
+Qwen3 32B - Qwen3 8B,no_protection,111,"-0.9 [-8.5, +6.7]",no
+Qwen3 32B - Qwen3 8B,placeholder:presidio,688,"+0.9 [-2.8, +4.6]",no
+Qwen3 32B - Qwen3 8B,casper_style,734,"+0.4 [-3.4, +4.0]",no
+Qwen3 32B - Qwen3 8B,placeholder:learned_lr,1208,"+2.7 [-0.5, +5.5]",no
+Llama 3.3 70B - Qwen3 32B,no_protection,110,"-4.5 [-10.2, +0.0]",no
+Llama 3.3 70B - Qwen3 32B,placeholder:presidio,683,"-1.8 [-5.1, +1.8]",no
+Llama 3.3 70B - Qwen3 32B,casper_style,716,"-8.8 [-12.7, -4.8]",yes
+Llama 3.3 70B - Qwen3 32B,placeholder:learned_lr,1207,"+0.0 [-2.5, +2.7]",no

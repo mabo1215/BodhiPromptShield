@@ -40,7 +40,7 @@ def _rate(rows: list[dict[str, str]]) -> float | None:
 def main() -> int:
     out_rows = []
     for tag in ATTACKERS:
-        path = os.path.join(EXPERIMENTS_DIR, f"privacylens_attribute_recovery_rows_{tag}.csv")
+        path = os.path.join(EXPERIMENTS_DIR, f"privacylens_attribute_recovery_rows_{tag}_corrected.csv")
         with open(path, "r", encoding="utf-8", newline="") as f:
             rows = list(csv.DictReader(f))
         multi = 0

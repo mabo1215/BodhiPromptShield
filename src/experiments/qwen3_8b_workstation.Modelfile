@@ -1,0 +1,20 @@
+# The workstation copy of the 8B model, imported from the published weights
+# (Qwen/Qwen3-8B-GGUF, Qwen3-8B-Q4_K_M.gguf, sha256 d98cdcbd03e17ce47681435b5150e34c1417f50b5c0019dd560e4882c5745785).
+# The template is the file's own chat template with thinking disabled. Without a TEMPLATE
+# line Ollama falls back to the bare prompt, and every reply is a text continuation.
+FROM ~/ollama-gguf/Qwen3-8B-Q4_K_M.gguf
+PARAMETER stop <|im_start|>
+PARAMETER stop <|im_end|>
+TEMPLATE """{{- range $i, $_ := .Messages }}{{- $last := eq (len (slice $.Messages $i)) 1 -}}
+{{- if eq .Role "system" }}<|im_start|>system
+{{ .Content }}<|im_end|>
+{{ else if eq .Role "user" }}<|im_start|>user
+{{ .Content }}<|im_end|>
+{{ else if eq .Role "assistant" }}<|im_start|>assistant
+{{ .Content }}{{ if not $last }}<|im_end|>
+{{ end }}{{ end }}{{ if and $last (ne .Role "assistant") }}<|im_start|>assistant
+{{ if and $.IsThinkSet (not $.Think) }}<think>
+
+</think>
+
+{{ end }}{{ end }}{{- end }}"""

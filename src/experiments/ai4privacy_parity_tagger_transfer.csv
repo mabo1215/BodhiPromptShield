@@ -1,0 +1,5 @@
+tagger_trained_on_ai4privacy,clinical_documents,per_percent,retention,span_precision
+logistic-regression tagger,100,"6.1 [5.9, 6.5]","0.847 [0.843, 0.851]","0.37 [0.36, 0.37]"
+parity tagger seed 17,100,"6.2 [5.9, 6.5]","0.899 [0.892, 0.907]","0.43 [0.42, 0.44]"
+parity tagger seed 18,100,"8.5 [7.9, 9.0]","0.890 [0.882, 0.897]","0.42 [0.41, 0.43]"
+parity tagger seed 19,100,"6.0 [5.9, 6.2]","0.879 [0.872, 0.887]","0.40 [0.40, 0.41]"

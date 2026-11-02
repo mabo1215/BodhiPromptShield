@@ -1,0 +1,74 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[seed 17] 3000 training documents, 3020 windows
+Loading weights:   0%|          | 0/100 [00:00<?, ?it/s]Loading weights: 100%|██████████| 100/100 [00:00<00:00, 1273.71it/s]
+[transformers] [1mDistilBertForTokenClassification LOAD REPORT[0m from: distilbert-base-cased
+Key                     | Status     | 
+------------------------+------------+-
+vocab_transform.bias    | UNEXPECTED | 
+vocab_transform.weight  | UNEXPECTED | 
+vocab_layer_norm.bias   | UNEXPECTED | 
+vocab_projector.bias    | UNEXPECTED | 
+vocab_layer_norm.weight | UNEXPECTED | 
+classifier.weight       | MISSING    | 
+classifier.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[seed 17] epoch 1/4: loss 0.1795 in 24s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.30s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.30s/it]
+[seed 17] epoch 2/4: loss 0.0930 in 23s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.26s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.26s/it]
+[seed 17] epoch 3/4: loss 0.0621 in 23s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.33s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.33s/it]
+[seed 17] epoch 4/4: loss 0.0414 in 23s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.95s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.96s/it]
+[seed 18] 3000 training documents, 3020 windows
+Loading weights:   0%|          | 0/100 [00:00<?, ?it/s]Loading weights: 100%|██████████| 100/100 [00:00<00:00, 1409.89it/s]
+[transformers] [1mDistilBertForTokenClassification LOAD REPORT[0m from: distilbert-base-cased
+Key                     | Status     | 
+------------------------+------------+-
+vocab_transform.bias    | UNEXPECTED | 
+vocab_transform.weight  | UNEXPECTED | 
+vocab_layer_norm.bias   | UNEXPECTED | 
+vocab_projector.bias    | UNEXPECTED | 
+vocab_layer_norm.weight | UNEXPECTED | 
+classifier.weight       | MISSING    | 
+classifier.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[seed 18] epoch 1/4: loss 0.1907 in 22s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.92s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.92s/it]
+[seed 18] epoch 2/4: loss 0.0983 in 22s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.44s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.44s/it]
+[seed 18] epoch 3/4: loss 0.0664 in 23s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.42s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.42s/it]
+[seed 18] epoch 4/4: loss 0.0458 in 23s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.75s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.75s/it]
+[seed 19] 3000 training documents, 3020 windows
+Loading weights:   0%|          | 0/100 [00:00<?, ?it/s]Loading weights: 100%|██████████| 100/100 [00:00<00:00, 1295.27it/s]
+[transformers] [1mDistilBertForTokenClassification LOAD REPORT[0m from: distilbert-base-cased
+Key                     | Status     | 
+------------------------+------------+-
+vocab_transform.bias    | UNEXPECTED | 
+vocab_transform.weight  | UNEXPECTED | 
+vocab_layer_norm.bias   | UNEXPECTED | 
+vocab_projector.bias    | UNEXPECTED | 
+vocab_layer_norm.weight | UNEXPECTED | 
+classifier.weight       | MISSING    | 
+classifier.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[seed 19] epoch 1/4: loss 0.1832 in 25s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.48s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.48s/it]
+[seed 19] epoch 2/4: loss 0.0961 in 23s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.42s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.42s/it]
+[seed 19] epoch 3/4: loss 0.0648 in 23s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:03<00:00,  3.29s/it]Writing model shards: 100%|██████████| 1/1 [00:03<00:00,  3.30s/it]
+[seed 19] epoch 4/4: loss 0.0427 in 23s
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.55s/it]Writing model shards: 100%|██████████| 1/1 [00:02<00:00,  2.55s/it]
+[parity] wrote ai4privacy_parity_tagger_summary.csv and ai4privacy_parity_tagger_matched.csv

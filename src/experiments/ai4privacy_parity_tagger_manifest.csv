@@ -1,0 +1,19 @@
+field,value
+model,distilbert-base-cased
+task,"binary per-word sensitive/not, maximum subword probability"
+training_documents,3000
+evaluation_documents,300
+epochs,4
+learning_rate,3e-05
+batch_size,16
+max_length,256
+stride,64
+seeds,17;18;19
+device,cuda
+gpu,NVIDIA GeForce RTX 3070
+torch,2.11.0+cu130
+transformers,5.6.2
+python,3.12.3
+platform,Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39
+host,bobsteam1215
+timestamp,2026-11-02T15:19:19+1300
