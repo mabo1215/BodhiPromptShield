@@ -32,6 +32,7 @@ This script only updates tables that are directly backed by repository CSVs:
                             (RCE shown only where the per-case shards record a mapping)
   - tab:inject           <- agentdojo_injection_extensions_qwen3_32b-q4km-hf.csv
   - tab:injectarms       <- agentdojo_injection_extensions_qwen3_32b-q4km-hf.csv
+  - tab:oraclesuites     <- agentdojo_injection_extensions_qwen3_32b-q4km-hf.csv
   - tab:portability      <- privacylens_downstream_summary_{qwen3_32b,llama3.3_70b}-q4km-hf_pooled.csv
                             + downstream_paired_tests_llama3.3_70b-q4km-hf.csv
   - tab:pljudge          <- privacylens_judge_agreement.csv
@@ -1171,6 +1172,38 @@ def build_injectarms_table() -> str:
     )
 
 
+def build_oraclesuites_table() -> str:
+    """The attack on the boundary by detector and suite: what each policy did and whom it refused."""
+    rows = {(r["experiment"], r["arm"], r["scope"]): r
+            for r in _read_csv(f"agentdojo_injection_extensions_{_DOWNSTREAM_AGENT}.csv")}
+    lines = []
+    for detector, label, suites in (("regex", "Regex", ("banking", "slack", "workspace")),
+                                    ("transformer", "Transformer", ("banking", "slack"))):
+        for suite in suites:
+            unrestricted = rows[("oracle_attack", f"{detector}_unrestricted", suite)]
+            scoped = rows[("oracle_attack", f"{detector}_scoped", suite)]
+            change = lambda field: (f"{unrestricted[field].split(' [')[0]} $\\rightarrow$ {scoped[field].split(' [')[0]}")
+            lines.append(" & ".join([
+                label,
+                suite.capitalize(),
+                scoped["pairs"],
+                change("attack_success_percent"),
+                change("utility_percent"),
+                change("pairs_boundary_restored_for_attacker"),
+                f"{scoped['pairs_refused_at_attacker']} ({scoped['calls_refused_at_attacker']})",
+                f"{scoped['pairs_refused_other_call']} ({scoped['calls_refused_other_call']})",
+            ]) + " \\\\")
+    return (
+        "\\begin{tabularx}{\\textwidth}{@{}>{\\raggedright\\arraybackslash}Xlcccccc@{}}\n"
+        + "\\toprule\n"
+        + "Detector & Suite & Pairs & ASR (\\%) & Util.\\ (\\%) & Rest. & Ref., attacker & Ref., other \\\\\n"
+        + "\\midrule\n"
+        + "\n".join(lines)
+        + "\n\\bottomrule\n"
+        + "\\end{tabularx}"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Propagation with intervals on every column, judge capacity against the human
 # reference, and input canonicalization against surface-form evasion.
@@ -1796,6 +1829,7 @@ TABLE_BUILDERS: dict[str, Callable[[], str]] = {
     "tab:downstream": build_downstream_table,
     "tab:inject": build_inject_table,
     "tab:injectarms": build_injectarms_table,
+    "tab:oraclesuites": build_oraclesuites_table,
     "tab:portability": build_portability_table,
     "tab:pljudge": build_pljudge_table,
     "tab:contextattack": build_contextattack_table,

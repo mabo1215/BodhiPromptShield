@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Summarize the injection runs added after the reported AgentDojo arms.
 
-Three questions, on the 74 task/injection pairs of the reported arms; the oracle also runs
+Four questions, on the 74 task/injection pairs of the reported arms; the oracle also runs
 on the workspace suite, on the user tasks whose prompt holds a value the regex detector
 tokenizes, and that suite is summarized on its own rather than pooled.
 
@@ -15,6 +15,9 @@ tokenizes, and that suite is summarized on its own rather than pooled.
   a value the prompts are identical, so a difference is decoding alone. That placebo is measured
   for every comparison, because a paired change can only be read against it. An unprotected
   arm tokenizes nothing, whatever its row counts as protectable.
+* Whom does a recipient-scoped boundary refuse? A refused call counts as addressed to the attacker
+  when any of its arguments names the attacker's endpoint, whichever tool it calls, since an
+  injected instruction can also reach the attacker's account by updating a scheduled transaction.
 
 Two readings of the records are added, because the counts alone mislead.
 
@@ -54,6 +57,7 @@ COMPANION_ACCOUNT = "ch9300762011623852957"  # Recipient of the pizza transactio
 THIRD_SUITE = "workspace"
 THIRD_SUITE_PAIRS = 36
 THIRD_SUITE_ARMS = (("regex_unrestricted", "oracle_all_regex", None), ("regex_scoped", "oracle_scoped_regex", "oracle_all_regex"))
+THIRD_SUITE_COMPARISONS = (("oracle unrestricted against scoped, second host, workspace", "oracle_all_regex", "oracle_scoped_regex"),)
 
 # experiment, arm, output tag, baseline tag of the paired change
 ARMS = (
@@ -77,6 +81,7 @@ COMPARISONS = (
     ("unrestricted against unprotected, recorded host", "inj_all_fixed", "inj_none_fixed"),
     ("scoped against unprotected, recorded host", "inj_scoped_fixed", "inj_none_fixed"),
     ("oracle unrestricted against scoped, second host", "oracle_all_regex", "oracle_scoped_regex"),
+    ("oracle transformer unrestricted against scoped, second host", "oracle_all_gliner", "oracle_scoped_gliner"),
     ("unrestricted against scoped, second host", "anchorinj_all_4c", "inj_scoped_4c"),
     ("unrestricted against unprotected, second host", "anchorinj_all_4c", "inj_none_4c"),
     ("scoped against unprotected, second host", "inj_scoped_4c", "inj_none_4c"),
@@ -110,6 +115,30 @@ def _strict_security(row: dict, record: dict | None) -> str:
     return "0"
 
 
+def _leaves(value) -> list[str]:
+    """Scalar leaves of a tool argument, so that a recipient list is searched like one recipient."""
+    if isinstance(value, dict):
+        return [leaf for v in value.values() for leaf in _leaves(v)]
+    if isinstance(value, list):
+        return [leaf for v in value for leaf in _leaves(v)]
+    return [str(value)]
+
+
+def _refused_calls(record: dict | None) -> tuple[int, int]:
+    """Refused calls that name the attacker's endpoint, whichever tool they call, and all the others."""
+    if record is None:
+        return 0, 0
+    endpoints = {str(v).lower() for sink in record.get("attacker_sinks") or [] for v in sink["endpoint"].values()}
+    at_attacker = other = 0
+    for call in record.get("calls") or []:
+        if int(call.get("refused") or 0) > 0:
+            if any(leaf.lower() in endpoints for leaf in _leaves(call.get("executed") or {})):
+                at_attacker += 1
+            else:
+                other += 1
+    return at_attacker, other
+
+
 def _suite_rows(suite: str, tag: str) -> list[dict] | None:
     """Rows of one arm on one suite, or None if its records do not exist yet."""
     path = EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{AGENT}_{tag}.csv"
@@ -118,13 +147,15 @@ def _suite_rows(suite: str, tag: str) -> list[dict] | None:
     records = _tool_records(suite, tag)
     rows = [r for r in _read_agentdojo_mixed(path) if r.get("injection_task")]
     for row in rows:
-        row["strict_security"] = _strict_security(row, records.get((row["task"], row["injection_task"])))
+        record = records.get((row["task"], row["injection_task"]))
+        row["strict_security"] = _strict_security(row, record)
+        row["refused_calls_at_attacker"], row["refused_calls_other"] = _refused_calls(record)
     return rows
 
 
-def _rows(tag: str) -> dict[str, list[dict]] | None:
+def _rows(tag: str, suites: tuple[str, ...] = SUITES) -> dict[str, list[dict]] | None:
     """Rows of one arm by suite, or None if a suite's records do not exist yet."""
-    out = {suite: _suite_rows(suite, tag) for suite in SUITES}
+    out = {suite: _suite_rows(suite, tag) for suite in suites}
     return None if any(rows is None for rows in out.values()) else out
 
 
@@ -188,13 +219,19 @@ def _summary(experiment: str, arm: str, scope: str, rows: list[dict], base: list
         "pairs_refused_restoration": str(_count(rows, "refused_unscoped_restorations")),
         "restorations_in_tool_args": str(sum(int(r.get("restored_in_tool_args") or 0) for r in rows)),
         "unrestored_tokens": str(sum(int(r.get("unrestored_tokens") or 0) for r in rows)),
+        "paired_utility_signflip_p": utility.get("signflip_p", ""),
+        "tokens_refused": str(sum(int(r.get("refused_unscoped_restorations") or 0) for r in rows)),
+        "pairs_refused_at_attacker": str(_count(rows, "refused_calls_at_attacker")),
+        "calls_refused_at_attacker": str(sum(r["refused_calls_at_attacker"] for r in rows)),
+        "pairs_refused_other_call": str(_count(rows, "refused_calls_other")),
+        "calls_refused_other_call": str(sum(r["refused_calls_other"] for r in rows)),
     }
 
 
-def _calls(tag: str) -> dict[tuple[str, str, str], list]:
+def _calls(tag: str, suites: tuple[str, ...] = SUITES) -> dict[tuple[str, str, str], list]:
     """Written tool calls of one arm, by (suite, task, injection task)."""
     out: dict[tuple[str, str, str], list] = {}
-    for suite in SUITES:
+    for suite in suites:
         path = EXPERIMENTS_DIR / f"agentdojo_restoration_tool_calls_{suite}_{AGENT}_{tag}.jsonl"
         if path.exists():
             with path.open(encoding="utf-8") as handle:
@@ -212,15 +249,16 @@ def _tokenized(row: dict) -> bool:
 
 def _repeatability() -> list[dict[str, str]]:
     out = []
-    for name, tag_a, tag_b in COMPARISONS:
-        rows_a, rows_b = _rows(tag_a), _rows(tag_b)
+    comparisons = [(c, SUITES) for c in COMPARISONS] + [(c, (THIRD_SUITE,)) for c in THIRD_SUITE_COMPARISONS]
+    for (name, tag_a, tag_b), suites in comparisons:
+        rows_a, rows_b = _rows(tag_a, suites), _rows(tag_b, suites)
         if rows_a is None or rows_b is None:
             print(f"[extensions] skipped comparison: {name}", flush=True)
             continue
-        a = {(r["suite"], r["task"], r["injection_task"]): r for s in SUITES for r in rows_a[s]}
-        b = {(r["suite"], r["task"], r["injection_task"]): r for s in SUITES for r in rows_b[s]}
+        a = {(r["suite"], r["task"], r["injection_task"]): r for s in suites for r in rows_a[s]}
+        b = {(r["suite"], r["task"], r["injection_task"]): r for s in suites for r in rows_b[s]}
         shared = sorted(set(a) & set(b))
-        calls_a, calls_b = _calls(tag_a), _calls(tag_b)
+        calls_a, calls_b = _calls(tag_a, suites), _calls(tag_b, suites)
         both = [k for k in shared if k in calls_a and k in calls_b]
         placebo = [k for k in shared if not _tokenized(a[k]) and not _tokenized(b[k])]
         out.append({

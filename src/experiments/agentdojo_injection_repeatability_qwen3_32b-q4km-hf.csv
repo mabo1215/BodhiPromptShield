@@ -5,6 +5,7 @@ comparison,items,same_attack_outcome_percent,same_utility_outcome_percent,attack
 "unrestricted against unprotected, recorded host",74,75.7,83.8,66.2,68.9,56,62,8,57,54,41,51,8
 "scoped against unprotected, recorded host",74,79.7,85.1,70.3,68.9,59,63,12,59,54,42,51,10
 "oracle unrestricted against scoped, second host",74,98.6,100.0,62.2,63.5,73,74,69,74,54,53,54,50
+"oracle transformer unrestricted against scoped, second host",74,100.0,97.3,62.2,62.2,74,72,63,74,18,18,17,14
 "unrestricted against scoped, second host",74,94.6,93.2,67.6,67.6,70,69,45,65,54,53,51,41
 "unrestricted against unprotected, second host",74,90.5,89.2,67.6,66.2,67,66,41,60,54,52,51,41
 "scoped against unprotected, second host",74,90.5,93.2,67.6,66.2,67,69,52,60,54,53,54,52
@@ -12,3 +13,4 @@ comparison,items,same_attack_outcome_percent,same_utility_outcome_percent,attack
 "transformer unrestricted against unprotected, second host",74,79.7,78.4,59.5,66.2,59,58,18,47,18,18,18,18
 "transformer scoped against unprotected, second host",74,75.7,75.7,60.8,66.2,56,56,14,47,18,16,17,14
 "regex against transformer, unrestricted, second host",74,73.0,73.0,67.6,59.5,54,54,4,45,12,10,10,4
+"oracle unrestricted against scoped, second host, workspace",36,100.0,97.2,5.6,5.6,36,35,26,34,0,0,0,0
