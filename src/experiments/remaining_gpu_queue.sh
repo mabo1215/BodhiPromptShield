@@ -78,15 +78,15 @@ live() {  # The transformer detector in the live stack, so the named configurati
 }
 
 injection_arm() {  # suite, tag, attack, detector, modes, scope, extra flags
-  local suite=$1 tag=$2 attack=$3 detector=$4 modes=$5 scope=$6
+  local suite=$1 tag=$2 attack=$3 detector=$4 modes=$5 scope=$6 injections
   shift 6
   case $suite in
-    banking) tasks=injection_task_1,injection_task_8 ;;
-    slack)   tasks=injection_task_2,injection_task_4 ;;
-    workspace) tasks=injection_task_3,injection_task_4 ;;
+    banking) injections=injection_task_1,injection_task_8 ;;
+    slack)   injections=injection_task_2,injection_task_4 ;;
+    workspace) injections=injection_task_3,injection_task_4 ;;
   esac
   $PY agentdojo_restoration_suite.py --agent-model "$AGENT" --base-url "$URL" --suite "$suite" --with-injections --attack "$attack" \
-      --injection-tasks "$tasks" --detector "$detector" --modes "$modes" --restore-scope "$scope" \
+      --injection-tasks "$injections" --detector "$detector" --modes "$modes" --restore-scope "$scope" \
       --output-tag "$tag" "$@"
 }
 
