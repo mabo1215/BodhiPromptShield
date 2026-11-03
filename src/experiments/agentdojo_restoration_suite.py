@@ -79,8 +79,10 @@ import sys
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 
+import httpx
 import openai
 from openai._types import NOT_GIVEN
+from openai.types.chat import ChatCompletionMessage
 from tenacity import retry, retry_if_not_exception_type, stop_after_attempt, wait_random_exponential
 from agentdojo.agent_pipeline import AgentPipeline, InitQuery, OpenAILLM, SystemMessage, ToolsExecutionLoop, ToolsExecutor
 from agentdojo.agent_pipeline.agent_pipeline import load_system_message
@@ -149,11 +151,12 @@ def _string_leaves(value) -> list[str]:
 
 
 @retry(wait=wait_random_exponential(multiplier=1, max=40), stop=stop_after_attempt(3), reraise=True,
-       retry=retry_if_not_exception_type((openai.BadRequestError, openai.UnprocessableEntityError)))
+       retry=retry_if_not_exception_type((openai.BadRequestError, openai.UnprocessableEntityError, openai.APITimeoutError)))
 def _pinned_completion_request(client: openai.OpenAI, model: str, messages: list, tools: list, decoding: dict):
     """agentdojo's chat_completion_request, with the decoding fields passed through as given (0 included).
 
-    Returns the parsed completion and the request body as it went over the wire.
+    Returns the parsed completion and the request body as it went over the wire. A timeout is not retried
+    here: the client has already sent the request three times, and a reply that keeps running does not end.
     """
     raw = client.chat.completions.with_raw_response.create(model=model, messages=messages, tools=tools or NOT_GIVEN,
                                                            tool_choice="auto" if tools else NOT_GIVEN, **decoding)
@@ -166,18 +169,30 @@ class PinnedDecodingOpenAILLM(OpenAILLM):
     ``requests`` holds, per model call of the current run, the non-message
     fields and the messages of the body actually sent; the harness resets it
     before each run.
+
+    The model occasionally writes a reply that never stops, and the same request can do so
+    every time it is sent. Such a reply ends the agent's turn with no text and no tool call,
+    so the benchmark still scores the environment as the agent left it, and ``unfinished``
+    counts it for the row.
     """
 
     def __init__(self, client: openai.OpenAI, model: str, decoding: dict) -> None:
         super().__init__(client, model, temperature=decoding.get("temperature"))
         self.decoding = dict(decoding)
         self.requests: list[dict] = []
+        self.unfinished = 0
 
     def query(self, query: str, runtime: FunctionsRuntime, env: Env = EmptyEnv(), messages: Sequence[ChatMessage] = [],
               extra_args: dict = {}) -> tuple[str, FunctionsRuntime, Env, Sequence[ChatMessage], dict]:
         openai_messages = [_message_to_openai(message, self.model) for message in messages]
         openai_tools = [_function_to_openai(tool) for tool in runtime.functions.values()]
-        completion, body = _pinned_completion_request(self.client, self.model, openai_messages, openai_tools, self.decoding)
+        try:
+            completion, body = _pinned_completion_request(self.client, self.model, openai_messages, openai_tools, self.decoding)
+        except openai.APITimeoutError:
+            self.unfinished += 1
+            self.requests.append({"params": {"model": self.model, **({"tool_choice": "auto"} if openai_tools else {}), **self.decoding},
+                                  "messages": openai_messages})
+            return query, runtime, env, [*messages, _openai_to_assistant_message(ChatCompletionMessage(role="assistant", content=""))], extra_args
         self.requests.append({"params": {k: v for k, v in body.items() if k not in ("messages", "tools")},
                               "messages": body.get("messages", [])})
         output = _openai_to_assistant_message(completion.choices[0].message)
@@ -526,7 +541,7 @@ def _sent_params_over(calls_path: Path) -> str:
 
 
 def run(args: argparse.Namespace) -> None:
-    client = openai.OpenAI(base_url=f"{args.base_url}/v1", api_key="ollama")
+    client = openai.OpenAI(base_url=f"{args.base_url}/v1", api_key="ollama", timeout=httpx.Timeout(args.request_timeout, connect=5.0))
     decoding = {"temperature": args.temperature, **({"seed": args.seed} if args.seed >= 0 else {})}
     llm = PinnedDecodingOpenAILLM(client, args.agent_model, decoding)
     learned = _train_learned_detector() if args.detector == "learned_lr" else None
@@ -577,6 +592,7 @@ def run(args: argparse.Namespace) -> None:
                 pipeline = build_pipeline(llm, detector, mode, state, args.mediate_tool_outputs, args.restore_scope)
                 pipeline.name = _attack_addressable_name(pipeline.name, args.with_injections)
                 llm.requests = []
+                llm.unfinished = 0
                 error = ""
                 try:
                     if inj_id is None:
@@ -595,6 +611,8 @@ def run(args: argparse.Namespace) -> None:
                     raise
                 except Exception as exc:  # noqa: BLE001 - one failing task must not abort the sweep
                     utility, security, error = False, False, f"{type(exc).__name__}: {str(exc)[:160]}"
+                if llm.unfinished:
+                    error = f"unfinished reply: {llm.unfinished} request(s) timed out on all three attempts"
                 mapping = state.get("mapping", {})
                 if mode == "none":  # count what would have been protected; the prompt went out raw
                     mapping = {f"raw-{i}": task.PROMPT[s:e] for i, (s, e) in enumerate(detector(task.PROMPT))}
@@ -698,6 +716,7 @@ def main() -> int:
     parser.add_argument("--restore-scope", default="all", choices=["all", "user-directed"])
     parser.add_argument("--spacy-model", default="en_core_web_lg")
     parser.add_argument("--base-url", default="http://127.0.0.1:11434")
+    parser.add_argument("--request-timeout", type=float, default=600.0, help="Seconds one attempt at a reply may take (default 600)")
     parser.add_argument("--temperature", type=float, default=0.0, help="Sent explicitly in every request (default 0)")
     parser.add_argument("--seed", type=int, default=17, help="Sent in every request; a negative value omits the field")
     parser.add_argument("--bootstrap", type=int, default=1000)
