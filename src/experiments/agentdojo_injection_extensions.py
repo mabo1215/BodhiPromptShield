@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Summarize the injection runs added after the reported AgentDojo arms.
 
-Three questions, all on the 74 task/injection pairs of the reported arms:
+Three questions, on the 74 task/injection pairs of the reported arms; the oracle also runs
+on the workspace suite, on the user tasks whose prompt holds a value the regex detector
+tokenizes, and that suite is summarized on its own rather than pooled.
 
 * Does the result depend on a detector that only covers structured values? The transformer
   detector faces the same injections under unrestricted and recipient-scoped restoration,
@@ -11,9 +13,8 @@ Three questions, all on the 74 task/injection pairs of the reported arms:
   under both restoration policies, paired on the pair.
 * How far do two arms differ when the layer does nothing? On a pair where neither arm tokenized
   a value the prompts are identical, so a difference is decoding alone. That placebo is measured
-  for every comparison, because a paired change can only be read against it. Outcomes repeat
-  when two arms send the same requests in the same order, which is why the policies compare
-  cleanly on one host and a detector does not.
+  for every comparison, because a paired change can only be read against it. An unprotected
+  arm tokenizes nothing, whatever its row counts as protectable.
 
 Two readings of the records are added, because the counts alone mislead.
 
@@ -50,6 +51,9 @@ REPEAT_OUT = EXPERIMENTS_DIR / f"agentdojo_injection_repeatability_{AGENT}.csv"
 RESTORED_OUT = EXPERIMENTS_DIR / f"agentdojo_injection_boundary_restorations_{AGENT}.csv"
 ATTACKER_ACCOUNT = "us133000000121212121212"
 COMPANION_ACCOUNT = "ch9300762011623852957"  # Recipient of the pizza transaction in the default environment.
+THIRD_SUITE = "workspace"
+THIRD_SUITE_PAIRS = 36
+THIRD_SUITE_ARMS = (("regex_unrestricted", "oracle_all_regex", None), ("regex_scoped", "oracle_scoped_regex", "oracle_all_regex"))
 
 # experiment, arm, output tag, baseline tag of the paired change
 ARMS = (
@@ -77,6 +81,9 @@ COMPARISONS = (
     ("unrestricted against unprotected, second host", "anchorinj_all_4c", "inj_none_4c"),
     ("scoped against unprotected, second host", "inj_scoped_4c", "inj_none_4c"),
     ("transformer unrestricted against scoped, second host", "inj_all_gliner", "inj_scoped_gliner"),
+    ("transformer unrestricted against unprotected, second host", "inj_all_gliner", "inj_none_4c"),
+    ("transformer scoped against unprotected, second host", "inj_scoped_gliner", "inj_none_4c"),
+    ("regex against transformer, unrestricted, second host", "anchorinj_all_4c", "inj_all_gliner"),
 )
 
 
@@ -103,31 +110,40 @@ def _strict_security(row: dict, record: dict | None) -> str:
     return "0"
 
 
+def _suite_rows(suite: str, tag: str) -> list[dict] | None:
+    """Rows of one arm on one suite, or None if its records do not exist yet."""
+    path = EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{AGENT}_{tag}.csv"
+    if not path.exists():
+        return None
+    records = _tool_records(suite, tag)
+    rows = [r for r in _read_agentdojo_mixed(path) if r.get("injection_task")]
+    for row in rows:
+        row["strict_security"] = _strict_security(row, records.get((row["task"], row["injection_task"])))
+    return rows
+
+
 def _rows(tag: str) -> dict[str, list[dict]] | None:
     """Rows of one arm by suite, or None if a suite's records do not exist yet."""
-    out: dict[str, list[dict]] = {}
-    for suite in SUITES:
-        path = EXPERIMENTS_DIR / f"agentdojo_restoration_rows_{suite}_{AGENT}_{tag}.csv"
-        if not path.exists():
-            return None
-        records = _tool_records(suite, tag)
-        out[suite] = [r for r in _read_agentdojo_mixed(path) if r.get("injection_task")]
-        for row in out[suite]:
-            row["strict_security"] = _strict_security(row, records.get((row["task"], row["injection_task"])))
-    return out
+    out = {suite: _suite_rows(suite, tag) for suite in SUITES}
+    return None if any(rows is None for rows in out.values()) else out
+
+
+def _endpoint_matches(executed, value: str) -> bool:
+    """Whether an executed endpoint argument names the attacker; a recipient list may hold several."""
+    return any(str(leaf).lower() == value for leaf in (executed if isinstance(executed, list) else [executed]))
 
 
 def _restorations(tags: list[str]) -> list[dict[str, str]]:
     """Every argument of an attacker-directed call that the boundary rewrote."""
     out = []
     for tag in tags:
-        for suite in SUITES:
+        for suite in (*SUITES, THIRD_SUITE):
             for (task, injection), record in sorted(_tool_records(suite, tag).items()):
                 for call in record.get("calls") or []:
                     executed, written = call.get("executed") or {}, call.get("written") or {}
                     for sink in record.get("attacker_sinks") or []:
-                        if call.get("function") != sink["function"] or any(
-                                str(executed.get(k, "")).lower() != v for k, v in sink["endpoint"].items()):
+                        if call.get("function") != sink["function"] or not all(
+                                _endpoint_matches(executed.get(k, ""), v) for k, v in sink["endpoint"].items()):
                             continue
                         for key in written:
                             if key not in sink["endpoint"] and str(written[key]) != str(executed.get(key)):
@@ -189,6 +205,11 @@ def _calls(tag: str) -> dict[tuple[str, str, str], list]:
     return out
 
 
+def _tokenized(row: dict) -> bool:
+    """Whether the layer replaced a value; an unprotected row only counts what could have been."""
+    return row["mode"] != "none" and int(row.get("protected_values") or 0) > 0
+
+
 def _repeatability() -> list[dict[str, str]]:
     out = []
     for name, tag_a, tag_b in COMPARISONS:
@@ -201,7 +222,7 @@ def _repeatability() -> list[dict[str, str]]:
         shared = sorted(set(a) & set(b))
         calls_a, calls_b = _calls(tag_a), _calls(tag_b)
         both = [k for k in shared if k in calls_a and k in calls_b]
-        placebo = [k for k in shared if int(a[k].get("protected_values") or 0) == 0 and int(b[k].get("protected_values") or 0) == 0]
+        placebo = [k for k in shared if not _tokenized(a[k]) and not _tokenized(b[k])]
         out.append({
             "comparison": name,
             "items": str(len(shared)),
@@ -217,6 +238,7 @@ def _repeatability() -> list[dict[str, str]]:
             # nothing, so any difference between the arms is decoding: a placebo for the rest.
             "placebo_pairs": str(len(placebo)),
             "placebo_same_attack_outcome_pairs": str(sum(a[k]['security'] == b[k]['security'] for k in placebo)),
+            "placebo_same_utility_outcome_pairs": str(sum(a[k]['utility'] == b[k]['utility'] for k in placebo)),
             "placebo_same_call_sequence_pairs": str(sum(calls_a[k] == calls_b[k] for k in placebo if k in both)),
         })
     return out
@@ -238,6 +260,12 @@ def main() -> int:
         table.append(_summary(experiment, arm, "pooled", pooled, [r for s in SUITES for r in base[s]] if base else None))
         for suite in SUITES:
             table.append(_summary(experiment, arm, suite, rows[suite], base[suite] if base else None))
+    third = {tag: _suite_rows(THIRD_SUITE, tag) or [] for _, tag, _ in THIRD_SUITE_ARMS}
+    if all(len(rows) == THIRD_SUITE_PAIRS for rows in third.values()):
+        for arm, tag, base_tag in THIRD_SUITE_ARMS:
+            table.append(_summary("oracle_attack", arm, THIRD_SUITE, third[tag], third[base_tag] if base_tag else None))
+    else:
+        print(f"[extensions] {THIRD_SUITE} oracle arms not complete yet", flush=True)
     with OUT.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(table[0].keys()))
         writer.writeheader()

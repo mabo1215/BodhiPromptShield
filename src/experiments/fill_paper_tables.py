@@ -30,7 +30,7 @@ This script only updates tables that are directly backed by repository CSVs:
   - tab:blindutilitytemplate <- data/cppb_blind_utility_by_template.csv
   - tab:downstream       <- privacylens_downstream_summary_qwen3_32b-q4km-hf_pooled.csv
                             (RCE shown only where the per-case shards record a mapping)
-  - tab:inject           <- agentdojo_injection_summary_pooled_qwen3_32b-q4km-hf_fixed.csv
+  - tab:inject           <- agentdojo_injection_extensions_qwen3_32b-q4km-hf.csv
   - tab:injectarms       <- agentdojo_injection_extensions_qwen3_32b-q4km-hf.csv
   - tab:portability      <- privacylens_downstream_summary_{qwen3_32b,llama3.3_70b}-q4km-hf_pooled.csv
                             + downstream_paired_tests_llama3.3_70b-q4km-hf.csv
@@ -1075,15 +1075,6 @@ def build_contextattack_table() -> str:
     )
 
 
-# The AgentDojo arms in the order the manuscript reads them, by the restoration
-# policy each ran under.
-_INJECT_ARMS = (
-    ("unprotected", "No protection"),
-    ("unrestricted", "Unrestricted restoration"),
-    ("user_directed", "User-directed restoration"),
-)
-
-
 def _signed_ci(cell: str) -> str:
     """A signed "point [lo, hi]" cell with each number in math mode, so its sign typesets as one."""
     point, _, rest = cell.partition("[")
@@ -1092,29 +1083,32 @@ def _signed_ci(cell: str) -> str:
 
 
 def build_inject_table() -> str:
-    # The rerun with the repaired harness (temperature and seed sent, restoration on an
-    # executed copy, attacker-call payloads classified) supersedes the earlier pass.
-    by_arm = {r["arm"]: r for r in _read_csv(f"agentdojo_injection_summary_pooled_{_DOWNSTREAM_AGENT}_fixed.csv")}
+    """The injection arms that ran one request at a time on one host, where a paired change can be read."""
+    rows = {(r["experiment"], r["arm"], r["scope"]): r
+            for r in _read_csv(f"agentdojo_injection_extensions_{_DOWNSTREAM_AGENT}.csv")}
     body_lines = []
-    for arm, label in _INJECT_ARMS:
-        row = by_arm[arm]
-        delta = row["paired_asr_delta_vs_unprotected"].strip()
+    for arm, label in _INJECT_ARM_PANELS[0][2]:
+        row = rows.get(("reported_attack", arm, "pooled"))
+        if row is None:
+            continue
+        asr_delta, utility_delta = row["paired_asr_delta_pp"].strip(), row["paired_utility_delta_pp"].strip()
         body_lines.append(
             " & ".join(
                 [
                     _tex_escape(label),
                     row["attack_success_percent"],
                     row["utility_percent"],
-                    _signed_ci(delta) if delta else "---",
-                    f"{row['raw_value_exfil_pairs']}/{row['pairs']}",
+                    _signed_ci(asr_delta) if asr_delta else "---",
+                    _signed_ci(utility_delta) if utility_delta else "---",
+                    row["pairs_raw_value_at_attacker"],
                 ]
             )
             + " \\\\"
         )
     return (
-        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xcccc}\n"
+        "\\begin{tabularx}{\\columnwidth}{>{\\raggedright\\arraybackslash}Xccccc}\n"
         + "\\toprule\n"
-        + "Condition & ASR (\\%) & Util.\\ (\\%) & Paired $\\Delta$ ASR (pts) & Raw \\\\\n"
+        + "Condition & ASR (\\%) & Util.\\ (\\%) & $\\Delta$ ASR (pts) & $\\Delta$ Util.\\ (pts) & Raw \\\\\n"
         + "\\midrule\n"
         + "\n".join(body_lines)
         + "\n\\bottomrule\n"
