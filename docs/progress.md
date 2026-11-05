@@ -1,6 +1,51 @@
 # 论文进度
 
-## 2026-11-04：4c 实验全部跑完，F9(c)、F16 已写进论文（当前最新）
+## 2026-11-05：改投 Knowledge-Based Systems，已重新编译、打包并核对 PDF；还不能上传（当前最新）
+
+**发现**：你问这篇论文能投哪个期刊，复核时发现 11-01 选刊漏查了期刊的范围排除条款。Elsevier 官方期刊页（shop.elsevier.com，2026-11-05 读取）原文：
+- "As of early 2024, we have instituted a moratorium on consideration of submissions that feature AI or ML as significant components."
+- "items directed to the security of AI/ML systems themselves (such as LLM and federated learning) are out of scope of the journal and should be submitted to a venue primarily about AI/ML."
+
+这篇论文的标题和第一个关键词就是 LLM agent，正好落在这一条里。`USAGE.md`、`docs/RevisionSuggestions.tex` 和本文件之前都没有记录这条；11-01 只核对了投稿格式和指标，所以当时"题材正对口"和评审里 venue fit 7/10 的判断都没有考虑它。
+
+**不是绝对投不进**：C&S 2026-09 发过一篇 VLM 隐私论文（10.1016/j.cose.2026.104931），执行看起来不完全一致，但这不能当作投稿依据。
+
+**候选（影响因子取自 Elsevier 期刊页，2026-11-05 读取；相近论文只看了标题）**：
+- 首选 Knowledge-Based Systems（IF 8；AI 期刊，范围含 practical study，无排除条款；发过 LLM 越狱检测的实证研究 10.1016/j.knosys.2026.117270）。
+- 看重 CCF B 则选 Information Sciences（IF 6；发过 LLM agent 部署形态的比较性安全评估 10.1016/j.ins.2026.123231）。
+- 都是 Elsevier，elsarticle 模板和声明部分可以沿用。
+- 未核实：中科院分区、版面费、字数上限（ScienceDirect 拒绝自动抓取）；两刊 CCF 等级只是凭记忆。
+
+**决定**：你选定 Knowledge-Based Systems（KBS）。
+
+**KBS 投稿要求**（通过搜索结果读 Guide for Authors，ScienceDirect 拒绝自动抓取，投稿时请登录再看一眼）：
+- 单盲评审，稿件保留作者信息；关键词 1–7 个，尽量避免多词；Highlights 鼓励，3–5 条，每条不超过 85 字符，单独可编辑文件；投稿时参考文献格式不限。
+- 摘要和字数上限没有确认。
+- 第三方指南（Manusights，商业服务，非官方）：没有硬性上限，常见 6,000–9,000 词；直接退稿的常见原因包括“没有方法上的新颖性”和“范围偏移”。这对一篇明确不提新机制的测量论文是真实风险，cover letter 已按“给系统构建者的实证知识”来写。
+
+**改动**
+- `paper/main.tex`：`\journal{}` 和首行注释改成 KBS；引言加一句说明结果服务于构建者的设计决策（不含新数字）。`paper/supplementary.tex`：首行注释。
+- `USAGE.md` 目标行改成 KBS；`src/package_journal_submission.py` 的说明和默认输出目录改成 KBS。
+- 新增 `docs/cover_letter_knowledge_based_systems.txt`，C&S 的 cover letter 和投稿包都保留。
+
+**打包**：`submit/knowledge_based_systems/`（10 个文件）和 `submit/knowledge_based_systems_latex_source.zip`（7 个文件，不含编译好的 PDF）。
+
+**PDF 核对结果**
+- 压缩包解压后单独编译两次（用现成 `.bbl`、删掉 `.bbl` 跑 BibTeX），都是 0 错误、0 未定义引用、0 overfull，提取的文字和上传用 PDF 完全一致。
+- 正文 24 页，补充材料 31 页，都是 A4；字体全部嵌入，没有 Type 3；标题和作者元数据正确。
+- 打包后的源文件相对 `main.tex` 只变了 xr 部分、两个图片路径和指向补充材料的编号。正文引用的 14 个补充章节和 4 张补充表都能找到。
+- Highlights 5 条，74–85 字符；摘要按 PDF 算 231 词；关键词 6 个。cover letter 的数字都能在论文里对上（arXiv 编号不在论文里；49.2 和 50.5 在论文里是分开写的）。
+- 24 页逐页看过缩略图，声明页单独放大看过，没有溢出或错位。
+- `elsarticle` v3.5 不在 PDF 上印期刊名，所以期刊名只在源文件里。参考文献里的 3 篇 C&S 论文是正常引用，留着。
+- 全文 PDF 约 12,064 词。C&S 的 12,000 词上限不再适用。
+
+**还不能上传**
+- 论文里还有 5 处红字（第 9、18、19 页）。
+- 代码仓库未登录访问返回 404，论文和 cover letter 却写着公开（第 5 条）。
+- Applied Intelligence 是否确实没投，还没确认（第 9 条）。
+- 这些解决后稿件会变，要重新编译、打包、再核对；现在这个包不是最终版。
+
+## 2026-11-04：4c 实验全部跑完，F9(c)、F16 已写进论文
 
 **主机状态**：4c 上的实验都跑完了，最后一组在 11-03 10:38 UTC（新西兰时间 23:38）结束。两张卡的私有 Ollama 已由自动脚本停止（10:39），我们不再占用 4c。你 11-04 说：后面要补实验就直接补，不用批准，只能用两张卡；不用了就关掉 Ollama。目前判断不需要再补，见下面“70B”一条。
 
@@ -3633,6 +3678,7 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 26. **F6(b)、F6(d)、F28（2026-11-02）**：attribute-recovery 攻击补上两种无文档对照（8B、32B），并在论文中把结论从"能选对多少"改成"比无文档多多少"，工具改名 value recovery。judge 提示词两种变体在 8B、27B、32B 上跑完并写入。两项都在 4c 上跑，digest 与记录一致，主机比对 5 项全部通过（`tab:hostanchor`）。这样改的原因：没有对照时 65% 这个水平会让读者高估释放文本泄露的量；不说明提示词敏感性，judge 的结论就只对一个提示词成立。
 
 27. **F9(c)、F16（2026-11-04）**：详见本文件顶部。要点：注入主表改用第二主机五组数据，原记录作为复现放在补充材料；加入 transformer 检测器（F16）；边界攻击扩到 regex 110 对和 transformer 74 对（F9(c)），新增按 suite 的表 S5，报告攻击成功率和拒绝率，并把拒绝分成对着攻击者和其他调用。这样改的原因：多组共用 server 时安慰剂一致率只有 41/54，配对差读不出来；第二主机是 52/54。评审的 GPU 项里除 F7(c)（需要人工）外都已完成。
+28. **改投 Knowledge-Based Systems 的转换、打包和 PDF 核对（2026-11-05）**：详见本文件顶部。要点：发现 C&S 把 LLM 安全列为范围外后改投 KBS；期刊名、目标行、打包脚本默认目录和 cover letter 已同步；压缩包独立编译两次，文字与上传用 PDF 完全一致。
 
 # 未修改或部分修改
 
@@ -3653,7 +3699,8 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
   - 不需要你现在决定。D2 写完后我按剩余版面和时间评估做哪几项，再在这里列出来。
 - ~~阶段 D（PoPETs 投稿前检查）~~：2026-10-31 改投 Applied Intelligence，PoPETs 专用的匿名链接、模板 MD5 等检查不再需要。
 - ~~Applied Intelligence 投稿前收尾~~：2026-11-01 改投 Computers & Security，Applied Intelligence 的投稿包留作备选，不再推进。
-- **Computers & Security 投稿前收尾**【进行中】：格式转换、补充材料拆分和投稿包已完成（见文件顶部）。还差：
+- ~~Computers & Security 投稿前收尾~~：2026-11-05 改投 Knowledge-Based Systems（C&S 把 LLM 安全列为范围外），C&S 的投稿包留着，不再推进。
+- **Knowledge-Based Systems 投稿前收尾**【已阻挡】（等你确认红字和代码仓库公开；确认后要重新编译、打包、核对）：期刊名、cover letter、投稿包和 PDF 核对已完成（见文件顶部）。还差：
   - 需要你确认：基金、利益冲突、作者贡献、AI 工具名称（论文里的红字），以及通讯作者、代码链接，见 `# 遗留问题` 第 1–5、10 条。
   - 需要你确认：Applied Intelligence 确实没有投出去（第 9 条）。
 - **F7(c)**：需要人工标注。
@@ -3678,7 +3725,7 @@ F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条
 
 需要你提供/决策。答完一条即可就地删掉该条。
 
-**2026-11-01 改投 Computers & Security 前需要你确认**（论文里对应位置是红字，答完我替换）
+**投 Knowledge-Based Systems 前需要你确认**（2026-11-01 起；论文里对应位置是红字，答完我替换，并重新编译、打包、核对）
 
 需要你提供/决策：
 1. 基金：有没有资助？有的话写资助方和项目编号；没有就用 Elsevier 的标准句 "This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors."
@@ -3689,11 +3736,11 @@ F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条
    A:
 4. 通讯作者：暂定 Bo Ma（rcn4743@aut.ac.nz）。是否改成 Weiqi Yan 或 Jinsong Wu？各作者有 ORCID 的话也请给我（投稿系统会让填）。
    A:
-5. 代码链接：Data availability 写的是 https://github.com/mabo1215/BodhiPromptShield（Apache 2.0）。这个仓库现在是公开的吗？（10-09 记录里你设成了私有。）里面还有 `.claude/` 规则、中文进度文件和已不用的 CPPB。是直接用它，还是另建一个干净的公开仓库或 Zenodo 存档？
+5. 代码链接：Data availability 写的是 https://github.com/mabo1215/BodhiPromptShield（Apache 2.0）。这个仓库现在是公开的吗？（10-09 记录里你设成了私有；2026-11-05 未登录访问返回 404，所以论文里“公开仓库”这句目前不成立，上传前必须解决。）里面还有 `.claude/` 规则、中文进度文件和已不用的 CPPB。是直接用它，还是另建一个干净的公开仓库或 Zenodo 存档？
    A:
 7. 推荐审稿人：Elsevier 的投稿系统通常要填 3–5 位，需要独立于作者、有机构邮箱。要不要我从相关工作的作者里列一份候选名单给你挑？
    A:
-9. Applied Intelligence 那份投稿包（10-31 备好）确认**没有**投出去吧？如果已经投了，必须先撤稿，拿到确认后才能投 C&S，否则算一稿两投。
+9. Applied Intelligence 那份投稿包（10-31 备好）确认**没有**投出去吧？如果已经投了，必须先撤稿，拿到确认后才能投 KBS，否则算一稿两投。
    A:
 10. 生成式 AI 声明里要写出具体工具名。我暂写了 "Claude Code (Anthropic), OpenAI Codex, and GitHub Copilot"（仓库里有这三套 agent 的规则文件）。实际用了哪些？
    A:
@@ -3702,6 +3749,10 @@ F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条
 14. 伦理：论文写的是志愿者知情后标注、未收集真实用户数据。AUT 是否需要伦理审批或豁免？如果有审批号或豁免说明请给我；没有的话投稿前请确认这句话站得住。
    A:
 17. F22 的第三方姓名 gold 是规则生成的，抽样 100 条是 AI 读的，不是人工。请你或一位合作者抽查 `src/experiments/privacylens_third_party_gold_mentions_sample.csv`（`mention` 和 `context` 是提及及其上下文，`is_person_name` 是 AI 的判断），确认 96/100 这个数说得过去。论文里写明了是 AI 读的；如果由人复核过，我改成人工复核。
+   A:
+19. 关键词：搜索结果显示 KBS 指南要求尽量避免多词关键词，而现在 6 个都是多词（如 "Large language model agent"）。我没读到指南原文，所以没改。你登录投稿系统时看一眼，需要的话告诉我怎么改。
+   A:
+20. 要不要从 KBS 换成 Information Sciences（INS）？建议先投 INS，退稿再投 KBS。依据：INS 发过同类的比较测量（10.1016/j.ins.2026.123231，摘要已读，未提出新防御机制）；KBS 那篇只看到标题。Manusights（商业机构，非官方）说 KBS 会退没有知识系统贡献的稿件，这一点靠 cover letter 难以弥补；INS 看重普适性、基线、消融实验和可复现性。代价：KBS 是中科院 1 区 Top（ais.cn 一处来源），IF 8；INS 的 IF 6，2 区和 CCF B 只见于个人博客，要查官方表。不管投哪家，cover letter 都改成突出方法贡献，论文里 "We claim no new privacy mechanism" 保留。
    A:
 
 **2026-10-09 第八轮评审的决策（D1–D5，原文在 `docs/RevisionSuggestions.tex` 第 7 节）**
