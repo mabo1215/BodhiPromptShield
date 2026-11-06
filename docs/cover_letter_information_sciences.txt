@@ -1,0 +1,29 @@
+Dear Editor-in-Chief,
+
+We submit the manuscript "What Prompt Mediation Stops in LLM Agent Pipelines, and How to Measure It" for consideration as a full-length research article in Information Sciences.
+
+Large language model (LLM) agents read user documents, query retrieval indexes, keep persistent memory, and call tools that act on real services. User content that enters such a system does not stay in one model call: it is copied into retrieval queries, memory entries, tool arguments, and logs. A widely deployed safeguard mediates the prompt at ingress, replacing detected sensitive spans with placeholders and restoring exact values only where an authorized tool needs them. This paper measures what that safeguard achieves and what it costs, and tests whether the instruments used to score leakage can be trusted. Its contribution is empirical knowledge for the people who build these systems; it proposes no new mechanism.
+
+The study compares Microsoft Presidio, a Casper-style sanitizer, an LLM sanitizer, and a mediation layer with three detectors under one protocol, on public benchmarks (AI4Privacy, PrivacyLens, AgentDojo) scored with each benchmark's own instruments and run with open-weight agents. Its main findings are:
+
+1. The detector sets identifier exposure and what it costs in over-redaction. At retention of at least 0.96 on AI4Privacy, a small transformer trained on that source leaves 6.5% of sensitive characters exposed against 49.2-50.5% for two zero-shot detectors, a gain that does not carry to another source. Exact identifiers in an agent's generated action fall from 13.7% to 2.1-3.1% under placeholders or dummy values, at helpfulness costs of 0.2-0.7 points on a 0-3 scale.
+2. Placement decides the outcome in a live tool-using agent. Mediating the prompt alone leaves 61-68% of tool-returned values reaching the model. Mediating every read edge keeps them out, at a large cost in task success (from 64.3% to 12.3-20.8%), of which scoped restoration recovers 19-25 points. One configuration run as a whole completes 43.5% of tasks against 64.9% unmediated, and exposes 4.6% of values against 81.2%.
+3. The safeguard's limits are specific. No detector is robust across all eight adaptive surface-form evasion families, and mediation does not stop prompt injection. An injected instruction can turn an unrestricted restoration boundary into an exfiltration path; restricting restoration to recipients the user named closes that path, at the price of some false refusals.
+4. Facts fare worse than identifiers. Blind human labels show inferability falling from 98% to 25-50% under four of five annotated mediated methods. A forced-choice adversary given four same-kind candidates picks 65% of removed values but 56% with no document at all, so the release adds about 9 points under the lowest-exposure detector against 42 unprotected.
+5. LLM judges need validation before they are used as measurements. An LLM judge and a word-overlap metric both miss the fall in inferability (Cohen's kappa 0.16 and 0.22 against human labels; two human readers agree at 0.85).
+
+We believe the work fits Information Sciences. It is a comparative evaluation of an information-protection technique under one protocol, with installed baselines, bootstrap intervals, ablations over detector, placement, and restoration, and a validation of the scoring instruments against human labels. It gives measured answers on which detector to use, where to place it, and when to restore, and it shows how far an LLM judge can be relied on as an evaluation instrument. The main rates are reported with bootstrap confidence intervals, and every table and figure can be regenerated from the released per-unit records; the code and records are publicly available, as stated in the Data availability section [authors to confirm the repository is public before submission].
+
+The submission consists of the manuscript (LaTeX source and PDF), a Supplementary Material file that holds the extended measurements, intervals, and design tables referenced from the main text, and a highlights file.
+
+Preprint disclosure. An earlier version of this work is available as an arXiv preprint (arXiv:2604.05793) under the title "BodhiPromptShield: Pre-Inference Prompt Mediation for Suppressing Privacy Propagation in LLM/VLM Agents". The present manuscript substantially revises that version: the evaluation has been rebuilt on public agent benchmarks and live tool execution, and several of its claims have been re-measured. No other part of the manuscript has been published, and no previously published figures, tables, or text are reused.
+
+This manuscript is original, is not under consideration by any other journal or conference, and has been approved by all authors. The authors declare no competing interests [authors to confirm].
+
+Sincerely,
+
+Bo Ma (corresponding author)
+Auckland University of Technology, Auckland, New Zealand
+rcn4743@aut.ac.nz
+
+on behalf of Bo Ma, Jinsong Wu, and Weiqi Yan

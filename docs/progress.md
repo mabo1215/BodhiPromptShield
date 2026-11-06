@@ -1,5 +1,23 @@
 # 论文进度
 
+## 2026-11-06：改投 Information Sciences，已重新编译并打包；还不能上传（当前最新）
+
+**决定**：你选定 Information Sciences（INS），KBS 作为备选（理由见 `USAGE.md` 目标行：INS 发过同类比较评测，看重普适贡献、基线和可复现性；KBS 要求知识系统方面的贡献，这篇没有）。
+
+**改动**
+- `paper/main.tex`：`\journal{}` 和首行注释改成 INS。`paper/supplementary.tex`：首行注释。引言里 11-05 为 KBS 加的那句（结果服务于构建者的决策）保留，对 INS 也成立，不含新数字。
+- `src/package_journal_submission.py`：说明和默认输出目录改成 `information_sciences`。
+- 新增 `docs/cover_letter_information_sciences.txt`：除“为什么适合本刊”一段改写外，其余沿用 KBS 版；KBS 和 C&S 的 cover letter 与投稿包都保留。
+
+**验证**：`build.bat` 重新编译，main.log 0 个未定义引用、0 个 overfull；打包脚本通过（10 个文件）。
+**没做**：压缩包解压后独立编译、PDF 逐页核对（正文只改了源文件里的期刊名，`elsarticle` 不在 PDF 上印期刊名，PDF 应与 11-05 版一致）。
+
+**仍需你确认**
+1. INS 的 Guide for Authors 我没读过（ScienceDirect 拒绝自动抓取）：评审模式、摘要和字数上限、关键词、Highlights 要求，请投稿时登录核对；Highlights 现为 5 条、每条不超过 85 字符。
+2. cover letter 里“适合本刊”一段是按我对 INS 的理解写的，没有对照官方 Aims & Scope，请你读一遍。
+3. 红字待确认项和代码仓库是否公开，同 11-05 的清单。
+4. 确认 KBS 和 Applied Intelligence 的稿件都没有投出去。
+
 ## 2026-11-05：改投 Knowledge-Based Systems，已重新编译、打包并核对 PDF；还不能上传（当前最新）
 
 **发现**：你问这篇论文能投哪个期刊，复核时发现 11-01 选刊漏查了期刊的范围排除条款。Elsevier 官方期刊页（shop.elsevier.com，2026-11-05 读取）原文：

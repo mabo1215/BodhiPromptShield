@@ -1,4 +1,4 @@
-"""Stage the files an Elsevier (Knowledge-Based Systems) submission needs.
+"""Stage the files an Elsevier (Information Sciences) submission needs.
 
 The manuscript is kept as ``paper/main.tex``, with figures under ``paper/figs/``
 and the class and style files under ``paper/template/``. The appendix is
@@ -29,7 +29,7 @@ the staged PDFs and the staged source cannot silently drift apart.
 
 Usage:
   python src/package_journal_submission.py
-  python src/package_journal_submission.py --out submit/knowledge_based_systems
+  python src/package_journal_submission.py --out submit/information_sciences
 """
 from __future__ import annotations
 
@@ -42,7 +42,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PAPER = REPO_ROOT / "paper"
 BUILD = PAPER / "build"
-DEFAULT_OUT = REPO_ROOT / "submit" / "knowledge_based_systems"
+DEFAULT_OUT = REPO_ROOT / "submit" / "information_sciences"
 
 MANUSCRIPT_NAME = "manuscript"
 SUPPLEMENT_NAME = "supplementary_material"
