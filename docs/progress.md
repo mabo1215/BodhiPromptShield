@@ -1,6 +1,124 @@
 # 论文进度
 
-## 2026-11-06：改投 Information Sciences，已重新编译并打包；还不能上传（当前最新）
+> 待你回答的问题只放在文件最后的 `# 遗留问题`，每条下面留 `A:` 给你直接填写。日期记录里出现的“需要你…”“仍需你确认”是当时的快照，已经答复或已过时，不用再看。
+
+## 2026-11-18：按你的答复改完 P0 和 P1，已重新编译、打包并核对（当前最新）
+
+**你的答复和处理**
+- 先改再提交：P0 和 P1 全部改完（见下）。
+- Zenodo 存档：要做。你选了单独打一个干净的存档包，放在 `submit/` 下；DOI 返修时再写进论文，现在先提交。存档包已打好，见下面 “Zenodo 存档包”。
+- 版面费：AUT 协议支付，你不用付。
+- 伦理：AUT 不需要审批，论文里的伦理声明不变。
+- 标注说明：(a) 放进补充材料，已新增 S13；(b) 标注者匿名，没有收集任何信息，正文和 S13 都写明“没有记录标注者的任何信息，包括背景”；(c) 不做配对重标注，论文里原有的局限不变。
+- 第三方姓名样本：你确认 100 条都人工逐条看过。补充材料原来写的是“由 AI 编码助手判断”，改成“我们人工逐条核对，100 条里 96 条是人名”。CSV 里 AI 标的也是 96 条，数字不变。
+
+**论文改动（正文、补充材料；不改任何结果数字）**
+- P0-1：两份文档的导言里都设置了 `\abovetopsep`，表标题和顶线之间有了间距，渲染图核对过。
+- P1-1：引言写出 RQ1–RQ4，各自对应到小节；三条贡献都改成先给结论句；加了全文结构段。迫选攻击者和 PrivacyLens 自带判官只中等一致这两点保留在 RQ3 那条贡献里。
+- P1-2：5.3 节开头加了指标表（新的表 2，其余表顺延为表 3–8），列出 13 个指标各自计数什么、不衡量什么、在哪节报告；SSR 定义写明在 AI4Privacy 上按整段计、在 PrivacyLens 上按字符计。这张表第一次编译时把后面所有表都挤到了文末，改成 `[!tbp]` 后各表回到对应的节，它自己单独占一页。
+- P1-3：改写了评审列出的几句；6.2 节各方法的人工比率改为指向图 2 的置信区间；6.3、6.4 节删掉和表 5 重复的区间，保留各项对比的区间。
+- P1-4：5.3 节说明参考标签来自一位作者，所有可推断性结果也用非作者的空表标签报告了，两份标签结论一致；图 2 图注加上非作者标签的范围。
+- P1-5：2.3 节并进 2.2 节，作为 “Formal scope” 一段，标签随之移动。
+- P1-6：撤回。是我测错了：之前凭 75 dpi 的渲染图估字号，按图片尺寸实际计算，图 1 印出来是 8.1–8.5 pt，已经满足 8 pt 的要求。评审文件里已注明撤回。
+- 新增补充材料 S13 “Annotation Instructions”：页面题目、两个按键、各轮次的页面说明（从中文界面翻译）、PrivacyLens 判官验证页的题目。放在补充材料最后，前面的 S 编号都不变。
+
+**其他文件**
+- `docs/cover_letter_array.txt`：说明改动的那一段补上了研究问题、指标表、表达修改和 S13，写明“没有任何结果改变”。
+- `docs/RevisionSuggestions.tex`：撤回 P1-6，文末加了处理记录。
+- 打包脚本现在会自动生成 `tables.tex` 和 `tables/` 里每个表各自的文件（之前是手工拼的），放在源码压缩包生成之后，不会被打进压缩包。`tables.pdf` 用正文的 `.aux` 编译，8 个表、0 处 “??”。
+- 推荐审稿人的姓名和邮箱从本文件移到了本地 `submit/suggested_reviewers.txt`（不进 git）。本文件在公开仓库里，推荐名单不应公开；之前也从来没提交过。
+
+**核对**
+- 正文 26 页（原 24 页），补充材料 33 页（原 31 页）；都没有排版溢出和未定义引用。
+- 源码压缩包两种方式单独编译（用现成 `.bbl`、删掉 `.bbl` 跑 BibTeX），提取的文字都和上传用 PDF 完全一致。
+- 没有红字占位、没有双句点、没有 Type 3 字体；作者元数据是 Ma、Yan、Wu。
+- 渲染看过：第 2 页（研究问题）、第 9 页（指标表）、第 16 页的表标题间距。
+
+**Zenodo 存档包**（按你的选择：单独打包，放在 `submit/` 下）
+- `src/package_artifact.py` 加了 `--named` 模式：保留作者、仓库地址和 arXiv 编号，只改写构建主机的细节（内网地址、租用 GPU 容器的主机名、本地路径）；有个人邮箱或这些主机细节残留时拒绝打包。比匿名模式多带两份 PrivacyLens 判官的人工标签（各 120 条；全空的模板不带），以及 LICENSE（Apache 2.0）和 NOTICE。原来的匿名模式不变。
+- 输出 `submit/zenodo/prompt_mediation_artifact.zip`：14.9 MB，847 个文件。包含代码、逐条记录、运行清单和人工标签；不含 `docs/progress.md`、`.claude/` 规则这些内部文件，也不含 CPPB 数据、原始运行日志、第三方语料和 PhysioNet 文本。
+- 解压后逐项扫描过：没有 token、密钥、ssh 命令、主机地址、个人邮箱或审稿人信息。“password” 只出现在 AgentDojo 和 PrivacyLens 基准自带的合成内容里；`api_key="ollama"` 是本地 Ollama 的占位值。
+- 打包时检查发现 `src/README.md` 还写着论文已删掉的 `fig:propagation` 和 `tab:prior_comparison`，已改正，并把新的指标表 `tab:metrics` 归到说明性表格一类。匿名模式用的是同一份 README，之前同样会被这个检查拦下，现在也能打包了。
+- 上传步骤和表单内容（标题、作者和单位、描述、许可证、关键词、关联标识）写在 `submit/zenodo/zenodo_metadata.txt`，可以直接复制。拿到 DOI 后填在文末 `# 遗留问题` 第 1 条。
+
+**上传时替换这些文件**（都在 `submit/array/`）：`manuscript.pdf`、`manuscript.tex`（或 `submit/array_latex_source.zip`）、`supplementary_material.pdf`、`cover_letter.txt`、`declaration_of_competing_interest.docx`、`tables.tex` 和 `tables.pdf`。Highlights、摘要、图没有变。
+
+## 2026-11-18：按 Array 要求独立评审，`docs/RevisionSuggestions.tex` 已整份重写
+
+**做法**：不沿用 11-01 按 C&S 写的评审。正文全部读过，补充材料看了结构和正文依赖的部分，有图表的页面都渲染出来看过。Array 的要求通过搜索结果读取（ScienceDirect 拒绝自动抓取）。新评审已编译通过（`docs/build.bat`）。
+
+**结论**：适合 Array，预计小修到大修，主要问题在表达，不在科学内容。Array 的格式要求（摘要、关键词、Highlights、参考文献格式、各项声明、作者顺序）都满足。最大的风险是可读性：正文太密，指标缩写分散在两节定义，贡献写成一串数字，几句话压缩得外行看不懂。审稿人看不明白，就会把“不提出新机制”当成没有贡献。
+
+**修改项（均未修改）**
+- 【P0】P0-1 表标题和表格顶线挤在一起：正文 7 个表都有，第 15 页的顶线直接压在“call and is excluded.”上，补充材料的表也很紧。改法：在两个文档的导言里设置 booktabs 的 `\abovetopsep`。几分钟。
+- 【P1】P1-1 引言写出四个研究问题（RQ1–RQ4），对应到各节；贡献改成一句话一个结论，少放数字；加一句全文结构说明。
+- 【P1】P1-2 把六个指标（PER、SSR、RCE、RSR、FRR、ASR）集中到一张表；修正 SSR 定义：正文说按整段 span 计，但 PrivacyLens 实际按字符计（表 2、表 S17 的标题里写了，定义里没写）。
+- 【P1】P1-3 改写过度压缩的句子（如 “The rest does not look like the tagger's doing.”、“Capacity moves the floor rather than the level”、“trades 21 points of task success for 77 points of exposure”）；正文里和表格重复的置信区间删掉，只留关键对比的。
+- 【P1】P1-4 人工标注的参考标签是一位作者标的，审稿人常会质疑。现在先补两句话：说明为什么用这份标签，并说明换成非作者盲标的标签结论也不变。修改阶段（P2）再考虑图 2 同时画两位标注者，或改用裁决后的标签。
+- 【P1】P1-5 2.3 节只有两句话，并进 2.2 节。
+- 【P1】P1-6 图 1 架构图的字在打印尺寸下只有 5–6 pt，要放大。
+- 【P2】P2-1 把实景 agent 的结果（表 5，12 列数字）画成“任务成功率 vs 非授权暴露”的权衡图，用现有数字，不需要重跑实验。
+- 【P2】P2-2 样本量（每种方法 40 条标注、200 个下游任务、74 对注入、154 个实景 case）：先准备答复，审稿人要求再决定是否扩跑（把下游从 200 扩到 493 个任务只需要 GPU 时间）。
+- 【P2】P2-3 只用了开源本地模型：审稿人要求再做，需要你提供 API 和经费。
+- 【P2】P2-4 把代码和逐条记录在 Zenodo 存档，拿 DOI 写进 Data availability。Array 强烈鼓励数据存档，需要你的账号。
+- 【P3】P3-1 Graphical abstract（鼓励，非必需）；P3-2 把 “§6.5” 改成 “Section 6.5”（Elsevier 风格，期刊排版时会统一改）。
+
+**P1 的改动都是表达层面的，不改任何数字。**
+
+**待你回答**：先改 P0/P1 再提交还是现在提交、要不要做 Zenodo 存档，见文末 `# 遗留问题` 第 1、2 条。
+
+## 2026-11-18：INS 直接拒稿，经 Elsevier 转投服务转到 Array；已补全声明、重新编译、打包并核对
+
+**经过**：Information Sciences 11-18 直接拒稿（INS-D-26-14978，编辑初筛未送审，理由是笼统的“竞争力不足”，没有具体科学意见）。Elsevier 给了 5 个转投选项（KBS、Array、ESWA、Neurocomputing、EAAI）。你选了 **Array**，原因是这次转投保证送审（保证送审，不保证录用）。Array 已回信，稿件在 Editorial Manager 的 “Submissions Sent Back to Author” 里，需要你点 “Edit submission” 完成提交。
+
+**发现**：投 INS 的 `manuscript.pdf` 里有 5 处红字 “[Authors to confirm…]”（实验部分的 AI 工具段、CRediT、利益冲突、Funding、生成式 AI 声明）。编辑看到的是一份带红字占位的稿件，这很可能是被直接拒稿的原因之一。
+
+**Array 要求**（通过搜索结果读 Guide for Authors，ScienceDirect 拒绝自动抓取）：摘要不超过 250 词（现 189）；关键词 1–7 个（现 6）；Highlights 鼓励，3–5 条、每条不超过 85 字符（现 5 条，74–85）；常规论文没写字数上限；单盲，至少两位审稿人。纯开放获取，APC 2,770 美元（不含税），转投页面写在 AUT 的出版协议范围内，转投时请确认是否真的免费。
+
+**改动**
+- `paper/main.tex`：`\journal{Array}` 和首行注释；去掉全部红字，按你 11-18 的回答填写：
+  - 两处 AI 工具声明：Claude Code (Anthropic)、OpenAI Codex、GitHub Copilot。
+  - CRediT：Bo Ma 不变；Jinsong Wu 改为 Supervision、Writing – review & editing；Weiqi Yan 改为 Supervision、Writing – review & editing。你写的是 “Writing – review”，CRediT 只有 “Writing – review & editing” 这一项，按它写。
+  - Funding：没有专项资助（Elsevier 标准句）。
+  - 利益冲突：去掉红字，内容不变（你投 INS 时交的声明 docx 已经写了没有利益冲突）。
+- `paper/main.tex`：修掉 4 个段落标题后的双句点（“Use of AI tools in the research process..” 等）。原因是 elsarticle 的 `\paragraph` 会自己加句点，标题里不该再写。补充材料用的是 article 类，没有这个问题。
+- `paper/supplementary.tex`：首行注释。
+- `src/package_journal_submission.py`：说明和默认输出目录改成 `submit/array`。
+- 新增 `docs/cover_letter_array.txt`：沿用你实际上传给 INS 的短版 cover letter，加了经转投服务从 INS 转来的说明、补全声明的说明和 arXiv 预印本披露，“适合本刊”一段按 Array 的范围（网络安全、智能系统）改写。
+- `USAGE.md` 目标行改成 Array（这个文件被 gitignore，只在本机）。
+
+**打包**：`submit/array/`（19 个文件）+ `submit/array_latex_source.zip`（7 个文件）。脚本产出 10 个文件；另外 9 个是照 INS 上传时手工加的文件改出来的：
+- `abstract.txt`、`figures/`、`figures.pdf`、`figures.zip`：和当前稿件一致，直接沿用。
+- `tables.tex`、`tables/`：改了期刊名；`tables.pdf` 用主文的 `.aux` 重新编译，文字和 INS 版完全一样。
+- `declaration_of_competing_interest.docx`：两处期刊名改成 Array。
+- `cover_letter.txt`：即 `docs/cover_letter_array.txt`。
+
+**核对**
+- `build.bat`：正文 24 页、补充材料 31 页，都是 0 overfull、0 未定义引用。
+- 压缩包解压后单独编译两次（用现成 `.bbl`、删掉 `.bbl` 跑 BibTeX），都是 0 错误、0 overfull、0 未定义引用，提取的文字和上传用 PDF 完全一致。
+- 和 INS 版正文 PDF 逐行比较：只有上面几处声明和段落标题变了，其余差异只是参考文献分页移动。改过的第 9、18 页看过渲染图。
+- 0 处 “Authors to confirm”，0 个 Type 3 字体，A4；标题和作者元数据正确；PDF 上没有印期刊名。
+- 代码仓库 https://github.com/mabo1215/BodhiPromptShield 现在未登录访问返回 200，Data availability 里的公开链接成立。
+
+**上传时替换这些文件**（转投带过来的是 INS 的旧文件）：`manuscript.pdf`、`manuscript.tex`（或 LaTeX 源码压缩包）、`supplementary_material.pdf`、`cover_letter.txt`、`declaration_of_competing_interest.docx`、`tables.tex`/`tables.pdf`。Highlights、摘要、图没有变，可以保留旧文件。
+
+**作者顺序（11-18 你确认）**：以 Editorial Manager 为准，Bo Ma, Weiqi Yan, Jinsong Wu。原来稿件写的是 Ma, Wu, Yan，已改成一致的有：正文作者块（邮箱随作者移动，单位编号仍是 AUT 为 a、GUET 为 b）、两个 PDF 的作者元数据、补充材料作者行、CRediT 顺序、cover letter 署名、利益冲突 docx 的作者行、`tables.tex` 元数据。之后重新编译、重新打包、重新编译 `tables.pdf`；压缩包两种方式单独编译，文字仍和上传用 PDF 完全一致，0 overfull、0 未定义引用；第 1 页看过渲染图。
+
+**待你回答**：APC 是否由 AUT 协议覆盖，见文末 `# 遗留问题` 第 3 条。
+
+**整理遗留问题时闭合的条目**（11-18，你在本文件或对话里已答复，已处理）
+- 基金：没有专项资助，已写 Elsevier 标准句。
+- 利益冲突：没有，已去掉红字。
+- CRediT：Bo Ma 不变；Weiqi Yan、Jinsong Wu 都是 Supervision、Writing – review & editing，已按此写。
+- AI 工具：Claude Code、OpenAI Codex、GitHub Copilot 三个都写，两处声明已改。
+- 通讯作者：Bo Ma，ORCID 0000-0003-1076-3290（填在投稿系统里；elsarticle 正文不放 ORCID）。
+- 代码仓库：已公开，11-18 未登录访问返回 200。
+- Applied Intelligence：你答复已投、被拒并建议转投，不存在一稿多投；`USAGE.md` 里的投稿历史已改。
+- 推荐审稿人：你要我列候选名单，并给了两位。姓名和单位放在本地 `submit/suggested_reviewers.txt`（不进 git：本文件在公开仓库里，推荐名单不应公开）。补全名单的工作记在 `# 未修改或部分修改`。
+- KBS 关键词、KBS 还是 INS：已过时（改投 Array）。Array 也要求避免带 and/of 的多词关键词，现在 6 个都不带。
+- paper 子模块合并：11-04 已快进合并进 `main`。
+
+## 2026-11-06：改投 Information Sciences，已重新编译并打包（11-18 被直接拒稿，已被 11-18 转投 Array 取代）
 
 **决定**：你选定 Information Sciences（INS），KBS 作为备选（理由见 `USAGE.md` 目标行：INS 发过同类比较评测，看重普适贡献、基线和可复现性；KBS 要求知识系统方面的贡献，这篇没有）。
 
@@ -12,13 +130,9 @@
 **验证**：`build.bat` 重新编译，main.log 0 个未定义引用、0 个 overfull；打包脚本通过（10 个文件）。
 **没做**：压缩包解压后独立编译、PDF 逐页核对（正文只改了源文件里的期刊名，`elsarticle` 不在 PDF 上印期刊名，PDF 应与 11-05 版一致）。
 
-**仍需你确认**
-1. INS 的 Guide for Authors 我没读过（ScienceDirect 拒绝自动抓取）：评审模式、摘要和字数上限、关键词、Highlights 要求，请投稿时登录核对；Highlights 现为 5 条、每条不超过 85 字符。
-2. cover letter 里“适合本刊”一段是按我对 INS 的理解写的，没有对照官方 Aims & Scope，请你读一遍。
-3. 红字待确认项和代码仓库是否公开，同 11-05 的清单。
-4. 确认 KBS 和 Applied Intelligence 的稿件都没有投出去。
+**当时待确认的四项**（INS 指南、cover letter、红字和代码仓库、KBS 与 Applied Intelligence 是否投出）：11-18 已全部处理或过时，见 11-18 的记录。
 
-## 2026-11-05：改投 Knowledge-Based Systems，已重新编译、打包并核对 PDF；还不能上传（当前最新）
+## 2026-11-05：改投 Knowledge-Based Systems，已重新编译、打包并核对 PDF（已被 11-06 改投 INS 取代）
 
 **发现**：你问这篇论文能投哪个期刊，复核时发现 11-01 选刊漏查了期刊的范围排除条款。Elsevier 官方期刊页（shop.elsevier.com，2026-11-05 读取）原文：
 - "As of early 2024, we have instituted a moratorium on consideration of submissions that feature AI or ML as significant components."
@@ -57,7 +171,7 @@
 - `elsarticle` v3.5 不在 PDF 上印期刊名，所以期刊名只在源文件里。参考文献里的 3 篇 C&S 论文是正常引用，留着。
 - 全文 PDF 约 12,064 词。C&S 的 12,000 词上限不再适用。
 
-**还不能上传**
+**当时还不能上传的原因**（11-18 已全部解决：红字已替换，代码仓库已公开，Applied Intelligence 已被拒）
 - 论文里还有 5 处红字（第 9、18、19 页）。
 - 代码仓库未登录访问返回 404，论文和 cover letter 却写着公开（第 5 条）。
 - Applied Intelligence 是否确实没投，还没确认（第 9 条）。
@@ -3700,85 +3814,36 @@ Ollama 当前保持可用，但没有模型实验进程在运行；下一次实�
 
 # 未修改或部分修改
 
-只列仍然开着、且还值得做的项。已完成的在 `# 已全部修改`；已被取代、资产不可恢复、
-或属于论文已写明的 future work 的项已从本节移除（`docs/ExperimentProgress.tex`
-的 next-step 表仍保留它们的完整记录与百分比，那张表是全量台账，本节只是待办）。
+只列仍然开着的项。每项下面写明是否需要你回答；需要的，问题在文末 `# 遗留问题`。
 
-2026-09-09：`# 遗留问题` 的六条已全部答复，本节按答复重排。放弃与认可两条已闭合并
-移入 `# 已全部修改`；另外三条从"等你拍板"变成"工具已就绪、等人力或等主机"。
+**Array 评审（2026-11-18，`docs/RevisionSuggestions.tex`）**：P0、P1 已改完，P1-6 撤回（见当天记录）。还开着的：
+- 【P2】P2-1 把表 6（实景 agent，12 列数字）画成任务成功率与暴露的权衡图（用现有数字）。
+  - 不需要你决定，返修阶段做。
+- 【P2】P2-2 样本量：先准备答复，审稿人要求再决定是否扩跑。
+  - 现在不需要你决定。
+- 【P2】P2-3 闭源模型复现：审稿人要求才做，到时需要你提供 API 和经费。
+  - 现在不需要你决定。
+- 【P2】P2-4 Zenodo 存档拿 DOI：存档包已打好（`submit/zenodo/`），等你上传到 Zenodo。返修时把 DOI 写进 Data availability。
+  - 需要你：上传后把 DOI 发给我，见 `# 遗留问题` 第 1 条。
+- 【P3】P3-1 Graphical abstract；P3-2 “§” 改成 “Section”。
+  - 不需要你决定，可选。
 
-**第八轮评审（2026-10-09，细节见 `docs/RevisionSuggestions.tex`）还开着的项**（2026-10-10 早更新）
+**推荐审稿人名单**
+- 你给了两位（见本地 `submit/suggested_reviewers.txt`，不进 git），要我从相关工作作者里补到 3–5 位候选。
+  - 不需要你现在回答；列好后放进 `# 遗留问题` 给你挑。
 
-阶段 A、B 已全部完成（F1–F5、F7–F18，含 F4(a) Casper-style 补还原、F7(c) AgentDojo 重跑、F10 正文自足），记录在文件顶部和 RevisionSuggestions 的 resolution log 里。还开着的：
+**早期评审留下的可选项（不需要你决定）**
+- F4(e) 多轮匿名化器：代码已备好、未运行（你决定只跑隐私提示词）。以后想补，开卡即可跑。
+- 阶段 C 的其余可选项：F6 中间还原点 + 还原预言机攻击、F4(e) 更强对照。
 
-- **F4(e) 多轮匿名化器**：代码已备好、未运行（你决定只跑隐私提示词）。
-  - 不需要你决定；如果以后想补，开卡即可跑。
-- **阶段 C 的其余可选项**：F6 中间还原点 + 还原预言机攻击；F7(d) LLM 改写规避；F4(e) 更强对照。
-  - 不需要你现在决定。D2 写完后我按剩余版面和时间评估做哪几项，再在这里列出来。
-- ~~阶段 D（PoPETs 投稿前检查）~~：2026-10-31 改投 Applied Intelligence，PoPETs 专用的匿名链接、模板 MD5 等检查不再需要。
-- ~~Applied Intelligence 投稿前收尾~~：2026-11-01 改投 Computers & Security，Applied Intelligence 的投稿包留作备选，不再推进。
-- ~~Computers & Security 投稿前收尾~~：2026-11-05 改投 Knowledge-Based Systems（C&S 把 LLM 安全列为范围外），C&S 的投稿包留着，不再推进。
-- **Knowledge-Based Systems 投稿前收尾**【已阻挡】（等你确认红字和代码仓库公开；确认后要重新编译、打包、核对）：期刊名、cover letter、投稿包和 PDF 核对已完成（见文件顶部）。还差：
-  - 需要你确认：基金、利益冲突、作者贡献、AI 工具名称（论文里的红字），以及通讯作者、代码链接，见 `# 遗留问题` 第 1–5、10 条。
-  - 需要你确认：Applied Intelligence 确实没有投出去（第 9 条）。
-- **F7(c)**：需要人工标注。
-  - 需要你决定：见 `# 遗留问题` 第 13 条。
-- **paper 子模块合并**：改动已推到分支，`main` 未动。
-  - 需要你决定：见 `# 遗留问题` 第 16 条。
-
-**第五轮评审（2026-10-07，细节见 `docs/RevisionSuggestions.tex`）开出、尚未闭合的项**
-
-F1–F5、F7–F14 已于 2026-10-07 落地（见 `# 已全部修改` 第 17 条）；F3 的 builder 与 tab:canon 的 transformer 列于 2026-10-08 完成（第 18 条）；符号还原 bug 及其对照于 2026-10-08 关闭（第 19、20 条）；F6c 人工标注扩样于 2026-10-09 关闭（第 21 条）。第五轮开出的项已全部闭合。
-
-**卡在外部资源，不需要你现在决定**
-
-- **PrivacyRestore 同协议复现**（60%）：需要白盒自服务模型 + 约 5 天。论文已给出不复现的
-  架构理由（它在服务端模型内部做激活引导，本层在黑盒端点之前）。标注扩样已完成，
-  它不再和标注工时冲突，但仍受白盒模型与时间限制。
-- **licensed i2b2 临床覆盖**（60%）：等数据使用审批。公开 PhysioNet 路线已跑通并入表。
-- **live-stack mapping table 攻防**（50%）：需要一套真实部署栈、审计路径与凭据模型，
-  不是算力问题。论文把该结论限定在机制层面。
+**卡在外部资源（不需要你现在决定）**
+- PrivacyRestore 同协议复现（60%）：需要白盒自服务模型和约 5 天。论文已给出不复现的架构理由。
+- licensed i2b2 临床覆盖（60%）：等数据使用审批。公开 PhysioNet 路线已跑通并入表。
+- live-stack mapping table 攻防（50%）：需要一套真实部署栈、审计路径与凭据模型，不是算力问题。论文把该结论限定在机制层面。
 
 # 遗留问题
 
-需要你提供/决策。答完一条即可就地删掉该条。
+只放需要你回答的问题，永远在文件最后。答完一条，我处理后就从这里删掉，并在当天的记录里写明结果。
 
-**投 Knowledge-Based Systems 前需要你确认**（2026-11-01 起；论文里对应位置是红字，答完我替换，并重新编译、打包、核对）
-
-需要你提供/决策：
-1. 基金：有没有资助？有的话写资助方和项目编号；没有就用 Elsevier 的标准句 "This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors."
+1. **Zenodo DOI**：存档包在 `submit/zenodo/prompt_mediation_artifact.zip`，步骤和表单内容在同目录的 `zenodo_metadata.txt`。上传前先点 “Reserve DOI”。拿到 DOI 后填在这里，不急，返修前给我就行。
    A:
-2. 利益冲突：论文和 cover letter 暂写 Elsevier 的标准句 "The authors declare that they have no known competing financial interests or personal relationships..."，对吗？
-   A:
-3. 作者贡献（CRediT）：草稿是 Bo Ma 负责 Conceptualization、Methodology、Software、Investigation、Data curation、Formal analysis、Visualization、Writing – original draft；Jinsong Wu 负责 Conceptualization、Supervision、Writing – review & editing；Weiqi Yan 负责 Methodology、Supervision、Writing – review & editing。请改成实际分工。
-   A:
-4. 通讯作者：暂定 Bo Ma（rcn4743@aut.ac.nz）。是否改成 Weiqi Yan 或 Jinsong Wu？各作者有 ORCID 的话也请给我（投稿系统会让填）。
-   A:
-5. 代码链接：Data availability 写的是 https://github.com/mabo1215/BodhiPromptShield（Apache 2.0）。这个仓库现在是公开的吗？（10-09 记录里你设成了私有；2026-11-05 未登录访问返回 404，所以论文里“公开仓库”这句目前不成立，上传前必须解决。）里面还有 `.claude/` 规则、中文进度文件和已不用的 CPPB。是直接用它，还是另建一个干净的公开仓库或 Zenodo 存档？
-   A:
-7. 推荐审稿人：Elsevier 的投稿系统通常要填 3–5 位，需要独立于作者、有机构邮箱。要不要我从相关工作的作者里列一份候选名单给你挑？
-   A:
-9. Applied Intelligence 那份投稿包（10-31 备好）确认**没有**投出去吧？如果已经投了，必须先撤稿，拿到确认后才能投 KBS，否则算一稿两投。
-   A:
-10. 生成式 AI 声明里要写出具体工具名。我暂写了 "Claude Code (Anthropic), OpenAI Codex, and GitHub Copilot"（仓库里有这三套 agent 的规则文件）。实际用了哪些？
-   A:
-13. F7 标注：(a) 完整标注说明要放进补充材料吗？除了题目本身和两个按键，当时还给过标注者别的书面说明吗？(b) 标注者的背景能写多少（比如是否有隐私或 NLP 背景）？(c) 配对重标注（同一事实跨所有方法，同一人不重复看）要做吗？这需要新的人力。不做的话论文已把它写成局限。
-   A:
-14. 伦理：论文写的是志愿者知情后标注、未收集真实用户数据。AUT 是否需要伦理审批或豁免？如果有审批号或豁免说明请给我；没有的话投稿前请确认这句话站得住。
-   A:
-17. F22 的第三方姓名 gold 是规则生成的，抽样 100 条是 AI 读的，不是人工。请你或一位合作者抽查 `src/experiments/privacylens_third_party_gold_mentions_sample.csv`（`mention` 和 `context` 是提及及其上下文，`is_person_name` 是 AI 的判断），确认 96/100 这个数说得过去。论文里写明了是 AI 读的；如果由人复核过，我改成人工复核。
-   A:
-19. 关键词：搜索结果显示 KBS 指南要求尽量避免多词关键词，而现在 6 个都是多词（如 "Large language model agent"）。我没读到指南原文，所以没改。你登录投稿系统时看一眼，需要的话告诉我怎么改。
-   A:
-20. 要不要从 KBS 换成 Information Sciences（INS）？建议先投 INS，退稿再投 KBS。依据：INS 发过同类的比较测量（10.1016/j.ins.2026.123231，摘要已读，未提出新防御机制）；KBS 那篇只看到标题。Manusights（商业机构，非官方）说 KBS 会退没有知识系统贡献的稿件，这一点靠 cover letter 难以弥补；INS 看重普适性、基线、消融实验和可复现性。代价：KBS 是中科院 1 区 Top（ais.cn 一处来源），IF 8；INS 的 IF 6，2 区和 CCF B 只见于个人博客，要查官方表。不管投哪家，cover letter 都改成突出方法贡献，论文里 "We claim no new privacy mechanism" 保留。
-   A:
-
-**2026-10-09 第八轮评审的决策（D1–D5，原文在 `docs/RevisionSuggestions.tex` 第 7 节）**
-
-（2026-10-09 已全部答复：D4 跳过；评分者是网上招募的志愿者、无报酬、书面和口头都告知过用途与公开发布；GPU 先用 vGPU 3090，PRO 6000 无卡模式已备好 D2 并关机。处理记录见文件顶部。）
-
-**2026-10-07 第五轮评审的决策（D1--D4，原文在 `docs/RevisionSuggestions.tex`）**
-
-（F6c 两条——读者身份、作答方式——均已于 2026-10-09 答复并闭合，见 `# 已全部修改` 第 21 条。）
-
-（上轮 D2「正文放哪张表」与 D4「PER 定义怎么改」仍按建议执行中，可回退。）

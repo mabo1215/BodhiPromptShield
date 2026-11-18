@@ -20,6 +20,14 @@ depends on:
 Every exclusion below carries its reason, and those reasons are rendered into
 the package README, so what the README claims and what the zip contains cannot
 drift apart.
+
+With ``--named`` the same tree is packaged for public archiving (for example on
+Zenodo) instead of anonymous review: author names, the repository URL, and the
+preprint identifier are kept, and only build-host details -- private network
+addresses, the rented GPU container hostname, and local checkout paths -- are
+rewritten. The named package also carries the human labels that validate the
+benchmark's leakage judge, which live under ``data/`` beside the excluded
+benchmark of the earlier version, and the repository's LICENSE and NOTICE.
 """
 from __future__ import annotations
 
@@ -96,7 +104,7 @@ EXCLUDED_NAMES = {
 _CPPB_REASON = (
     "The constructed prompt benchmark of an earlier version of the work. The "
     "manuscript no longer reports any result on it, and its dataset card links "
-    "to a public release, so it is left out of the anonymous package."
+    "to a public release, so it is left out of this package."
 )
 EXCLUDED_GLOBS = {
     "data/*": _CPPB_REASON,
@@ -113,6 +121,15 @@ EXCLUDED_GLOBS = {
         "are included."
     ),
 }
+
+# Files under data/ that the named package keeps: the human labels behind the
+# validation of the benchmark's own leakage judge. The anonymous package drops
+# all of data/ with the earlier benchmark.
+NAMED_DATA_KEEP = ("data/privacylens_judge_human_annotations.csv",
+                   "data/privacylens_judge_human_annotations2.csv")
+
+# Repository-root files the named package carries.
+NAMED_ROOT_FILES = ("LICENSE", "NOTICE")
 
 # Any single file larger than this is a redistribution we did not intend.
 MAX_FILE_BYTES = 12 * 1024 * 1024
@@ -141,6 +158,27 @@ REDACTIONS = (
     (re.compile(r"bodhipromptshield"), "promptmediation"),
     # Private-network host addresses of the machines the runs used.
     (re.compile(r"\b10\.126\.\d{1,3}\.\d{1,3}\b"), "<private-host>"),
+)
+
+# The named package keeps authorship and only rewrites build-host details.
+NAMED_REDACTIONS = (
+    (re.compile(r"autodl-container-[a-z0-9]+-[a-z0-9]+"), "rented-gpu-host"),
+    (re.compile(r"[A-Za-z]:/source/BodhiPromptShield"), "<repository root>"),
+    (re.compile(r"\b10\.126\.\d{1,3}\.\d{1,3}\b"), "<private-host>"),
+)
+
+# What must not survive into the named package: personal e-mail addresses,
+# build-host identifiers, and local account paths.
+NAMED_FORBIDDEN = (
+    re.compile(r"\bamabo\w*@", re.I),
+    re.compile(r"\bmabo1215@", re.I),
+    re.compile(r"autodl-container-", re.I),
+    re.compile(r"[A-Za-z]:\\+[Ss]ource\\+", re.I),
+    re.compile(r"/root/autodl"),
+    re.compile(r"[A-Za-z]:\\+Users\\+", re.I),
+    re.compile(r"AppData\\+", re.I),
+    re.compile(r"\b10\.126\.\d"),
+    re.compile(r"[A-Za-z]:/source/", re.I),
 )
 
 # The build fails if any of these survive staging. Kept deliberately wider than
@@ -174,8 +212,11 @@ FORBIDDEN = (
 )
 
 
-def _excluded(rel: Path) -> str | None:
+def _excluded(rel: Path, named: bool = False) -> str | None:
     """Return the reason this path is excluded, or None to include it."""
+    posix = rel.as_posix()
+    if named and any(fnmatch.fnmatch(posix, keep) for keep in NAMED_DATA_KEEP):
+        return None
     for part in rel.parts[:-1]:
         if part in EXCLUDED_DIRS:
             return EXCLUDED_DIRS[part]
@@ -190,15 +231,15 @@ def _excluded(rel: Path) -> str | None:
     return None
 
 
-def _redact(text: str) -> tuple[str, int]:
+def _redact(text: str, named: bool = False) -> tuple[str, int]:
     total = 0
-    for pattern, replacement in REDACTIONS:
+    for pattern, replacement in (NAMED_REDACTIONS if named else REDACTIONS):
         text, n = pattern.subn(replacement, text)
         total += n
     return text, total
 
 
-def stage(root: Path, dest: Path) -> tuple[list[Path], int, dict[str, int]]:
+def stage(root: Path, dest: Path, named: bool = False) -> tuple[list[Path], int, dict[str, int]]:
     """Copy the shippable tree into ``dest``, redacting as it goes."""
     staged: list[Path] = []
     redactions = 0
@@ -216,7 +257,7 @@ def stage(root: Path, dest: Path) -> tuple[list[Path], int, dict[str, int]]:
             if not path.is_file():
                 continue
             rel = path.relative_to(root)
-            reason = _excluded(rel)
+            reason = _excluded(rel, named)
             if reason is not None:
                 skipped[reason] = skipped.get(reason, 0) + 1
                 continue
@@ -233,7 +274,7 @@ def stage(root: Path, dest: Path) -> tuple[list[Path], int, dict[str, int]]:
                 with path.open(encoding="utf-8", errors="surrogateescape",
                                newline="") as handle:
                     original = handle.read()
-                cleaned, n = _redact(original)
+                cleaned, n = _redact(original, named)
                 redactions += n
                 with target.open("w", encoding="utf-8", errors="surrogateescape",
                                  newline="") as handle:
@@ -242,23 +283,29 @@ def stage(root: Path, dest: Path) -> tuple[list[Path], int, dict[str, int]]:
                 shutil.copy2(path, target)
             staged.append(rel)
 
+    if named:
+        for name in NAMED_ROOT_FILES:
+            shutil.copy2(root / name, dest / name)
+            staged.append(Path(name))
+
     return staged, redactions, skipped
 
 
-def verify(dest: Path) -> None:
+def verify(dest: Path, named: bool = False) -> None:
     """Fail the build if any forbidden identifier survived staging."""
     hits: list[str] = []
+    forbidden = NAMED_FORBIDDEN if named else FORBIDDEN
     for path in sorted(dest.rglob("*")):
         if not path.is_file() or path.suffix.lower() not in TEXT_EXTENSIONS:
             continue
         text = path.read_text(encoding="utf-8", errors="surrogateescape")
-        for pattern in FORBIDDEN:
+        for pattern in forbidden:
             match = pattern.search(text)
             if match:
                 rel = path.relative_to(dest).as_posix()
                 hits.append(f"{rel}: {pattern.pattern} -> {match.group(0)!r}")
     if hits:
-        raise SystemExit("anonymity check failed:\n  " + "\n  ".join(hits[:40]))
+        raise SystemExit("identifier check failed:\n  " + "\n  ".join(hits[:40]))
 
 
 # A shipped Markdown file may knowingly name a label the manuscript has
@@ -334,16 +381,55 @@ def write_manifest(dest: Path, staged: list[Path]) -> Path:
     return out
 
 
-def write_readme(dest: Path, staged: list[Path], skipped: dict[str, int]) -> Path:
+def write_readme(dest: Path, staged: list[Path], skipped: dict[str, int], named: bool = False) -> Path:
     exclusions = "\n".join(
         f"- **{count} file(s)** — {reason}"
         for reason, count in sorted(skipped.items(), key=lambda kv: -kv[1])
         if reason != "extension not shipped"
     )
+    if named:
+        header = (
+            "Code and per-unit records for the paper by Bo Ma, Weiqi Yan, and Jinsong Wu.\n"
+            "An archived snapshot of https://github.com/mabo1215/BodhiPromptShield, "
+            f"{len(staged)} files. The code is released under the Apache License 2.0 "
+            "(LICENSE, NOTICE); external datasets remain under their own terms.\n"
+        )
+        labels_note = """
+## Human labels
+
+    src/experiments/semantic_inferability_*      Inferability labels: the
+                        sheets each annotator answered, the agreement and
+                        per-method summaries, and the keys that map items to
+                        methods.
+    data/privacylens_judge_human_annotations{,2}.csv
+                        Two annotators' labels on 120 decisions of the
+                        benchmark's own leakage judge.
+
+Nothing was recorded about the annotators beyond their labels.
+"""
+        privacy_note = """## Build-host details
+
+Private network addresses of the evaluation hosts, the rented GPU container
+hostname, and local checkout paths were rewritten before packaging. Hardware
+descriptions, model digests, decoding settings, and seeds are untouched. The
+build refuses to produce a zip if a personal e-mail address or any of those
+host details survives the pass.
+"""
+    else:
+        header = f"Anonymous supplementary material. {len(staged)} files.\n"
+        labels_note = ""
+        privacy_note = """## Anonymization
+
+Author names, the system name used in an earlier version, the code repository
+URL, the preprint identifier, private host addresses, and the rented GPU
+container hostname were rewritten before packaging. Hardware descriptions,
+model digests, decoding settings, and seeds are untouched, so the provenance a
+reviewer needs to check a number is intact. The build refuses to produce a zip
+if any of those identifiers survives the pass.
+"""
     text = f"""# Artifact for "What Prompt Mediation Stops in LLM Agent Pipelines, and How to Measure It"
 
-Anonymous supplementary material. {len(staged)} files.
-
+{header}
 ## Layout
 
     src/experiments/    The mediation layer itself -- detectors and sanitization
@@ -364,7 +450,7 @@ Anonymous supplementary material. {len(staged)} files.
 The tree keeps its repository-relative shape on purpose: the scripts resolve
 the project root two levels above `src/experiments`, so they run from an
 unzipped copy without path edits.
-
+{labels_note}
 ## Reproducing
 
     python -m pip install -r src/requirements.txt
@@ -383,21 +469,13 @@ Third-party corpora are referenced rather than shipped; the acquisition scripts
 in `src/experiments` document the exact source and version of each. External
 datasets remain under their own licenses and access terms.
 
-## Anonymization
-
-Author names, the system name used in an earlier version, the code repository
-URL, the preprint identifier, private host addresses, and the rented GPU
-container hostname were rewritten before packaging. Hardware descriptions,
-model digests, decoding settings, and seeds are untouched, so the provenance a
-reviewer needs to check a number is intact. The build refuses to produce a zip
-if any of those identifiers survives the pass.
-"""
+{privacy_note}"""
     out = dest / "README.md"
     out.write_text(text, encoding="utf-8")
     return out
 
 
-def build(root: Path, out_zip: Path) -> None:
+def build(root: Path, out_zip: Path, named: bool = False) -> None:
     if out_zip.exists():
         raise SystemExit(
             f"{out_zip} already exists; move or delete it first rather than "
@@ -407,12 +485,12 @@ def build(root: Path, out_zip: Path) -> None:
         dest = Path(tmp) / PACKAGE_NAME
         dest.mkdir(parents=True)
 
-        staged, redactions, skipped = stage(root, dest)
-        verify(dest)
+        staged, redactions, skipped = stage(root, dest, named)
+        verify(dest, named)
         verify_documentation(root, dest)
 
         write_manifest(dest, staged)
-        write_readme(dest, staged, skipped)
+        write_readme(dest, staged, skipped, named)
 
         out_zip.parent.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(out_zip, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
@@ -421,7 +499,7 @@ def build(root: Path, out_zip: Path) -> None:
                     zf.write(path, Path(PACKAGE_NAME) / path.relative_to(dest))
 
     size = out_zip.stat().st_size
-    print(f"[package] {len(staged)} files, {redactions} identity rewrites")
+    print(f"[package] {len(staged)} files, {redactions} rewrites ({'named' if named else 'anonymous'} package)")
     for reason, count in sorted(skipped.items(), key=lambda kv: -kv[1]):
         print(f"[package] skipped {count:>4}  {reason[:88]}")
     print(f"[package] wrote {out_zip} ({size / 1e6:.1f} MB)")
@@ -429,10 +507,13 @@ def build(root: Path, out_zip: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--out", default=str(REPO_ROOT / "submit" /
-                                             f"{PACKAGE_NAME}_anonymous.zip"))
+    parser.add_argument("--named", action="store_true",
+                        help="keep authorship for public archiving; rewrite build-host details only")
+    parser.add_argument("--out", default=None)
     args = parser.parse_args()
-    build(REPO_ROOT, Path(args.out))
+    default = (REPO_ROOT / "submit" / "zenodo" / f"{PACKAGE_NAME}.zip" if args.named
+               else REPO_ROOT / "submit" / f"{PACKAGE_NAME}_anonymous.zip")
+    build(REPO_ROOT, Path(args.out) if args.out else default, args.named)
 
 
 if __name__ == "__main__":

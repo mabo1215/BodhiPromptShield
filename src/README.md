@@ -34,7 +34,7 @@ number against its record.
 
 | Manuscript object | Produced by |
 | --- | --- |
-| `tab:measprop`, `fig:propagation` — identifier exposure across boundaries, with span precision and fact retention | `propagation_suite.py` (per-document records under the `v2` tag), pooled by `aggregate_paper_results.py`, drawn by `figures/propagation_and_fact_gap.py` |
+| `tab:measprop` — identifier exposure across boundaries, with span precision and fact retention | `propagation_suite.py` (per-document records under the `v2` tag), pooled by `aggregate_paper_results.py` |
 | `tab:propints` — the same table with intervals on every column | `aggregate_paper_results.py` |
 | `tab:downstream` — PrivacyLens downstream leakage and helpfulness, including the privacy-enhanced-prompt rows | `privacylens_downstream_suite.py` (`pe/` conditions for the privacy-enhanced prompt), pooled by `aggregate_paper_results.py`; paired tests by `downstream_paired_tests.py` |
 | `tab:portability` — second downstream agent | `privacylens_downstream_suite.py` with a second agent model |
@@ -69,7 +69,7 @@ number against its record.
 manuscript source. It carries builders for labels the manuscript no longer
 uses; a builder with no matching label in the `.tex` does nothing.
 
-`tab:threat_map`, `tab:prior_comparison`, `tab:pi_rules`, `tab:pi_profiles`,
+`tab:threat_map`, `tab:metrics`, `tab:pi_rules`, `tab:pi_profiles`,
 `tab:mapping_surface` and `tab:models` are expository and have no record behind
 them; they are not claimed as reproduced output.
 

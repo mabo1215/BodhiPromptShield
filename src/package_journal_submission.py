@@ -1,4 +1,4 @@
-"""Stage the files an Elsevier (Information Sciences) submission needs.
+"""Stage the files an Elsevier (Array) submission needs.
 
 The manuscript is kept as ``paper/main.tex``, with figures under ``paper/figs/``
 and the class and style files under ``paper/template/``. The appendix is
@@ -21,15 +21,24 @@ self-contained source set:
    compiles whether or not the submission system runs BibTeX.
 4. The compiled manuscript PDF, the Supplementary Material PDF, and the
    highlights file are copied as the separate uploads the journal asks for.
+5. Every table of the manuscript is written, in order and one per page, to a
+   standalone ``tables.tex`` with the manuscript's own preamble, and each table
+   also to its own file under ``tables/``, for a journal that asks for editable
+   tables. They are written after the LaTeX source archive, so the archive
+   holds only the manuscript build. Compile ``tables.tex`` with the
+   manuscript's ``.aux`` copied in as ``tables.aux``, or its section references
+   print as ??.
 
 The build fails if the manuscript includes another file, references a figure
 that does not exist, references a supplement label the supplement does not
 define, or if either local PDF is older than the sources it was built from, so
-the staged PDFs and the staged source cannot silently drift apart.
+the staged PDFs and the staged source cannot silently drift apart. It also
+fails while any source still carries an author placeholder (red text or an
+"[Authors to confirm" note), so an unfinished manuscript cannot be staged.
 
 Usage:
   python src/package_journal_submission.py
-  python src/package_journal_submission.py --out submit/information_sciences
+  python src/package_journal_submission.py --out submit/array
 """
 from __future__ import annotations
 
@@ -42,7 +51,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PAPER = REPO_ROOT / "paper"
 BUILD = PAPER / "build"
-DEFAULT_OUT = REPO_ROOT / "submit" / "information_sciences"
+DEFAULT_OUT = REPO_ROOT / "submit" / "array"
 
 MANUSCRIPT_NAME = "manuscript"
 SUPPLEMENT_NAME = "supplementary_material"
@@ -50,6 +59,10 @@ CLASS_FILES = ("elsarticle.cls", "elsarticle-num.bst")
 HIGHLIGHTS = PAPER / "highlights.txt"
 
 SUPP_PREFIX = "S-"
+TABLE_RE = re.compile(r"\\begin\{(table\*?)\}.*?\\end\{\1\}", re.S)
+TABLE_LABEL_RE = re.compile(r"\\label\{tab:([^}]+)\}")
+# Author placeholders that must be resolved before a manuscript is staged.
+PLACEHOLDER_RE = re.compile(r"\\textcolor\{red\}|\[Authors to confirm", re.IGNORECASE)
 INPUT_RE = re.compile(r"\\(?:input|include)\{([^}]+)\}")
 GRAPHICS_RE = re.compile(r"(\\includegraphics(?:\[[^\]]*\])?\{)([^}]+)(\})")
 SUPP_REF_RE = re.compile(r"\\ref\{" + re.escape(SUPP_PREFIX) + r"([^}]+)\}")
@@ -117,6 +130,46 @@ def _flatten_graphics(text: str) -> tuple[str, list[Path]]:
     return flat, figures
 
 
+def _write_tables(text: str, out: Path) -> list[Path]:
+    """Write every table of the staged manuscript to a standalone tables.tex."""
+    preamble = text[: text.index("\\begin{document}")]
+    tables = [m.group(0) for m in TABLE_RE.finditer(text)]
+    if not tables:
+        raise SystemExit("The manuscript has no table environments.")
+    note = (
+        "%% Every table of the manuscript, in order and one per page, typeset with the\n"
+        "%% manuscript's own preamble. Section references resolve when the manuscript's\n"
+        "%% .aux is copied in as tables.aux.\n"
+    )
+    document = note + preamble + "\\begin{document}\n" + "\n\\clearpage\n".join(tables) + "\n\\end{document}\n"
+    (out / "tables.tex").write_text(document, encoding="utf-8", newline="\n")
+    folder = out / "tables"
+    folder.mkdir()
+    written = [out / "tables.tex"]
+    for number, table in enumerate(tables, 1):
+        label = TABLE_LABEL_RE.search(table)
+        name = f"table{number}_{label.group(1) if label else number}.tex"
+        (folder / name).write_text(table + "\n", encoding="utf-8", newline="\n")
+        written.append(folder / name)
+    (folder / "tables.tex").write_text(document, encoding="utf-8", newline="\n")
+    for name in CLASS_FILES:
+        shutil.copy2(PAPER / "template" / name, folder / name)
+    return written
+
+
+def _check_no_placeholders(sources: list[Path]) -> None:
+    """Refuse to stage while any source still carries an author placeholder."""
+    hits = []
+    for src in sources:
+        for number, line in enumerate(src.read_text(encoding="utf-8").splitlines(), 1):
+            if line.lstrip().startswith("%"):
+                continue
+            if PLACEHOLDER_RE.search(line):
+                hits.append(f"{src.name}:{number}")
+    if hits:
+        raise SystemExit(f"Author placeholders remain in {', '.join(hits)}; resolve them first.")
+
+
 def _check_pdf_is_current(pdf: Path, sources: list[Path]) -> None:
     newest = max(p.stat().st_mtime for p in sources)
     if pdf.stat().st_mtime < newest:
@@ -145,6 +198,7 @@ def main() -> int:
         if not required.exists():
             raise SystemExit(f"Missing {required}; build the paper first.")
 
+    _check_no_placeholders([main_tex, *supp_sources])
     text = main_tex.read_text(encoding="utf-8")
     if INPUT_RE.search(text):
         raise SystemExit("main.tex includes another file; the manuscript must be a single .tex file.")
@@ -182,10 +236,13 @@ def main() -> int:
             if p.suffix in source_suffixes and p.name not in {f"{MANUSCRIPT_NAME}.pdf", f"{SUPPLEMENT_NAME}.pdf"}:
                 zf.write(p, p.name)
 
+    tables = _write_tables(text, out)
+
     print(f"Staged {len(staged)} files in {out}:")
     for p in staged:
         print(f"  {p.name} ({p.stat().st_size:,} bytes)")
     print(f"LaTeX source archive (no compiled PDFs): {archive}")
+    print(f"Standalone tables ({len(tables) - 1} tables, compile with the manuscript .aux as tables.aux): {tables[0]}")
     return 0
 
 

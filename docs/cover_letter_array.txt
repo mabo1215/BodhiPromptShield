@@ -1,0 +1,20 @@
+Dear Editors,
+
+Please consider our manuscript, "What Prompt Mediation Stops in LLM Agent Pipelines, and How to Measure It," as a regular research paper in Array. The manuscript reaches Array through Elsevier's Article Transfer Service from Information Sciences (INS-D-26-14978), whose editor declined it at the screening stage without review and without scientific comments.
+
+LLM agents copy user content into retrieval queries, memory, tool arguments, and logs. A common defense mediates the prompt at ingress, replacing sensitive spans with placeholders and restoring exact values only where an authorized tool needs them. This measurement study asks what such a layer stops. We claim no new mechanism; we compare nine mediation methods under one protocol on public benchmarks with open-weight agents.
+
+Main findings:
+- The detector sets identifier exposure: exact identifiers in agent actions fall from 13.7% to 2.1-3.1%.
+- In a live agent, placement decides the outcome; mediating only the prompt leaves most tool-returned values in context.
+- Mediation does not stop prompt injection, and unrestricted restoration can exfiltrate values.
+- Blind human labels show inferability falling from 98% to 25-50%, a fall that LLM-judge and word-overlap metrics miss.
+
+The work fits Array's coverage of cyber security and of intelligent systems: it is a reproducible, human-validated evaluation of information leakage in LLM-based systems, with bootstrap intervals, ablations over detector, placement, and restoration, and every table and figure regenerable from the released per-unit records.
+
+Since the Information Sciences submission we have completed the author statements (authorship contributions, funding, and the use of AI tools), stated the research questions explicitly, added a table that defines every metric, clarified the presentation of the results, and added the annotators' instructions to the Supplementary Material. No result has changed.
+
+It is original and not under consideration elsewhere. An earlier version is available as an arXiv preprint (arXiv:2604.05793). All authors approved the manuscript, and none has competing interests.
+
+Sincerely,
+Bo Ma (corresponding author), for Weiqi Yan and Jinsong Wu

@@ -23,8 +23,8 @@
 
 \title{Independent Review and Revision Plan\\
 \large What Prompt Mediation Stops in LLM Agent Pipelines, and How to Measure It\\
-\normalsize Target venue: \emph{Computers \& Security} (Elsevier), full-length research article}
-\author{Independent review, 1 November 2026}
+\normalsize Target venue: \emph{Array} (Elsevier, open access), regular research paper}
+\author{Independent review, 18 November 2026}
 \date{}
 
 \begin{document}
@@ -32,560 +32,215 @@
 
 \section{How this review was conducted}
 This review is a reset. It takes no finding, priority or completion judgment from any earlier review round. It was
-written from the current manuscript alone: \src{paper/main.tex} with its rendered \src{paper/main.pdf} (29 pages:
-body to p.~22, declarations pp.~22--23, references pp.~24--29), and the Supplementary Material
-\src{paper/supplementary.tex}, which wraps \src{paper/appendix.tex} and renders as \src{paper/supplementary.pdf}
-(21 pages, sections S1--S12). The two documents were reviewed jointly as one submission. The manuscript was examined
-along four independent dimensions; no reviewer was shown an earlier review or a progress note.
-\begin{enumerate}
-\item \textbf{Scientific substance}, read as a \emph{Computers \& Security} referee would read it: contribution,
-threat model, experimental design and statistics, support for every headline claim, and practical implications.
-\item \textbf{Claims against records.} About 470 reported values and 250 interval bounds were traced to the
-per-unit records, covering every main-text table and figure and Tables S1--S13; the pooled summaries were rebuilt
-from the per-unit rows and came out byte-identical. Every main$\leftrightarrow$supplement cross-reference was resolved
-against both \src{.aux} files and its target content read. The headline metrics were read against the code that
-computes them.
-\item \textbf{Bibliography and positioning.} All 66 entries were checked against canonical records (Crossref,
-publisher pages, ACL Anthology, arXiv); citation use was checked against the cited works; the \emph{Computers \&
-Security} record since 2023 (1{,}856 items in Crossref) was searched for the journal's own relevant work.
-\item \textbf{Venue compliance and presentation.} The journal's requirements and Elsevier's generative-AI policy
-(updated June 2026) were checked against the PDF, the back matter, the highlights file and the cover letter; the
-word count was measured from the PDF; selected pages were rendered and inspected.
-\end{enumerate}
-Two findings that rest on code or data (F5 and F10) were re-verified directly against the code path and the
-records before they were recorded here.
+written from the current manuscript alone: \src{paper/main.tex} with its rendered PDF (24 pages: body to p.~18,
+declarations pp.~18--19, references pp.~19--24) and the Supplementary Material \src{paper/supplementary.tex}, which
+wraps \src{paper/appendix.tex} and renders as 31 pages (Sections S1--S12). The two documents were reviewed jointly as
+one submission. The whole main text was read; the supplement was read for structure and for the points the main text
+rests on. Pages carrying figures and tables were rendered and inspected.
 
-\section{Verdict}
-\textbf{Major revision. Indicative score 58/100} (novelty 5/10, rigor 6/10, evaluation 6/10, clarity 5/10, venue fit
-7/10).
+The manuscript reaches \emph{Array} through Elsevier's Article Transfer Service from \emph{Information Sciences}, which
+declined it at screening without scientific comments. The transfer offer guarantees peer review: a Scientific Handling
+Editor makes an initial check for major concerns and defers the suitability judgment to the referees' reports. The
+review below is therefore written for two \emph{Array} referees, single-blind, from a broad computer-science
+readership that includes cyber security and intelligent systems but is not specialized in LLM privacy.
 
-The measurement content is careful and largely sound. Every traced number matches its record. The paired statistics
-use Holm correction, and run-to-run nondeterminism is measured rather than assumed away. The leakage instruments
-are validated against human labels, including the benchmark's own judge. The read-edge placement result comes from a
-live tool-executing stack, the canonicalization hardening is measured rather than recommended, and the limitations
-are candid.
-
-Four things hold the paper back at \emph{Computers \& Security}:
-\begin{enumerate}
-\item \textbf{The headline message about facts contradicts the paper's own results} (F1). The introduction and the
-conclusion say mediation ``removes strings, not what a reader can reconstruct'', while \S6.2 reports that human
-labels show inferability falling by 47--72 points, ``the opposite of what a surface metric or an unvalidated judge
-reports''. Several headline numbers are also stated more strongly than the body supports (F2).
-\item \textbf{Several headline comparisons are not like-for-like, or hold by construction} (F6--F9). An in-domain
-trained detector is set against zero-shot tools. The attribute-recovery attack has no release-free control, and it
-blanks mostly first names rather than ``the most sensitive value''. The AI4Privacy ``propagation'' comes from a
-deterministic reference agent whose memory write is the whole text. The ``restoration timing'' effect is, by the
-paper's own description, mediation against no mediation.
-\item \textbf{The article is over the 12{,}000-word cap} by the conservative count, and it leans on a 21-page
-supplement for points a reviewer must accept (F3, F25).
-\item \textbf{Positioning}: the novelty sentence overclaims against cited work, the injection conclusion rests on one
-defense, and the paper cites none of the journal's own work (F17).
-\end{enumerate}
-Most of this is fixable by writing and by CPU-only reanalysis of released records. Two controls need a short GPU run
-(F6, F7), and the human-annotation design needs either new labels or an explicit statement of its limits (F12).
+\emph{Array} requirements were read through search results, because ScienceDirect blocks automated fetching of the
+Guide for Authors; they should be confirmed in the submission system.
 
 \section{Venue requirements}
-Sources: the \emph{Computers \& Security} Guide for Authors (the ScienceDirect page blocks automated fetching; the
-requirements below were read through search-engine copies on 1 November 2026 and must be confirmed in the
-submission system), and Elsevier's \emph{Generative AI policies for journals} (fetched 1 November 2026, ``Policy
-updated June 2026'').
-\begin{center}\small
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{4.2cm}Y>{\raggedright\arraybackslash}p{1.3cm}}
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}p{4.4cm}Yp{1.2cm}@{}}
 \toprule
-Requirement & Evidence in the current submission & Status \\
+Requirement & Current state & Status \\
 \midrule
-At most 12{,}000 words including abstract, main text, references and appendices & Whole-PDF token count 13{,}289:
-front matter 302, body with tables and captions 10{,}499, declarations 550, references 1{,}938. Prose-only count
-(no table cells) about 11{,}700--12{,}300 depending on whether declarations are counted (F3) & \fail \\
-Abstract $\leq$ 250 words & 247 words by source count, 250 by PDF count; no margin (F4) & \fail{} (margin) \\
-5--10 keywords, no general or plural terms & Six singular, specific keywords & \ok \\
-Highlights: 3--5 bullets, $\leq$ 85 characters, separate editable file & Five bullets of 74--85 characters, but
-bullet~2 is false and bullets 3--4 overstate (F2) & \fail \\
-Single-anonymized review: author names on the manuscript & Present & \ok \\
-Numbered sections; any consistent reference style at submission & elsarticle \src{preprint}, numbered references &
-\ok \\
-CRediT statement, competing-interest declaration, funding, data availability & Present, but CRediT, competing
-interests and funding are unresolved red placeholders (F11) & \fail{} (author) \\
-Generative-AI declaration titled ``\dots in the manuscript preparation process''; AI used in the research process
-described in the Methods section & Heading correct; the declaration mixes research-process use (code development,
-data processing, experiment orchestration) into the manuscript-preparation declaration, and the tool list is a red
-placeholder (F11) & \fail \\
-AI must not create or alter images of primary data & ``No figure was generated with an AI image tool'' & \ok \\
-Supplementary material published as supplied & Separate PDF with S-numbered sections; all 27 main$\rightarrow$S and 25
-S$\rightarrow$main references resolve; no ``??''; flattened submission source matches the supplement's numbering
-exactly & \ok \\
-Every table and figure cited in the text & Table~2 (closest systems) is never cited (F30) & \fail \\
-Scalable fonts & All Type 1 (text) and CID TrueType (figures) & \ok \\
+Abstract at most 250 words & 189 words & \ok \\
+1--7 keywords; avoid ``and''/``of'' phrases & 6 keywords, none with ``and'' or ``of'' & \ok \\
+Highlights encouraged: 3--5 bullets, at most 85 characters & 5 bullets, 74--85 characters, separate file & \ok \\
+Graphical abstract encouraged & None & optional (P3) \\
+Numbered references in square brackets & \src{elsarticle-num} & \ok \\
+Single-blind review & Author names and affiliations on the title page & \ok \\
+Author order matches the submission system & Ma, Yan, Wu in both & \ok \\
+Declarations: CRediT, competing interests, funding, data availability, generative AI & All present; no placeholder text remains & \ok \\
+Datasets in a public repository strongly encouraged & Code and per-unit records on GitHub; no archival DOI & see P2-4 \\
+Length & No limit stated for regular papers; 24 + 31 pages & \ok \\
+Typeset tables & Table captions touch the top rule (P0-1) & \fail \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-\section{What is sound and should not be disturbed}
+\section{Verdict}
+\textbf{Suitable for \emph{Array}; expected outcome minor to major revision, driven by presentation rather than
+substance.}
+The study is careful and honest. It compares ten conditions under one protocol on public benchmarks, runs a live
+tool-executing agent, reports bootstrap intervals and paired tests with multiplicity correction, validates its
+scoring instruments against human labels, states negative and unresolved results as such, and releases per-unit
+records. These are the qualities a scientifically sound measurement paper needs, and they exceed what \emph{Array}
+typically requires.
+
+The main risk with \emph{Array} referees is readability. The prose is extremely dense: most paragraphs carry several
+numbers with intervals, six metric abbreviations are defined in two different sections, the contributions are stated
+as numbers rather than claims, and several sentences are compressed to the point of being opaque to a reader outside
+the subfield. A referee who cannot follow the argument quickly will ask for a rewrite, or will read the paper's
+explicit statement that it proposes no new mechanism as a lack of contribution. The second risk is a small set of
+methodological questions that referees in this area routinely raise (sample size, an author's labels as the human
+reference, open-weight models only); the paper already discloses each of them, and the actions below make the
+disclosure easier to find.
+
+\section{Strengths to keep}
 \begin{itemize}
-\item \textbf{Record fidelity.} Every traced value in Tables 3--8, Figures 2--3 and Tables S1--S13 matches its record;
-the pooled summaries rebuild byte-identically. The headline metrics (PER, the final-action identifier rate, the
-$-11.0$ contrast, attribute recovery, the $\kappa$ values, the human inferability rates) are implemented as defined.
-\item \textbf{Human validation of the instruments}, including the non-author blank-sheet reader and the check of
-PrivacyLens' own judge; the finding that an uncalibrated judge can be confidently wrong is worth keeping central.
-\item \textbf{The live-stack placement experiment} (\S6.5): the strongest agent-level evidence in the paper.
-\item \textbf{Paired statistics with Holm correction}, and measured run-to-run nondeterminism.
-\item \textbf{Canonicalization}: measured, and it closes exactly the byte-level families.
-\item \textbf{Token linkability}: placeholder labels single out 94--98\% of releases. This is non-obvious and
-practically important.
-\item \textbf{Restoration as an exfiltration path under injection}, and its refusal under recipient-scoped
-restoration (\S6.6): the most security-relevant restoration observation in the paper (see F9).
+\item One protocol across detectors, replacement modes, placements and restoration policies, with installed
+baselines (Presidio, a reimplemented Casper-style sanitizer, an LLM sanitizer).
+\item A live tool-executing agent (AgentDojo) in which values enter through tool outputs as well as the prompt,
+which shows that ingress-only mediation leaves most values reachable.
+\item Instrument validation: the LLM judge and the lexical measure both miss the fall in human-labeled
+inferability, and the benchmark's own leakage judge is checked against two readers.
+\item A concrete security finding about the layer itself: an unrestricted restoration boundary acts as a confused
+deputy under prompt injection, and recipient scoping closes that path at a measured cost.
+\item Explicit limitations, unresolved effects reported as unresolved, and deployer guidance tied to the
+measurements.
 \end{itemize}
 
-\section{Findings}
-Severity: \pz{} likely desk return or rejection; \po{} major-revision item a referee would require; \pt{} should be
-fixed; \pth{} polish. Line numbers refer to \src{paper/main.tex} (M) and \src{paper/appendix.tex} (A) at the time of
-review. \textbf{Effort} states whether an item needs text only, CPU-only reanalysis of released records, a GPU run,
-new human labels, or an author decision.
+\section{Findings and revision actions}
+Priorities: \pz{} must be fixed before the submission is completed; \po{} should be done before completing the
+submission, because each one is cheap, changes no number, and removes a likely referee objection; \pt{} are probable
+referee requests that need data, figures, or the authors' decision and can wait for the revision round; \pth{} are
+optional.
 
-\subsection{Headline claims and submission blockers}
+\subsection*{\pz{} P0-1. Table captions collide with the top rule}
+In every main-text table (Tables 1--7) the last line of the caption sits on the \verb|\toprule|: on p.~15 the rule
+runs through the descenders of ``call and is excluded.'' The class places captions above tables with no space below
+them (\verb|\belowcaptionskip| is 0). Supplementary tables (e.g.\ Table S2) are tight in the same way.
+\textbf{Action:} set booktabs' \verb|\abovetopsep| to about 4pt in the preambles of both documents, rebuild, and
+inspect one table page of each.
+\effort{Minutes.}
 
-\subsection*{F1 \pz{} The message about facts contradicts \S6.2}
-\textbf{Evidence.} Contribution~2 (M98): ``blind human labels show inferability falling far less than identifier
-exposure. Mediation removes strings, not what a reader can reconstruct.'' Conclusion (M528): ``It does not control
-facts \dots\ blind human labels show inferability falling far less than identifier exposure---a result that an LLM
-judge and a word-overlap metric both missed.'' Against this, \S6.2 (M363) says the human labels ``reverse the finding
-those proxies suggested \dots\ Mediation reduces factual inferability substantially---the opposite of what a surface
-metric or an unvalidated judge reports'', and M365 adds ``removing more removes more''. The 70B agent's judge-scored
-leakage falls significantly under seven of eight conditions (Table~S10), and overall attacker recovery falls by 32.4
-points [$-35.5$, $-29.6$] under the learned detector (Table~S5), a column the main-text Table~4 omits. The
-conclusion's attribution is logically inverted: the proxies stayed flat, so what they missed is the \emph{decline},
-not that the decline is smaller than for identifiers.
+\subsection*{\po{} P1-1. State the research questions and recast the contributions as claims}
+The introduction names four measurement axes in one long sentence and then lists three contributions that are
+mostly numbers (``2.1--3.1\% \ldots 13.7\% \ldots 61--68\% \ldots 44--52 points \ldots 19--25''). A broad
+readership needs the questions before the numbers.
+\textbf{Action:} state four research questions and map each to its section: RQ1, how much identifier exposure each
+detector leaves and at what over-redaction cost (Sections 6.1, 6.3); RQ2, where mediation must sit in a live
+tool-using agent and what restoration recovers (Sections 6.4, 6.5); RQ3, whether facts survive when their strings do
+not, and whether automated leakage measures agree with people (Section 6.2); RQ4, what the layer's own surfaces expose
+under evasion and prompt injection (Sections 4.3, 6.6). Rewrite each contribution bullet as one claim sentence with at
+most one or two supporting numbers, and add a one-sentence roadmap of the paper. Make explicit what is new in a
+measurement contribution: the first joint measurement of these four questions for one layer under one protocol, the
+human-validated failure of both automated leakage measures, and the restoration-oracle finding.
+\effort{One to two hours; no number changes.}
 
-\textbf{Action.} State one message everywhere (abstract, contributions, \S6.3 opening at M425, conclusion):
-mediation substantially reduces what a reader can infer (human-labeled inferability 98\%$\rightarrow$25--50\%) but
-leaves facts far more exposed than identifiers (residual identifiers 2--7\%), and an adversary given candidates still
-recovers most removed values; the automated proxies miss the reduction entirely. Delete ``Mediation removes strings,
-not what a reader can reconstruct''. Add the ``Recovered (\%)'' column and the paired reductions to Table~4.
-\effort{Text only.}
+\subsection*{\po{} P1-2. Collect the metrics in one place, and fix the SSR definition}
+PER and SSR are defined in Section 4.4; RCE, RSR, ASR and FRR in Section 5.3. Section 4.4 defines SSR as ``the
+fraction of gold spans still present verbatim'', but on PrivacyLens it is counted over covered characters (Table 2
+caption, Table S17 caption), which the definition does not say.
+\textbf{Action:} add one compact table (metric, unit counted, what it measures, what it does not measure, where it is
+reported) at the start of Section 5.3, and state in the SSR definition that it is counted over whole spans on
+AI4Privacy and over covered characters on PrivacyLens.
+\effort{One hour.}
 
-\subsection*{F2 \pz{} Highlights, abstract and cover letter state numbers more strongly than the body}
+\subsection*{\po{} P1-3. Rewrite the most compressed sentences and thin the intervals in running text}
+Several sentences are hard to parse for a reader outside the subfield, for example:
 \begin{itemize}
-\item Highlight~2, ``cuts identifier exposure to 7.4\%, the best baseline to 46.7\%'', is false: the LLM sanitizer, a
-listed baseline, reaches 22.1\% [19.0, 25.2] on the same source, and on PrivacyLens Casper-style (1.4\%) is below the
-learned detector (1.8\%). The abstract's ``46.7--52.2\% for the strongest baselines'' and cover-letter point~1 have
-the same problem.
-\item Highlight~3, ``keeps identifiers out of agent output'': 2.7\% remain before restoration, and 8.0\% of deferred
-actions carry one (see also F9).
-\item Highlight~4, ``recovers 64\% of removed values'', omits that this is a four-way forced choice with 25\% chance.
-\item Abstract: ``identifiers in a live agent's final action'' refers to PrivacyLens, where no tool executes; ``live''
-is otherwise reserved for AgentDojo.
-\item Cover letter: ``Every reported number carries a bootstrap confidence interval'' is false (no interval on any
-$\kappa$, Table~4's recovery columns, Table~6's utility columns, Table~7, Table~S10, Table~S13); point~5 omits the
-regex-only exception; ``no competing interests [authors to confirm]'' is a placeholder.
+\item Section 1: ``Each of its limits has been measured somewhere'' (the antecedent of ``its'' is unclear).
+\item Section 6.1: ``Retention prices the result''; ``The rest does not look like the tagger's doing.''
+\item Section 6.2: ``the reported human labels, an author's, fall from \ldots''; ``Capacity moves the floor rather
+than the level''.
+\item Section 6.5: ``The configuration we name below, run as a whole, trades 21 points of task success for 77 points
+of exposure'' (``below'' refers to the next sentence; ``trades \ldots for'' reads as the opposite of what is meant).
 \end{itemize}
-\textbf{Action.} Rewrite each statement to match the body (``the strongest recognizer-based baselines'', ``choosing
-among four candidates'', ``cuts'', ``in the agent's generated final action''); keep every highlight $\leq$ 85
-characters. \effort{Text only.}
+Many paragraphs (Sections 6.2, 6.4, 6.5) repeat in prose the intervals the tables already give.
+\textbf{Action:} rewrite these sentences in plain terms. In running text keep the interval for each headline
+contrast and drop intervals that duplicate a table cell. No number changes.
+\effort{Half a day for a careful pass over Sections 1 and 6.}
 
-\subsection*{F3 \pz{} The article exceeds the 12{,}000-word cap}
-\textbf{Evidence.} Whole-PDF token count 13{,}289 (body with tables and captions 10{,}499; references 1{,}938;
-declarations 550; front matter 302). A prose-only count that skips table cells gives about 12{,}300 with the
-declarations. The cap counts references and appendices; whether the editorial office counts table cells is not
-stated. Additions required by this review (F12 protocol, F15 guidance, F17 citations) add about 400--600 words.
+\subsection*{\po{} P1-4. Make the human reference labels easy to defend}
+The labels reported in Figure 2 and Section 6.2 are an author's. The text does give the non-author blank-sheet
+reader's labels (22.5--47.5\%, $\kappa=0.849$ against the author), but only in passing, after the headline numbers.
+Referees routinely object to an author's labels as the reference, especially since the method's replacement style can
+show through to the annotator.
+\textbf{Action (now):} state in Section 5.3 why these labels are the reference, and state in Section 6.2 and in the
+Figure 2 caption that every conclusion drawn from them also holds under the non-author's labels.
+\textbf{Action (revision round, P2):} show both readers in Figure 2, or adopt adjudicated labels as the reference
+and report each reader's labels in the supplement.
+\effort{Half an hour now; a figure regeneration later.}
 
-\textbf{Action.} Bring the whole-PDF count to $\leq$ 11{,}700 words (a margin under the most conservative reading)
-after all additions, i.e.\ a gross cut of about 2{,}100--2{,}300 words. Candidates, with approximate savings:
-\begin{center}\small
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{6.3cm}>{\raggedright\arraybackslash}p{2.0cm}Yr}
-\toprule
-Cut & Location & Note & Saving \\
-\midrule
-Compress \S2.1: drop $G=(V,\mathcal{E})$ (never used again), the three-property list, and the joint $(\pi,\rho)$
-optimization that is never solved & M104--139 & keep $x$, $E(x)$, $T_\pi$, $K$, $\mathcal{R}_\rho$ & 250 \\
-Fold the four adversary definitions into Table~1; delete the paragraph restating it (M170) & M144--170 & with
-F13 & 150 \\
-\S4.5 mode selection to one sentence; \S4.6 key-management design (envelope encryption, HSM/TEE, audit) to the
-supplement, keeping the measured token-linkability result and one trust sentence & M253--264 & with F14 & 330 \\
-Merge \S4.7 runtime and \S4.8 OCR into one sentence; OCR detail to the supplement & M266--270 & with F23 & 100 \\
-Shorten the extrapolation paragraph; drop its speculative last sentence & M277--278 & with F23 & 130 \\
-Delete the implementation paragraph that repeats \S5.3 & M295 & & 60 \\
-Delete Figure~2 and its description & M308--314, M355 & with F8 & 60 \\
-Move the judge-reliability literature in \S6.2 to Related Work in two sentences & M365 & & 80 \\
-\S6.6: per-arm payload accounting to the supplement; delete the ``earlier pass'' sentence & M515 & with F27 & 180 \\
-Compress \S3.3 prose that repeats Table~2; trim the training-time paragraph and its least-needed references &
-M179, M185 & references count & 350 \\
-Table~5: drop the ``Secret'' column and move intervals that are not discussed to the supplement, so it fits upright &
-M400--423 & with F31 & 200 \\
-Trim results prose that repeats table values with intervals (\S6.3, \S6.5) & M425--468 & & 250 \\
-\bottomrule
-\end{tabularx}
-\end{center}
-Also bring the abstract to $\leq$ 235 words (F4). \effort{Text only.}
+\subsection*{\po{} P1-5. Fold the two-sentence Section 2.3 into the threat model}
+Section 2.3 (``Formal Privacy Scope'') is two sentences. A separate subsection draws attention to a point that the
+threat model and the limitations already make.
+\textbf{Action:} move the two sentences to the end of Section 2.2 and update the two references to it.
+\effort{Minutes.}
 
-\subsection*{F4 \pt{} The abstract is overloaded and at the word limit}
-\textbf{Evidence.} 16 numeric results in 247 words; ``inferability falling \dots\ under every mediated method except
-regex-only'' covers only the four annotated mediated methods (the LLM sanitizer, the transformer detector and
-symbolic mapping were not annotated). \textbf{Action.} Rewrite to about 220--235 words: problem, method, four or five
-quantified findings consistent with F1--F2 and F9, implication. \effort{Text only.}
+\subsection*{P1-6. Enlarge the text in Figure 1 --- withdrawn}
+This finding was wrong. It was estimated from a 75\,dpi page render. Measured from the figure itself, the canvas is
+6.7\,in wide and is included at the 6.3\,in text width, so its 8.6--9.0\,pt labels print at 8.1--8.5\,pt, which meets
+the 8\,pt this item asked for. No action.
 
-\subsection{Evaluation design}
+\subsection*{\pt{} P2-1. Show the live-stack trade-off as a figure}
+Table 5 has twelve numeric columns (three detectors times four measures) and is the paper's central deployment
+result. Its message, that each placement buys exposure reduction at a utility cost and restoration moves points back
+along that curve, is a two-dimensional trade-off.
+\textbf{Action:} plot task success against non-authorized exposure for the six placements and three detectors (a
+point per cell, lines joining each detector's restored and unrestored conditions), from the existing numbers. Keep
+Table 5 or move it to the supplement.
+\effort{Two hours; no new runs.}
 
-\subsection*{F5 \po{} The headline exposure comparison is not like-for-like}
-\textbf{Evidence.} The 7.4\% detector is a logistic-regression tagger trained on 3{,}000 AI4Privacy documents (M287),
-compared with zero-shot Presidio, Casper-style and GLiNER; its precision is 0.35 and retention 0.80 against
-0.66--0.78 and 0.94--0.97 for the zero-shot detectors. PER rewards over-redaction, so a detector that masks more
-text scores lower. The supplement concedes ``the detector is replaceable and is not a contribution of this paper''
-(A319).
+\subsection*{\pt{} P2-2. Sample sizes}
+Several contrasts rest on small samples: 40 annotated items per method, 200 PrivacyLens tasks downstream, 74
+injection pairs, 154 live-stack cases, and many effects are reported as unresolved. The paper says so. A referee may
+still ask for more.
+\textbf{Action:} prepare the response: which contrasts are resolved at the current sizes, which are not, and the
+cost of extending the most informative one (the downstream PrivacyLens run from 200 to all 493 tasks needs GPU time
+only). Decide only if a referee asks.
 
-\textbf{Action.} (a) Present the AI4Privacy comparison as an operating-point comparison: plot or tabulate PER against
-retention for every detector that exposes a score (the logistic-regression tagger, GLiNER, Presidio), sweeping the
-threshold $\tau$, and compare at matched retention. (b) Add one baseline with training-data parity, e.g.\ a small
-transformer token classifier fine-tuned on the same 3{,}000 documents; or, failing that, state the asymmetry in the
-abstract and the first results paragraph. (c) Lead the abstract with the comparison that is like-for-like.
-\effort{(a) CPU-only; (b) a short GPU run (or a long CPU run).}
+\subsection*{\pt{} P2-3. Open-weight models only}
+All agents and judges are local open-weight models; no commercial endpoint was tested. This is disclosed in the
+limitations. A referee may ask for one closed-model replication.
+\textbf{Action:} none until a referee asks; it needs API access and budget from the authors.
 
-\subsection*{F6 \po{} The attribute-recovery attack is mis-described and has no release-free control}
-\textbf{Evidence.} The text says the attack blanks ``the most sensitive value of each marked fact'' (M367, A134).
-The code (\src{\_maskable\_span} in the attack script) applies a fixed priority rule instead: the longest gold
-identifier, else the first number, else the first capitalized token longer than three characters. In the 32B records
-832 of the 1{,}237 blanks are capitalized entities, 335 numbers and 70 identifiers; the most frequent answers are
-first names (Emily 64, John 57, Jane 49). A fact such as ``Dave Thompson is going through a divorce'' becomes ``\_\_\_\_
-is going through a divorce'': the attacker recovers \emph{who}, not the sensitive attribute. Candidate pools are typed
-by shape, so a pool mixes names, places and products, and the stem plus the candidates may make the answer guessable
-without any release; under no protection, 82.5\% of the questions whose value is absent from the release are still
-answered correctly. ``Present'' is an exact full-string match, so a release that keeps ``Dave'' but masks
-``Thompson'' counts the value as removed.
+\subsection*{\pt{} P2-4. Archive the released records with a DOI}
+The data statement points to a GitHub repository. \emph{Array} strongly encourages data deposit in a repository, and
+a GitHub URL is not an archival identifier.
+\textbf{Action:} archive a tagged release of the code and per-unit records (e.g.\ on Zenodo) and cite its DOI in the
+Data availability statement. Needs the authors' account.
 
-\textbf{Action.} (a) Describe the blank exactly (``a value chosen by a fixed priority rule: identifier, then number,
-then named entity'') and report recovery separately for identifiers, numbers and entities. (b) Add two controls on
-the identical questions: stem plus candidates with no document, and stem plus candidates with the document fully
-masked; report recovery \emph{above} the release-free control. (c) Recount ``present'' with token-level survival and
-report both. (d) Rename the instrument if the controls show it measures referent recovery rather than attribute
-recovery, and cite the re-identification precedents (Patsakis and Lykousas 2023; Nyffenegger et al.\ 2024; Staab et
-al.\ 2024; Xin et al.\ 2025). \effort{(a), (c) CPU-only from the released rows; (b) GPU, two conditions $\times$
-1{,}237 questions on the 32B attacker (about one GPU-hour).}
+\subsection*{\pth{} P3-1. Graphical abstract}
+Encouraged, not required. A simplified version of Figure 1 with the four headline findings would serve.
 
-\subsection*{F7 \po{} The human inferability reference is unpaired, author-anchored, under-reported}
-\textbf{Evidence.} The 240 labeled items (246 rows with top-ups) cover 199 distinct (document, fact) pairs; 159 of
-them appear under one method only, so method contrasts at $n=40$ are between different items and confounded with
-item difficulty. The reference rater is an author (M524). Blinding is limited: a reader sees \texttt{<PERSON\_1>}
-markers, plausible dummy values or regex masks and can infer the method family. Neither document reports the
-annotation guidelines, worked examples, rater background, interface or time per item. Regex-only's contrast depends
-on the reference rater: it includes zero under the author's labels and is resolved under the second reader's
-($-12.5$ [$-25.0$, $-0.5$]). The intervals use 10{,}000 resamples, not the 1{,}000 stated in \S5.5.
+\subsection*{\pth{} P3-2. Cross-reference style}
+The text uses ``\S6.5'' for sections. Elsevier house style spells out ``Section 6.5''. The journal re-typesets
+accepted papers, so this is cosmetic.
 
-\textbf{Action.} (a) Add a short protocol paragraph to the main text (question asked, rater pool, blinding and its
-limit, sampling, reconciliation) and the full guidelines to the supplement. (b) Report the per-method rates under
-each reader, or under an adjudicated consensus, not under the author's labels alone. (c) State the unpaired design as
-a limitation and, if possible, add a paired re-annotation (the same facts under every method, distributed so that no
-rater sees a fact twice). (d) State the resample count used. \effort{(a), (b), (d) text and CPU-only; (c) new human
-labels.}
+\section{What not to change}
+Do not add a new mechanism, and do not soften the statement that the paper proposes none: the contribution is the
+measurement, and P1-1 makes that explicit. Do not change any reported number in the P1 actions: they are presentation
+changes only. Keep the limitations section as it is.
 
-\subsection*{F8 \po{} The AI4Privacy ``cross-boundary propagation'' holds by construction}
-\textbf{Evidence.} M251: the retrieval query is the first half of the mediated text, the memory write is the full
-text, and the tool call keeps tokens with a digit, ``@'' or an initial capital. Memory is therefore the highest column
-for every method by definition, and Figure~2's caption presents that as a finding. On AI4Privacy, SPE is a
-deterministic function of the detector's mask and adds nothing beyond PER; the paper itself says SPE ``measures how
-much of each surface a detector leaves, not how an agent propagates values''.
+\section{Recommended order}
+P0-1 and P1-1 to P1-5 before completing the \emph{Array} submission, then rebuild, repackage and re-check the PDFs.
+P2 and P3 items in the revision round, once the referees' reports show which of them they ask for.
 
-\textbf{Action.} Delete Figure~2; report the AI4Privacy result as a detector measurement (PER, retention,
-precision); keep SPE only where an artifact is not a projection of the prompt, or rename it; re-anchor
-Contribution~1 on the agent-generated evidence (\S6.3--6.5). \effort{Text only.}
-
-\subsection*{F9 \po{} The ``restoration timing'' effect is mediation against no mediation; the real restoration
-finding is buried}
-\textbf{Evidence.} M431: under early restoration ``its prompt is the unprotected prompt byte for byte on all 200
-cases: for the agent, early restoration is no mediation at all''. The $-11.0$ [$-13.3$, $-8.7$] contrast therefore
-equals symbolic mediation against none; typed placeholders with the same detector give $-11.0$ [$-13.4$, $-8.6$]
-against no protection. RCE 1.6\% against 100\% is definitional. Meanwhile the security-relevant restoration
-observation sits in the injection paragraph (M515): under unrestricted restoration the agent wrote only a token into
-the attacker's call and the boundary restored it; under recipient-scoped restoration the boundary refused.
-
-\textbf{Action.} (a) Reframe \S6.4 and the abstract honestly: the contrast shows that an agent which plans over
-tokens rarely writes identifiers, whatever happens at restoration; the timing comparison isolates \emph{where} the
-exact value re-enters. (b) Promote the confused-deputy observation to its own short result: restoration is an oracle
-an injected instruction can call, and recipient scoping is the control that refused it. (c) Optionally, run a
-dedicated restoration-oracle attack (injected instructions that ask the agent to send a token to an attacker-named
-recipient) under unrestricted and recipient-scoped restoration on all AgentDojo suites, and report attack success and
-refusal rates. \effort{(a), (b) text only; (c) GPU, about 100 targeted pairs $\times$ 2 arms.}
-
-\subsection*{F10 \po{} The live-stack summary says restoration costs no exposure; the Presidio arm says otherwise}
-\textbf{Evidence.} M468, under ``Three findings hold in both arms'': ``restoration recovers part of it at no exposure
-cost''. In the Presidio arm the read-edge-with-restoration against read-edge contrast is $+1.64$ [$+0.09$, $+3.50$], a
-resolved increase. The same paragraph prints signed intervals beside unsigned point estimates (``removing a further
-56.6 points [$-68.4$, $-41.8$]'', ``costs 13.7 points [$-23.0$, $-2.6$]''). \textbf{Action.} ``at a small exposure cost
-(at most 1.6 points)''; print signed differences. \effort{Text only.}
-
-\subsection*{F11 \pz{} Back matter: unresolved declarations and a non-compliant AI declaration}
-\textbf{Evidence.} M540--552: CRediT, competing interests and funding are red ``[Authors to confirm]'' placeholders,
-and the AI tool list is red. Elsevier's policy (June 2026) asks that AI used in the research process be ``described in
-detail in the Methods section''; the declaration covers manuscript preparation (improving language, clarity and
-readability). The current declaration lists code development, data processing and experiment orchestration there.
-The acknowledgements thank ``the four volunteer annotators who labeled the inferability items'', but two non-authors
-labeled inferability items and two others labeled the judge-validation items.
-
-\textbf{Action.} (a) Authors resolve the four placeholders. (b) Move the research-process use (code development,
-data processing, experiment orchestration, the model rater) into \S5.5 as methods text; keep the declaration to
-manuscript preparation, with tools named. (c) Correct the acknowledgements. \effort{(a) author decision; (b), (c)
-text only.}
-
-\subsection{Framing, threat model and practical value}
-
-\subsection*{F12 \po{} Measurement paper or system paper?}
-\textbf{Evidence.} M93: ``We claim no new privacy mechanism''; A319: the detector ``is not a contribution''. Yet \S4 is
-titled ``Proposed Framework'', Table~3 and the figures label rows ``Proposed (\dots)'', and about 700 words describe
-untested design (a per-span mode selector, envelope encryption, HSM/TEE, policy profiles, an OCR path). In Table~3
-``every method masks its detected spans with one marker'' (M287), so the ``Proposed'' rows are detectors, one of them
-off-the-shelf GLiNER.
-
-\textbf{Action.} Retitle \S4 (e.g.\ ``The Mediation Layer Under Test''); label rows by what they are (``Rules +
-context (heuristic)'', ``GLiNER-PII (zero-shot)'', ``LR tagger (trained on AI4Privacy)''); move the untested design to
-the supplement (see F3). Regenerate the figure labels to match. \effort{Text and figure regeneration (CPU).}
-
-\subsection*{F13 \po{} The threat model does not tie each adversary to an experiment, nor place the evasion adversary}
-\textbf{Evidence.} M144: ``An adaptive prompt adversary may craft prompts to evade span detection''; the evasion
-experiments perturb the gold identifiers themselves. In the stated trust model the user owns the data and the
-downstream observer is the adversary, so who obfuscates the user's identifiers is unstated. The coherent cases are an
-insider bypassing an organizational data-loss-prevention filter, and adversarial third-party content entering
-through read edges. The observer ``may inspect released agent traces if mediation is not applied before inference''
-is defined conditionally. The observer includes ``the model provider'' (M148), yet every agent is a local open-weight
-model. The Unicode/homoglyph clause cites injection and jailbreak papers (including GCG) rather than the evasion
-literature.
-
-\textbf{Action.} Rewrite \S2.2 compactly: for each adversary, its entry point, goal, capability, and the experiment
-that evaluates it (merge into Table~1). State the insider/DLP framing for evasion. Cite Bad Characters for the
-byte-level clause. Note in the limitations that a commercial endpoint, the deployment the observer model implies,
-was not tested. \effort{Text only (an optional commercial-API arm would need API budget).}
-
-\subsection*{F14 \po{} Practical guidance is in the supplement, and its recommended configuration was never run}
-\textbf{Evidence.} The main text says only that Supplementary Section S7 ``names one configuration'' (M518). S7
-recommends the transformer detector with symbolic mapping and every read edge mediated (A317), but the live stack
-ran only the learned and Presidio detectors. The conclusion recommends keeping identifiers out of ``retrieval,
-memory, tool arguments, and logs'' without the measured cost: read-edge mediation drops live-agent utility from
-64.3\% to 12.3--20.8\% (31.4--41.6\% with restoration). S7 also says the learned detector ``leaks least'', which holds
-on the 70B agent only.
-
-\textbf{Action.} Replace \S6.7 with a short ``Guidance for deployers'' list in the main text, each item with its
-measured effect and cost: canonicalize input; mediate every read edge; scope restoration to user-named recipients;
-prefer per-session random namespaces and minimal labels; re-measure the detector on in-house data; calibrate any
-leakage judge against people; pair with flow control for the instruction channel. State that the recommendation is
-assembled from components measured separately. Optionally run the transformer detector arm in the live stack.
-\effort{Text only; the optional arm is a GPU run (154 cases $\times$ 6 placements).}
-
-\subsection*{F15 \po{} The downstream leak channel rests on a judge the paper both validates and disowns}
-\textbf{Evidence.} M425: ``which we validated against two further annotators''; M524: the judge agrees with them at
-$\kappa\approx0.51$ ``so we report them as the benchmark's scoring, not as a measurement of disclosure''. PrivacyLens
-reported $\kappa=0.82$ for its own judge; the paper does not set the two side by side or explain the gap (4-bit
-quantization; different agents' actions). The judge-validation sample was drawn from the original nine-condition
-decision log, including the retired early-restoration arm (12 of 120 items) and pre-fix late-restoration decisions.
-
-\textbf{Action.} ``checked against two annotators; agreement is moderate ($\kappa\approx0.51$, against 0.82 reported
-by the benchmark for the full-precision judge on its own actions)''; state the validation sample's provenance in S4.
-Optionally add human leakage labels for a paired subset of the key conditions. \effort{Text only; the optional
-labels are human effort.}
-
-\subsection*{F16 \pt{} Restoration and injection setup}
-\textbf{Evidence.} \S5.1 (M275) says AgentDojo's banking and Slack suites; the live stack also uses workspace (77
-tasks $=16+21+40$). The injection result pools suites mediated differently (``The banking arms mediate tool outputs
-and the Slack arms do not'') and uses the regex detector in every arm. \textbf{Action.} Align \S5.1; report injection
-per suite (from the released rows); justify the regex detector or rerun with a stronger one. \effort{Text and
-CPU-only; a rerun is a short GPU job.}
-
-\subsection{Positioning and related work}
-
-\subsection*{F17 \po{} The novelty sentence overclaims, and defenses a security referee will name are missing}
-\textbf{Evidence.} M89: limits ``are rarely measured where they matter: across the boundaries of a multi-step agent
-\dots, against the facts a reader can still learn \dots, and with leakage instruments that have themselves been
-checked against people''. Each axis is covered by cited work on its own (PAAC, AgentDAM and Privacy in Action;
-Staab et al.\ 2025 and Xin et al.; PrivacyLens validated its own judge at $\kappa=0.82$). The injection conclusion
-(M515) cites only CaMeL. Not cited: FIDES (agent IFC with selective hiding, the closest flow-control counterpart to
-placeholders with deferred restoration), StruQ and SecAlign (model-level injection defenses), adaptive attacks on
-injection defenses (Zhan et al.\ 2025), InjecAgent, TAB (the reference anonymization metrics), and LLM
-re-identification of anonymized text (Patsakis and Lykousas 2023; Nyffenegger et al.\ 2024). The attribute-recovery
-attack (M367) cites nothing. The paper cites no \emph{Computers \& Security} article; the journal has few LLM-privacy
-papers, but several are relevant: Shahriar et al.\ 2025 (text-data privacy review), Lindemann et al.\ 2026
-(quasi-identifier re-identification at scale), Denis et al.\ 2024 (decentralized IFC with usage control), and, if
-their abstracts confirm relevance, Jiang et al.\ 2025 (attacks on NER) and Liu et al.\ 2026 (VLM upload privacy).
-
-\textbf{Action.} Rephrase the novelty claim as the conjunction (measured \emph{together}, for one layer, under one
-protocol) and cite the per-axis precedents in the sentence. Add the works above at the placements listed in
-Section~\ref{sec:bib}. Restate the contributions around the non-obvious findings: placement effect sizes in a live
-stack, the human-validated fall in inferability that both proxies miss, token linkability, the dummy-value result
-against a stronger attacker, and restoration as an injection oracle. \effort{Text only.}
-
-\subsection*{F18 \pt{} Bibliography errors}
-25 of 66 entries need correction; 11 are substantive. The two main benchmarks print as ``Agentdojo'' and
-``Privacylens'' and lack volume, pages and DOI; \src{dwork2014algorithmic} has wrong pages (211--407 for 211--487);
-\src{siyan2024papillon} prints the first author as ``L.~Siyan'' (Siyan Li); \src{yuan2026paac} is now accepted at
-NeurIPS 2026; titles lose capitalization under \src{elsarticle-num} (``Gpt-4v(ision)'', ``(eu)'', ``sdk'', and
-the word after ``?'' in two titles); the EMNLP entry \src{mireshghallah2023privacy} lacks pages and DOI; 14~entries lack a~DOI or volume.
-``Differential privacy in \dots\ embedding learning'' cites works on neither. \textbf{Action.} Apply the verified
-corrections. \effort{Text only.}
-
-\subsection{Consistency and presentation}
-
-\subsection*{F19 \pt{} Five references land on the wrong supplement section}
-M367 and the Table~4 caption cite S3.4 for the 70B/Casper-style result, which is in S3.5. M275 and M278 cite S5.1
-for clinical results, which are in S5.2. The Table~7 caption promises intervals that S3 gives only for two
-detectors. M520's ``dense OCR noise still causes span-boundary errors'' has no support in S5.1. \textbf{Action.}
-Retarget, or drop unsupported claims. \effort{Text only.}
-
-\subsection*{F20 \pt{} Internal inconsistencies}
+\section{Resolution log (18 November 2026)}
 \begin{itemize}
-\item M245: pooled and per-unit aggregation on PrivacyLens also swap spaCy NER and the LLM sanitizer (65.3/52.6
-against 60.3/67.8), not only the two lowest methods.
-\item M363: ``Nor is it a matter of judge size'' against S9: ``Capacity matters''; the 70B judge reaches four to six
-times the 27B's $\kappa$. Say capacity narrows but does not close the gap (also Contribution~3).
-\item Contribution~2: ``recovers most removed values regardless of capacity''; under Casper-style the 70B recovers
-48.5\%.
-\item S8 (A325): ``Casper-style, which retains the most text'' is false (0.95/0.91 against Presidio 0.97/0.93).
-\item S3.1 (A73): ``half keep the original letters and digits and change only punctuation or spacing (38\%) or
-nothing at all (14\%)'' does not reproduce: 25.6\% and 13.6\%, together 39\%; no released script computes it.
-\item S3.1 (A70): the learned detector ``degrades under attacks that change token structure or spelling
-(45.5--72.9\%)''; under leetspeak its post-attack PER is 3.1\%.
-\item The inferability judge produced 3{,}563 parsed judgments, not 3{,}564; the token namespace derives from the
-``case identifier'' in M260 and the ``session identifier'' in Table~S16; ``PrivacyLens' '' and ``PrivacyLens's''
-both appear; the Holm-adjusted $p=0.31$ (M425) is unlabeled.
+\item \textbf{P0-1 done.} \verb|\abovetopsep| set to 4pt in both preambles; table pages of both documents inspected.
+\item \textbf{P1-1 done.} The introduction states RQ1--RQ4 with their sections, the three contributions lead with a
+claim sentence each, and a roadmap paragraph closes the introduction. The forced-choice result and the moderate
+agreement of the benchmark's own judge stay in the RQ3 contribution.
+\item \textbf{P1-2 done.} A metrics table (Table 2) opens Section 5.3; the SSR definition states that it counts whole
+spans on AI4Privacy and covered characters on PrivacyLens. The table first floated every later table to the end of
+the document; it is placed with \verb|[!tbp]| and now sits on its own page after Section 5.3.
+\item \textbf{P1-3 done.} The listed sentences are rewritten; per-method human rates in Section 6.2 point to
+Figure 2 for their intervals, and intervals that repeat cells of the downstream table are dropped from Sections 6.3
+and 6.4. Interval-bearing contrasts are kept. No number changed.
+\item \textbf{P1-4 done.} Section 5.3 states that the reference labels are one author's, that every inferability
+result is also reported under the blank-sheet non-author's labels, and that the conclusions hold under both; the
+Figure 2 caption gives the non-author's range. A new Supplementary Section S13 gives the annotation instructions,
+translated from the Chinese interface, and states that nothing was recorded about the annotators.
+\item \textbf{P1-5 done.} Section 2.3 is folded into Section 2.2 as a ``Formal scope'' paragraph; its label moved
+with it.
+\item \textbf{P1-6 withdrawn} (see above).
+\item \textbf{Also done on the authors' answers.} The 100-mention sample behind the third-party name gold was
+checked by hand, so the supplement now says so instead of attributing the check to an AI assistant.
 \end{itemize}
-\textbf{Action.} Correct each. \effort{Text only; the S3.1 statistic needs a recomputation (CPU) or deletion.}
-
-\subsection*{F21 \pt{} Reproducibility statements overclaim slightly}
-\textbf{Evidence.} M281 and the Data availability statement say every reported number can be regenerated from the
-released records; the reply byte-identity counts (48/200, 32/200, \dots) come from completion caches that are not
-released, and the S3.1 rewrite composition has no script. The code-repository README maps the latency table to the
-wrong host manifest. M281 refers to ``the code availability statement'', which no longer exists (it is now Data
-availability). \textbf{Action.} ``Every table and figure''; release the caches and the script or say they are
-summarized; fix the README; fix the dangling reference. \effort{Text only.}
-
-\subsection*{F22 \pt{} PrivacyLens identifier gold is regex-defined and excludes third parties}
-\textbf{Evidence.} M306; gold is e-mail and digit-run regex matches plus the user's own name and e-mail. Gold produced
-by regexes favors rule-based detectors, and third-party names, the subjects of PrivacyLens' secrets and the values
-the attack recovers, are not gold. \textbf{Action.} State the gold definition and its circularity; optionally add
-third-party person names as a second gold set and report PER under both. \effort{Text; the second gold set is
-CPU-only.}
-
-\subsection*{F23 \pt{} Transfer and OCR claims overstate the evidence}
-\textbf{Evidence.} M278: the learned detector ``keeps exposure at 6.1\%'' on clinical notes, at about 0.37 precision
-(Table~S9); M270 says the OCR slice ``uses a layout-aware variant of the heuristic detector'', while S5.1 says it is
-``a separate line, keyword, and layout heuristic, not the text-side mediation path''; M278 ends with a speculative
-sentence (``we see no reason to expect messier input to make them survive less''). Figure~1 and \S2.1 present OCR as
-part of the evaluated layer. \textbf{Action.} Add the precision caveat; use the supplement's OCR wording; delete the
-speculation; present OCR as a transfer slice, not as part of the layer under test. \effort{Text only.}
-
-\subsection*{F24 \pt{} Instrument details are missing for the rewriting methods}
-The character alignment used to score rewriting methods (M245), span precision for a rewriter, the prompts of the LLM
-sanitizer and the abstraction mode, and Casper-style dummy-value generation (vocabulary, consistency across
-mentions) are not specified, although the dummy values drive the attacker-capacity result. \textbf{Action.} One-line
-definitions in the main text; details in the supplement. \effort{Text only.}
-
-\subsection*{F25 \pt{} The main text depends on the supplement where a referee must accept a claim}
-State in one to three sentences each in the main text: the deployment guidance (F14); the reconciliation of 60--67\%
-attack recovery with 25--50\% human inferability (A160; without it Table~4 and Figure~3 look contradictory); the
-overall recovery and paired reductions (F1); the 70B results that overturn the 32B negative on leakage; the
-annotation protocol (F7); the run-to-run threshold used to dismiss helpfulness differences (A309, used at M427 and
-M431). \effort{Text only, paid for by F3.}
-
-\subsection*{F26 \pt{} The human-label ordering is over-read}
-``Descend monotonically'' describes rows sorted by value; the limitations concede the mediated methods separate from
-the control, not from one another. The lowest-inferability method, the heuristic, keeps 0.60 of non-sensitive text
-and has FRR 37.7\%, so ``removing more removes more'' is partly a utility statement. \textbf{Action.} Drop
-``monotonically''; place inferability beside retention or helpfulness so the reader sees the trade.
-\effort{Text; an optional plot is CPU-only.}
-
-\subsection*{F27 \pt{} Revision-history residue}
-M515: ``An earlier pass whose client did not transmit a zero temperature \dots\ this pass does not reproduce them.''
-M427: ``The restored arm's new judge calls were generated in a later pass on different hardware''. These read as the
-paper's own revision history. \textbf{Action.} Keep one sentence on nondeterminism and its measured size; move
-provenance notes to the supplement. \effort{Text only.}
-
-\subsection*{F28 \pt{} Judge-failure claim and a missing statistic}
-The judge result rests on one prompt per judge; prompt calibration may matter as much as capacity (the 27B calls
-81\% inferable, the 8B 15\%). M365 says the judge ``agreed with a crude word-overlap heuristic closely enough that
-neither exposed the other'' without a number (82\% raw agreement, $\kappa=0.29$ on the 240 items). \textbf{Action.}
-Quantify the judge--lexical agreement; state that one prompt was used; optionally test two prompt variants on the 102
-items. \effort{Text; optional GPU run.}
-
-\subsection*{F29 \pth{} Naming and notation}
-The same method is ``Proposed (learned detector)'', ``Prop.\ (learned)'', ``Typed placeholder (learned)'', ``Learned
-placeholder'' and ``Learned''; ``Casper-style detector (rules + NER)'', ``Casper-style'' and ``Casper'' are mixed;
-``\S'' and ``Section'' are mixed; the ``Mem.\ SPE'' column counts spans on one source and characters on the other.
-\textbf{Action.} One naming scheme defined in \S5.3; one unit per column.
-
-\subsection*{F30 \pth{} Figures and tables}
-Table~2 is never cited in the text; its ``This paper'' row is not a comparable system attribute. Figure~1's labels are
-small at print size. Table~5 is a rotated table with 11 rows and five interval columns. The Figure~3 caption defers
-per-method proxy values to ``the released records''. \textbf{Action.} Cite Table~2 and drop its last row; enlarge
-Figure~1's labels; make Table~5 upright (F3); give the proxy values in a supplementary table.
-
-\subsection*{F31 \pth{} Sentence-level clarity}
-Results paragraphs carry three or more bracketed intervals per sentence (M427, M431, M468). M515 contains the
-ungrammatical ``A raw protected value left in 4, 3, and 1 of the 74 pairs (20 of which hold such a value)'' and the
-unclear ``the injected text names the agent's model with a name the attack template recognizes''. \textbf{Action.}
-Lead each results subsection with its one-sentence finding; keep the intervals that carry a decision; move the rest to
-tables.
-
-\subsection*{F32 \pth{} Submission hygiene}
-Remove source comments mentioning previous venues (M35, M530--535) from the uploaded source; add S7 to the S1
-overview; delete the reader aliases in the Table~S7 caption; give the PDF title and author metadata; print the
-latency medians in one sentence of \S4 (practitioners look for them).
-
-\section{Bibliography additions and placements}\label{sec:bib}
-All entries below were verified against primary records. Placements refer to the current text.
-\begin{center}\small
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{3.4cm}Y}
-\toprule
-Work & Venue & Placement \\
-\midrule
-Costa et al., FIDES & arXiv 2025 & IFC paragraph (M209); injection conclusion (M515) \\
-Chen et al., StruQ & USENIX Security 2025 & Injection sentence (M182); injection conclusion (M515) \\
-Chen et al., SecAlign & ACM CCS 2025 & Same \\
-Zhan et al., adaptive attacks on injection defenses & Findings NAACL 2025 & First sentence of \S6.6 (M472) \\
-Zhan et al., InjecAgent & Findings ACL 2024 & Injection sentence (M182) \\
-Pil\'an et al., TAB & Computational Linguistics 2022 & Exposure metrics (M241): relate PER to TAB's recall \\
-Patsakis and Lykousas & Scientific Reports 2023 & Where the recovery attack is introduced (M367); novelty
-sentence (M89) \\
-Nyffenegger et al. & Findings NAACL 2024 & Same \\
-Shahriar, Dara and Akalu & \emph{Computers \& Security} 151 (2025) & De-identification paragraph (M179) \\
-Lindemann et al. & \emph{Computers \& Security} 171 (2026) & Beside Sweeney and El Emam (M179) \\
-Denis et al. & \emph{Computers \& Security} 144 (2024) & IFC paragraph, after Myers and Liskov (M209) \\
-Jiang et al.\ (attacks on NER) & \emph{Computers \& Security} 150 (2025) & Threat model / \S6.6, only after reading the
-abstract \\
-Liu et al.\ (VLM upload privacy) & \emph{Computers \& Security} 168 (2026) & OCR sentence, only after reading the
-abstract \\
-Boucher et al., Bad Characters (already in the bibliography) & IEEE S\&P 2022 & Threat-model evasion clause (M144);
-restrict its use at M472 to the byte-level families \\
-\bottomrule
-\end{tabularx}
-\end{center}
-Lower-priority candidates (IsolateGPT, Progent, f-secure, Spotlighting, DP-Prompt, Bavaresco et al.\ on judge
-agreement, the Unicode standards UAX\,\#15 and UTS\,\#39, BOLT for cryptographic private inference) should be added
-only if the word budget allows. A search hit for a \emph{Computers \& Security} prompt-injection taxonomy article
-(``145, 103241'') has no Crossref record and must not be cited.
-
-\section{Revision plan}
-\begin{enumerate}
-\item \textbf{Headline consistency} (F1, F2, F4, F9a, F10): rewrite the abstract, contributions, the opening of
-\S6.3, \S6.4, the conclusion, the highlights and the cover letter around one message.
-\item \textbf{Framing and threat model} (F12, F13, F17): retitle \S4, relabel rows and figures, rewrite \S2.2 into
-Table~1, rephrase the novelty sentence, add the related work.
-\item \textbf{Word budget} (F3): apply the cuts in F3 while adding the main-text items of F7, F14, F25.
-\item \textbf{CPU-only reanalysis} (F5a, F6a/c, F16, F20, F26): operating points, recovery by blank type and
-token-level survival, per-suite injection, the S3.1 statistic.
-\item \textbf{Consistency and bibliography} (F18--F24, F27--F32).
-\item \textbf{GPU and human items} (F5b, F6b, F7c, F9c, F14, F15, F28): the release-free controls for the recovery
-attack (F6b) are the one experiment a referee is most likely to demand; the rest are optional.
-\item \textbf{Author decisions} (F11a): declarations, the code repository's visibility, and confirmation that no
-other journal is considering the manuscript.
-\end{enumerate}
-
-\section{Decisions required from the authors}
-\begin{enumerate}
-\item Funding, competing interests, CRediT roles and the AI tools used for manuscript preparation (F11).
-\item Whether to run the GPU controls for the recovery attack (F6b) and, if so, on which host.
-\item Whether to collect a paired human re-annotation (F7c) or to state the unpaired design as a limitation.
-\item Ethics: whether to obtain an exemption determination from the institution for the volunteer annotation, or to
-cite the policy under which none is required.
-\end{enumerate}
-
-\section{Limits of this review}
-The \emph{Computers \& Security} Guide for Authors could not be fetched directly; the word cap and declaration
-requirements were read from search-engine copies and must be confirmed in the submission system. The
-\emph{Computers \& Security} citations marked ``only after reading the abstract'' were identified by title. The
-records check covers about 470 values, not every number in the supplement.
+The main text is now 26 pages and the supplement 33 (S13 added at the end, so no supplement number moved).
 
 \end{document}
